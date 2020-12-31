@@ -8,7 +8,6 @@ namespace BloodstarClocktica
     static class BC
     {
         public static SaveFile Document;
-        public static Splash SplashForm;
         public static MainForm Form;
         public static string TempPngName = ".bloodstarclocktica.tmp.png";
 
@@ -18,18 +17,12 @@ namespace BloodstarClocktica
         [STAThread]
         static void Main()
         {
+            Document = new SaveFile();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            new Splash(SplashDone).ShowDialog();
-        }
-
-        static void SplashDone()
-        {
-            SplashForm = null;
-            Document = new SaveFile();
             Form = new MainForm();
             Refresh();
-            Form.ShowDialog();
+            Application.Run(Form);
         }
 
         /// <summary>
@@ -79,6 +72,7 @@ namespace BloodstarClocktica
         public static void Refresh()
         {
             RefreshMeta();
+            RefreshCharacterList();
             // TODO: rest of controls
         }
 
@@ -207,6 +201,41 @@ namespace BloodstarClocktica
                 return dlg.FileName;
             }
             return null;
+        }
+
+        /// <summary>
+        /// add a new character to the set
+        /// </summary>
+        public static void AddCharacter()
+        {
+            Document.Roles.Add(new SaveRole());
+            RefreshCharacterList();
+        }
+
+        /// <summary>
+        /// Update the character list control after Document.Roles changed
+        /// </summary>
+        static void RefreshCharacterList()
+        {
+            var numCharacters = Document.Roles.Count;
+            var items = Form.CharactersList.Items;
+            Form.CharactersList.BeginUpdate();
+            while (items.Count > numCharacters)
+            {
+                items.RemoveAt(items.Count-1);
+            }
+            for (var i=0; i<numCharacters; ++i)
+            {
+                if (i < items.Count)
+                {
+                    items[i] = Document.Roles[i].Id;
+                }
+                else
+                {
+                    items.Add(Document.Roles[i].Id);
+                }
+            }
+            Form.CharactersList.EndUpdate();
         }
     }
 }

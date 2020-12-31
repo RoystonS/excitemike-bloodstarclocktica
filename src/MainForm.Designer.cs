@@ -29,7 +29,13 @@ namespace BloodstarClocktica
         /// </summary>
         private void InitializeComponent()
         {
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            System.Windows.Forms.GroupBox groupBox1;
+            this.CharactersList = new System.Windows.Forms.ListBox();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+            this.btnUp = new System.Windows.Forms.Button();
+            this.btnDown = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,12 +48,6 @@ namespace BloodstarClocktica
             this.toDiskToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.uploadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.btnUp = new System.Windows.Forms.Button();
-            this.btnDown = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.listCharacters = new System.Windows.Forms.ListBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.AuthorTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -56,26 +56,96 @@ namespace BloodstarClocktica
             this.LogoButton = new System.Windows.Forms.Button();
             this.NameTextBox = new System.Windows.Forms.TextBox();
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
-            this.menuStrip1.SuspendLayout();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            groupBox1 = new System.Windows.Forms.GroupBox();
+            groupBox1.SuspendLayout();
+            this.flowLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // menuStrip1
+            // groupBox1
             // 
-            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileMenu,
-            this.orderToolStripMenuItem,
-            this.exportToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(801, 24);
-            this.menuStrip1.TabIndex = 0;
-            this.menuStrip1.Text = "menuStrip1";
+            groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            groupBox1.Controls.Add(this.CharactersList);
+            groupBox1.Controls.Add(this.flowLayoutPanel1);
+            groupBox1.Location = new System.Drawing.Point(4, 105);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new System.Drawing.Size(249, 355);
+            groupBox1.TabIndex = 7;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Characters";
+            // 
+            // CharactersList
+            // 
+            this.CharactersList.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.CharactersList.FormattingEnabled = true;
+            this.CharactersList.Location = new System.Drawing.Point(5, 23);
+            this.CharactersList.Name = "CharactersList";
+            this.CharactersList.Size = new System.Drawing.Size(195, 316);
+            this.CharactersList.TabIndex = 5;
+            // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.flowLayoutPanel1.Controls.Add(this.btnUp);
+            this.flowLayoutPanel1.Controls.Add(this.btnDown);
+            this.flowLayoutPanel1.Controls.Add(this.button1);
+            this.flowLayoutPanel1.Controls.Add(this.button2);
+            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(203, 19);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(40, 329);
+            this.flowLayoutPanel1.TabIndex = 6;
+            // 
+            // btnUp
+            // 
+            this.btnUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnUp.Location = new System.Drawing.Point(3, 3);
+            this.btnUp.Name = "btnUp";
+            this.btnUp.Size = new System.Drawing.Size(34, 23);
+            this.btnUp.TabIndex = 2;
+            this.btnUp.Text = "/\\";
+            this.btnUp.UseVisualStyleBackColor = true;
+            // 
+            // btnDown
+            // 
+            this.btnDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnDown.Location = new System.Drawing.Point(3, 32);
+            this.btnDown.Name = "btnDown";
+            this.btnDown.Size = new System.Drawing.Size(34, 23);
+            this.btnDown.TabIndex = 3;
+            this.btnDown.Text = "\\/";
+            this.btnDown.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.Location = new System.Drawing.Point(3, 61);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(34, 23);
+            this.button1.TabIndex = 4;
+            this.button1.Text = "Add";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.Button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button2.Location = new System.Drawing.Point(3, 90);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(34, 23);
+            this.button2.TabIndex = 5;
+            this.button2.Text = "Del";
+            this.button2.UseVisualStyleBackColor = true;
             // 
             // fileMenu
             // 
@@ -175,80 +245,15 @@ namespace BloodstarClocktica
             // 
             // splitContainer1.Panel1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.flowLayoutPanel1);
-            this.splitContainer1.Panel1.Controls.Add(this.listCharacters);
+            this.splitContainer1.Panel1.Controls.Add(groupBox1);
             this.splitContainer1.Panel1.Controls.Add(this.tableLayoutPanel1);
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.propertyGrid1);
             this.splitContainer1.Size = new System.Drawing.Size(801, 467);
-            this.splitContainer1.SplitterDistance = 621;
+            this.splitContainer1.SplitterDistance = 260;
             this.splitContainer1.TabIndex = 1;
-            // 
-            // flowLayoutPanel1
-            // 
-            this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.flowLayoutPanel1.Controls.Add(this.btnUp);
-            this.flowLayoutPanel1.Controls.Add(this.btnDown);
-            this.flowLayoutPanel1.Controls.Add(this.button1);
-            this.flowLayoutPanel1.Controls.Add(this.button2);
-            this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(574, 107);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(40, 353);
-            this.flowLayoutPanel1.TabIndex = 6;
-            // 
-            // btnUp
-            // 
-            this.btnUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnUp.Location = new System.Drawing.Point(3, 3);
-            this.btnUp.Name = "btnUp";
-            this.btnUp.Size = new System.Drawing.Size(34, 23);
-            this.btnUp.TabIndex = 2;
-            this.btnUp.Text = "/\\";
-            this.btnUp.UseVisualStyleBackColor = true;
-            // 
-            // btnDown
-            // 
-            this.btnDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDown.Location = new System.Drawing.Point(3, 32);
-            this.btnDown.Name = "btnDown";
-            this.btnDown.Size = new System.Drawing.Size(34, 23);
-            this.btnDown.TabIndex = 3;
-            this.btnDown.Text = "\\/";
-            this.btnDown.UseVisualStyleBackColor = true;
-            // 
-            // button1
-            // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(3, 61);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(34, 23);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "Add";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
-            // button2
-            // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(3, 90);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(34, 23);
-            this.button2.TabIndex = 5;
-            this.button2.Text = "Del";
-            this.button2.UseVisualStyleBackColor = true;
-            // 
-            // listCharacters
-            // 
-            this.listCharacters.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.listCharacters.FormattingEnabled = true;
-            this.listCharacters.Location = new System.Drawing.Point(3, 109);
-            this.listCharacters.Name = "listCharacters";
-            this.listCharacters.Size = new System.Drawing.Size(565, 342);
-            this.listCharacters.TabIndex = 5;
             // 
             // tableLayoutPanel1
             // 
@@ -270,7 +275,7 @@ namespace BloodstarClocktica
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(611, 93);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(250, 93);
             this.tableLayoutPanel1.TabIndex = 4;
             // 
             // AuthorTextBox
@@ -278,7 +283,7 @@ namespace BloodstarClocktica
             this.AuthorTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.AuthorTextBox.Location = new System.Drawing.Point(47, 27);
             this.AuthorTextBox.Name = "AuthorTextBox";
-            this.AuthorTextBox.Size = new System.Drawing.Size(561, 20);
+            this.AuthorTextBox.Size = new System.Drawing.Size(200, 20);
             this.AuthorTextBox.TabIndex = 4;
             this.AuthorTextBox.TextChanged += new System.EventHandler(this.AuthorTextBox_TextChanged);
             // 
@@ -320,7 +325,7 @@ namespace BloodstarClocktica
             this.LogoButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.LogoButton.Location = new System.Drawing.Point(47, 51);
             this.LogoButton.Name = "LogoButton";
-            this.LogoButton.Size = new System.Drawing.Size(561, 39);
+            this.LogoButton.Size = new System.Drawing.Size(200, 39);
             this.LogoButton.TabIndex = 5;
             this.LogoButton.UseVisualStyleBackColor = true;
             this.LogoButton.Click += new System.EventHandler(this.LogoButton_Click);
@@ -331,7 +336,7 @@ namespace BloodstarClocktica
             | System.Windows.Forms.AnchorStyles.Right)));
             this.NameTextBox.Location = new System.Drawing.Point(47, 3);
             this.NameTextBox.Name = "NameTextBox";
-            this.NameTextBox.Size = new System.Drawing.Size(561, 20);
+            this.NameTextBox.Size = new System.Drawing.Size(200, 20);
             this.NameTextBox.TabIndex = 3;
             this.NameTextBox.TextChanged += new System.EventHandler(this.NameTextBox_TextChanged);
             // 
@@ -342,8 +347,20 @@ namespace BloodstarClocktica
             | System.Windows.Forms.AnchorStyles.Right)));
             this.propertyGrid1.Location = new System.Drawing.Point(3, 3);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(166, 457);
+            this.propertyGrid1.Size = new System.Drawing.Size(527, 457);
             this.propertyGrid1.TabIndex = 0;
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileMenu,
+            this.orderToolStripMenuItem,
+            this.exportToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(801, 24);
+            this.menuStrip1.TabIndex = 8;
+            this.menuStrip1.Text = "menuStrip1";
             // 
             // MainForm
             // 
@@ -358,23 +375,22 @@ namespace BloodstarClocktica
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Bloodstar Clocktica";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            this.flowLayoutPanel1.ResumeLayout(false);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
-            this.flowLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileMenu;
         private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
@@ -389,7 +405,6 @@ namespace BloodstarClocktica
         private System.Windows.Forms.Button btnUp;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.ListBox listCharacters;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
@@ -401,6 +416,8 @@ namespace BloodstarClocktica
         public System.Windows.Forms.TextBox NameTextBox;
         public System.Windows.Forms.TextBox AuthorTextBox;
         public System.Windows.Forms.Button LogoButton;
+        public System.Windows.Forms.ListBox CharactersList;
+        private System.Windows.Forms.MenuStrip menuStrip1;
     }
 }
 

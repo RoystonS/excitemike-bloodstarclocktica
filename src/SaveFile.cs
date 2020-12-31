@@ -60,7 +60,7 @@ namespace BloodstarClocktica
         public SaveFile()
         {
             FilePath = string.Empty;
-            Dirty = true;
+            Dirty = false;
             Meta = SaveMeta.Default();
             Roles = new List<SaveRole>();
             FirstNightOrder = new List<NightOrderItem>();
@@ -169,10 +169,10 @@ namespace BloodstarClocktica
             {
                 if (entry.FullName.StartsWith($"{RoleDir}{PathSep}"))
                 {
-                    var id = entry.Name.Split(new char[] { '.' }, 1)[0];
+                    var id = Path.GetFileNameWithoutExtension(entry.Name);
                     var srcImageEntry = archive.GetEntry($"{SourceImageDir}{PathSep}{id}.png");
                     var processedImageEntry = archive.GetEntry($"{ProcessedImageDir}{PathSep}{id}.png");
-                    SaveRole.Load(entry, srcImageEntry, processedImageEntry);
+                    list.Add(SaveRole.Load(entry, srcImageEntry, processedImageEntry));
                 }
             }
             return list;

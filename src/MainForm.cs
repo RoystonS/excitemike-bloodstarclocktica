@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace BloodstarClocktica
@@ -37,14 +38,20 @@ namespace BloodstarClocktica
 
         private void NameTextBox_TextChanged(object sender, EventArgs e)
         {
-            BC.Document.Meta.Name = (sender as TextBox).Text;
-            BC.Document.Dirty = true;
+            if (BC.Document.Meta.Name != (sender as TextBox).Text)
+            {
+                BC.Document.Meta.Name = (sender as TextBox).Text;
+                BC.Document.Dirty = true;
+            }
         }
 
         private void AuthorTextBox_TextChanged(object sender, EventArgs e)
         {
-            BC.Document.Meta.Author = (sender as TextBox).Text;
-            BC.Document.Dirty = true;
+            if (BC.Document.Meta.Author != (sender as TextBox).Text)
+            {
+                BC.Document.Meta.Author = (sender as TextBox).Text;
+                BC.Document.Dirty = true;
+            }
         }
 
         private void LogoButton_Click(object sender, EventArgs e)
@@ -56,6 +63,11 @@ namespace BloodstarClocktica
                 BC.Document.Dirty = true;
             }
             BC.RefreshMeta();
+        }
+
+        private void Button1_Click(object sender, EventArgs e)
+        {
+            BC.AddCharacter();
         }
     }
 }

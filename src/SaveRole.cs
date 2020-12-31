@@ -9,7 +9,6 @@ namespace BloodstarClocktica
 {
     class SaveRole
     {
-        public DateTime ModifiedTime { get; set; }
         public string Id { get; set; }
         public string Name { get; set; }
         public SaveTeam.TeamValue Team { get; set; }
@@ -18,6 +17,13 @@ namespace BloodstarClocktica
         public List<string> ReminderTokens { get; set; }
         public bool Setup { get; set; }
         public string Ability { get; set; }
+
+        public SaveRole()
+        {
+            Id = "new_character";
+            Name = "New Character";
+            ReminderTokens = new List<string>();
+        }
 
         /// <summary>
         /// Save the role's json file and associated images in the .zip
