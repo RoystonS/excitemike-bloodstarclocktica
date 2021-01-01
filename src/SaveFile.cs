@@ -7,13 +7,13 @@ using System.Text.Json;
 namespace BloodstarClocktica
 {
     [Serializable]
-    struct NightOrderItem
+    public struct NightOrderItem
     {
         readonly string id;
         readonly string reminder;
     }
 
-    class SaveFile
+    public class SaveFile
     {
         public static string RoleDir = "roles";
         public static string SourceImageDir = "src_images";

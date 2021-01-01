@@ -2,7 +2,7 @@
 
 namespace BloodstarClocktica
 {
-    class SaveTeam
+    public class SaveTeam
     {
         public enum TeamValue
         {

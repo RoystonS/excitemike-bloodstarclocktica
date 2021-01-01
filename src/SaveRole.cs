@@ -1,73 +1,23 @@
-﻿using SixLabors.ImageSharp;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.Drawing;
 using System.Drawing.Design;
+using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Text.Json;
-using System.Windows.Forms;
-using System.Windows.Forms.Design;
 
 namespace BloodstarClocktica
 {
-    /// <summary>
-    /// wrap SixLabors.ImageSharp.Image so we can add attributes, so we can pick images from PropertyGrid
-    /// </summary>
-    [Editor(typeof(SaveImageEditor), typeof(UITypeEditor)), TypeConverter(typeof(ExpandableObjectConverter))]
-    class SaveImage
-    {
-        public Image SrcImage { get; set; }
-        public Image ProcessedImage { get; set; }
-        public SaveImage(Image srcImage, Image processedImage)
-        {
-            SrcImage = srcImage;
-            ProcessedImage = processedImage;
-        }
-    }
-
-    /// <summary>
-    /// editor for picking images from PropertyGrid
-    /// </summary>
-    class SaveImageEditor : UITypeEditor
-    {
-        public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
-        {
-            return UITypeEditorEditStyle.Modal;
-        }
-        public override object EditValue(ITypeDescriptorContext context, System.IServiceProvider provider, object value)
-        {
-            if (value is SaveImage saveImage)
-            {
-                if (provider.GetService(typeof(IWindowsFormsEditorService)) is IWindowsFormsEditorService svc)
-                {
-                    using (var form = new TokenImageForm())
-                    {
-                        form.SrcImage = saveImage.SrcImage;
-                        if ((svc.ShowDialog(form) == DialogResult.OK) && (form.SrcImage != saveImage.SrcImage))
-                        {
-                            saveImage.SrcImage = form.SrcImage;
-                            saveImage.ProcessedImage = form.ProcessedImage;
-                            BC.Document.Dirty = true;
-                        }
-                    }
-                }
-                return value;
-            }
-            else
-            {
-                throw new BcDataException($"SaveImageEditor used with invalid type");
-            }
-        }
-    }
-
     [DefaultProperty("Id")]
-    class SaveRole
+    public class SaveRole
     {
         [Category("Character"), Description("The internal ID for this character, without spaces or special characters.")]
         public string Id { get; set; }
 
         [Category("Character"), Description("The displayed ability text of the character.")]
+        [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
         public string Ability { get; set; }
 
         [Category("Character"), Description("The displayed name of the character.")]
@@ -75,28 +25,43 @@ namespace BloodstarClocktica
 
         [Category("Character"), Description("The team of the character.")]
         public SaveTeam.TeamValue Team { get; set; }
-        
-        [Category("Character"), Description("Image for character token.")]
-        public SaveImage TokenImage { get; set; }
 
-        [Category("Character"), Description("Reminder tokens that are available if the character is assigned to a player.")]
-        public List<string> ReminderTokens { get; set; }
+        /// <summary>
+        /// source character token image
+        /// </summary>
+        [Browsable(false)]
+        public System.Drawing.Image SourceImage { get; set; }
 
-        [Category("Character"), Description("Global reminder tokens that will always be available, no matter if the character is assigned to a player or not.")]
-        public List<string> GlobalReminderTokens { get; set; }
+        /// <summary>
+        /// cached processed character token image
+        /// </summary>
+        [Browsable(false)]
+        public System.Drawing.Image ProcessedImage { get; set; }
 
-        [Category("Character"), Description("Whether this token affects setup (orange leaf), like the Drunk or Baron.")]
+        [Category("Reminders"), Description("Reminder tokens that are available if the character is assigned to a player.")]
+        [Editor("System.Windows.Forms.Design.StringCollectionEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(System.Drawing.Design.UITypeEditor))]
+        public BindingList<string> ReminderTokens { get; set; }
+
+        [Category("Reminders"), Description("Global reminder tokens that will always be available, no matter if the character is assigned to a player or not.")]
+        [Editor("System.Windows.Forms.Design.StringCollectionEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(System.Drawing.Design.UITypeEditor))]
+        public BindingList<string> GlobalReminderTokens { get; set; }
+
+        [Category("Reminders"), Description("Whether this token affects setup (orange leaf), like the Drunk or Baron.")]
         public bool Setup { get; set; }
 
+        /// <summary>
+        /// create default SaveRole
+        /// </summary>
         public SaveRole()
         {
             Id = "new_character";
             Ability = "";
             Name = "New Character";
             Team = SaveTeam.TeamValue.Townsfolk;
-            TokenImage = new SaveImage(null, null);
-            ReminderTokens = new List<string>();
-            GlobalReminderTokens = new List<string>();
+            SourceImage = null;
+            ProcessedImage = null;
+            ReminderTokens = new BindingList<string>();
+            GlobalReminderTokens = new BindingList<string>();
         }
 
         /// <summary>
@@ -137,24 +102,21 @@ namespace BloodstarClocktica
                 }
             }
 
-            if (TokenImage != null)
+            // source image
+            if (SourceImage != null)
             {
-                // source image
-                if (TokenImage.SrcImage != null)
+                using (var stream = archive.CreateEntry($"{SaveFile.SourceImageDir}{SaveFile.PathSep}{Id}.png").Open())
                 {
-                    using (var stream = archive.CreateEntry($"{SaveFile.SourceImageDir}{SaveFile.PathSep}{Id}.png").Open())
-                    {
-                        TokenImage.SrcImage.SaveAsPng(stream);
-                    }
+                    SourceImage.Save(stream, ImageFormat.Png);
                 }
+            }
 
-                // processed image
-                if (TokenImage.ProcessedImage != null)
+            // processed image
+            if (ProcessedImage != null)
+            {
+                using (var stream = archive.CreateEntry($"{SaveFile.ProcessedImageDir}{SaveFile.PathSep}{Id}.png").Open())
                 {
-                    using (var stream = archive.CreateEntry($"{SaveFile.ProcessedImageDir}{SaveFile.PathSep}{Id}.png").Open())
-                    {
-                        TokenImage.ProcessedImage.SaveAsPng(stream);
-                    }
+                    ProcessedImage.Save(stream, ImageFormat.Png);
                 }
             }
         }
@@ -198,7 +160,7 @@ namespace BloodstarClocktica
                                 break;
                             case "reminders":
                                 {
-                                    var list = new List<string>();
+                                    var list = new BindingList<string>();
                                     if (json.TokenType != JsonTokenType.StartArray) { throw new BcLoadException("Expected an array for reminder_tokens"); }
                                     json.Read();
                                     while (json.TokenType != JsonTokenType.EndArray)
@@ -211,7 +173,7 @@ namespace BloodstarClocktica
                                 break;
                             case "globalReminders":
                                 {
-                                    var list = new List<string>();
+                                    var list = new BindingList<string>();
                                     if (json.TokenType != JsonTokenType.StartArray) { throw new BcLoadException("Expected an array for reminder_tokens"); }
                                     json.Read();
                                     while (json.TokenType != JsonTokenType.EndArray)
@@ -228,6 +190,10 @@ namespace BloodstarClocktica
                             case "ability":
                                 role.Ability = json.GetString();
                                 break;
+                            default:
+                                Console.Error.WriteLine($"unhandled property: \"{propertyName}\"");
+                                json.Skip();
+                                break;
                         }
                     }
                     else
@@ -242,7 +208,7 @@ namespace BloodstarClocktica
             {
                 using (var stream = srcImageEntry.Open())
                 {
-                    role.TokenImage.SrcImage = Image.Load(stream);
+                    role.SourceImage = Image.FromStream(stream);
                 }
             }
 
@@ -251,7 +217,7 @@ namespace BloodstarClocktica
             {
                 using (var stream = processedImageEntry.Open())
                 {
-                    role.TokenImage.ProcessedImage = Image.Load(stream);
+                    role.ProcessedImage = Image.FromStream(stream);
                 }
             }
 

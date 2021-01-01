@@ -1,19 +1,16 @@
 ﻿using SixLabors.ImageSharp;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace BloodstarClocktica
 {
-    class SaveMeta
+    public class SaveMeta
     {
         public string Name { get; set; }
         public string Author { get; set; }
+        // TODO: use System.Drawing.Image here
         public Image Logo { get; set; }
         public static SaveMeta Default()
         {

@@ -1,12 +1,9 @@
-﻿using SixLabors.ImageSharp;
-using System;
-using System.IO;
+﻿using System;
 using System.Windows.Forms;
-using System.Windows.Forms.Design;
 
 namespace BloodstarClocktica
 {
-    static class BC
+    public static partial class BC
     {
         public static SaveFile Document;
         public static MainForm Form;
@@ -65,37 +62,6 @@ namespace BloodstarClocktica
         {
             Document = SaveFile.Load(filePath);
             Refresh();
-        }
-
-        /// <summary>
-        /// update all controls to reflect document
-        /// </summary>
-        public static void Refresh()
-        {
-            RefreshMeta();
-            RefreshCharacterList();
-            RefreshCharacterPane();
-        }
-
-        /// <summary>
-        /// update meta information controls based on document
-        /// </summary>
-        public static void RefreshMeta()
-        {
-            Form.NameTextBox.Text = Document.Meta.Name;
-            Form.AuthorTextBox.Text = Document.Meta.Author;
-            if (Document.Meta.Logo == null)
-            {
-                Form.LogoButton.BackgroundImage = null;
-                Form.LogoButton.Text = "Click to choose logo";
-            }
-            else
-            {
-                var ms = new MemoryStream();
-                Document.Meta.Logo.SaveAsPng(ms);
-                Form.LogoButton.BackgroundImage = System.Drawing.Image.FromStream(ms);
-                Form.LogoButton.Text = "";
-            }
         }
 
         /// <summary>
@@ -209,34 +175,10 @@ namespace BloodstarClocktica
         /// </summary>
         public static void AddCharacter()
         {
+            Document.Dirty = true;
             Document.Roles.Add(new SaveRole());
             RefreshCharacterList();
-        }
-
-        /// <summary>
-        /// Update the character list control after Document.Roles changed
-        /// </summary>
-        static void RefreshCharacterList()
-        {
-            var numCharacters = Document.Roles.Count;
-            var items = Form.CharactersList.Items;
-            Form.CharactersList.BeginUpdate();
-            while (items.Count > numCharacters)
-            {
-                items.RemoveAt(items.Count-1);
-            }
-            for (var i=0; i<numCharacters; ++i)
-            {
-                if (i < items.Count)
-                {
-                    items[i] = Document.Roles[i].Id;
-                }
-                else
-                {
-                    items.Add(Document.Roles[i].Id);
-                }
-            }
-            Form.CharactersList.EndUpdate();
+            Form.CharactersList.SelectedIndex = Form.CharactersList.Items.Count - 1;
         }
 
         /// <summary>
@@ -261,23 +203,14 @@ namespace BloodstarClocktica
         {
             if (index != -1)
             {
+                Document.Dirty = true;
                 Document.Roles.RemoveAt(index);
                 RefreshCharacterList();
+                if (Form.CharactersList.SelectedIndex == -1 && Form.CharactersList.Items.Count != 0)
+                {
+                    Form.CharactersList.SelectedIndex = Form.CharactersList.Items.Count - 1;
+                }
             }
-        }
-
-        /// <summary>
-        /// update character controls
-        /// </summary>
-        public static void RefreshCharacterPane()
-        {
-            var index = Form.CharactersList.SelectedIndex;
-            if (-1 == index)
-            {
-                Form.PropertyGrid.SelectedObject = null;
-                return;
-            }
-            Form.PropertyGrid.SelectedObject = Document.Roles[index];
         }
     }
 }
