@@ -65,9 +65,33 @@ namespace BloodstarClocktica
             BC.RefreshMeta();
         }
 
-        private void Button1_Click(object sender, EventArgs e)
+        private void AddCharacter_Click(object sender, EventArgs e)
         {
             BC.AddCharacter();
+        }
+
+        private void RemoveCharacter_Click(object sender, EventArgs e)
+        {
+            var index = CharactersList.SelectedIndex;
+            if (index != -1)
+            {
+                BC.PromptForRemoveCharacter(index);
+            }
+        }
+
+        private void CharactersList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            BC.RefreshCharacterPane();
+        }
+
+        private void PropertyGrid_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            var index = CharactersList.SelectedIndex;
+            if (index != -1)
+            {
+                BC.RefreshCharacterListItem(index);
+                BC.Document.Dirty = true;
+            }
         }
     }
 }

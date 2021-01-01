@@ -102,6 +102,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="src\BcDataException.cs" />
     <Compile Include="src\BcLoadException.cs" />
     <Compile Include="src\MainForm.cs">
       <SubType>Form</SubType>
@@ -127,6 +128,12 @@
     <Compile Include="src\Splash.Designer.cs">
       <DependentUpon>Splash.cs</DependentUpon>
     </Compile>
+    <Compile Include="TokenImageForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="TokenImageForm.Designer.cs">
+      <DependentUpon>TokenImageForm.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="src\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -145,6 +152,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="src\Splash.resx">
       <DependentUpon>Splash.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="TokenImageForm.resx">
+      <DependentUpon>TokenImageForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

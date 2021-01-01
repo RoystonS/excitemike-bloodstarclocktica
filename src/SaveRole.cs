@@ -1,28 +1,102 @@
 ﻿using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing.Design;
 using System.IO;
 using System.IO.Compression;
 using System.Text.Json;
+using System.Windows.Forms;
+using System.Windows.Forms.Design;
 
 namespace BloodstarClocktica
 {
-    class SaveRole
+    /// <summary>
+    /// wrap SixLabors.ImageSharp.Image so we can add attributes, so we can pick images from PropertyGrid
+    /// </summary>
+    [Editor(typeof(SaveImageEditor), typeof(UITypeEditor)), TypeConverter(typeof(ExpandableObjectConverter))]
+    class SaveImage
     {
-        public string Id { get; set; }
-        public string Name { get; set; }
-        public SaveTeam.TeamValue Team { get; set; }
         public Image SrcImage { get; set; }
         public Image ProcessedImage { get; set; }
-        public List<string> ReminderTokens { get; set; }
-        public bool Setup { get; set; }
+        public SaveImage(Image srcImage, Image processedImage)
+        {
+            SrcImage = srcImage;
+            ProcessedImage = processedImage;
+        }
+    }
+
+    /// <summary>
+    /// editor for picking images from PropertyGrid
+    /// </summary>
+    class SaveImageEditor : UITypeEditor
+    {
+        public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
+        {
+            return UITypeEditorEditStyle.Modal;
+        }
+        public override object EditValue(ITypeDescriptorContext context, System.IServiceProvider provider, object value)
+        {
+            if (value is SaveImage saveImage)
+            {
+                if (provider.GetService(typeof(IWindowsFormsEditorService)) is IWindowsFormsEditorService svc)
+                {
+                    using (var form = new TokenImageForm())
+                    {
+                        form.SrcImage = saveImage.SrcImage;
+                        if ((svc.ShowDialog(form) == DialogResult.OK) && (form.SrcImage != saveImage.SrcImage))
+                        {
+                            saveImage.SrcImage = form.SrcImage;
+                            saveImage.ProcessedImage = form.ProcessedImage;
+                            BC.Document.Dirty = true;
+                        }
+                    }
+                }
+                return value;
+            }
+            else
+            {
+                throw new BcDataException($"SaveImageEditor used with invalid type");
+            }
+        }
+    }
+
+    [DefaultProperty("Id")]
+    class SaveRole
+    {
+        [Category("Character"), Description("The internal ID for this character, without spaces or special characters.")]
+        public string Id { get; set; }
+
+        [Category("Character"), Description("The displayed ability text of the character.")]
         public string Ability { get; set; }
+
+        [Category("Character"), Description("The displayed name of the character.")]
+        public string Name { get; set; }
+
+        [Category("Character"), Description("The team of the character.")]
+        public SaveTeam.TeamValue Team { get; set; }
+        
+        [Category("Character"), Description("Image for character token.")]
+        public SaveImage TokenImage { get; set; }
+
+        [Category("Character"), Description("Reminder tokens that are available if the character is assigned to a player.")]
+        public List<string> ReminderTokens { get; set; }
+
+        [Category("Character"), Description("Global reminder tokens that will always be available, no matter if the character is assigned to a player or not.")]
+        public List<string> GlobalReminderTokens { get; set; }
+
+        [Category("Character"), Description("Whether this token affects setup (orange leaf), like the Drunk or Baron.")]
+        public bool Setup { get; set; }
 
         public SaveRole()
         {
             Id = "new_character";
+            Ability = "";
             Name = "New Character";
+            Team = SaveTeam.TeamValue.Townsfolk;
+            TokenImage = new SaveImage(null, null);
             ReminderTokens = new List<string>();
+            GlobalReminderTokens = new List<string>();
         }
 
         /// <summary>
@@ -43,8 +117,14 @@ namespace BloodstarClocktica
                         json.WriteString("id", Id);
                         json.WriteString("name", Name);
                         json.WriteString("team", SaveTeam.ToString(Team));
-                        json.WriteStartArray("reminder_tokens");
+                        json.WriteStartArray("reminders");
                         foreach (var reminder in ReminderTokens)
+                        {
+                            json.WriteStringValue(reminder);
+                        }
+                        json.WriteEndArray();
+                        json.WriteStartArray("globalReminders");
+                        foreach (var reminder in GlobalReminderTokens)
                         {
                             json.WriteStringValue(reminder);
                         }
@@ -57,21 +137,24 @@ namespace BloodstarClocktica
                 }
             }
 
-            // source image
-            if (SrcImage != null)
+            if (TokenImage != null)
             {
-                using (var stream = archive.CreateEntry($"{SaveFile.SourceImageDir}{SaveFile.PathSep}{Id}.png").Open())
+                // source image
+                if (TokenImage.SrcImage != null)
                 {
-                    SrcImage.SaveAsPng(stream);
+                    using (var stream = archive.CreateEntry($"{SaveFile.SourceImageDir}{SaveFile.PathSep}{Id}.png").Open())
+                    {
+                        TokenImage.SrcImage.SaveAsPng(stream);
+                    }
                 }
-            }
 
-            // processed image
-            if (ProcessedImage != null)
-            {
-                using (var stream = archive.CreateEntry($"{SaveFile.ProcessedImageDir}{SaveFile.PathSep}{Id}.png").Open())
+                // processed image
+                if (TokenImage.ProcessedImage != null)
                 {
-                    ProcessedImage.SaveAsPng(stream);
+                    using (var stream = archive.CreateEntry($"{SaveFile.ProcessedImageDir}{SaveFile.PathSep}{Id}.png").Open())
+                    {
+                        TokenImage.ProcessedImage.SaveAsPng(stream);
+                    }
                 }
             }
         }
@@ -113,16 +196,31 @@ namespace BloodstarClocktica
                             case "team":
                                 role.Team = SaveTeam.FromString(json.GetString());
                                 break;
-                            case "reminder_tokens":
-                                var list = new List<string>();
-                                if (json.TokenType != JsonTokenType.StartArray) { throw new BcLoadException("Expected an array for reminder_tokens"); }
-                                json.Read();
-                                while (json.TokenType != JsonTokenType.EndArray)
+                            case "reminders":
                                 {
-                                    list.Add(json.GetString());
+                                    var list = new List<string>();
+                                    if (json.TokenType != JsonTokenType.StartArray) { throw new BcLoadException("Expected an array for reminder_tokens"); }
                                     json.Read();
+                                    while (json.TokenType != JsonTokenType.EndArray)
+                                    {
+                                        list.Add(json.GetString());
+                                        json.Read();
+                                    }
+                                    role.ReminderTokens = list;
                                 }
-                                role.ReminderTokens = list;
+                                break;
+                            case "globalReminders":
+                                {
+                                    var list = new List<string>();
+                                    if (json.TokenType != JsonTokenType.StartArray) { throw new BcLoadException("Expected an array for reminder_tokens"); }
+                                    json.Read();
+                                    while (json.TokenType != JsonTokenType.EndArray)
+                                    {
+                                        list.Add(json.GetString());
+                                        json.Read();
+                                    }
+                                    role.GlobalReminderTokens = list;
+                                }
                                 break;
                             case "setup":
                                 role.Setup = json.GetBoolean();
@@ -144,7 +242,7 @@ namespace BloodstarClocktica
             {
                 using (var stream = srcImageEntry.Open())
                 {
-                    role.SrcImage = Image.Load(stream);
+                    role.TokenImage.SrcImage = Image.Load(stream);
                 }
             }
 
@@ -153,7 +251,7 @@ namespace BloodstarClocktica
             {
                 using (var stream = processedImageEntry.Open())
                 {
-                    role.ProcessedImage = Image.Load(stream);
+                    role.TokenImage.ProcessedImage = Image.Load(stream);
                 }
             }
 

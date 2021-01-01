@@ -93,14 +93,16 @@ namespace BloodstarClocktica
         /// <returns></returns>
         public static SaveFile Load(String filePath)
         {
-            var archive = ZipFile.Open(filePath, ZipArchiveMode.Read);
-            return new SaveFile(
-                filePath,
-                LoadMetadata(archive),
-                LoadRoles(archive),
-                LoadFirstNightOrder(archive),
-                LoadOtherNightsOrder(archive)
-           );
+            using (var archive = ZipFile.Open(filePath, ZipArchiveMode.Read))
+            {
+                return new SaveFile(
+                    filePath,
+                    LoadMetadata(archive),
+                    LoadRoles(archive),
+                    LoadFirstNightOrder(archive),
+                    LoadOtherNightsOrder(archive)
+               );
+            }
         }
 
         /// <summary>

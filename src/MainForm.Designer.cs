@@ -32,10 +32,10 @@ namespace BloodstarClocktica
             System.Windows.Forms.GroupBox groupBox1;
             this.CharactersList = new System.Windows.Forms.ListBox();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.btnUp = new System.Windows.Forms.Button();
-            this.btnDown = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.MoveCharacterUpButton = new System.Windows.Forms.Button();
+            this.MoveCharacterDownButton = new System.Windows.Forms.Button();
+            this.AddCharacterButton = new System.Windows.Forms.Button();
+            this.RemoveCharacterButton = new System.Windows.Forms.Button();
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -55,7 +55,7 @@ namespace BloodstarClocktica
             this.label3 = new System.Windows.Forms.Label();
             this.LogoButton = new System.Windows.Forms.Button();
             this.NameTextBox = new System.Windows.Forms.TextBox();
-            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             groupBox1 = new System.Windows.Forms.GroupBox();
             groupBox1.SuspendLayout();
@@ -92,60 +92,62 @@ namespace BloodstarClocktica
             this.CharactersList.Name = "CharactersList";
             this.CharactersList.Size = new System.Drawing.Size(195, 316);
             this.CharactersList.TabIndex = 5;
+            this.CharactersList.SelectedIndexChanged += new System.EventHandler(this.CharactersList_SelectedIndexChanged);
             // 
             // flowLayoutPanel1
             // 
             this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.flowLayoutPanel1.Controls.Add(this.btnUp);
-            this.flowLayoutPanel1.Controls.Add(this.btnDown);
-            this.flowLayoutPanel1.Controls.Add(this.button1);
-            this.flowLayoutPanel1.Controls.Add(this.button2);
+            this.flowLayoutPanel1.Controls.Add(this.MoveCharacterUpButton);
+            this.flowLayoutPanel1.Controls.Add(this.MoveCharacterDownButton);
+            this.flowLayoutPanel1.Controls.Add(this.AddCharacterButton);
+            this.flowLayoutPanel1.Controls.Add(this.RemoveCharacterButton);
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(203, 19);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(40, 329);
             this.flowLayoutPanel1.TabIndex = 6;
             // 
-            // btnUp
+            // MoveCharacterUpButton
             // 
-            this.btnUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnUp.Location = new System.Drawing.Point(3, 3);
-            this.btnUp.Name = "btnUp";
-            this.btnUp.Size = new System.Drawing.Size(34, 23);
-            this.btnUp.TabIndex = 2;
-            this.btnUp.Text = "/\\";
-            this.btnUp.UseVisualStyleBackColor = true;
+            this.MoveCharacterUpButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.MoveCharacterUpButton.Location = new System.Drawing.Point(3, 3);
+            this.MoveCharacterUpButton.Name = "MoveCharacterUpButton";
+            this.MoveCharacterUpButton.Size = new System.Drawing.Size(34, 23);
+            this.MoveCharacterUpButton.TabIndex = 2;
+            this.MoveCharacterUpButton.Text = "/\\";
+            this.MoveCharacterUpButton.UseVisualStyleBackColor = true;
             // 
-            // btnDown
+            // MoveCharacterDownButton
             // 
-            this.btnDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnDown.Location = new System.Drawing.Point(3, 32);
-            this.btnDown.Name = "btnDown";
-            this.btnDown.Size = new System.Drawing.Size(34, 23);
-            this.btnDown.TabIndex = 3;
-            this.btnDown.Text = "\\/";
-            this.btnDown.UseVisualStyleBackColor = true;
+            this.MoveCharacterDownButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.MoveCharacterDownButton.Location = new System.Drawing.Point(3, 32);
+            this.MoveCharacterDownButton.Name = "MoveCharacterDownButton";
+            this.MoveCharacterDownButton.Size = new System.Drawing.Size(34, 23);
+            this.MoveCharacterDownButton.TabIndex = 3;
+            this.MoveCharacterDownButton.Text = "\\/";
+            this.MoveCharacterDownButton.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // AddCharacterButton
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(3, 61);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(34, 23);
-            this.button1.TabIndex = 4;
-            this.button1.Text = "Add";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.Button1_Click);
+            this.AddCharacterButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.AddCharacterButton.Location = new System.Drawing.Point(3, 61);
+            this.AddCharacterButton.Name = "AddCharacterButton";
+            this.AddCharacterButton.Size = new System.Drawing.Size(34, 23);
+            this.AddCharacterButton.TabIndex = 4;
+            this.AddCharacterButton.Text = "Add";
+            this.AddCharacterButton.UseVisualStyleBackColor = true;
+            this.AddCharacterButton.Click += new System.EventHandler(this.AddCharacter_Click);
             // 
-            // button2
+            // RemoveCharacterButton
             // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(3, 90);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(34, 23);
-            this.button2.TabIndex = 5;
-            this.button2.Text = "Del";
-            this.button2.UseVisualStyleBackColor = true;
+            this.RemoveCharacterButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.RemoveCharacterButton.Location = new System.Drawing.Point(3, 90);
+            this.RemoveCharacterButton.Name = "RemoveCharacterButton";
+            this.RemoveCharacterButton.Size = new System.Drawing.Size(34, 23);
+            this.RemoveCharacterButton.TabIndex = 5;
+            this.RemoveCharacterButton.Text = "Del";
+            this.RemoveCharacterButton.UseVisualStyleBackColor = true;
+            this.RemoveCharacterButton.Click += new System.EventHandler(this.RemoveCharacter_Click);
             // 
             // fileMenu
             // 
@@ -250,7 +252,7 @@ namespace BloodstarClocktica
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.propertyGrid1);
+            this.splitContainer1.Panel2.Controls.Add(this.PropertyGrid);
             this.splitContainer1.Size = new System.Drawing.Size(801, 467);
             this.splitContainer1.SplitterDistance = 260;
             this.splitContainer1.TabIndex = 1;
@@ -340,15 +342,16 @@ namespace BloodstarClocktica
             this.NameTextBox.TabIndex = 3;
             this.NameTextBox.TextChanged += new System.EventHandler(this.NameTextBox_TextChanged);
             // 
-            // propertyGrid1
+            // PropertyGrid
             // 
-            this.propertyGrid1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.PropertyGrid.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.propertyGrid1.Location = new System.Drawing.Point(3, 3);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(527, 457);
-            this.propertyGrid1.TabIndex = 0;
+            this.PropertyGrid.Location = new System.Drawing.Point(2, 3);
+            this.PropertyGrid.Name = "PropertyGrid";
+            this.PropertyGrid.Size = new System.Drawing.Size(527, 457);
+            this.PropertyGrid.TabIndex = 0;
+            this.PropertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.PropertyGrid_PropertyValueChanged);
             // 
             // menuStrip1
             // 
@@ -401,15 +404,14 @@ namespace BloodstarClocktica
         private System.Windows.Forms.ToolStripMenuItem uploadToolStripMenuItem;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
-        private System.Windows.Forms.Button btnDown;
-        private System.Windows.Forms.Button btnUp;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button MoveCharacterDownButton;
+        private System.Windows.Forms.Button MoveCharacterUpButton;
+        private System.Windows.Forms.Button AddCharacterButton;
+        private System.Windows.Forms.Button RemoveCharacterButton;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.PropertyGrid propertyGrid1;
         private System.Windows.Forms.ToolStripMenuItem orderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem firstNightToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem otherNightsToolStripMenuItem;
@@ -418,6 +420,7 @@ namespace BloodstarClocktica
         public System.Windows.Forms.Button LogoButton;
         public System.Windows.Forms.ListBox CharactersList;
         private System.Windows.Forms.MenuStrip menuStrip1;
+        public System.Windows.Forms.PropertyGrid PropertyGrid;
     }
 }
 

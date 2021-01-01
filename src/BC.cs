@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Windows.Forms;
+using System.Windows.Forms.Design;
 
 namespace BloodstarClocktica
 {
@@ -73,7 +74,7 @@ namespace BloodstarClocktica
         {
             RefreshMeta();
             RefreshCharacterList();
-            // TODO: rest of controls
+            RefreshCharacterPane();
         }
 
         /// <summary>
@@ -236,6 +237,47 @@ namespace BloodstarClocktica
                 }
             }
             Form.CharactersList.EndUpdate();
+        }
+
+        /// <summary>
+        /// Remove a character from the character list, confirming first
+        /// </summary>
+        /// <param name="index"></param>
+        public static void PromptForRemoveCharacter(int index)
+        {
+            if (index == -1) { return; }
+            var role = Document.Roles[index];
+            if (DialogResult.Yes == MessageBox.Show($"Remove character \"{role.Id}\"?", "Confirm", MessageBoxButtons.YesNo))
+            {
+                RemoveCharacter(index);
+            }
+        }
+
+        /// <summary>
+        /// Remove a character from the character list
+        /// </summary>
+        /// <param name="index"></param>
+        static void RemoveCharacter(int index)
+        {
+            if (index != -1)
+            {
+                Document.Roles.RemoveAt(index);
+                RefreshCharacterList();
+            }
+        }
+
+        /// <summary>
+        /// update character controls
+        /// </summary>
+        public static void RefreshCharacterPane()
+        {
+            var index = Form.CharactersList.SelectedIndex;
+            if (-1 == index)
+            {
+                Form.PropertyGrid.SelectedObject = null;
+                return;
+            }
+            Form.PropertyGrid.SelectedObject = Document.Roles[index];
         }
     }
 }
