@@ -11,6 +11,7 @@ namespace BloodstarClocktica
         /// </summary>
         public static void Refresh()
         {
+            RefreshTitle();
             RefreshMeta();
             RefreshCharacterList();
             RefreshCharacterPane();
@@ -146,7 +147,7 @@ namespace BloodstarClocktica
             var index = Form.CharactersList.SelectedIndex;
             if (index != -1)
             {
-                Document.Dirty = true;
+                SetDirty(true);
             }
         }
     }

@@ -7,7 +7,7 @@ namespace BloodstarClocktica
     {
         public static SaveFile Document;
         public static MainForm Form;
-        public static string TempPngName = ".bloodstarclocktica.tmp.png";
+        static readonly string WindowTitle = "Bloodstar Clocktica";
 
         /// <summary>
         /// The main entry point for the application.
@@ -143,6 +143,7 @@ namespace BloodstarClocktica
             try
             {
                 Document.Save(path);
+                RefreshTitle();
             }
             catch (Exception exception)
             {
@@ -175,7 +176,7 @@ namespace BloodstarClocktica
         /// </summary>
         public static void AddCharacter()
         {
-            Document.Dirty = true;
+            SetDirty(true);
             Document.Roles.Add(new SaveRole());
             RefreshCharacterList();
             Form.CharactersList.SelectedIndex = Form.CharactersList.Items.Count - 1;
@@ -203,7 +204,7 @@ namespace BloodstarClocktica
         {
             if (index != -1)
             {
-                Document.Dirty = true;
+                SetDirty(true);
                 Document.Roles.RemoveAt(index);
                 RefreshCharacterList();
                 if (Form.CharactersList.SelectedIndex == -1 && Form.CharactersList.Items.Count != 0)
@@ -232,6 +233,31 @@ namespace BloodstarClocktica
                 roles[indexB] = temp;
             }
             Form.CharactersList.SelectedIndex = indexB;
+        }
+
+        /// <summary>
+        /// Mark the document dirty and update window title
+        /// </summary>
+        /// <param name="isDirty"></param>
+        public static void SetDirty(bool isDirty)
+        {
+            Document.Dirty = isDirty;
+            RefreshTitle();
+        }
+
+        /// <summary>
+        /// Update window title to reflect whether document is dirty
+        /// </summary>
+        static void RefreshTitle()
+        {
+            if (Document.Dirty)
+            {
+                Form.Text = WindowTitle + " *";
+            }
+            else
+            {
+                Form.Text = WindowTitle;
+            }
         }
     }
 }

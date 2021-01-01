@@ -41,7 +41,7 @@ namespace BloodstarClocktica
             if (BC.Document.Meta.Name != (sender as TextBox).Text)
             {
                 BC.Document.Meta.Name = (sender as TextBox).Text;
-                BC.Document.Dirty = true;
+                BC.SetDirty(true);
             }
         }
 
@@ -50,7 +50,7 @@ namespace BloodstarClocktica
             if (BC.Document.Meta.Author != (sender as TextBox).Text)
             {
                 BC.Document.Meta.Author = (sender as TextBox).Text;
-                BC.Document.Dirty = true;
+                BC.SetDirty(true);
             }
         }
 
@@ -60,7 +60,7 @@ namespace BloodstarClocktica
             if (image != null)
             {
                 BC.Document.Meta.Logo = SixLabors.ImageSharp.Image.Load(image);
-                BC.Document.Dirty = true;
+                BC.SetDirty(true);
             }
             BC.RefreshMeta();
         }
@@ -90,7 +90,7 @@ namespace BloodstarClocktica
             if (index != -1)
             {
                 BC.RefreshCharacterListItem(index);
-                BC.Document.Dirty = true;
+                BC.SetDirty(true);
             }
         }
 
