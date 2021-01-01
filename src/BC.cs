@@ -212,5 +212,26 @@ namespace BloodstarClocktica
                 }
             }
         }
+
+        /// <summary>
+        /// change the order of the characters
+        /// </summary>
+        /// <param name="index"></param>
+        public static void SwapCharacters(int indexA, int indexB)
+        {
+            var items = Form.CharactersList.Items;
+            var roles = Document.Roles;
+            {
+                var temp = items[indexA];
+                items[indexA] = items[indexB];
+                items[indexB] = temp;
+            }
+            {
+                var temp = roles[indexA];
+                roles[indexA] = roles[indexB];
+                roles[indexB] = temp;
+            }
+            Form.CharactersList.SelectedIndex = indexB;
+        }
     }
 }

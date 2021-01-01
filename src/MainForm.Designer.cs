@@ -39,6 +39,9 @@ namespace BloodstarClocktica
             this.MoveCharacterDownButton = new System.Windows.Forms.Button();
             this.AddCharacterButton = new System.Windows.Forms.Button();
             this.RemoveCharacterButton = new System.Windows.Forms.Button();
+            this.ProcessedImageGroupBox = new System.Windows.Forms.GroupBox();
+            this.SourceImageButton = new System.Windows.Forms.Button();
+            this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -58,28 +61,25 @@ namespace BloodstarClocktica
             this.label3 = new System.Windows.Forms.Label();
             this.LogoButton = new System.Windows.Forms.Button();
             this.NameTextBox = new System.Windows.Forms.TextBox();
-            this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.SourceImageButton = new System.Windows.Forms.Button();
-            this.ProcessedImageGroupBox = new System.Windows.Forms.GroupBox();
             groupBox1 = new System.Windows.Forms.GroupBox();
             splitContainer2 = new System.Windows.Forms.SplitContainer();
             tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             groupBox2 = new System.Windows.Forms.GroupBox();
             groupBox1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.SplitContainer)).BeginInit();
-            this.SplitContainer.Panel1.SuspendLayout();
-            this.SplitContainer.Panel2.SuspendLayout();
-            this.SplitContainer.SuspendLayout();
-            this.tableLayoutPanel1.SuspendLayout();
-            this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(splitContainer2)).BeginInit();
             splitContainer2.Panel1.SuspendLayout();
             splitContainer2.Panel2.SuspendLayout();
             splitContainer2.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SplitContainer)).BeginInit();
+            this.SplitContainer.Panel1.SuspendLayout();
+            this.SplitContainer.Panel2.SuspendLayout();
+            this.SplitContainer.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -91,7 +91,7 @@ namespace BloodstarClocktica
             groupBox1.Controls.Add(this.flowLayoutPanel1);
             groupBox1.Location = new System.Drawing.Point(4, 105);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new System.Drawing.Size(249, 355);
+            groupBox1.Size = new System.Drawing.Size(318, 355);
             groupBox1.TabIndex = 7;
             groupBox1.TabStop = false;
             groupBox1.Text = "Characters";
@@ -104,7 +104,7 @@ namespace BloodstarClocktica
             this.CharactersList.FormattingEnabled = true;
             this.CharactersList.Location = new System.Drawing.Point(5, 23);
             this.CharactersList.Name = "CharactersList";
-            this.CharactersList.Size = new System.Drawing.Size(195, 316);
+            this.CharactersList.Size = new System.Drawing.Size(264, 329);
             this.CharactersList.TabIndex = 5;
             this.CharactersList.SelectedIndexChanged += new System.EventHandler(this.CharactersList_SelectedIndexChanged);
             // 
@@ -116,7 +116,7 @@ namespace BloodstarClocktica
             this.flowLayoutPanel1.Controls.Add(this.AddCharacterButton);
             this.flowLayoutPanel1.Controls.Add(this.RemoveCharacterButton);
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(203, 19);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(272, 19);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(40, 329);
             this.flowLayoutPanel1.TabIndex = 6;
@@ -130,6 +130,7 @@ namespace BloodstarClocktica
             this.MoveCharacterUpButton.TabIndex = 2;
             this.MoveCharacterUpButton.Text = "/\\";
             this.MoveCharacterUpButton.UseVisualStyleBackColor = true;
+            this.MoveCharacterUpButton.Click += new System.EventHandler(this.MoveCharacterUpButton_Click);
             // 
             // MoveCharacterDownButton
             // 
@@ -140,6 +141,7 @@ namespace BloodstarClocktica
             this.MoveCharacterDownButton.TabIndex = 3;
             this.MoveCharacterDownButton.Text = "\\/";
             this.MoveCharacterDownButton.UseVisualStyleBackColor = true;
+            this.MoveCharacterDownButton.Click += new System.EventHandler(this.MoveCharacterDownButton_Click);
             // 
             // AddCharacterButton
             // 
@@ -163,6 +165,81 @@ namespace BloodstarClocktica
             this.RemoveCharacterButton.UseVisualStyleBackColor = true;
             this.RemoveCharacterButton.Click += new System.EventHandler(this.RemoveCharacter_Click);
             // 
+            // splitContainer2
+            // 
+            splitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            splitContainer2.Location = new System.Drawing.Point(0, 0);
+            splitContainer2.Name = "splitContainer2";
+            splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer2.Panel1
+            // 
+            splitContainer2.Panel1.Controls.Add(tableLayoutPanel2);
+            // 
+            // splitContainer2.Panel2
+            // 
+            splitContainer2.Panel2.Controls.Add(this.PropertyGrid);
+            splitContainer2.Size = new System.Drawing.Size(682, 467);
+            splitContainer2.SplitterDistance = 230;
+            splitContainer2.TabIndex = 1;
+            // 
+            // tableLayoutPanel2
+            // 
+            tableLayoutPanel2.ColumnCount = 2;
+            tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            tableLayoutPanel2.Controls.Add(this.ProcessedImageGroupBox, 0, 0);
+            tableLayoutPanel2.Controls.Add(groupBox2, 0, 0);
+            tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
+            tableLayoutPanel2.Name = "tableLayoutPanel2";
+            tableLayoutPanel2.RowCount = 1;
+            tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            tableLayoutPanel2.Size = new System.Drawing.Size(678, 226);
+            tableLayoutPanel2.TabIndex = 0;
+            // 
+            // ProcessedImageGroupBox
+            // 
+            this.ProcessedImageGroupBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.ProcessedImageGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ProcessedImageGroupBox.Location = new System.Drawing.Point(342, 3);
+            this.ProcessedImageGroupBox.Name = "ProcessedImageGroupBox";
+            this.ProcessedImageGroupBox.Size = new System.Drawing.Size(333, 220);
+            this.ProcessedImageGroupBox.TabIndex = 2;
+            this.ProcessedImageGroupBox.TabStop = false;
+            this.ProcessedImageGroupBox.Text = "Processed Image";
+            // 
+            // groupBox2
+            // 
+            groupBox2.Controls.Add(this.SourceImageButton);
+            groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
+            groupBox2.Location = new System.Drawing.Point(3, 3);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new System.Drawing.Size(333, 220);
+            groupBox2.TabIndex = 1;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Source Image";
+            // 
+            // SourceImageButton
+            // 
+            this.SourceImageButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.SourceImageButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SourceImageButton.Location = new System.Drawing.Point(3, 16);
+            this.SourceImageButton.Name = "SourceImageButton";
+            this.SourceImageButton.Size = new System.Drawing.Size(327, 201);
+            this.SourceImageButton.TabIndex = 0;
+            this.SourceImageButton.UseVisualStyleBackColor = true;
+            // 
+            // PropertyGrid
+            // 
+            this.PropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PropertyGrid.Location = new System.Drawing.Point(0, 0);
+            this.PropertyGrid.Name = "PropertyGrid";
+            this.PropertyGrid.Size = new System.Drawing.Size(678, 229);
+            this.PropertyGrid.TabIndex = 0;
+            this.PropertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.PropertyGrid_PropertyValueChanged);
+            // 
             // fileMenu
             // 
             this.fileMenu.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -178,7 +255,7 @@ namespace BloodstarClocktica
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
             this.newToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.newToolStripMenuItem.Text = "&New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.NewToolStripMenuItem_Click);
             // 
@@ -186,7 +263,7 @@ namespace BloodstarClocktica
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.openToolStripMenuItem.Text = "&Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
@@ -194,7 +271,7 @@ namespace BloodstarClocktica
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.SaveToolStripMenuItem_Click);
             // 
@@ -202,7 +279,7 @@ namespace BloodstarClocktica
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.saveAsToolStripMenuItem.Text = "Save &As";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.SaveAsToolStripMenuItem_Click);
             // 
@@ -242,14 +319,14 @@ namespace BloodstarClocktica
             // 
             this.toDiskToolStripMenuItem.Name = "toDiskToolStripMenuItem";
             this.toDiskToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.toDiskToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.toDiskToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.toDiskToolStripMenuItem.Text = "To &Disk";
             // 
             // uploadToolStripMenuItem
             // 
             this.uploadToolStripMenuItem.Name = "uploadToolStripMenuItem";
             this.uploadToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F5)));
-            this.uploadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.uploadToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
             this.uploadToolStripMenuItem.Text = "&Upload";
             // 
             // SplitContainer
@@ -267,8 +344,8 @@ namespace BloodstarClocktica
             // SplitContainer.Panel2
             // 
             this.SplitContainer.Panel2.Controls.Add(splitContainer2);
-            this.SplitContainer.Size = new System.Drawing.Size(801, 467);
-            this.SplitContainer.SplitterDistance = 260;
+            this.SplitContainer.Size = new System.Drawing.Size(1015, 467);
+            this.SplitContainer.SplitterDistance = 329;
             this.SplitContainer.TabIndex = 1;
             // 
             // tableLayoutPanel1
@@ -291,7 +368,7 @@ namespace BloodstarClocktica
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 44F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(250, 93);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(319, 93);
             this.tableLayoutPanel1.TabIndex = 4;
             // 
             // AuthorTextBox
@@ -299,7 +376,7 @@ namespace BloodstarClocktica
             this.AuthorTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.AuthorTextBox.Location = new System.Drawing.Point(47, 27);
             this.AuthorTextBox.Name = "AuthorTextBox";
-            this.AuthorTextBox.Size = new System.Drawing.Size(200, 20);
+            this.AuthorTextBox.Size = new System.Drawing.Size(269, 20);
             this.AuthorTextBox.TabIndex = 4;
             this.AuthorTextBox.TextChanged += new System.EventHandler(this.AuthorTextBox_TextChanged);
             // 
@@ -341,7 +418,7 @@ namespace BloodstarClocktica
             this.LogoButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.LogoButton.Location = new System.Drawing.Point(47, 51);
             this.LogoButton.Name = "LogoButton";
-            this.LogoButton.Size = new System.Drawing.Size(200, 39);
+            this.LogoButton.Size = new System.Drawing.Size(269, 39);
             this.LogoButton.TabIndex = 5;
             this.LogoButton.UseVisualStyleBackColor = true;
             this.LogoButton.Click += new System.EventHandler(this.LogoButton_Click);
@@ -352,18 +429,9 @@ namespace BloodstarClocktica
             | System.Windows.Forms.AnchorStyles.Right)));
             this.NameTextBox.Location = new System.Drawing.Point(47, 3);
             this.NameTextBox.Name = "NameTextBox";
-            this.NameTextBox.Size = new System.Drawing.Size(200, 20);
+            this.NameTextBox.Size = new System.Drawing.Size(269, 20);
             this.NameTextBox.TabIndex = 3;
             this.NameTextBox.TextChanged += new System.EventHandler(this.NameTextBox_TextChanged);
-            // 
-            // PropertyGrid
-            // 
-            this.PropertyGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PropertyGrid.Location = new System.Drawing.Point(0, 0);
-            this.PropertyGrid.Name = "PropertyGrid";
-            this.PropertyGrid.Size = new System.Drawing.Size(533, 229);
-            this.PropertyGrid.TabIndex = 0;
-            this.PropertyGrid.PropertyValueChanged += new System.Windows.Forms.PropertyValueChangedEventHandler(this.PropertyGrid_PropertyValueChanged);
             // 
             // menuStrip1
             // 
@@ -373,81 +441,15 @@ namespace BloodstarClocktica
             this.exportToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(801, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1015, 24);
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "menuStrip1";
-            // 
-            // splitContainer2
-            // 
-            splitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            splitContainer2.Location = new System.Drawing.Point(0, 0);
-            splitContainer2.Name = "splitContainer2";
-            splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer2.Panel1
-            // 
-            splitContainer2.Panel1.Controls.Add(tableLayoutPanel2);
-            // 
-            // splitContainer2.Panel2
-            // 
-            splitContainer2.Panel2.Controls.Add(this.PropertyGrid);
-            splitContainer2.Size = new System.Drawing.Size(537, 467);
-            splitContainer2.SplitterDistance = 230;
-            splitContainer2.TabIndex = 1;
-            // 
-            // tableLayoutPanel2
-            // 
-            tableLayoutPanel2.ColumnCount = 2;
-            tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            tableLayoutPanel2.Controls.Add(this.ProcessedImageGroupBox, 0, 0);
-            tableLayoutPanel2.Controls.Add(groupBox2, 0, 0);
-            tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            tableLayoutPanel2.Location = new System.Drawing.Point(0, 0);
-            tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 1;
-            tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            tableLayoutPanel2.Size = new System.Drawing.Size(533, 226);
-            tableLayoutPanel2.TabIndex = 0;
-            // 
-            // groupBox2
-            // 
-            groupBox2.Controls.Add(this.SourceImageButton);
-            groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            groupBox2.Location = new System.Drawing.Point(3, 3);
-            groupBox2.Name = "groupBox2";
-            groupBox2.Size = new System.Drawing.Size(260, 220);
-            groupBox2.TabIndex = 1;
-            groupBox2.TabStop = false;
-            groupBox2.Text = "Source Image";
-            // 
-            // SourceImageButton
-            // 
-            this.SourceImageButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.SourceImageButton.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SourceImageButton.Location = new System.Drawing.Point(3, 16);
-            this.SourceImageButton.Name = "SourceImageButton";
-            this.SourceImageButton.Size = new System.Drawing.Size(254, 201);
-            this.SourceImageButton.TabIndex = 0;
-            this.SourceImageButton.UseVisualStyleBackColor = true;
-            // 
-            // ProcessedImageGroupBox
-            // 
-            this.ProcessedImageGroupBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ProcessedImageGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ProcessedImageGroupBox.Location = new System.Drawing.Point(269, 3);
-            this.ProcessedImageGroupBox.Name = "ProcessedImageGroupBox";
-            this.ProcessedImageGroupBox.Size = new System.Drawing.Size(261, 220);
-            this.ProcessedImageGroupBox.TabIndex = 2;
-            this.ProcessedImageGroupBox.TabStop = false;
-            this.ProcessedImageGroupBox.Text = "Processed Image";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(801, 491);
+            this.ClientSize = new System.Drawing.Size(1015, 491);
             this.Controls.Add(this.SplitContainer);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -458,6 +460,12 @@ namespace BloodstarClocktica
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             groupBox1.ResumeLayout(false);
             this.flowLayoutPanel1.ResumeLayout(false);
+            splitContainer2.Panel1.ResumeLayout(false);
+            splitContainer2.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(splitContainer2)).EndInit();
+            splitContainer2.ResumeLayout(false);
+            tableLayoutPanel2.ResumeLayout(false);
+            groupBox2.ResumeLayout(false);
             this.SplitContainer.Panel1.ResumeLayout(false);
             this.SplitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.SplitContainer)).EndInit();
@@ -466,12 +474,6 @@ namespace BloodstarClocktica
             this.tableLayoutPanel1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            splitContainer2.Panel1.ResumeLayout(false);
-            splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(splitContainer2)).EndInit();
-            splitContainer2.ResumeLayout(false);
-            tableLayoutPanel2.ResumeLayout(false);
-            groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 

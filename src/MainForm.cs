@@ -93,5 +93,42 @@ namespace BloodstarClocktica
                 BC.Document.Dirty = true;
             }
         }
+
+        private void MoveCharacterUpButton_Click(object sender, EventArgs e)
+        {
+            var index = CharactersList.SelectedIndex;
+            if (index > 0)
+            {
+                CharactersList.BeginUpdate();
+                CharactersList.SelectedIndexChanged -= new System.EventHandler(CharactersList_SelectedIndexChanged);
+                try
+                {
+                    BC.SwapCharacters(index, index - 1);
+                }
+                finally
+                {
+                    CharactersList.SelectedIndexChanged += new System.EventHandler(CharactersList_SelectedIndexChanged);
+                    CharactersList.EndUpdate();
+                }
+            }
+        }
+        private void MoveCharacterDownButton_Click(object sender, EventArgs e)
+        {
+            var index = CharactersList.SelectedIndex;
+            if (index != -1 && index < CharactersList.Items.Count -1)
+            {
+                CharactersList.BeginUpdate();
+                CharactersList.SelectedIndexChanged -= new System.EventHandler(CharactersList_SelectedIndexChanged);
+                try
+                {
+                    BC.SwapCharacters(index, index + 1);
+                }
+                finally
+                {
+                    CharactersList.SelectedIndexChanged += new System.EventHandler(CharactersList_SelectedIndexChanged);
+                    CharactersList.EndUpdate();
+                }
+            }
+        }
     }
 }
