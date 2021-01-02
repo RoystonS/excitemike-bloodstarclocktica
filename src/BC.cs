@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Windows.Forms;
 
 namespace BloodstarClocktica
@@ -157,7 +158,7 @@ namespace BloodstarClocktica
         /// Choose a source image
         /// </summary>
         /// <returns>path to an image file or null</returns>
-        public static string ChooseImage()
+        public static Image ChooseImage()
         {
             var dlg = new OpenFileDialog
             {
@@ -166,7 +167,7 @@ namespace BloodstarClocktica
             };
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                return dlg.FileName;
+                return Image.FromFile(dlg.FileName);
             }
             return null;
         }
@@ -257,6 +258,29 @@ namespace BloodstarClocktica
             else
             {
                 Form.Text = WindowTitle;
+            }
+        }
+
+        /// <summary>
+        /// select a source image for the character
+        /// </summary>
+        /// <param name="index"></param>
+        internal static void ChooseSourceImage(int index)
+        {
+            // TODO: should this have a confirmation popup?
+            // TODO: a way to go back to no image at all
+            if (-1 == index)
+            {
+                return;
+            }
+            var character = Document.Roles[index];
+            var image = BC.ChooseImage();
+            if (image != null)
+            {
+                character.SourceImage = image;
+                character.ProcessedImage = null;
+                SetDirty(true);
+                RefreshCharacterPane();
             }
         }
     }

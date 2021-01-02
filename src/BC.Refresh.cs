@@ -1,5 +1,6 @@
 ﻿using SixLabors.ImageSharp;
 using System.ComponentModel;
+using System.Drawing.Imaging;
 using System.IO;
 
 namespace BloodstarClocktica
@@ -32,7 +33,7 @@ namespace BloodstarClocktica
             else
             {
                 var ms = new MemoryStream();
-                Document.Meta.Logo.SaveAsPng(ms);
+                Document.Meta.Logo.Save(ms, ImageFormat.Png);
                 Form.LogoButton.BackgroundImage = System.Drawing.Image.FromStream(ms);
                 Form.LogoButton.Text = "";
             }
@@ -54,11 +55,11 @@ namespace BloodstarClocktica
             {
                 if (i < items.Count)
                 {
-                    items[i] = Document.Roles[i].Id;
+                    items[i] = GetCharacterListString(Document.Roles[i]);
                 }
                 else
                 {
-                    items.Add(Document.Roles[i].Id);
+                    items.Add(GetCharacterListString(Document.Roles[i]));
                 }
             }
             Form.CharactersList.EndUpdate();
@@ -73,7 +74,7 @@ namespace BloodstarClocktica
         public static void RefreshCharacterListItem(int index)
         {
             if (index == -1) { return; }
-            Form.CharactersList.Items[index] = Document.Roles[index].Id;
+            Form.CharactersList.Items[index] = GetCharacterListString(Document.Roles[index]);
         }
 
         /// <summary>
@@ -87,29 +88,38 @@ namespace BloodstarClocktica
             {
                 Form.PropertyGrid.SelectedObject = null;
                 Form.SplitContainer.Panel2.Enabled = false;
+                RefreshCharacterImages(null);
             }
             else
             {
                 Form.SplitContainer.Panel2.Enabled = true;
                 var character = Document.Roles[index];
                 Form.PropertyGrid.SelectedObject = character;
-                if (character == null || character.SourceImage == null)
-                {
-                    Form.SourceImageButton.BackgroundImage = null;
-                    Form.SourceImageButton.Text = "Click to import source image";
-                    Form.ProcessedImageGroupBox.BackgroundImage = null;
-                }
-                else
-                {
-                    Form.SourceImageButton.BackgroundImage = character.SourceImage;
-                    Form.ProcessedImageGroupBox.BackgroundImage = character.ProcessedImage;
-                    Form.SourceImageButton.Text = "";
-                }
+                RefreshCharacterImages(character);
                 if (Form.PropertyGrid.SelectedObject is SaveRole saveRole)
                 {
                     saveRole.ReminderTokens.ListChanged += MarkDirty;
                 }
                 AddListListeners();
+            }
+        }
+
+        /// <summary>
+        /// update controls for character images
+        /// </summary>
+        internal static void RefreshCharacterImages(SaveRole character)
+        {
+            if (character == null || character.SourceImage == null)
+            {
+                Form.SourceImageButton.BackgroundImage = null;
+                Form.SourceImageButton.Text = "Click to import source image";
+                Form.ProcessedImageGroupBox.BackgroundImage = null;
+            }
+            else
+            {
+                Form.SourceImageButton.BackgroundImage = character.SourceImage;
+                Form.ProcessedImageGroupBox.BackgroundImage = character.ProcessedImage;
+                Form.SourceImageButton.Text = "";
             }
         }
 
@@ -149,6 +159,16 @@ namespace BloodstarClocktica
             {
                 SetDirty(true);
             }
+        }
+
+        /// <summary>
+        /// get what to show in the character list for the character
+        /// </summary>
+        /// <param name="character"></param>
+        /// <returns></returns>
+        static string GetCharacterListString(SaveRole character)
+        {
+            return $"{character.Name}";
         }
     }
 }

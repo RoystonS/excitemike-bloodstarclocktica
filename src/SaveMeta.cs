@@ -1,5 +1,6 @@
-﻿using SixLabors.ImageSharp;
-using System;
+﻿using System;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
 using System.Text.Json;
@@ -48,7 +49,7 @@ namespace BloodstarClocktica
             {
                 using (var stream = archive.CreateEntry(SaveFile.LogoFile).Open())
                 {
-                    Logo.SaveAsPng(stream);
+                    Logo.Save(stream, ImageFormat.Png);
                 }
             }
         }
@@ -103,7 +104,7 @@ namespace BloodstarClocktica
             {
                 using (var stream = logoEntry.Open())
                 {
-                    meta.Logo = Image.Load(stream);
+                    meta.Logo = Image.FromStream(stream);
                 }
             }
 

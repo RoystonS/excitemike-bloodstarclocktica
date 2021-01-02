@@ -36,7 +36,7 @@ namespace BloodstarClocktica
         /// cached processed character token image
         /// </summary>
         [Browsable(false)]
-        public System.Drawing.Image ProcessedImage { get; set; }
+        public System.Drawing.Image ProcessedImage { get; set; } // TODO: just-in-time generate processed image
 
         [Category("Reminders"), Description("Reminder tokens that are available if the character is assigned to a player.")]
         [Editor("System.Windows.Forms.Design.StringCollectionEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(System.Drawing.Design.UITypeEditor))]

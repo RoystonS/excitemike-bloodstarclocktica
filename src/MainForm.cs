@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Drawing;
 using System.Windows.Forms;
 
 namespace BloodstarClocktica
@@ -59,7 +58,7 @@ namespace BloodstarClocktica
             var image = BC.ChooseImage();
             if (image != null)
             {
-                BC.Document.Meta.Logo = SixLabors.ImageSharp.Image.Load(image);
+                BC.Document.Meta.Logo = image;
                 BC.SetDirty(true);
             }
             BC.RefreshMeta();
@@ -128,6 +127,15 @@ namespace BloodstarClocktica
                     CharactersList.SelectedIndexChanged += new System.EventHandler(CharactersList_SelectedIndexChanged);
                     CharactersList.EndUpdate();
                 }
+            }
+        }
+
+        private void SourceImageButton_Click(object sender, EventArgs e)
+        {
+            var index = CharactersList.SelectedIndex;
+            if (index != -1)
+            {
+                BC.ChooseSourceImage(index);
             }
         }
     }
