@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 
 namespace BloodstarClocktica
@@ -167,7 +168,10 @@ namespace BloodstarClocktica
             };
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                return Image.FromFile(dlg.FileName);
+                using (Stream stream = new FileStream(dlg.FileName, FileMode.Open))
+                {
+                    return Image.FromStream(stream);
+                }
             }
             return null;
         }
