@@ -182,7 +182,7 @@ namespace BloodstarClocktica
         public static void AddCharacter()
         {
             SetDirty(true);
-            Document.Roles.Add(new SaveRole());
+            Document.Roles.Add(new SaveRole(UniqueCharacterId()));
             RefreshCharacterList();
             Form.CharactersList.SelectedIndex = Form.CharactersList.Items.Count - 1;
         }
@@ -285,6 +285,24 @@ namespace BloodstarClocktica
                 SetDirty(true);
                 RefreshCharacterPane();
             }
+        }
+        /// <summary>
+        /// Get a unique character id
+        /// </summary>
+        /// <returns></returns>
+        internal static string UniqueCharacterId()
+        {
+            var prefix = "newcharacter";
+            if (ValidateId(prefix, -1))
+            {
+                return prefix;
+            }
+            var n = 2;
+            while (!ValidateId($"{prefix}{n}", -1))
+            {
+                n++;
+            }
+            return $"{prefix}{n}";
         }
     }
 }

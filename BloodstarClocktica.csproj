@@ -104,10 +104,11 @@
   <ItemGroup>
     <Compile Include="src\BC.ProcessImage.cs" />
     <Compile Include="src\BC.Refresh.cs" />
-    <Compile Include="src\BcDataException.cs" />
+    <Compile Include="src\BC.Validation.cs" />
+    <Compile Include="src\Bc.Exceptions.cs" />
     <Compile Include="src\BcImageProcessingException.cs" />
-    <Compile Include="src\BcLoadException.cs" />
     <Compile Include="src\BitmapExtensionMethods.cs" />
+    <Compile Include="src\IdValidator.cs" />
     <Compile Include="src\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

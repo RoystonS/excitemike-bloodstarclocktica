@@ -13,7 +13,7 @@ namespace BloodstarClocktica
     [DefaultProperty("Id")]
     public class SaveRole
     {
-        [Category("Character"), Description("The internal ID for this character, without spaces or special characters.")]
+        [Category("Character"), Description("The internal ID for this character, without spaces or special characters."), TypeConverter(typeof(IdValidator))]
         public string Id { get; set; }
 
         [Category("Character"), Description("The displayed ability text of the character.")]
@@ -88,9 +88,9 @@ namespace BloodstarClocktica
         /// <summary>
         /// create default SaveRole
         /// </summary>
-        public SaveRole()
+        public SaveRole(string id)
         {
-            Id = "new_character";
+            Id = id;
             Ability = "";
             Name = "New Character";
             Team = SaveTeam.TeamValue.Townsfolk;
@@ -163,7 +163,7 @@ namespace BloodstarClocktica
         /// <param name="entry"></param>
         static public SaveRole Load(ZipArchiveEntry jsonEntry, ZipArchiveEntry srcImageEntry, ZipArchiveEntry processedImageEntry)
         {
-            var role = new SaveRole();
+            var role = new SaveRole(BC.UniqueCharacterId());
 
             // json
             using (var stream = jsonEntry.Open())
@@ -197,7 +197,7 @@ namespace BloodstarClocktica
                             case "reminders":
                                 {
                                     var list = new BindingList<string>();
-                                    if (json.TokenType != JsonTokenType.StartArray) { throw new BcLoadException("Expected an array for reminder_tokens"); }
+                                    if (json.TokenType != JsonTokenType.StartArray) { throw new BC.LoadException("Expected an array for reminder_tokens"); }
                                     json.Read();
                                     while (json.TokenType != JsonTokenType.EndArray)
                                     {
@@ -210,7 +210,7 @@ namespace BloodstarClocktica
                             case "globalReminders":
                                 {
                                     var list = new BindingList<string>();
-                                    if (json.TokenType != JsonTokenType.StartArray) { throw new BcLoadException("Expected an array for reminder_tokens"); }
+                                    if (json.TokenType != JsonTokenType.StartArray) { throw new BC.LoadException("Expected an array for reminder_tokens"); }
                                     json.Read();
                                     while (json.TokenType != JsonTokenType.EndArray)
                                     {
@@ -234,7 +234,7 @@ namespace BloodstarClocktica
                     }
                     else
                     {
-                        throw new BcLoadException("Unhandled json token type");
+                        throw new BC.LoadException("Unhandled json token type");
                     }
                 }
             }

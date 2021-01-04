@@ -93,7 +93,7 @@ namespace BloodstarClocktica
                     }
                     else
                     {
-                        throw new BcLoadException("Unhandled json token type");
+                        throw new BC.LoadException("Unhandled json token type");
                     }
                 }
             }
