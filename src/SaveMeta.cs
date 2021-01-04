@@ -11,7 +11,6 @@ namespace BloodstarClocktica
     {
         public string Name { get; set; }
         public string Author { get; set; }
-        // TODO: use System.Drawing.Image here
         public Image Logo { get; set; }
         public static SaveMeta Default()
         {

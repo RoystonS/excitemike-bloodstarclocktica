@@ -59,8 +59,7 @@ namespace BloodstarClocktica
             {
                 if (null != _ProcessedImage) { return _ProcessedImage; }
                 if (null == SourceImage) { return null; }
-                var (red, green, blue) = BC.GetColorForTeam(Team);
-                _ProcessedImage = BC.ProcessImage(SourceImage, red, green, blue);
+                ReprocessImage();
                 return _ProcessedImage;
             }
             set
@@ -259,6 +258,15 @@ namespace BloodstarClocktica
             }
 
             return role;
+        }
+
+        /// <summary>
+        /// regenerate processed image
+        /// </summary>
+        public void ReprocessImage()
+        {
+            var (red, green, blue) = BC.GetColorForTeam(Team);
+            _ProcessedImage = BC.ProcessImage(SourceImage, red, green, blue);
         }
     }
 }

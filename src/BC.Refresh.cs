@@ -71,10 +71,16 @@ namespace BloodstarClocktica
         /// Update the character list item as id changes
         /// </summary>
         /// <param name="index"></param>
-        public static void RefreshCharacterListItem(int index)
+        public static void RefreshCharacterListItem(int index, string changedItemLabel)
         {
             if (index == -1) { return; }
-            Form.CharactersList.Items[index] = GetCharacterListString(Document.Roles[index]);
+            var character = Document.Roles[index];
+            Form.CharactersList.Items[index] = GetCharacterListString(character);
+            if ((changedItemLabel == "Team") && (character.SourceImage != null))
+            {
+                character.ProcessedImage = null;
+                RefreshCharacterImages(character);
+            }
         }
 
         /// <summary>

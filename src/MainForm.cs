@@ -88,7 +88,7 @@ namespace BloodstarClocktica
             var index = CharactersList.SelectedIndex;
             if (index != -1)
             {
-                BC.RefreshCharacterListItem(index);
+                BC.RefreshCharacterListItem(index, e.ChangedItem.Label);
                 BC.SetDirty(true);
             }
         }
