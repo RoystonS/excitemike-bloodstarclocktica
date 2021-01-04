@@ -1,11 +1,11 @@
-﻿using SixLabors.ImageSharp;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Windows.Forms;
 
 namespace BloodstarClocktica
 {
-    public partial class BC
+    internal static partial class BC
     {
         /// <summary>
         /// update all controls to reflect document
@@ -113,12 +113,19 @@ namespace BloodstarClocktica
             {
                 Form.SourceImageButton.BackgroundImage = null;
                 Form.SourceImageButton.Text = "Click to import source image";
-                Form.ProcessedImageGroupBox.BackgroundImage = null;
+                Form.ProcessedImagePanel.BackgroundImage = null;
             }
             else
             {
                 Form.SourceImageButton.BackgroundImage = character.SourceImage;
-                Form.ProcessedImageGroupBox.BackgroundImage = character.ProcessedImage;
+                try
+                {
+                    Form.ProcessedImagePanel.BackgroundImage = character.ProcessedImage;
+                }
+                catch (BcImageProcessingException e)
+                {
+                    MessageBox.Show($"{e.Message}\n\n{e.StackTrace}", "Image processing error");
+                }
                 Form.SourceImageButton.Text = "";
             }
         }

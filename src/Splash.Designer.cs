@@ -35,7 +35,7 @@ namespace BloodstarClocktica
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackgroundImage = global::BloodstarClocktica.Properties.Resources.logo;
+            this.BackgroundImage = global::BloodstarClocktica.Properties.Resources.Logo;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ClientSize = new System.Drawing.Size(800, 400);
             this.ControlBox = false;

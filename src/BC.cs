@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace BloodstarClocktica
 {
-    public static partial class BC
+    internal static partial class BC
     {
         public static SaveFile Document;
         public static MainForm Form;
@@ -278,7 +278,6 @@ namespace BloodstarClocktica
             if (image != null)
             {
                 character.SourceImage = image;
-                character.ProcessedImage = null;
                 SetDirty(true);
                 RefreshCharacterPane();
             }

@@ -30,13 +30,50 @@ namespace BloodstarClocktica
         /// source character token image
         /// </summary>
         [Browsable(false)]
-        public System.Drawing.Image SourceImage { get; set; }
+        public System.Drawing.Image SourceImage
+        {
+            get
+            {
+                return _SourceImage;
+            }
+            set
+            {
+                _ProcessedImage = null;
+                _SourceImage = value;
+            }
+        }
+
+        /// <summary>
+        /// backing field
+        /// </summary>
+        [Browsable(false)]
+        public System.Drawing.Image _SourceImage;
 
         /// <summary>
         /// cached processed character token image
         /// </summary>
         [Browsable(false)]
-        public System.Drawing.Image ProcessedImage { get; set; } // TODO: just-in-time generate processed image
+        public System.Drawing.Image ProcessedImage
+        {
+            get
+            {
+                if (null != _ProcessedImage) { return _ProcessedImage; }
+                if (null == SourceImage) { return null; }
+                var (red, green, blue) = BC.GetColorForTeam(Team);
+                _ProcessedImage = BC.ProcessImage(SourceImage, red, green, blue);
+                return _ProcessedImage;
+            }
+            set
+            {
+                _ProcessedImage = value;
+            }
+        }
+
+        /// <summary>
+        /// backing field for ProcessedImage
+        /// </summary>
+        [Browsable(false)]
+        private System.Drawing.Image _ProcessedImage;
 
         [Category("Reminders"), Description("Reminder tokens that are available if the character is assigned to a player.")]
         [Editor("System.Windows.Forms.Design.StringCollectionEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(System.Drawing.Design.UITypeEditor))]
@@ -59,7 +96,7 @@ namespace BloodstarClocktica
             Name = "New Character";
             Team = SaveTeam.TeamValue.Townsfolk;
             SourceImage = null;
-            ProcessedImage = null;
+            _ProcessedImage = null;
             ReminderTokens = new BindingList<string>();
             GlobalReminderTokens = new BindingList<string>();
         }

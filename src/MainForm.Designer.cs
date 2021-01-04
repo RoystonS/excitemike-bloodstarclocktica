@@ -62,6 +62,7 @@ namespace BloodstarClocktica
             this.LogoButton = new System.Windows.Forms.Button();
             this.NameTextBox = new System.Windows.Forms.TextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.ProcessedImagePanel = new System.Windows.Forms.Panel();
             groupBox1 = new System.Windows.Forms.GroupBox();
             splitContainer2 = new System.Windows.Forms.SplitContainer();
             tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -73,6 +74,7 @@ namespace BloodstarClocktica
             splitContainer2.Panel2.SuspendLayout();
             splitContainer2.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
+            this.ProcessedImageGroupBox.SuspendLayout();
             groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SplitContainer)).BeginInit();
             this.SplitContainer.Panel1.SuspendLayout();
@@ -202,6 +204,7 @@ namespace BloodstarClocktica
             // ProcessedImageGroupBox
             // 
             this.ProcessedImageGroupBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.ProcessedImageGroupBox.Controls.Add(this.ProcessedImagePanel);
             this.ProcessedImageGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ProcessedImageGroupBox.Location = new System.Drawing.Point(342, 3);
             this.ProcessedImageGroupBox.Name = "ProcessedImageGroupBox";
@@ -446,6 +449,15 @@ namespace BloodstarClocktica
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "menuStrip1";
             // 
+            // ProcessedImagePanel
+            // 
+            this.ProcessedImagePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.ProcessedImagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ProcessedImagePanel.Location = new System.Drawing.Point(3, 16);
+            this.ProcessedImagePanel.Name = "ProcessedImagePanel";
+            this.ProcessedImagePanel.Size = new System.Drawing.Size(327, 201);
+            this.ProcessedImagePanel.TabIndex = 0;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -466,6 +478,7 @@ namespace BloodstarClocktica
             ((System.ComponentModel.ISupportInitialize)(splitContainer2)).EndInit();
             splitContainer2.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
+            this.ProcessedImageGroupBox.ResumeLayout(false);
             groupBox2.ResumeLayout(false);
             this.SplitContainer.Panel1.ResumeLayout(false);
             this.SplitContainer.Panel2.ResumeLayout(false);
@@ -509,7 +522,8 @@ namespace BloodstarClocktica
         public System.Windows.Forms.PropertyGrid PropertyGrid;
         public System.Windows.Forms.SplitContainer SplitContainer;
         public System.Windows.Forms.Button SourceImageButton;
-        public System.Windows.Forms.GroupBox ProcessedImageGroupBox;
+        public System.Windows.Forms.Panel ProcessedImagePanel;
+        private System.Windows.Forms.GroupBox ProcessedImageGroupBox;
     }
 }
 
