@@ -265,8 +265,7 @@ namespace BloodstarClocktica
         /// </summary>
         public void ReprocessImage()
         {
-            var (red, green, blue) = BC.GetColorForTeam(Team);
-            _ProcessedImage = BC.ProcessImage(SourceImage, red, green, blue);
+            _ProcessedImage = BC.ProcessImage(SourceImage, BC.GetGradientForTeam(Team));
         }
     }
 }

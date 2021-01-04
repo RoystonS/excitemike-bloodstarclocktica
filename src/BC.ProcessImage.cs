@@ -15,11 +15,11 @@ namespace BloodstarClocktica
             internal static int OutputWidth = 539;
             internal static int OutputHeight = 539;
             internal static Rectangle Position = new Rectangle(120, 50, 300, 300);
-            internal static (byte, byte, byte) TownsfolkColor = (31, 101, 241);
-            internal static (byte, byte, byte) OutsiderColor = (61, 185, 255);
-            internal static (byte, byte, byte) MinionColor = (252, 105, 0);
-            internal static (byte, byte, byte) DemonColor = (206, 1, 0);
-            internal static (byte, byte, byte) TravelerColor = (255, 255, 255);
+            internal static Bitmap TownsfolkGradient = Properties.Resources.TownsfolkGradient;
+            internal static Bitmap OutsiderGradient = Properties.Resources.OutsiderGradient;
+            internal static Bitmap MinionGradient = Properties.Resources.MinionGradient;
+            internal static Bitmap DemonGradient = Properties.Resources.DemonGradient;
+            internal static Bitmap TravelerGradient = Properties.Resources.TravelerGradient;
             internal static double BorderSize = 2;
         }
 
@@ -27,15 +27,14 @@ namespace BloodstarClocktica
         /// create the character token image based on a shape and color
         /// </summary>
         /// <param name="source"></param>
-        /// <param name="red"></param>
-        /// <param name="green"></param>
-        /// <param name="blue"></param>
-        /// <returns></returns>
-        internal static Image ProcessImage(Image source, byte red, byte green, byte blue)
+        /// <param name="colorGradient"></param>
+        /// <returns>processed copy of the image</returns>
+        internal static Image ProcessImage(Image source, Bitmap colorGradient)
         {
-            var trimmedColored = new Bitmap(source).Trim().SetRGB(red, green, blue);
+            var trimmed = new Bitmap(source).Trim();
+            var colored = trimmed.SetRGB(255, 255, 255).Multiply(colorGradient.Resized(trimmed.Width, trimmed.Height));
             return new Bitmap(ProcessImageSettings.OutputWidth, ProcessImageSettings.OutputHeight)
-                .PasteZoomed(trimmedColored, ProcessImageSettings.Position)
+                .PasteZoomed(colored, ProcessImageSettings.Position)
                 .Multiply(Properties.Resources.Texture)
                 .AddBorder(ProcessImageSettings.BorderSize)
                 .AddDropShadow(ProcessImageSettings.DropShadowSize, ProcessImageSettings.DropShadowOffsetX, ProcessImageSettings.DropShadowOffsetY, ProcessImageSettings.DropShadowOpacity);
@@ -46,23 +45,23 @@ namespace BloodstarClocktica
         /// </summary>
         /// <param name="team"></param>
         /// <returns></returns>
-        internal static (byte, byte, byte) GetColorForTeam(SaveTeam.TeamValue team)
+        internal static Bitmap GetGradientForTeam(SaveTeam.TeamValue team)
         {
             // TODO: should be a gradient
             // TODO: should come from settings
             switch (team)
             {
                 case SaveTeam.TeamValue.Townsfolk:
-                    return ProcessImageSettings.TownsfolkColor;
+                    return ProcessImageSettings.TownsfolkGradient;
                 case SaveTeam.TeamValue.Outsider:
-                    return ProcessImageSettings.OutsiderColor;
+                    return ProcessImageSettings.OutsiderGradient;
                 case SaveTeam.TeamValue.Minion:
-                    return ProcessImageSettings.MinionColor;
+                    return ProcessImageSettings.MinionGradient;
                 case SaveTeam.TeamValue.Demon:
-                    return ProcessImageSettings.DemonColor;
+                    return ProcessImageSettings.DemonGradient;
                 case SaveTeam.TeamValue.Traveler:
                 default:
-                    return ProcessImageSettings.TravelerColor;
+                    return ProcessImageSettings.TravelerGradient;
             }
             throw new System.Exception("Unhandled team in GetColorForTeam");
         }

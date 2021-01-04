@@ -184,5 +184,20 @@
   <ItemGroup>
     <None Include="Resources\token.d0b9dbdf.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\townsfolkgradient.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\outsidergradient.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\miniongradient.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\demongradient.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\travelergradient.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

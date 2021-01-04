@@ -51,6 +51,23 @@ namespace BloodstarClocktica
             }
             return destination;
         }
+
+        /// <summary>
+        /// Create a resized copy of the image
+        /// </summary>
+        /// <param name="im"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns>resized copy of image</returns>
+        internal static Bitmap Resized(this Bitmap im, int width, int height)
+        {
+            var output = new Bitmap(width, height);
+            using (Graphics g = Graphics.FromImage(output))
+            {
+                g.DrawImage(im, new Rectangle(0, 0, width, height));
+            }
+            return output;
+        }
         /// <summary>
         /// create a new, scaled copy of the image
         /// </summary>
