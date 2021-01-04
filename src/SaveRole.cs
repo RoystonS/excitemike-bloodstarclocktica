@@ -85,6 +85,36 @@ namespace BloodstarClocktica
         [Category("Reminders"), Description("Whether this token affects setup (orange leaf), like the Drunk or Baron.")]
         public bool Setup { get; set; }
 
+        [Browsable(false)]
+        public int FirstNightOrder { get; set; }
+
+        [Browsable(false)]
+        public bool HasFirstNightReminder
+        {
+            get
+            {
+                return FirstNightReminder != "";
+            }
+        }
+
+        [Category("Reminders"), Description("Reminder text for first night.")]
+        public string FirstNightReminder { get; set; }
+
+        [Browsable(false)]
+        public int OtherNightOrder { get; set; }
+
+        [Browsable(false)]
+        public bool HasOtherNightReminder
+        {
+            get
+            {
+                return OtherNightReminder != "";
+            }
+        }
+
+        [Category("Reminders"), Description("Reminder text for other nights.")]
+        public string OtherNightReminder { get; set; }
+
         /// <summary>
         /// create default SaveRole
         /// </summary>
@@ -98,6 +128,10 @@ namespace BloodstarClocktica
             _ProcessedImage = null;
             ReminderTokens = new BindingList<string>();
             GlobalReminderTokens = new BindingList<string>();
+            FirstNightOrder = 0;
+            OtherNightOrder = 0;
+            FirstNightReminder = "";
+            OtherNightReminder = "";
         }
 
         /// <summary>
@@ -132,6 +166,10 @@ namespace BloodstarClocktica
                         json.WriteEndArray();
                         json.WriteBoolean("setup", Setup);
                         json.WriteString("ability", Ability);
+                        json.WriteNumber("firstNight", FirstNightOrder);
+                        json.WriteNumber("otherNight", OtherNightOrder);
+                        json.WriteString("firstNightReminder", FirstNightReminder);
+                        json.WriteString("otherNightReminder", OtherNightReminder);
                         json.WriteEndObject();
                         json.Flush();
                     }
@@ -225,6 +263,18 @@ namespace BloodstarClocktica
                                 break;
                             case "ability":
                                 role.Ability = json.GetString();
+                                break;
+                            case "firstNight":
+                                role.FirstNightOrder = json.GetInt32();
+                                break;
+                            case "otherNight":
+                                role.OtherNightOrder = json.GetInt32();
+                                break;
+                            case "firstNightReminder":
+                                role.FirstNightReminder = json.GetString();
+                                break;
+                            case "otherNightReminder":
+                                role.OtherNightReminder = json.GetString();
                                 break;
                             default:
                                 Console.Error.WriteLine($"unhandled property: \"{propertyName}\"");

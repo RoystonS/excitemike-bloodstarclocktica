@@ -238,6 +238,7 @@ namespace BloodstarClocktica
                 roles[indexB] = temp;
             }
             Form.CharactersList.SelectedIndex = indexB;
+            SetDirty(true);
         }
 
         /// <summary>
@@ -293,11 +294,7 @@ namespace BloodstarClocktica
         internal static string UniqueCharacterId()
         {
             var prefix = "newcharacter";
-            if (ValidateId(prefix, -1))
-            {
-                return prefix;
-            }
-            var n = 2;
+            var n = 1;
             while (!ValidateId($"{prefix}{n}", -1))
             {
                 n++;

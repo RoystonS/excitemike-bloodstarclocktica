@@ -138,5 +138,33 @@ namespace BloodstarClocktica
                 BC.ChooseSourceImage(index);
             }
         }
+
+        /// <summary>
+        /// edit first night order
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void FirstNightToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var dlg = new NightOrderForm("First Night Order & Reminders", true))
+            {
+                dlg.ShowDialog();
+                BC.RefreshCharacterPane();
+            }
+        }
+
+        /// <summary>
+        /// edit order for other nights
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OtherNightsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var dlg = new NightOrderForm("Other Night Order & Reminders", false))
+            {
+                dlg.ShowDialog();
+                BC.RefreshCharacterPane();
+            }
+        }
     }
 }

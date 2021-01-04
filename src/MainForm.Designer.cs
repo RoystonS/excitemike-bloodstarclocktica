@@ -40,6 +40,7 @@ namespace BloodstarClocktica
             this.AddCharacterButton = new System.Windows.Forms.Button();
             this.RemoveCharacterButton = new System.Windows.Forms.Button();
             this.ProcessedImageGroupBox = new System.Windows.Forms.GroupBox();
+            this.ProcessedImagePanel = new System.Windows.Forms.Panel();
             this.SourceImageButton = new System.Windows.Forms.Button();
             this.PropertyGrid = new System.Windows.Forms.PropertyGrid();
             this.fileMenu = new System.Windows.Forms.ToolStripMenuItem();
@@ -62,7 +63,6 @@ namespace BloodstarClocktica
             this.LogoButton = new System.Windows.Forms.Button();
             this.NameTextBox = new System.Windows.Forms.TextBox();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.ProcessedImagePanel = new System.Windows.Forms.Panel();
             groupBox1 = new System.Windows.Forms.GroupBox();
             splitContainer2 = new System.Windows.Forms.SplitContainer();
             tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -213,6 +213,15 @@ namespace BloodstarClocktica
             this.ProcessedImageGroupBox.TabStop = false;
             this.ProcessedImageGroupBox.Text = "Processed Image";
             // 
+            // ProcessedImagePanel
+            // 
+            this.ProcessedImagePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.ProcessedImagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ProcessedImagePanel.Location = new System.Drawing.Point(3, 16);
+            this.ProcessedImagePanel.Name = "ProcessedImagePanel";
+            this.ProcessedImagePanel.Size = new System.Drawing.Size(327, 201);
+            this.ProcessedImagePanel.TabIndex = 0;
+            // 
             // groupBox2
             // 
             groupBox2.Controls.Add(this.SourceImageButton);
@@ -302,6 +311,7 @@ namespace BloodstarClocktica
             this.firstNightToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D1)));
             this.firstNightToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.firstNightToolStripMenuItem.Text = "&First Night";
+            this.firstNightToolStripMenuItem.Click += new System.EventHandler(this.FirstNightToolStripMenuItem_Click);
             // 
             // otherNightsToolStripMenuItem
             // 
@@ -309,6 +319,7 @@ namespace BloodstarClocktica
             this.otherNightsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D2)));
             this.otherNightsToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.otherNightsToolStripMenuItem.Text = "&Other Nights";
+            this.otherNightsToolStripMenuItem.Click += new System.EventHandler(this.OtherNightsToolStripMenuItem_Click);
             // 
             // exportToolStripMenuItem
             // 
@@ -448,15 +459,6 @@ namespace BloodstarClocktica
             this.menuStrip1.Size = new System.Drawing.Size(1015, 24);
             this.menuStrip1.TabIndex = 8;
             this.menuStrip1.Text = "menuStrip1";
-            // 
-            // ProcessedImagePanel
-            // 
-            this.ProcessedImagePanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.ProcessedImagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ProcessedImagePanel.Location = new System.Drawing.Point(3, 16);
-            this.ProcessedImagePanel.Name = "ProcessedImagePanel";
-            this.ProcessedImagePanel.Size = new System.Drawing.Size(327, 201);
-            this.ProcessedImagePanel.TabIndex = 0;
             // 
             // MainForm
             // 

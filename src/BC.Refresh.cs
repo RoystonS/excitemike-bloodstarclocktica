@@ -64,6 +64,11 @@ namespace BloodstarClocktica
             }
             Form.CharactersList.EndUpdate();
 
+            if ((Form.CharactersList.Items.Count > 0) && (Form.CharactersList.SelectedIndex == -1))
+            {
+                Form.CharactersList.SelectedIndex = 0;
+            }
+
             // TODO: enable/disable characterlist buttons based on selection
         }
 

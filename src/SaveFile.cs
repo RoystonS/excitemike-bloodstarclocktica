@@ -6,65 +6,46 @@ using System.Text.Json;
 
 namespace BloodstarClocktica
 {
-    [Serializable]
-    public struct NightOrderItem
+    internal class SaveFile
     {
-        readonly string id;
-        readonly string reminder;
-    }
-
-    public class SaveFile
-    {
-        public static string RoleDir = "roles";
-        public static string SourceImageDir = "src_images";
-        public static string ProcessedImageDir = "processed_images";
-        public static string PathSep = "/";
-        public static string MetaFile = "meta.json";
-        public static string FirstNightFile = "FirstNight.json";
-        public static string OtherNightsFile = "OtherNights.json";
-        public static string LogoFile = "logo.png";
+        internal static string RoleDir = "roles";
+        internal static string SourceImageDir = "src_images";
+        internal static string ProcessedImageDir = "processed_images";
+        internal static string PathSep = "/";
+        internal static string MetaFile = "meta.json";
+        internal static string FirstNightFile = "FirstNight.json";
+        internal static string OtherNightsFile = "OtherNights.json";
+        internal static string LogoFile = "logo.png";
 
         /// <summary>
         /// Last save/load location
         /// </summary>
-        public string FilePath { get; set; }
+        internal string FilePath { get; set; }
 
         /// <summary>
         /// whether a save is needed
         /// </summary>
-        public bool Dirty { get; set; }
+        internal bool Dirty { get; set; }
 
         /// <summary>
         /// information about the set itself
         /// </summary>
-        public SaveMeta Meta { get; set; }
+        internal SaveMeta Meta { get; set; }
 
         /// <summary>
         /// information on roles in the game
         /// </summary>
-        public List<SaveRole> Roles { get; set; }
-
-        /// <summary>
-        /// what happens at night, in what order
-        /// </summary>
-        List<NightOrderItem> FirstNightOrder;
-
-        /// <summary>
-        /// what happens at night, in what order
-        /// </summary>
-        List<NightOrderItem> OtherNightsOrder;
+        internal List<SaveRole> Roles { get; set; }
 
         /// <summary>
         ///  create brand new SaveFile
         /// </summary>
-        public SaveFile()
+        internal SaveFile()
         {
             FilePath = string.Empty;
             Dirty = false;
             Meta = SaveMeta.Default();
             Roles = new List<SaveRole>();
-            FirstNightOrder = new List<NightOrderItem>();
-            OtherNightsOrder = new List<NightOrderItem>();
         }
 
         /// <summary>
@@ -73,17 +54,13 @@ namespace BloodstarClocktica
         protected SaveFile(
             string filePath,
             SaveMeta meta,
-            List<SaveRole> roles,
-            List<NightOrderItem> firstNightOrder,
-            List<NightOrderItem> otherNightsOrder
+            List<SaveRole> roles
             )
         {
             FilePath = filePath;
             Dirty = false;
             Meta = meta;
             Roles = roles;
-            FirstNightOrder = firstNightOrder;
-            OtherNightsOrder = otherNightsOrder;
         }
 
         /// <summary>
@@ -91,16 +68,14 @@ namespace BloodstarClocktica
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        public static SaveFile Load(String filePath)
+        internal static SaveFile Load(String filePath)
         {
             using (var archive = ZipFile.Open(filePath, ZipArchiveMode.Read))
             {
                 return new SaveFile(
                     filePath,
                     LoadMetadata(archive),
-                    LoadRoles(archive),
-                    LoadFirstNightOrder(archive),
-                    LoadOtherNightsOrder(archive)
+                    LoadRoles(archive)
                );
             }
         }
@@ -109,7 +84,7 @@ namespace BloodstarClocktica
         /// save to zip file
         /// </summary>
         /// <param name="path"></param>
-        public void Save(String path)
+        internal void Save(String path)
         {
             FilePath = path;
             using (Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write))
@@ -118,8 +93,6 @@ namespace BloodstarClocktica
                 {
                     SaveMetadata(archive);
                     SaveRoles(archive);
-                    SaveFirstNightOrder(archive);
-                    SaveOtherNightsOrder(archive);
                 }
             }
             Dirty = false;
@@ -178,81 +151,6 @@ namespace BloodstarClocktica
                 }
             }
             return list;
-        }
-
-        /// <summary>
-        /// helper for Save. Save who acts in what order, with what reminders for the first night.
-        /// </summary>
-        /// <param name="archive"></param>
-        protected void SaveFirstNightOrder(ZipArchive archive)
-        {
-            var entry = archive.CreateEntry(FirstNightFile);
-            using (var stream = entry.Open())
-            {
-                var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
-                JsonSerializer.Serialize(writer, FirstNightOrder, new JsonSerializerOptions { WriteIndented = true });
-            }
-        }
-
-        /// <summary>
-        /// Load who acts in what order, with what reminders for the first night.
-        /// </summary>
-        /// <param name="archive"></param>
-        protected static List<NightOrderItem> LoadFirstNightOrder(ZipArchive archive)
-        {
-            var entry = archive.GetEntry(FirstNightFile);
-            using (var stream = entry.Open())
-            {
-                var ms = new MemoryStream();
-                stream.CopyTo(ms);
-                return JsonSerializer.Deserialize<List<NightOrderItem>>(new ReadOnlySpan<byte>(ms.ToArray()));
-            }
-        }
-
-        /// <summary>
-        /// helper for Save. Save who acts in what order, with what reminders for the other nights.
-        /// </summary>
-        /// <param name="archive"></param>
-        protected void SaveOtherNightsOrder(ZipArchive archive)
-        {
-            var entry = archive.CreateEntry(OtherNightsFile);
-            using (var stream = entry.Open())
-            {
-                var writer = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true });
-                JsonSerializer.Serialize(writer, OtherNightsOrder, new JsonSerializerOptions { WriteIndented = true });
-            }
-        }
-
-        /// <summary>
-        /// Load who acts in what order, with what reminders for the other nights.
-        /// </summary>
-        /// <param name="archive"></param>
-        protected static List<NightOrderItem> LoadOtherNightsOrder(ZipArchive archive)
-        {
-            var entry = archive.GetEntry(OtherNightsFile);
-            using (var stream = entry.Open())
-            {
-                var ms = new MemoryStream();
-                stream.CopyTo(ms);
-                return JsonSerializer.Deserialize<List<NightOrderItem>>(new ReadOnlySpan<byte>(ms.ToArray()));
-            }
-        }
-
-        /// <summary>
-        /// query for role info by id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns>First SaveRole that matches or null</returns>
-        SaveRole GetRoleById(string id)
-        {
-            foreach (var role in Roles)
-            {
-                if (role.Id == id)
-                {
-                    return role;
-                }
-            }
-            return null;
         }
     }
 }
