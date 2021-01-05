@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing.Imaging;
+﻿using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BloodstarClocktica
@@ -32,7 +27,12 @@ namespace BloodstarClocktica
                 {
                     return;
                 }
+                var oldValue = Document.Meta.ExportToDiskPath;
                 Document.Meta.ExportToDiskPath = Path.GetDirectoryName(folderDialog.FileName);
+                if (oldValue != Document.Meta.ExportToDiskPath)
+                {
+                    SetDirty(true);
+                }
             }
 
             // prompt for image path prefix
@@ -42,10 +42,15 @@ namespace BloodstarClocktica
                 {
                     return;
                 }
+                var oldValue = Document.Meta.ImagePathPrefix;
                 Document.Meta.ImagePathPrefix = urlPrefixDialog.Value;
                 if (!Document.Meta.ImagePathPrefix.EndsWith("/"))
                 {
                     Document.Meta.ImagePathPrefix += "/";
+                }
+                if (oldValue != Document.Meta.ImagePathPrefix)
+                {
+                    SetDirty(true);
                 }
             }
 
