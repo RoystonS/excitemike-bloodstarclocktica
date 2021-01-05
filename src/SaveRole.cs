@@ -11,6 +11,7 @@ using System.Text.Json;
 namespace BloodstarClocktica
 {
     [DefaultProperty("Id")]
+    // TODO: rename all this "SaveXXX"
     public class SaveRole
     {
         [Category("Character"), Description("The internal ID for this character, without spaces or special characters."), TypeConverter(typeof(IdValidator))]
@@ -98,6 +99,7 @@ namespace BloodstarClocktica
         }
 
         [Category("Reminders"), Description("Reminder text for first night.")]
+        [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
         public string FirstNightReminder { get; set; }
 
         [Browsable(false)]
@@ -113,6 +115,7 @@ namespace BloodstarClocktica
         }
 
         [Category("Reminders"), Description("Reminder text for other nights.")]
+        [Editor(typeof(MultilineStringEditor), typeof(UITypeEditor))]
         public string OtherNightReminder { get; set; }
 
         /// <summary>
