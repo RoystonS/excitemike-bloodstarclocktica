@@ -61,6 +61,9 @@
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
+    <Reference Include="Renci.SshNet, Version=2020.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
+      <HintPath>packages\SSH.NET.2020.0.0\lib\net40\Renci.SshNet.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
@@ -102,6 +105,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Settings.cs" />
     <Compile Include="src\BC.Export.cs" />
     <Compile Include="src\BC.ProcessImage.cs" />
     <Compile Include="src\BC.Refresh.cs" />
@@ -123,6 +127,12 @@
     </Compile>
     <Compile Include="src\NightOrderForm.Designer.cs">
       <DependentUpon>NightOrderForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\ProgressPopup.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\ProgressPopup.Designer.cs">
+      <DependentUpon>ProgressPopup.cs</DependentUpon>
     </Compile>
     <Compile Include="src\SaveDiscardCancel.cs">
       <SubType>Form</SubType>
@@ -162,6 +172,9 @@
     </Compile>
     <EmbeddedResource Include="src\NightOrderForm.resx">
       <DependentUpon>NightOrderForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="src\ProgressPopup.resx">
+      <DependentUpon>ProgressPopup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="src\SaveDiscardCancel.resx">
       <DependentUpon>SaveDiscardCancel.cs</DependentUpon>

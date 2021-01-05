@@ -8,6 +8,7 @@ namespace BloodstarClocktica
         public MainForm()
         {
             InitializeComponent();
+            // TODO: recent files
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -175,6 +176,11 @@ namespace BloodstarClocktica
         private void ToDiskToolStripMenuItem_Click(object sender, EventArgs e)
         {
             BC.ExportToDisk();
+        }
+
+        private void UploadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BC.ExportSftp();
         }
     }
 }

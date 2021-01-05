@@ -12,8 +12,81 @@ namespace BloodstarClocktica
         public string Name { get; set; }
         public string Author { get; set; }
         public Image Logo { get; set; }
-        public string ImagePathPrefix { get; set; }
+        private string _UrlRoot = "/";
+        public string UrlRoot
+        {
+            get
+            {
+                return _UrlRoot;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    _UrlRoot = "/";
+                }
+                else
+                {
+                    if (value.EndsWith("/"))
+                    {
+                        _UrlRoot = value;
+                    }
+                    else
+                    {
+                        _UrlRoot = value + "/";
+                    }
+                }
+            }
+        }
+        private string _RemoteDirectory = "/";
+        public string RemoteDirectory
+        {
+            get
+            {
+                return _RemoteDirectory;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    _RemoteDirectory = "/";
+                }
+                else
+                {
+                    _RemoteDirectory = value;
+                    if (!_RemoteDirectory.StartsWith("/"))
+                    {
+                        _RemoteDirectory = "/" + _RemoteDirectory;
+                    }
+                    if (!_RemoteDirectory.EndsWith("/"))
+                    {
+                        _RemoteDirectory += "/";
+                    }
+                }
+            }
+        }
+        public string ImageUrlPrefix
+        {
+            get
+            {
+                return _UrlRoot + "images/";
+            }
+        }
+        public string RemoteImagesDirectory
+        {
+            get
+            {
+                return _RemoteDirectory + "images/";
+            }
+        }
         public string ExportToDiskPath { get; set; }
+        public string RolesUrl
+        {
+            get
+            {
+                return $"{UrlRoot}{RemoteDirectory.Substring(1)}roles.json";
+            }
+        }
         public static SaveMeta Default()
         {
             return new SaveMeta
@@ -21,7 +94,8 @@ namespace BloodstarClocktica
                 Name = "New Edition",
                 Author = "",
                 Logo = null,
-                ImagePathPrefix = "https://example.com/path/img/",
+                UrlRoot = "https://example.com/",
+                RemoteDirectory = "/botc/",
                 ExportToDiskPath = Path.GetTempPath()
             };
         }
@@ -41,7 +115,8 @@ namespace BloodstarClocktica
                         json.WriteStartObject();
                         json.WriteString("name", Name);
                         json.WriteString("author", Author);
-                        json.WriteString("imagePathPrefix", ImagePathPrefix);
+                        json.WriteString("urlRoot", UrlRoot);
+                        json.WriteString("remoteDirectory", RemoteDirectory);
                         json.WriteString("exportToDiskPath", ExportToDiskPath);
                         json.WriteEndObject();
                         json.Flush();
@@ -95,11 +170,18 @@ namespace BloodstarClocktica
                             case "author":
                                 meta.Author = json.GetString();
                                 break;
-                            case "imagePathPrefix":
-                                var prefix = json.GetString();
-                                if ("" != prefix)
+                            case "urlRoot":
+                                var urlRoot = json.GetString();
+                                if ("" != urlRoot)
                                 {
-                                    meta.ImagePathPrefix = prefix;
+                                    meta.UrlRoot = urlRoot;
+                                }
+                                break;
+                            case "remoteDirectory":
+                                var remoteDirectory = json.GetString();
+                                if ("" != remoteDirectory)
+                                {
+                                    meta.RemoteDirectory = remoteDirectory;
                                 }
                                 break;
                             case "exportToDiskPath":
