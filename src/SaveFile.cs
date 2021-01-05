@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Text.Json;
 
 namespace BloodstarClocktica
 {
@@ -104,7 +103,6 @@ namespace BloodstarClocktica
         /// <param name="archive"></param>
         protected void SaveMetadata(ZipArchive archive)
         {
-            // TODO: check timestamps!
             Meta.Save(archive);
         }
 
@@ -125,7 +123,6 @@ namespace BloodstarClocktica
         /// <param name="archive"></param>
         protected void SaveRoles(ZipArchive archive)
         {
-            // TODO: check timestamps!
             foreach (var role in Roles)
             {
                 role.Save(archive);

@@ -30,7 +30,7 @@ namespace BloodstarClocktica
         {
             // json
             {
-                using (var stream = archive.CreateEntry(SaveFile.MetaFile).Open())
+                using (var stream = archive.CreateEntry(SaveFile.MetaFile, CompressionLevel.Fastest).Open())
                 {
                     using (Utf8JsonWriter json = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true }))
                     {
@@ -46,7 +46,7 @@ namespace BloodstarClocktica
             // logo
             if (Logo != null)
             {
-                using (var stream = archive.CreateEntry(SaveFile.LogoFile).Open())
+                using (var stream = archive.CreateEntry(SaveFile.LogoFile, CompressionLevel.Fastest).Open())
                 {
                     Logo.Save(stream, ImageFormat.Png);
                 }

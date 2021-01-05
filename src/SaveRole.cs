@@ -140,11 +140,9 @@ namespace BloodstarClocktica
         /// <param name="archive"></param>
         public void Save(ZipArchive archive)
         {
-            // TODO: check timestamps!
-
             // json
             {
-                using (var stream = archive.CreateEntry($"{SaveFile.RoleDir}{SaveFile.PathSep}{Id}.json").Open())
+                using (var stream = archive.CreateEntry($"{SaveFile.RoleDir}{SaveFile.PathSep}{Id}.json", CompressionLevel.Fastest).Open())
                 {
                     using (Utf8JsonWriter json = new Utf8JsonWriter(stream, new JsonWriterOptions { Indented = true }))
                     {
@@ -179,7 +177,7 @@ namespace BloodstarClocktica
             // source image
             if (SourceImage != null)
             {
-                using (var stream = archive.CreateEntry($"{SaveFile.SourceImageDir}{SaveFile.PathSep}{Id}.png").Open())
+                using (var stream = archive.CreateEntry($"{SaveFile.SourceImageDir}{SaveFile.PathSep}{Id}.png", CompressionLevel.Fastest).Open())
                 {
                     SourceImage.Save(stream, ImageFormat.Png);
                 }
@@ -188,7 +186,7 @@ namespace BloodstarClocktica
             // processed image
             if (ProcessedImage != null)
             {
-                using (var stream = archive.CreateEntry($"{SaveFile.ProcessedImageDir}{SaveFile.PathSep}{Id}.png").Open())
+                using (var stream = archive.CreateEntry($"{SaveFile.ProcessedImageDir}{SaveFile.PathSep}{Id}.png", CompressionLevel.Fastest).Open())
                 {
                     ProcessedImage.Save(stream, ImageFormat.Png);
                 }
