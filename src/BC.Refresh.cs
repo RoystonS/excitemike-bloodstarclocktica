@@ -23,19 +23,19 @@ namespace BloodstarClocktica
         /// </summary>
         public static void RefreshMeta()
         {
-            Form.NameTextBox.Text = Document.Meta.Name;
-            Form.AuthorTextBox.Text = Document.Meta.Author;
+            MainForm.NameTextBox.Text = Document.Meta.Name;
+            MainForm.AuthorTextBox.Text = Document.Meta.Author;
             if (Document.Meta.Logo == null)
             {
-                Form.LogoButton.BackgroundImage = null;
-                Form.LogoButton.Text = "Click to choose logo";
+                MainForm.LogoButton.BackgroundImage = null;
+                MainForm.LogoButton.Text = "Click to choose logo";
             }
             else
             {
                 var ms = new MemoryStream();
                 Document.Meta.Logo.Save(ms, ImageFormat.Png);
-                Form.LogoButton.BackgroundImage = System.Drawing.Image.FromStream(ms);
-                Form.LogoButton.Text = "";
+                MainForm.LogoButton.BackgroundImage = System.Drawing.Image.FromStream(ms);
+                MainForm.LogoButton.Text = "";
             }
         }
 
@@ -45,8 +45,8 @@ namespace BloodstarClocktica
         static void RefreshCharacterList()
         {
             var numCharacters = Document.Roles.Count;
-            var items = Form.CharactersList.Items;
-            Form.CharactersList.BeginUpdate();
+            var items = MainForm.CharactersList.Items;
+            MainForm.CharactersList.BeginUpdate();
             while (items.Count > numCharacters)
             {
                 items.RemoveAt(items.Count - 1);
@@ -62,11 +62,11 @@ namespace BloodstarClocktica
                     items.Add(GetCharacterListString(Document.Roles[i]));
                 }
             }
-            Form.CharactersList.EndUpdate();
+            MainForm.CharactersList.EndUpdate();
 
-            if ((Form.CharactersList.Items.Count > 0) && (Form.CharactersList.SelectedIndex == -1))
+            if ((MainForm.CharactersList.Items.Count > 0) && (MainForm.CharactersList.SelectedIndex == -1))
             {
-                Form.CharactersList.SelectedIndex = 0;
+                MainForm.CharactersList.SelectedIndex = 0;
             }
 
             // TODO: enable/disable characterlist buttons based on selection
@@ -80,7 +80,7 @@ namespace BloodstarClocktica
         {
             if (index == -1) { return; }
             var character = Document.Roles[index];
-            Form.CharactersList.Items[index] = GetCharacterListString(character);
+            MainForm.CharactersList.Items[index] = GetCharacterListString(character);
             if ((changedItemLabel == "Team") && (character.SourceImage != null))
             {
                 character.ProcessedImage = null;
@@ -94,20 +94,20 @@ namespace BloodstarClocktica
         public static void RefreshCharacterPane()
         {
             ClearListListeners();
-            var index = Form.CharactersList.SelectedIndex;
+            var index = MainForm.CharactersList.SelectedIndex;
             if (-1 == index)
             {
-                Form.PropertyGrid.SelectedObject = null;
-                Form.SplitContainer.Panel2.Enabled = false;
+                MainForm.PropertyGrid.SelectedObject = null;
+                MainForm.SplitContainer.Panel2.Enabled = false;
                 RefreshCharacterImages(null);
             }
             else
             {
-                Form.SplitContainer.Panel2.Enabled = true;
+                MainForm.SplitContainer.Panel2.Enabled = true;
                 var character = Document.Roles[index];
-                Form.PropertyGrid.SelectedObject = character;
+                MainForm.PropertyGrid.SelectedObject = character;
                 RefreshCharacterImages(character);
-                if (Form.PropertyGrid.SelectedObject is SaveRole saveRole)
+                if (MainForm.PropertyGrid.SelectedObject is SaveRole saveRole)
                 {
                     saveRole.ReminderTokens.ListChanged += MarkDirty;
                 }
@@ -122,22 +122,22 @@ namespace BloodstarClocktica
         {
             if (character == null || character.SourceImage == null)
             {
-                Form.SourceImageButton.BackgroundImage = null;
-                Form.SourceImageButton.Text = "Click to import source image";
-                Form.ProcessedImagePanel.BackgroundImage = null;
+                MainForm.SourceImageButton.BackgroundImage = null;
+                MainForm.SourceImageButton.Text = "Click to import source image";
+                MainForm.ProcessedImagePanel.BackgroundImage = null;
             }
             else
             {
-                Form.SourceImageButton.BackgroundImage = character.SourceImage;
+                MainForm.SourceImageButton.BackgroundImage = character.SourceImage;
                 try
                 {
-                    Form.ProcessedImagePanel.BackgroundImage = character.ProcessedImage;
+                    MainForm.ProcessedImagePanel.BackgroundImage = character.ProcessedImage;
                 }
                 catch (BcImageProcessingException e)
                 {
                     MessageBox.Show($"{e.Message}\n\n{e.StackTrace}", "Image processing error");
                 }
-                Form.SourceImageButton.Text = "";
+                MainForm.SourceImageButton.Text = "";
             }
         }
 
@@ -147,7 +147,7 @@ namespace BloodstarClocktica
         static void AddListListeners()
         {
             // clear listeners
-            if (Form.PropertyGrid.SelectedObject is SaveRole saveRole)
+            if (MainForm.PropertyGrid.SelectedObject is SaveRole saveRole)
             {
                 saveRole.ReminderTokens.ListChanged += MarkDirty;
                 saveRole.GlobalReminderTokens.ListChanged += MarkDirty;
@@ -160,7 +160,7 @@ namespace BloodstarClocktica
         static void ClearListListeners()
         {
             // clear listeners
-            if (Form.PropertyGrid.SelectedObject is SaveRole saveRole)
+            if (MainForm.PropertyGrid.SelectedObject is SaveRole saveRole)
             {
                 saveRole.ReminderTokens.ListChanged -= MarkDirty;
                 saveRole.GlobalReminderTokens.ListChanged -= MarkDirty;
@@ -172,7 +172,7 @@ namespace BloodstarClocktica
         /// </summary>
         static void MarkDirty(object _o, ListChangedEventArgs _e)
         {
-            var index = Form.CharactersList.SelectedIndex;
+            var index = MainForm.CharactersList.SelectedIndex;
             if (index != -1)
             {
                 SetDirty(true);

@@ -12,6 +12,8 @@ namespace BloodstarClocktica
         public string Name { get; set; }
         public string Author { get; set; }
         public Image Logo { get; set; }
+        public string ImagePathPrefix { get; set; }
+        public string ExportToDiskPath { get; set; }
         public static SaveMeta Default()
         {
             return new SaveMeta
@@ -19,6 +21,8 @@ namespace BloodstarClocktica
                 Name = "New Edition",
                 Author = "",
                 Logo = null,
+                ImagePathPrefix = "https://example.com/path/img/",
+                ExportToDiskPath = Path.GetTempPath()
             };
         }
 
@@ -37,6 +41,8 @@ namespace BloodstarClocktica
                         json.WriteStartObject();
                         json.WriteString("name", Name);
                         json.WriteString("author", Author);
+                        json.WriteString("imagePathPrefix", ImagePathPrefix);
+                        json.WriteString("exportToDiskPath", ExportToDiskPath);
                         json.WriteEndObject();
                         json.Flush();
                     }
@@ -61,7 +67,7 @@ namespace BloodstarClocktica
         /// <returns></returns>
         public static SaveMeta Load(ZipArchiveEntry jsonEntry, ZipArchiveEntry logoEntry)
         {
-            var meta = new SaveMeta();
+            var meta = Default();
 
             // json
             using (var stream = jsonEntry.Open())
@@ -88,6 +94,20 @@ namespace BloodstarClocktica
                                 break;
                             case "author":
                                 meta.Author = json.GetString();
+                                break;
+                            case "imagePathPrefix":
+                                var prefix = json.GetString();
+                                if ("" != prefix)
+                                {
+                                    meta.ImagePathPrefix = prefix;
+                                }
+                                break;
+                            case "exportToDiskPath":
+                                var path = json.GetString();
+                                if ("" != path)
+                                {
+                                    meta.ExportToDiskPath = path;
+                                }
                                 break;
                         }
                     }

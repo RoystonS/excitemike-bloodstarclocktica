@@ -8,7 +8,7 @@ namespace BloodstarClocktica
     internal static partial class BC
     {
         public static SaveFile Document;
-        public static MainForm Form;
+        public static MainForm MainForm;
         static readonly string WindowTitle = "Bloodstar Clocktica";
 
         /// <summary>
@@ -20,9 +20,9 @@ namespace BloodstarClocktica
             Document = new SaveFile();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Form = new MainForm();
+            MainForm = new MainForm();
             Refresh();
-            Application.Run(Form);
+            Application.Run(MainForm);
         }
 
         /// <summary>
@@ -44,10 +44,10 @@ namespace BloodstarClocktica
         {
             if (SavePromptIfDirty())
             {
+                // TODO: remember last opened
                 var dlg = new OpenFileDialog
                 {
-                    Filter = "Bloodstar Clocktica files (*.blood)|*.blood",
-                    RestoreDirectory = true
+                    Filter = "Bloodstar Clocktica files (*.blood)|*.blood"
                 };
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
@@ -164,7 +164,6 @@ namespace BloodstarClocktica
             var dlg = new OpenFileDialog
             {
                 Filter = "Images (*.jpg;*.png;*.bmp;*.gif)|*.jpg;*.png;*.bmp;*.gif",
-                RestoreDirectory = true
             };
             if (dlg.ShowDialog() == DialogResult.OK)
             {
@@ -184,7 +183,7 @@ namespace BloodstarClocktica
             SetDirty(true);
             Document.Roles.Add(new SaveRole(UniqueCharacterId()));
             RefreshCharacterList();
-            Form.CharactersList.SelectedIndex = Form.CharactersList.Items.Count - 1;
+            MainForm.CharactersList.SelectedIndex = MainForm.CharactersList.Items.Count - 1;
         }
 
         /// <summary>
@@ -212,9 +211,9 @@ namespace BloodstarClocktica
                 SetDirty(true);
                 Document.Roles.RemoveAt(index);
                 RefreshCharacterList();
-                if (Form.CharactersList.SelectedIndex == -1 && Form.CharactersList.Items.Count != 0)
+                if (MainForm.CharactersList.SelectedIndex == -1 && MainForm.CharactersList.Items.Count != 0)
                 {
-                    Form.CharactersList.SelectedIndex = Form.CharactersList.Items.Count - 1;
+                    MainForm.CharactersList.SelectedIndex = MainForm.CharactersList.Items.Count - 1;
                 }
             }
         }
@@ -225,7 +224,7 @@ namespace BloodstarClocktica
         /// <param name="index"></param>
         public static void SwapCharacters(int indexA, int indexB)
         {
-            var items = Form.CharactersList.Items;
+            var items = MainForm.CharactersList.Items;
             var roles = Document.Roles;
             {
                 var temp = items[indexA];
@@ -237,7 +236,7 @@ namespace BloodstarClocktica
                 roles[indexA] = roles[indexB];
                 roles[indexB] = temp;
             }
-            Form.CharactersList.SelectedIndex = indexB;
+            MainForm.CharactersList.SelectedIndex = indexB;
             SetDirty(true);
         }
 
@@ -258,11 +257,11 @@ namespace BloodstarClocktica
         {
             if (Document.Dirty)
             {
-                Form.Text = WindowTitle + " *";
+                MainForm.Text = WindowTitle + " *";
             }
             else
             {
-                Form.Text = WindowTitle;
+                MainForm.Text = WindowTitle;
             }
         }
 

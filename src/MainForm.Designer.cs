@@ -334,14 +334,15 @@ namespace BloodstarClocktica
             // 
             this.toDiskToolStripMenuItem.Name = "toDiskToolStripMenuItem";
             this.toDiskToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.toDiskToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.toDiskToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.toDiskToolStripMenuItem.Text = "To &Disk";
+            this.toDiskToolStripMenuItem.Click += new System.EventHandler(this.ToDiskToolStripMenuItem_Click);
             // 
             // uploadToolStripMenuItem
             // 
             this.uploadToolStripMenuItem.Name = "uploadToolStripMenuItem";
             this.uploadToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F5)));
-            this.uploadToolStripMenuItem.Size = new System.Drawing.Size(158, 22);
+            this.uploadToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.uploadToolStripMenuItem.Text = "&Upload";
             // 
             // SplitContainer

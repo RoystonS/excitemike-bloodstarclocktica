@@ -166,5 +166,15 @@ namespace BloodstarClocktica
                 BC.RefreshCharacterPane();
             }
         }
+
+        /// <summary>
+        /// write out roles.json and image files
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ToDiskToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BC.ExportToDisk();
+        }
     }
 }

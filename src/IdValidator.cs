@@ -17,7 +17,7 @@ namespace BloodstarClocktica
         {
             if (value is string s)
             {
-                if (BC.ValidateId(s, BC.Form.CharactersList.SelectedIndex))
+                if (BC.ValidateId(s, BC.MainForm.CharactersList.SelectedIndex))
                 {
                     return s;
                 }
