@@ -146,9 +146,9 @@ namespace BloodstarClocktica
         /// <param name="e"></param>
         private void FirstNightToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var dlg = new NightOrderForm("First Night Order & Reminders", true))
+            using (var dlg = new NightOrderForm(true))
             {
-                dlg.ShowDialog();
+                dlg.ShowDialog(this);
                 BC.RefreshCharacterPane();
             }
         }
@@ -160,9 +160,9 @@ namespace BloodstarClocktica
         /// <param name="e"></param>
         private void OtherNightsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var dlg = new NightOrderForm("Other Night Order & Reminders", false))
+            using (var dlg = new NightOrderForm(false))
             {
-                dlg.ShowDialog();
+                dlg.ShowDialog(this);
                 BC.RefreshCharacterPane();
             }
         }

@@ -14,11 +14,12 @@ namespace BloodstarClocktica
         /// </summary>
         /// <param name="title"></param>
         /// <param name="firstNight"></param>
-        internal NightOrderForm(string title, bool firstNight)
+        internal NightOrderForm(bool firstNight)
         {
             InitializeComponent();
             this.firstNight = firstNight;
-            Text = title;
+            Text = firstNight ? "First Night Order & Reminders" : "Other Night Order & Reminders";
+            NightReminderLabel.Text = firstNight ? "First Night Reminder" : "Other Nights Reminder";
             sortedCharacterList = new List<SaveRole>(BC.Document.Roles);
             sortedCharacterList.Sort(new NightOrderComparer(firstNight));
             UpdateDocument();
@@ -201,56 +202,21 @@ namespace BloodstarClocktica
                 {
                     UpdateTextBox(character.OtherNightReminder);
                 }
+                TeamText.Text = character.Team.ToString();
+                AbilityText.Text = character.Ability;
             }
         }
 
         /// <summary>
-        /// update textbox/dirty flag as we check of uncheck boxes
+        /// block clicks from messing up the check mark
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void CharactersList_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            if (e.NewValue != e.CurrentValue)
-            {
-                // TODO: this should be going through BC not messing with document directly
-                var i = e.Index;
-                var character = sortedCharacterList[i];
-                if (e.NewValue == CheckState.Checked)
-                {
-                    var defaultText = "REMINDER TEXT HERE";
-                    if (firstNight)
-                    {
-                        character.FirstNightReminder = defaultText;
-                    }
-                    else
-                    {
-                        character.OtherNightReminder = defaultText;
-                    }
-                    if (i == CharactersList.SelectedIndex)
-                    {
-                        UpdateTextBox(defaultText);
-                        TextBox.Focus();
-                        TextBox.SelectAll();
-                    }
-                }
-                else
-                {
-                    if (firstNight)
-                    {
-                        character.FirstNightReminder = "";
-                    }
-                    else
-                    {
-                        character.OtherNightReminder = "";
-                    }
-                    if (i == CharactersList.SelectedIndex)
-                    {
-                        UpdateTextBox("");
-                    }
-                }
-                BC.SetDirty(true);
-            }
+            var character = sortedCharacterList[e.Index];
+            var hasReminder = firstNight ? character.HasFirstNightReminder : character.HasOtherNightReminder;
+            e.NewValue = hasReminder ? CheckState.Checked : CheckState.Unchecked;
         }
 
         /// <summary>
@@ -282,7 +248,7 @@ namespace BloodstarClocktica
         {
             var indexA = CharactersList.SelectedIndex;
             var indexB = indexA + offset;
-            if ((indexA != -1) && (0 < indexB) && (indexB < CharactersList.Items.Count - 1))
+            if ((indexA != -1) && (0 <= indexB) && (indexB < CharactersList.Items.Count))
             {
                 CharactersList.BeginUpdate();
                 CharactersList.SelectedIndexChanged -= new System.EventHandler(CharactersList_SelectedIndexChanged);
