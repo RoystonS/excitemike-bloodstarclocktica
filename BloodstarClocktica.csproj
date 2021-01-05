@@ -209,5 +209,8 @@
   <ItemGroup>
     <None Include="Resources\travelergradient.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\texture.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

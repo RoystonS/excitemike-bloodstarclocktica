@@ -47,7 +47,6 @@ namespace BloodstarClocktica
         /// <returns></returns>
         internal static Bitmap GetGradientForTeam(SaveTeam.TeamValue team)
         {
-            // TODO: should be a gradient
             // TODO: should come from settings
             switch (team)
             {
