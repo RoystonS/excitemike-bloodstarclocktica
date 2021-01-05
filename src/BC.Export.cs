@@ -57,7 +57,7 @@ namespace BloodstarClocktica
             // write out roles.json
             {
                 var path = Path.Combine(Document.Meta.ExportToDiskPath, "roles.json");
-                using (var stream = new FileStream(path, FileMode.OpenOrCreate))
+                using (var stream = new FileStream(path, FileMode.Create))
                 {
                     ExportRolesJson(stream);
                 }
@@ -70,7 +70,7 @@ namespace BloodstarClocktica
             if (Document.Meta.Logo != null)
             {
                 var path = Path.Combine(imageDir, "logo.png");
-                using (var stream = new FileStream(path, FileMode.OpenOrCreate))
+                using (var stream = new FileStream(path, FileMode.Create))
                 {
                     Document.Meta.Logo.Save(stream, ImageFormat.Png);
                 }
@@ -82,7 +82,7 @@ namespace BloodstarClocktica
                 if (character.ProcessedImage != null)
                 {
                     var path = Path.Combine(imageDir, $"{character.Id}.png");
-                    using (var stream = new FileStream(path, FileMode.OpenOrCreate))
+                    using (var stream = new FileStream(path, FileMode.Create))
                     {
                         character.ProcessedImage.Save(stream, ImageFormat.Png);
                     }
@@ -137,7 +137,7 @@ namespace BloodstarClocktica
             json.WriteString("id", character.Id);
             if (character.ProcessedImage != null)
             {
-                json.WriteString("image", $"{Document.Meta.ImagePathPrefix}images/{character.Id}.json");
+                json.WriteString("image", $"{Document.Meta.ImagePathPrefix}images/{character.Id}.png");
             }
             json.WriteString("edition", "custom");
             json.WriteNumber("firstNight", character.FirstNightOrder);

@@ -103,10 +103,12 @@ namespace BloodstarClocktica
                                 }
                                 break;
                             case "exportToDiskPath":
-                                var path = json.GetString();
-                                if ("" != path)
                                 {
-                                    meta.ExportToDiskPath = path;
+                                    var path = json.GetString();
+                                    if ("" != path)
+                                    {
+                                        meta.ExportToDiskPath = path;
+                                    }
                                 }
                                 break;
                         }

@@ -49,6 +49,10 @@ namespace BloodstarClocktica
                 {
                     Filter = "Bloodstar Clocktica files (*.blood)|*.blood"
                 };
+                if ((Document.FilePath != null) && (Document.FilePath != ""))
+                {
+                    dlg.InitialDirectory = Path.GetDirectoryName(Document.FilePath);
+                }
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
                     Open(dlg.FileName);

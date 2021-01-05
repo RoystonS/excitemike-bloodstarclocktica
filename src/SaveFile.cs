@@ -83,7 +83,7 @@ namespace BloodstarClocktica
         /// save to zip file
         /// </summary>
         /// <param name="path"></param>
-        internal void Save(String path)
+        internal void Save(string path)
         {
             FilePath = path;
             using (Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write))
