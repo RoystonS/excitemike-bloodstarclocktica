@@ -22,5 +22,17 @@ namespace BloodstarClocktica.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string DocumentDir {
+            get {
+                return ((string)(this["DocumentDir"]));
+            }
+            set {
+                this["DocumentDir"] = value;
+            }
+        }
     }
 }

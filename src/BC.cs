@@ -49,9 +49,10 @@ namespace BloodstarClocktica
                 {
                     Filter = "Bloodstar Clocktica files (*.blood)|*.blood"
                 };
-                if ((Document.FilePath != null) && (Document.FilePath != ""))
+                var docDir = Properties.Settings.Default.DocumentDir;
+                if ((docDir != null) && (docDir != ""))
                 {
-                    dlg.InitialDirectory = Path.GetDirectoryName(Document.FilePath);
+                    dlg.InitialDirectory = docDir;
                 }
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
@@ -67,6 +68,8 @@ namespace BloodstarClocktica
         static void Open(string filePath)
         {
             Document = SaveFile.Load(filePath);
+            Properties.Settings.Default.DocumentDir = Path.GetDirectoryName(filePath);
+            Properties.Settings.Default.Save();
             Refresh();
         }
 
@@ -132,6 +135,11 @@ namespace BloodstarClocktica
                 RestoreDirectory = true,
                 OverwritePrompt = true
             };
+            var docDir = Properties.Settings.Default.DocumentDir;
+            if ((docDir != null) && (docDir != ""))
+            {
+                dlg.InitialDirectory = docDir;
+            }
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 return SaveAs(dlg.FileName);
@@ -144,11 +152,13 @@ namespace BloodstarClocktica
         /// </summary>
         /// <param name="path"></param>
         /// <returns>true if it successfully saved</returns>
-        static bool SaveAs(string path)
+        static bool SaveAs(string filePath)
         {
             try
             {
-                Document.Save(path);
+                Document.Save(filePath);
+                Properties.Settings.Default.DocumentDir = Path.GetDirectoryName(filePath);
+                Properties.Settings.Default.Save();
                 RefreshTitle();
             }
             catch (Exception exception)
