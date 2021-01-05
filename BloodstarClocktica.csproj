@@ -113,6 +113,12 @@
     <Compile Include="src\BC.Exceptions.cs" />
     <Compile Include="src\BcImageProcessingException.cs" />
     <Compile Include="src\BitmapExtensionMethods.cs" />
+    <Compile Include="src\FtpConnectionInfo.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\FtpConnectionInfo.Designer.cs">
+      <DependentUpon>FtpConnectionInfo.cs</DependentUpon>
+    </Compile>
     <Compile Include="src\IdValidator.cs" />
     <Compile Include="src\MainForm.cs">
       <SubType>Form</SubType>
@@ -156,6 +162,9 @@
     <Compile Include="src\StringDialog.Designer.cs">
       <DependentUpon>StringDialog.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="src\FtpConnectionInfo.resx">
+      <DependentUpon>FtpConnectionInfo.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="src\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
       <SubType>Designer</SubType>

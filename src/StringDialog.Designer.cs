@@ -30,14 +30,14 @@ namespace BloodstarClocktica
         private void InitializeComponent()
         {
             System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-            System.Windows.Forms.Button button1;
             System.Windows.Forms.Button button2;
+            System.Windows.Forms.Button button1;
             this.Label = new System.Windows.Forms.Label();
             this.TextBox = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            button1 = new System.Windows.Forms.Button();
             button2 = new System.Windows.Forms.Button();
+            button1 = new System.Windows.Forms.Button();
             tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.SuspendLayout();
@@ -55,23 +55,10 @@ namespace BloodstarClocktica
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 39F));
+            tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 39F));
             tableLayoutPanel1.Size = new System.Drawing.Size(597, 39);
             tableLayoutPanel1.TabIndex = 0;
-            // 
-            // button1
-            // 
-            button1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            button1.DialogResult = System.Windows.Forms.DialogResult.OK;
-            button1.Location = new System.Drawing.Point(3, 3);
-            button1.Name = "button1";
-            button1.Size = new System.Drawing.Size(292, 33);
-            button1.TabIndex = 0;
-            button1.Text = "&Ok";
-            button1.UseVisualStyleBackColor = true;
             // 
             // button2
             // 
@@ -85,6 +72,19 @@ namespace BloodstarClocktica
             button2.TabIndex = 1;
             button2.Text = "&Cancel";
             button2.UseVisualStyleBackColor = true;
+            // 
+            // button1
+            // 
+            button1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            button1.DialogResult = System.Windows.Forms.DialogResult.OK;
+            button1.Location = new System.Drawing.Point(3, 3);
+            button1.Name = "button1";
+            button1.Size = new System.Drawing.Size(292, 33);
+            button1.TabIndex = 0;
+            button1.Text = "&Ok";
+            button1.UseVisualStyleBackColor = true;
             // 
             // Label
             // 
@@ -124,14 +124,16 @@ namespace BloodstarClocktica
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 26F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(597, 26);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // StringDialog
             // 
+            this.AcceptButton = button1;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = button2;
             this.ClientSize = new System.Drawing.Size(621, 103);
             this.Controls.Add(this.tableLayoutPanel2);
             this.Controls.Add(tableLayoutPanel1);

@@ -96,19 +96,27 @@ namespace BloodstarClocktica
             }
         }
 
+        /// <summary>
+        /// Prompt for connection settings and upload
+        /// </summary>
         internal async static void ExportSftp()
         {
-            var host = "ftp.excitemike.com";
-            var port = 2222;
-            var user = "mike@meyermike.com";
-            var pass = "7e4!2r6M";
-            Document.Meta.RemoteDirectory = "botc_mec";
-            Document.Meta.UrlRoot = "https://meyermik.startlogic.com/";
+            string password = "";
+            if (!PromptForUploadSettings(ref password))
+            {
+                return;
+            }
 
             var progressPopup = new ProgressPopup();
             MainForm.Enabled = false;
             progressPopup.Show(MainForm);
-            var connectionInfo = new ConnectionInfo(host, port, user, new PasswordAuthenticationMethod(user, pass), new PrivateKeyAuthenticationMethod("rsa.key"));
+            var connectionInfo = new ConnectionInfo(
+                Document.Meta.SftpHost,
+                Document.Meta.SftpPort,
+                Document.Meta.SftpUser,
+                new PasswordAuthenticationMethod(Document.Meta.SftpUser, password),
+                new PrivateKeyAuthenticationMethod("rsa.key")
+            );
             using (var client = new SftpClient(connectionInfo))
             {
                 try
@@ -133,6 +141,10 @@ namespace BloodstarClocktica
                         MessageBox.Show($"rules.json link: {Document.Meta.RolesUrl}?{DateTime.Now:yyyyMMddHHmmssf}");
                     }
                 }
+                catch (Exception e)
+                {
+                    MessageBox.Show($"Error uploading via SFTP.\n{e.Message}\n{e.StackTrace}");
+                }
                 finally
                 {
                     client.Disconnect();
@@ -140,6 +152,27 @@ namespace BloodstarClocktica
             }
         }
 
+        /// <summary>
+        /// Prompt the user for upload/export settings
+        /// </summary>
+        /// <param name="password"></param>
+        /// <returns>true if the user clicked ok</returns>
+        private static bool PromptForUploadSettings(ref string password)
+        {
+            var popup = new FtpConnectionInfo();
+            if (popup.ShowDialog(MainForm) == DialogResult.OK)
+            {
+                password = popup.PasswordTextBox.Text;
+                return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// write each file to the SftpClient, reporting progress
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="progress"></param>
         static void ExportSftp(SftpClient client, IProgress<int> progress)
         {
             var num = 1;
@@ -149,12 +182,12 @@ namespace BloodstarClocktica
             // roles.json
             try
             {
-                client.ChangeDirectory(Document.Meta.RemoteDirectory);
+                client.ChangeDirectory(Document.Meta.SftpRemoteDirectory);
             }
             catch (Renci.SshNet.Common.SftpPathNotFoundException)
             {
-                client.CreateDirectory(Document.Meta.RemoteDirectory);
-                client.ChangeDirectory(Document.Meta.RemoteDirectory);
+                client.CreateDirectory(Document.Meta.SftpRemoteDirectory);
+                client.ChangeDirectory(Document.Meta.SftpRemoteDirectory);
             }
             using (var stream = new MemoryStream())
             {
@@ -168,12 +201,12 @@ namespace BloodstarClocktica
             client.ChangeDirectory("/");
             try
             {
-                client.ChangeDirectory(Document.Meta.RemoteImagesDirectory);
+                client.ChangeDirectory(Document.Meta.SftpRemoteImagesDirectory);
             }
             catch (Renci.SshNet.Common.SftpPathNotFoundException)
             {
-                client.CreateDirectory(Document.Meta.RemoteImagesDirectory);
-                client.ChangeDirectory(Document.Meta.RemoteImagesDirectory);
+                client.CreateDirectory(Document.Meta.SftpRemoteImagesDirectory);
+                client.ChangeDirectory(Document.Meta.SftpRemoteImagesDirectory);
             }
 
             // logo

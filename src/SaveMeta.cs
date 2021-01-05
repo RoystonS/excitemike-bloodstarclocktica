@@ -38,29 +38,29 @@ namespace BloodstarClocktica
                 }
             }
         }
-        private string _RemoteDirectory = "/";
-        public string RemoteDirectory
+        private string _SftpRemoteDirectory = "/";
+        public string SftpRemoteDirectory
         {
             get
             {
-                return _RemoteDirectory;
+                return _SftpRemoteDirectory;
             }
             set
             {
                 if (value == null)
                 {
-                    _RemoteDirectory = "/";
+                    _SftpRemoteDirectory = "/";
                 }
                 else
                 {
-                    _RemoteDirectory = value;
-                    if (!_RemoteDirectory.StartsWith("/"))
+                    _SftpRemoteDirectory = value;
+                    if (!_SftpRemoteDirectory.StartsWith("/"))
                     {
-                        _RemoteDirectory = "/" + _RemoteDirectory;
+                        _SftpRemoteDirectory = "/" + _SftpRemoteDirectory;
                     }
-                    if (!_RemoteDirectory.EndsWith("/"))
+                    if (!_SftpRemoteDirectory.EndsWith("/"))
                     {
-                        _RemoteDirectory += "/";
+                        _SftpRemoteDirectory += "/";
                     }
                 }
             }
@@ -72,11 +72,11 @@ namespace BloodstarClocktica
                 return _UrlRoot + "images/";
             }
         }
-        public string RemoteImagesDirectory
+        public string SftpRemoteImagesDirectory
         {
             get
             {
-                return _RemoteDirectory + "images/";
+                return _SftpRemoteDirectory + "images/";
             }
         }
         public string ExportToDiskPath { get; set; }
@@ -84,19 +84,25 @@ namespace BloodstarClocktica
         {
             get
             {
-                return $"{UrlRoot}{RemoteDirectory.Substring(1)}roles.json";
+                return $"{UrlRoot}{SftpRemoteDirectory.Substring(1)}roles.json";
             }
         }
+        public string SftpHost { get; set; }
+        public string SftpUser { get; set; }
+        public int SftpPort { get; set; }
         public static SaveMeta Default()
         {
             return new SaveMeta
             {
-                Name = "New Edition",
+                Name = "Custom Edition",
                 Author = "",
                 Logo = null,
-                UrlRoot = "https://example.com/",
-                RemoteDirectory = "/botc/",
-                ExportToDiskPath = Path.GetTempPath()
+                UrlRoot = "https://meyermike.startlogic.com/botc",
+                SftpRemoteDirectory = "REPLACE ME",
+                ExportToDiskPath = Path.GetTempPath(),
+                SftpHost = "ftp.excitemike.com",
+                SftpPort = 2222,
+                SftpUser = "botc_homebrew"
             };
         }
 
@@ -115,9 +121,12 @@ namespace BloodstarClocktica
                         json.WriteStartObject();
                         json.WriteString("name", Name);
                         json.WriteString("author", Author);
-                        json.WriteString("urlRoot", UrlRoot);
-                        json.WriteString("remoteDirectory", RemoteDirectory);
                         json.WriteString("exportToDiskPath", ExportToDiskPath);
+                        json.WriteString("urlRoot", UrlRoot);
+                        json.WriteString("sftpRemoteDirectory", SftpRemoteDirectory);
+                        json.WriteString("sftpHost", SftpHost);
+                        json.WriteNumber("sftpPort", SftpPort);
+                        json.WriteString("sftpUser", SftpUser);
                         json.WriteEndObject();
                         json.Flush();
                     }
@@ -177,13 +186,6 @@ namespace BloodstarClocktica
                                     meta.UrlRoot = urlRoot;
                                 }
                                 break;
-                            case "remoteDirectory":
-                                var remoteDirectory = json.GetString();
-                                if ("" != remoteDirectory)
-                                {
-                                    meta.RemoteDirectory = remoteDirectory;
-                                }
-                                break;
                             case "exportToDiskPath":
                                 {
                                     var path = json.GetString();
@@ -192,6 +194,22 @@ namespace BloodstarClocktica
                                         meta.ExportToDiskPath = path;
                                     }
                                 }
+                                break;
+                            case "sftpRemoteDirectory":
+                                var remoteDirectory = json.GetString();
+                                if ("" != remoteDirectory)
+                                {
+                                    meta.SftpRemoteDirectory = remoteDirectory;
+                                }
+                                break;
+                            case "sftpHost":
+                                meta.SftpHost = json.GetString();
+                                break;
+                            case "sftpPort":
+                                meta.SftpPort = json.GetInt32();
+                                break;
+                            case "sftpUser":
+                                meta.SftpUser = json.GetString();
                                 break;
                         }
                     }
