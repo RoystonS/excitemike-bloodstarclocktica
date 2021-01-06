@@ -73,7 +73,7 @@ namespace BloodstarClocktica
             label1.Location = new System.Drawing.Point(49, 0);
             label1.Name = "label1";
             label1.Size = new System.Drawing.Size(34, 25);
-            label1.TabIndex = 2;
+            label1.TabIndex = 0;
             label1.Text = "Team";
             label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -85,7 +85,7 @@ namespace BloodstarClocktica
             lbl.Location = new System.Drawing.Point(49, 25);
             lbl.Name = "lbl";
             lbl.Size = new System.Drawing.Size(34, 50);
-            lbl.TabIndex = 3;
+            lbl.TabIndex = 2;
             lbl.Text = "Ability";
             lbl.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -149,7 +149,7 @@ namespace BloodstarClocktica
             this.CharactersList.Location = new System.Drawing.Point(3, 3);
             this.CharactersList.Name = "CharactersList";
             this.CharactersList.Size = new System.Drawing.Size(260, 394);
-            this.CharactersList.TabIndex = 2;
+            this.CharactersList.TabIndex = 0;
             this.CharactersList.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.CharactersList_ItemCheck);
             this.CharactersList.SelectedIndexChanged += new System.EventHandler(this.CharactersList_SelectedIndexChanged);
             // 
@@ -175,7 +175,7 @@ namespace BloodstarClocktica
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(354, 204);
-            this.tableLayoutPanel1.TabIndex = 2;
+            this.tableLayoutPanel1.TabIndex = 0;
             // 
             // NightReminderLabel
             // 
@@ -198,7 +198,7 @@ namespace BloodstarClocktica
             this.TextBox.Multiline = true;
             this.TextBox.Name = "TextBox";
             this.TextBox.Size = new System.Drawing.Size(262, 123);
-            this.TextBox.TabIndex = 0;
+            this.TextBox.TabIndex = 5;
             this.TextBox.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
             // 
             // AbilityText
@@ -209,7 +209,7 @@ namespace BloodstarClocktica
             this.AbilityText.Name = "AbilityText";
             this.AbilityText.ReadOnly = true;
             this.AbilityText.Size = new System.Drawing.Size(262, 44);
-            this.AbilityText.TabIndex = 6;
+            this.AbilityText.TabIndex = 3;
             // 
             // TeamText
             // 
@@ -219,7 +219,7 @@ namespace BloodstarClocktica
             this.TeamText.Name = "TeamText";
             this.TeamText.ReadOnly = true;
             this.TeamText.Size = new System.Drawing.Size(262, 19);
-            this.TeamText.TabIndex = 7;
+            this.TeamText.TabIndex = 1;
             // 
             // NightOrderForm
             // 

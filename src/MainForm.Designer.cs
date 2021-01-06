@@ -94,7 +94,7 @@ namespace BloodstarClocktica
             groupBox1.Location = new System.Drawing.Point(4, 165);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new System.Drawing.Size(255, 465);
-            groupBox1.TabIndex = 7;
+            groupBox1.TabIndex = 0;
             groupBox1.TabStop = false;
             groupBox1.Text = "Characters";
             // 
@@ -107,7 +107,7 @@ namespace BloodstarClocktica
             this.CharactersList.Location = new System.Drawing.Point(5, 23);
             this.CharactersList.Name = "CharactersList";
             this.CharactersList.Size = new System.Drawing.Size(204, 433);
-            this.CharactersList.TabIndex = 5;
+            this.CharactersList.TabIndex = 0;
             this.CharactersList.SelectedIndexChanged += new System.EventHandler(this.CharactersList_SelectedIndexChanged);
             // 
             // flowLayoutPanel1
@@ -129,7 +129,7 @@ namespace BloodstarClocktica
             this.MoveCharacterUpButton.Location = new System.Drawing.Point(3, 3);
             this.MoveCharacterUpButton.Name = "MoveCharacterUpButton";
             this.MoveCharacterUpButton.Size = new System.Drawing.Size(34, 23);
-            this.MoveCharacterUpButton.TabIndex = 2;
+            this.MoveCharacterUpButton.TabIndex = 0;
             this.MoveCharacterUpButton.Text = "/\\";
             this.MoveCharacterUpButton.UseVisualStyleBackColor = true;
             this.MoveCharacterUpButton.Click += new System.EventHandler(this.MoveCharacterUpButton_Click);
@@ -140,7 +140,7 @@ namespace BloodstarClocktica
             this.MoveCharacterDownButton.Location = new System.Drawing.Point(3, 32);
             this.MoveCharacterDownButton.Name = "MoveCharacterDownButton";
             this.MoveCharacterDownButton.Size = new System.Drawing.Size(34, 23);
-            this.MoveCharacterDownButton.TabIndex = 3;
+            this.MoveCharacterDownButton.TabIndex = 1;
             this.MoveCharacterDownButton.Text = "\\/";
             this.MoveCharacterDownButton.UseVisualStyleBackColor = true;
             this.MoveCharacterDownButton.Click += new System.EventHandler(this.MoveCharacterDownButton_Click);
@@ -151,7 +151,7 @@ namespace BloodstarClocktica
             this.AddCharacterButton.Location = new System.Drawing.Point(3, 61);
             this.AddCharacterButton.Name = "AddCharacterButton";
             this.AddCharacterButton.Size = new System.Drawing.Size(34, 23);
-            this.AddCharacterButton.TabIndex = 4;
+            this.AddCharacterButton.TabIndex = 2;
             this.AddCharacterButton.Text = "Add";
             this.AddCharacterButton.UseVisualStyleBackColor = true;
             this.AddCharacterButton.Click += new System.EventHandler(this.AddCharacter_Click);
@@ -162,7 +162,7 @@ namespace BloodstarClocktica
             this.RemoveCharacterButton.Location = new System.Drawing.Point(3, 90);
             this.RemoveCharacterButton.Name = "RemoveCharacterButton";
             this.RemoveCharacterButton.Size = new System.Drawing.Size(34, 23);
-            this.RemoveCharacterButton.TabIndex = 5;
+            this.RemoveCharacterButton.TabIndex = 3;
             this.RemoveCharacterButton.Text = "Del";
             this.RemoveCharacterButton.UseVisualStyleBackColor = true;
             this.RemoveCharacterButton.Click += new System.EventHandler(this.RemoveCharacter_Click);
@@ -184,7 +184,7 @@ namespace BloodstarClocktica
             splitContainer2.Panel2.Controls.Add(this.PropertyGrid);
             splitContainer2.Size = new System.Drawing.Size(714, 637);
             splitContainer2.SplitterDistance = 313;
-            splitContainer2.TabIndex = 1;
+            splitContainer2.TabIndex = 0;
             // 
             // tableLayoutPanel2
             // 
@@ -209,7 +209,7 @@ namespace BloodstarClocktica
             this.ProcessedImageGroupBox.Location = new System.Drawing.Point(358, 3);
             this.ProcessedImageGroupBox.Name = "ProcessedImageGroupBox";
             this.ProcessedImageGroupBox.Size = new System.Drawing.Size(349, 303);
-            this.ProcessedImageGroupBox.TabIndex = 2;
+            this.ProcessedImageGroupBox.TabIndex = 1;
             this.ProcessedImageGroupBox.TabStop = false;
             this.ProcessedImageGroupBox.Text = "Processed Image";
             // 
@@ -229,7 +229,7 @@ namespace BloodstarClocktica
             groupBox2.Location = new System.Drawing.Point(3, 3);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new System.Drawing.Size(349, 303);
-            groupBox2.TabIndex = 1;
+            groupBox2.TabIndex = 0;
             groupBox2.TabStop = false;
             groupBox2.Text = "Source Image";
             // 
@@ -386,7 +386,7 @@ namespace BloodstarClocktica
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(256, 154);
-            this.tableLayoutPanel1.TabIndex = 4;
+            this.tableLayoutPanel1.TabIndex = 0;
             // 
             // AuthorTextBox
             // 
@@ -394,7 +394,7 @@ namespace BloodstarClocktica
             this.AuthorTextBox.Location = new System.Drawing.Point(47, 30);
             this.AuthorTextBox.Name = "AuthorTextBox";
             this.AuthorTextBox.Size = new System.Drawing.Size(206, 20);
-            this.AuthorTextBox.TabIndex = 4;
+            this.AuthorTextBox.TabIndex = 3;
             this.AuthorTextBox.TextChanged += new System.EventHandler(this.AuthorTextBox_TextChanged);
             // 
             // label1
@@ -414,7 +414,7 @@ namespace BloodstarClocktica
             this.label2.Location = new System.Drawing.Point(3, 34);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(38, 13);
-            this.label2.TabIndex = 1;
+            this.label2.TabIndex = 2;
             this.label2.Text = "Author";
             // 
             // label3
@@ -424,7 +424,7 @@ namespace BloodstarClocktica
             this.label3.Location = new System.Drawing.Point(10, 97);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(31, 13);
-            this.label3.TabIndex = 2;
+            this.label3.TabIndex = 4;
             this.label3.Text = "Logo";
             // 
             // LogoButton
@@ -447,7 +447,7 @@ namespace BloodstarClocktica
             this.NameTextBox.Location = new System.Drawing.Point(47, 3);
             this.NameTextBox.Name = "NameTextBox";
             this.NameTextBox.Size = new System.Drawing.Size(206, 20);
-            this.NameTextBox.TabIndex = 3;
+            this.NameTextBox.TabIndex = 1;
             this.NameTextBox.TextChanged += new System.EventHandler(this.NameTextBox_TextChanged);
             // 
             // menuStrip1
@@ -459,7 +459,7 @@ namespace BloodstarClocktica
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(984, 24);
-            this.menuStrip1.TabIndex = 8;
+            this.menuStrip1.TabIndex = 1;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // MainForm

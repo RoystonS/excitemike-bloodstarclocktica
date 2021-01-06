@@ -95,7 +95,7 @@ namespace BloodstarClocktica
             this.Label.Location = new System.Drawing.Point(3, 0);
             this.Label.Name = "Label";
             this.Label.Size = new System.Drawing.Size(49, 26);
-            this.Label.TabIndex = 2;
+            this.Label.TabIndex = 0;
             this.Label.Text = "message";
             this.Label.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
@@ -107,7 +107,7 @@ namespace BloodstarClocktica
             this.TextBox.Location = new System.Drawing.Point(58, 3);
             this.TextBox.Name = "TextBox";
             this.TextBox.Size = new System.Drawing.Size(536, 20);
-            this.TextBox.TabIndex = 3;
+            this.TextBox.TabIndex = 1;
             this.TextBox.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
             // 
             // tableLayoutPanel2
