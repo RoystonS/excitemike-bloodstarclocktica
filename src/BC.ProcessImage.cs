@@ -47,7 +47,6 @@ namespace BloodstarClocktica
         /// <returns></returns>
         internal static Bitmap GetGradientForTeam(SaveTeam.TeamValue team)
         {
-            // TODO: should come from settings
             switch (team)
             {
                 case SaveTeam.TeamValue.Townsfolk:

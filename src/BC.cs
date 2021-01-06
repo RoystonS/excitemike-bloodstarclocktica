@@ -44,7 +44,6 @@ namespace BloodstarClocktica
         {
             if (SavePromptIfDirty())
             {
-                // TODO: remember last opened
                 var dlg = new OpenFileDialog
                 {
                     Filter = "Bloodstar Clocktica files (*.blood)|*.blood"
@@ -285,8 +284,6 @@ namespace BloodstarClocktica
         /// <param name="index"></param>
         internal static void ChooseSourceImage(int index)
         {
-            // TODO: should this have a confirmation popup?
-            // TODO: a way to go back to no image at all
             if (-1 == index)
             {
                 return;

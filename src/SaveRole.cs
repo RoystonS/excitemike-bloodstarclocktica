@@ -11,7 +11,7 @@ using System.Text.Json;
 namespace BloodstarClocktica
 {
     [DefaultProperty("Id")]
-    // TODO: rename all this "SaveXXX"
+    // TODO: rename all this "SaveXXX" stuff to something better
     public class SaveRole
     {
         [Category("Character"), Description("The internal ID for this character, without spaces or special characters."), TypeConverter(typeof(IdValidator))]
