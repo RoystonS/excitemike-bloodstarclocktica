@@ -61,7 +61,7 @@ namespace BloodstarClocktica
                 default:
                     return ProcessImageSettings.TravelerGradient;
             }
-            throw new System.Exception("Unhandled team in GetColorForTeam");
+            throw new System.Exception("Unhandled team in GetGradientForTeam");
         }
     }
 }
