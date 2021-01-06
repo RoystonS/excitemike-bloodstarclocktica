@@ -20,6 +20,18 @@ namespace BloodstarClocktica
         }
 
         /// <summary>
+        /// resize, adding extra spacing to keep the aspect ratio the same
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns>a new bitmap</returns>
+        internal static Bitmap Fit(this Bitmap source, int width, int height)
+        {
+            return new Bitmap(width, height).PasteZoomed(source, new Rectangle(0, 0, width, height));
+        }
+
+        /// <summary>
         /// paste the source bitmap, scaled without changing the aspect ratio, into the rect in the destination bitmap
         /// </summary>
         /// <param name="destination"></param>

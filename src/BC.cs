@@ -292,10 +292,17 @@ namespace BloodstarClocktica
                 return;
             }
             var character = Document.Roles[index];
-            var image = BC.ChooseImage();
+            var image = ChooseImage();
             if (image != null)
             {
-                character.SourceImage = image;
+                if ((image.Width > ProcessImageSettings.OutputWidth) || (image.Height > ProcessImageSettings.OutputHeight))
+                {
+                    character.SourceImage = new Bitmap(image).Fit(ProcessImageSettings.OutputWidth, ProcessImageSettings.OutputHeight);
+                }
+                else
+                {
+                    character.SourceImage = image;
+                }
                 SetDirty(true);
                 RefreshCharacterPane();
             }
