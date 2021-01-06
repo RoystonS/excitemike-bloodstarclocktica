@@ -105,7 +105,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Settings.cs" />
+    <Compile Include="src\LinkMessageBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="src\LinkMessageBox.Designer.cs">
+      <DependentUpon>LinkMessageBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="src\Settings.cs" />
     <Compile Include="src\BC.Export.cs" />
     <Compile Include="src\BC.ProcessImage.cs" />
     <Compile Include="src\BC.Refresh.cs" />
@@ -162,6 +168,9 @@
     <Compile Include="src\StringDialog.Designer.cs">
       <DependentUpon>StringDialog.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="src\LinkMessageBox.resx">
+      <DependentUpon>LinkMessageBox.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="src\FtpConnectionInfo.resx">
       <DependentUpon>FtpConnectionInfo.cs</DependentUpon>
     </EmbeddedResource>

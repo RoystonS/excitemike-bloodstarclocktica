@@ -138,7 +138,8 @@ namespace BloodstarClocktica
                     {
                         progressPopup.Close();
                         MainForm.Enabled = true;
-                        MessageBox.Show($"rules.json link: {Document.Meta.RolesUrl}?{DateTime.Now:yyyyMMddHHmmssf}");
+                        var popup = new LinkMessageBox("Upload Complete", "Roles.json is available at:", $"{Document.Meta.RolesUrl}?{DateTime.Now:MMddHHmmss}");
+                        popup.ShowDialog(MainForm);
                     }
                 }
                 catch (Exception e)
@@ -228,7 +229,7 @@ namespace BloodstarClocktica
                 {
                     using (var stream = new MemoryStream())
                     {
-                        Document.Meta.Logo.Save(stream, ImageFormat.Png);
+                        character.ProcessedImage.Save(stream, ImageFormat.Png);
                         stream.Position = 0;
                         client.UploadFile(stream, $"{character.Id}.png", true);
                     }
