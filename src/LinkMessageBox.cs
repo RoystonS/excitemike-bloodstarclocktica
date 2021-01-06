@@ -21,7 +21,6 @@ namespace BloodstarClocktica
 
         private void LinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Uri uriResult;
             if (Uri.IsWellFormedUriString(LinkLabel.Text, UriKind.Absolute))
             {
                 Process.Start(LinkLabel.Text);

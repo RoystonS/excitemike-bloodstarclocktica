@@ -6,7 +6,7 @@ namespace BloodstarClocktica
 {
     public partial class FtpConnectionInfo : Form
     {
-        private bool initializing;
+        private readonly bool initializing;
         public FtpConnectionInfo()
         {
             initializing = true;
