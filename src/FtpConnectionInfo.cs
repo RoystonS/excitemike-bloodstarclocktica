@@ -31,7 +31,7 @@ namespace BloodstarClocktica
             if (initializing) { return; }
             if (UrlRootTextBox.Text != BC.Document.Meta.UrlRoot)
             {
-                BC.Document.Meta.UrlRoot = WebUtility.UrlEncode(UrlRootTextBox.Text);
+                BC.Document.Meta.UrlRoot = UrlRootTextBox.Text;
                 BC.SetDirty(true);
             }
         }

@@ -69,7 +69,7 @@ namespace BloodstarClocktica
         {
             get
             {
-                return _UrlRoot + "images/";
+                return $"{_UrlRoot}{SftpRemoteImagesDirectory.Substring(1)}";
             }
         }
         public string SftpRemoteImagesDirectory
