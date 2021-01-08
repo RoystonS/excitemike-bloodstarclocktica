@@ -3,7 +3,7 @@ using System.Drawing;
 
 namespace BloodstarClocktica
 {
-    internal static partial class BC
+    public static partial class BC
     {
         static class ProcessImageSettings
         {

@@ -8,12 +8,12 @@ using System.Windows.Forms;
 
 namespace BloodstarClocktica
 {
-    internal static partial class BC
+    public static partial class BC
     {
         /// <summary>
         /// save output files to disk
         /// </summary>
-        internal static void ExportToDisk()
+        public static void ExportToDisk()
         {
             // prompt to select folder
             {
@@ -44,7 +44,7 @@ namespace BloodstarClocktica
         /// <summary>
         /// save files to disk
         /// </summary>
-        internal static void ExportToDisk(string exportFolder)
+        public static void ExportToDisk(string exportFolder)
         {
             // prompt for image path prefix
             {
@@ -99,7 +99,7 @@ namespace BloodstarClocktica
         /// <summary>
         /// Prompt for connection settings and upload
         /// </summary>
-        internal async static void ExportSftp()
+        public async static void ExportSftp()
         {
             string password = "";
             if (!PromptForUploadSettings(ref password))
@@ -158,7 +158,7 @@ namespace BloodstarClocktica
         /// </summary>
         /// <param name="password"></param>
         /// <returns>true if the user clicked ok</returns>
-        private static bool PromptForUploadSettings(ref string password)
+        public static bool PromptForUploadSettings(ref string password)
         {
             var popup = new FtpConnectionInfo();
             if (popup.ShowDialog(MainForm) == DialogResult.OK)

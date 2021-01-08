@@ -2,7 +2,7 @@
 
 namespace BloodstarClocktica
 {
-    internal static partial class BC
+    public static partial class BC
     {
         /// <summary>
         /// validate whether the id is taken

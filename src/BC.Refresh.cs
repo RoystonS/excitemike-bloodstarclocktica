@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace BloodstarClocktica
 {
-    internal static partial class BC
+    public static partial class BC
     {
         /// <summary>
         /// update all controls to reflect document
@@ -23,6 +23,7 @@ namespace BloodstarClocktica
         /// </summary>
         public static void RefreshMeta()
         {
+            if (MainForm == null) { return; }
             MainForm.NameTextBox.Text = Document.Meta.Name;
             MainForm.AuthorTextBox.Text = Document.Meta.Author;
             if (Document.Meta.Logo == null)
@@ -44,6 +45,7 @@ namespace BloodstarClocktica
         /// </summary>
         static void RefreshCharacterList()
         {
+            if (MainForm == null) { return; }
             var numCharacters = Document.Roles.Count;
             var items = MainForm.CharactersList.Items;
             MainForm.CharactersList.BeginUpdate();
@@ -93,6 +95,7 @@ namespace BloodstarClocktica
         /// </summary>
         public static void RefreshCharacterPane()
         {
+            if (MainForm == null) { return; }
             ClearListListeners();
             var index = MainForm.CharactersList.SelectedIndex;
             if (-1 == index)

@@ -5,11 +5,28 @@ using System.Windows.Forms;
 
 namespace BloodstarClocktica
 {
-    internal static partial class BC
+    public static partial class BC
     {
-        public static SaveFile Document;
-        public static MainForm MainForm;
-        static readonly string WindowTitle = "Bloodstar Clocktica";
+        internal static SaveFile _Document;
+        internal static SaveFile Document
+        {
+            get
+            {
+                if (_Document == null)
+                {
+                    _Document = new SaveFile();
+                }
+                return _Document;
+            }
+            set
+            {
+                _Document = value;
+            }
+        }
+        internal static MainForm MainForm;
+        static readonly string BaseWindowTitle = "Bloodstar Clocktica";
+
+        public static string Title { get; set; }
 
         /// <summary>
         /// The main entry point for the application.
@@ -55,7 +72,7 @@ namespace BloodstarClocktica
                 }
                 if (dlg.ShowDialog() == DialogResult.OK)
                 {
-                    Open(dlg.FileName);
+                    Open(dlg.FileName, true);
                 }
             }
         }
@@ -64,12 +81,15 @@ namespace BloodstarClocktica
         /// open the specified document
         /// </summary>
         /// <param name="filePath"></param>
-        static void Open(string filePath)
+        public static void Open(string filePath, bool skipSavePrompt)
         {
-            Document = SaveFile.Load(filePath);
-            Properties.Settings.Default.DocumentDir = Path.GetDirectoryName(filePath);
-            Properties.Settings.Default.Save();
-            Refresh();
+            if (skipSavePrompt || SavePromptIfDirty())
+            {
+                Document = SaveFile.Load(filePath);
+                Properties.Settings.Default.DocumentDir = Path.GetDirectoryName(filePath);
+                Properties.Settings.Default.Save();
+                Refresh();
+            }
         }
 
         /// <summary>
@@ -78,11 +98,11 @@ namespace BloodstarClocktica
         /// <returns>true if it is now ok to do the destructive action</returns>
         public static bool SavePromptIfDirty()
         {
-            return (!Document.Dirty) || ExitPrompt();
+            return (Document == null) || (!Document.Dirty) || ExitPrompt();
         }
 
         /// <summary>
-        /// called if you try to close the window whith unsaved changes
+        /// called if you try to close the window with unsaved changes
         /// </summary>
         /// <returns>true if it is now ok to do the destructive action</returns>
         public static bool ExitPrompt()
@@ -270,11 +290,19 @@ namespace BloodstarClocktica
         {
             if (Document.Dirty)
             {
-                MainForm.Text = WindowTitle + " *";
+                Title = BaseWindowTitle + Document.FilePath + " *";
+                if (MainForm != null)
+                {
+                    MainForm.Text = BaseWindowTitle + " *";
+                }
             }
             else
             {
-                MainForm.Text = WindowTitle;
+                Title = BaseWindowTitle + Document.FilePath;
+                if (MainForm != null)
+                {
+                    MainForm.Text = BaseWindowTitle;
+                }
             }
         }
 

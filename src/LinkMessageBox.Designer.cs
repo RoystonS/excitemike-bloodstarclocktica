@@ -56,7 +56,8 @@ namespace BloodstarClocktica
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.LinkLabel.AutoSize = true;
-            this.LinkLabel.Location = new System.Drawing.Point(42, 0);
+            this.LinkLabel.Location = new System.Drawing.Point(36, 0);
+            this.LinkLabel.Margin = new System.Windows.Forms.Padding(0, 0, 3, 0);
             this.LinkLabel.Name = "LinkLabel";
             this.LinkLabel.Size = new System.Drawing.Size(53, 56);
             this.LinkLabel.TabIndex = 1;
@@ -72,6 +73,7 @@ namespace BloodstarClocktica
             | System.Windows.Forms.AnchorStyles.Right)));
             this.Label.AutoSize = true;
             this.Label.Location = new System.Drawing.Point(3, 0);
+            this.Label.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
             this.Label.Name = "Label";
             this.Label.Size = new System.Drawing.Size(33, 56);
             this.Label.TabIndex = 2;
@@ -101,9 +103,9 @@ namespace BloodstarClocktica
             this.CopyToClipboard.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.CopyToClipboard.Location = new System.Drawing.Point(101, 3);
+            this.CopyToClipboard.Location = new System.Drawing.Point(95, 3);
             this.CopyToClipboard.Name = "CopyToClipboard";
-            this.CopyToClipboard.Size = new System.Drawing.Size(466, 50);
+            this.CopyToClipboard.Size = new System.Drawing.Size(472, 50);
             this.CopyToClipboard.TabIndex = 3;
             this.CopyToClipboard.Text = "&Copy to Clipboard";
             this.CopyToClipboard.UseVisualStyleBackColor = true;
