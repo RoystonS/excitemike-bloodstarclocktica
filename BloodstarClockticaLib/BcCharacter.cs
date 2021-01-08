@@ -30,23 +30,44 @@ namespace BloodstarClockticaLib
         /// </summary>
         public BcTeam.TeamValue Team { get; set; }
 
+        /// <summary>
+        /// The displayed ability text of the character
+        /// </summary>
+        public string Ability { get; set; }
+
         private BindingList<string> reminderTokens;
 
         private BindingList<string> globalReminderTokens;
 
         private bool setup;
 
-        private string ability;
-
         private int firstNightOrder;
 
         private int otherNightOrder;
 
-        private string firstNightReminder;
+        /// <summary>
+        /// Reminder text for first night
+        /// </summary>
+        public string FirstNightReminder { get; set; }
 
-        private string otherNightReminder;
+        /// <summary>
+        /// Reminder text for other nights
+        /// </summary>
+        public string OtherNightReminder { get; set; }
 
         public Image SourceImage { get; set; }
+
+        public string SourceImageButtonText
+        {
+            get
+            {
+                if (SourceImage == null)
+                {
+                    return "Click to import source image";
+                }
+                return "";
+            }
+        }
 
         public Image ProcessedImage { get; set; }
 
@@ -84,11 +105,11 @@ namespace BloodstarClockticaLib
             reminderTokens = new BindingList<string>();
             globalReminderTokens = new BindingList<string>();
             setup = false;
-            ability = "";
+            Ability = "";
             firstNightOrder = 0;
             otherNightOrder = 0;
-            firstNightReminder = "";
-            otherNightReminder = "";
+            FirstNightReminder = "";
+            OtherNightReminder = "";
             SourceImage = null;
             ProcessedImage = null;
         }
@@ -165,7 +186,7 @@ namespace BloodstarClockticaLib
                                 this.setup = json.GetBoolean();
                                 break;
                             case "ability":
-                                this.ability = json.GetString();
+                                this.Ability = json.GetString();
                                 break;
                             case "firstNight":
                                 this.firstNightOrder = json.GetInt32();
@@ -174,10 +195,10 @@ namespace BloodstarClockticaLib
                                 this.otherNightOrder = json.GetInt32();
                                 break;
                             case "firstNightReminder":
-                                this.firstNightReminder = json.GetString();
+                                this.FirstNightReminder = json.GetString();
                                 break;
                             case "otherNightReminder":
-                                this.otherNightReminder = json.GetString();
+                                this.OtherNightReminder = json.GetString();
                                 break;
                             default:
                                 Console.Error.WriteLine($"unhandled property: \"{propertyName}\"");
@@ -222,7 +243,7 @@ namespace BloodstarClockticaLib
                         json.WriteStartObject();
                         json.WriteString("id", Id);
                         json.WriteString("name", Name);
-                        json.WriteString("team", BcTeam.ToString(Team));
+                        json.WriteString("team", BcTeam.ToSaveString(Team));
                         json.WriteStartArray("reminders");
                         foreach (var reminder in reminderTokens)
                         {
@@ -236,11 +257,11 @@ namespace BloodstarClockticaLib
                         }
                         json.WriteEndArray();
                         json.WriteBoolean("setup", setup);
-                        json.WriteString("ability", ability);
+                        json.WriteString("ability", Ability);
                         json.WriteNumber("firstNight", firstNightOrder);
                         json.WriteNumber("otherNight", otherNightOrder);
-                        json.WriteString("firstNightReminder", firstNightReminder);
-                        json.WriteString("otherNightReminder", otherNightReminder);
+                        json.WriteString("firstNightReminder", FirstNightReminder);
+                        json.WriteString("otherNightReminder", OtherNightReminder);
                         json.WriteEndObject();
                         json.Flush();
                     }

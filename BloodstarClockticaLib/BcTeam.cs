@@ -15,7 +15,7 @@ namespace BloodstarClockticaLib
 
         public static TeamValue FromString(string s)
         {
-            switch (s)
+            switch (s.ToLower())
             {
                 case "townsfolk":
                     return TeamValue.Townsfolk;
@@ -37,7 +37,7 @@ namespace BloodstarClockticaLib
         /// </summary>
         /// <param name="t"></param>
         /// <returns></returns>
-        public static string ToString(TeamValue t)
+        public static string ToSaveString(TeamValue t)
         {
             switch (t)
             {
@@ -51,6 +51,30 @@ namespace BloodstarClockticaLib
                     return "demon";
                 case TeamValue.Traveler:
                     return "traveler";
+                default:
+                    throw new ArgumentException($"Unhandled Team Enum \"{t}\"");
+            }
+        }
+
+        /// <summary>
+        ///  team enum to name
+        /// </summary>
+        /// <param name="t"></param>
+        /// <returns></returns>
+        public static string ToDisplayString(TeamValue t)
+        {
+            switch (t)
+            {
+                case TeamValue.Townsfolk:
+                    return "Townsfolk";
+                case TeamValue.Outsider:
+                    return "Outsider";
+                case TeamValue.Minion:
+                    return "Minion";
+                case TeamValue.Demon:
+                    return "Demon";
+                case TeamValue.Traveler:
+                    return "Traveler";
                 default:
                     throw new ArgumentException($"Unhandled Team Enum \"{t}\"");
             }

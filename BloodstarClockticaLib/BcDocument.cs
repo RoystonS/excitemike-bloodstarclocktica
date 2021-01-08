@@ -53,7 +53,10 @@ namespace BloodstarClockticaLib
             filePath = string.Empty;
             dirty = false;
             meta = new BcMeta();
-            characters = new List<BcCharacter>();
+            characters = new List<BcCharacter>
+            {
+                new BcCharacter(this)
+            };
         }
 
         /// <summary>

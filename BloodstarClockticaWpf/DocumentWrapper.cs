@@ -59,7 +59,7 @@ namespace BloodstarClockticaWpf
                 {
                     if (document.Dirty)
                     {
-                        return $"*{MainWindow.BaseTitle}";
+                        return $"• {MainWindow.BaseTitle}";
                     }
                     else
                     {
@@ -70,11 +70,11 @@ namespace BloodstarClockticaWpf
                 {
                     if (document.Dirty)
                     {
-                        return $"*{MainWindow.BaseTitle} - {document.FilePath}";
+                        return $"• {document.FilePath} - {MainWindow.BaseTitle}";
                     }
                     else
                     {
-                        return $"{MainWindow.BaseTitle} - {document.FilePath}";
+                        return $"{document.FilePath} - {MainWindow.BaseTitle}";
                     }
                 }
             }
@@ -131,10 +131,14 @@ namespace BloodstarClockticaWpf
             UpdateCharacterList();
             OnPropertyChanged(null);
         }
+        public DocumentWrapper() : this(new BcDocument())
+        {
+        }
         public DocumentWrapper(BcDocument document)
         {
             this.document = document;
             CharacterList = new ObservableCollection<CharacterWrapper>();
+            CharacterList.CollectionChanged += (object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) => { Dirty = true; };
             UpdateCharacterList();
         }
 

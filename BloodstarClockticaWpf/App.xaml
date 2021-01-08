@@ -3,6 +3,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <properties:Settings x:Key="Settings" />
+            <local:DocumentWrapper x:Key="DesignTimeDocument"/>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Themes\ExpressionDark.xaml" />
                 <ResourceDictionary Source="Themes\BloodstarClocktica.xaml" />
