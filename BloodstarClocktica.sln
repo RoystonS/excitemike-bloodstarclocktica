@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BloodstarClocktica", "BloodstarClocktica.csproj", "{64D941CA-135F-4C19-AA79-660FA4EAA870}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BloodstarClockticaWpf", "BloodstarClockticaWpf\BloodstarClockticaWpf.csproj", "{99643661-848F-45A0-9CC1-176AAAD5A4C0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BloodstarClockticaLib", "BloodstarClockticaLib\BloodstarClockticaLib.csproj", "{BF92930B-3044-4FA9-8C15-7CF9D51219A0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{64D941CA-135F-4C19-AA79-660FA4EAA870}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{64D941CA-135F-4C19-AA79-660FA4EAA870}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{64D941CA-135F-4C19-AA79-660FA4EAA870}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99643661-848F-45A0-9CC1-176AAAD5A4C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99643661-848F-45A0-9CC1-176AAAD5A4C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99643661-848F-45A0-9CC1-176AAAD5A4C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99643661-848F-45A0-9CC1-176AAAD5A4C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF92930B-3044-4FA9-8C15-7CF9D51219A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF92930B-3044-4FA9-8C15-7CF9D51219A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF92930B-3044-4FA9-8C15-7CF9D51219A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF92930B-3044-4FA9-8C15-7CF9D51219A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
