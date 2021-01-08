@@ -84,7 +84,7 @@ namespace BloodstarClocktica
             lbl.AutoSize = true;
             lbl.Location = new System.Drawing.Point(49, 25);
             lbl.Name = "lbl";
-            lbl.Size = new System.Drawing.Size(34, 50);
+            lbl.Size = new System.Drawing.Size(34, 75);
             lbl.TabIndex = 2;
             lbl.Text = "Ability";
             lbl.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -105,6 +105,7 @@ namespace BloodstarClocktica
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.AutoScroll = true;
             this.splitContainer1.Panel2.Controls.Add(this.tableLayoutPanel1);
             this.splitContainer1.Size = new System.Drawing.Size(684, 411);
             this.splitContainer1.SplitterDistance = 316;
@@ -155,8 +156,7 @@ namespace BloodstarClocktica
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -171,9 +171,8 @@ namespace BloodstarClocktica
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 75F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(354, 204);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
@@ -182,9 +181,9 @@ namespace BloodstarClocktica
             this.NightReminderLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.NightReminderLabel.AutoSize = true;
-            this.NightReminderLabel.Location = new System.Drawing.Point(3, 75);
+            this.NightReminderLabel.Location = new System.Drawing.Point(3, 100);
             this.NightReminderLabel.Name = "NightReminderLabel";
-            this.NightReminderLabel.Size = new System.Drawing.Size(80, 129);
+            this.NightReminderLabel.Size = new System.Drawing.Size(80, 104);
             this.NightReminderLabel.TabIndex = 4;
             this.NightReminderLabel.Text = "Night Reminder";
             this.NightReminderLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -194,10 +193,10 @@ namespace BloodstarClocktica
             this.TextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.TextBox.Location = new System.Drawing.Point(89, 78);
+            this.TextBox.Location = new System.Drawing.Point(89, 103);
             this.TextBox.Multiline = true;
             this.TextBox.Name = "TextBox";
-            this.TextBox.Size = new System.Drawing.Size(262, 123);
+            this.TextBox.Size = new System.Drawing.Size(262, 98);
             this.TextBox.TabIndex = 5;
             this.TextBox.TextChanged += new System.EventHandler(this.TextBox_TextChanged);
             // 
@@ -208,7 +207,7 @@ namespace BloodstarClocktica
             this.AbilityText.Multiline = true;
             this.AbilityText.Name = "AbilityText";
             this.AbilityText.ReadOnly = true;
-            this.AbilityText.Size = new System.Drawing.Size(262, 44);
+            this.AbilityText.Size = new System.Drawing.Size(262, 69);
             this.AbilityText.TabIndex = 3;
             // 
             // TeamText
