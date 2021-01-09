@@ -35,11 +35,20 @@ namespace BloodstarClockticaLib
         /// </summary>
         public string Ability { get; set; }
 
-        private BindingList<string> reminderTokens;
+        /// <summary>
+        /// Reminder tokens for this character
+        /// </summary>
+        public IEnumerable<string> ReminderTokens { get; set; }
 
-        private BindingList<string> globalReminderTokens;
+        /// <summary>
+        /// Reminder tokens for everybody
+        /// </summary>
+        public IEnumerable<string> GlobalReminderTokens { get; set; }
 
-        private bool setup;
+        /// <summary>
+        /// hether this token affects setup (orange leaf), like the Drunk or Baron
+        /// </summary>
+        public bool Setup { get; set; }
 
         private int firstNightOrder;
 
@@ -102,9 +111,9 @@ namespace BloodstarClockticaLib
             Id = UniqueCharacterId(document);
             Name = "New Character";
             Team = BcTeam.TeamValue.Townsfolk;
-            reminderTokens = new BindingList<string>();
-            globalReminderTokens = new BindingList<string>();
-            setup = false;
+            ReminderTokens = new BindingList<string>();
+            GlobalReminderTokens = new BindingList<string>();
+            Setup = false;
             Ability = "";
             firstNightOrder = 0;
             otherNightOrder = 0;
@@ -166,7 +175,7 @@ namespace BloodstarClockticaLib
                                         list.Add(json.GetString());
                                         json.Read();
                                     }
-                                    this.reminderTokens = list;
+                                    this.ReminderTokens = list;
                                 }
                                 break;
                             case "globalReminders":
@@ -179,11 +188,11 @@ namespace BloodstarClockticaLib
                                         list.Add(json.GetString());
                                         json.Read();
                                     }
-                                    this.globalReminderTokens = list;
+                                    this.GlobalReminderTokens = list;
                                 }
                                 break;
                             case "setup":
-                                this.setup = json.GetBoolean();
+                                this.Setup = json.GetBoolean();
                                 break;
                             case "ability":
                                 this.Ability = json.GetString();
@@ -245,18 +254,18 @@ namespace BloodstarClockticaLib
                         json.WriteString("name", Name);
                         json.WriteString("team", BcTeam.ToSaveString(Team));
                         json.WriteStartArray("reminders");
-                        foreach (var reminder in reminderTokens)
+                        foreach (var reminder in ReminderTokens)
                         {
                             json.WriteStringValue(reminder);
                         }
                         json.WriteEndArray();
                         json.WriteStartArray("globalReminders");
-                        foreach (var reminder in globalReminderTokens)
+                        foreach (var reminder in GlobalReminderTokens)
                         {
                             json.WriteStringValue(reminder);
                         }
                         json.WriteEndArray();
-                        json.WriteBoolean("setup", setup);
+                        json.WriteBoolean("setup", Setup);
                         json.WriteString("ability", Ability);
                         json.WriteNumber("firstNight", firstNightOrder);
                         json.WriteNumber("otherNight", otherNightOrder);

@@ -15,7 +15,7 @@
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
                 <Label DockPanel.Dock="Left" Grid.Row="0" Grid.Column="0" Content="{Binding Name}"/>
-                <TextBox Grid.Column="1" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"/>
+                <TextBox Grid.Column="1" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="{Binding Multiline}"/>
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="RowComboBox">
@@ -39,31 +39,11 @@
                 <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding AbilityProperty}"/>
                 <Label Content="Reminders" Style="{StaticResource PropGridHeading}"/>
                 <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding FirstNightReminderProperty}"/>
-                <Grid ToolTip="Reminder text for other nights">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" SharedSizeGroup="Labels"/>
-                        <ColumnDefinition Width="1*"/>
-                    </Grid.ColumnDefinitions>
-                    <Label DockPanel.Dock="Left" Grid.Row="0" Grid.Column="0" Content="Other Nights"/>
-                    <TextBox Grid.Column="1" Text="{Binding OtherNightsOrder, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch"/>
-                </Grid>
+                <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding OtherNightReminderProperty}"/>
+                <ContentControl ContentTemplate="{StaticResource RowComboBox}" Content="{Binding SetupProperty}"/>
                 <Label Content="Tokens" Style="{StaticResource PropGridHeading}"/>
-                <Grid ToolTip="Reminder tokens for this characters">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" SharedSizeGroup="Labels"/>
-                        <ColumnDefinition Width="1*"/>
-                    </Grid.ColumnDefinitions>
-                    <Label DockPanel.Dock="Left" Grid.Row="0" Grid.Column="0" Content="Reminder Tokens"/>
-                    <TextBox Grid.Column="1" Text="{Binding ReminderTokens, UpdateSourceTrigger=PropertyChanged}"/>
-                </Grid>
-                <Grid ToolTip="Reminder tokens that will always be available, no matter if the character is assigned to a player or not">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" SharedSizeGroup="Labels"/>
-                        <ColumnDefinition Width="1*"/>
-                    </Grid.ColumnDefinitions>
-                    <Label DockPanel.Dock="Left" Grid.Row="0" Grid.Column="0" Content="Global Reminder Tokens"/>
-                    <TextBox Grid.Column="1" Text="{Binding GlobalReminderTokens, UpdateSourceTrigger=PropertyChanged}"/>
-                </Grid>
+                <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding ReminderTokensProperty}"/>
+                <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding GlobalReminderTokensProperty}"/>
             </StackPanel>
         </Border>
     </ScrollViewer>

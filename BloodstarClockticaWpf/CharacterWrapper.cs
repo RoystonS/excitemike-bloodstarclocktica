@@ -21,12 +21,14 @@ namespace BloodstarClockticaWpf
             get => getter();
             set => setter(value);
         }
-        public StringBindingHelper(string name, string description, Func<string> getter, Action<string> setter)
+        public bool Multiline { get; private set; }
+        public StringBindingHelper(string name, string description, Func<string> getter, Action<string> setter, bool multiline)
         {
             Name = name;
             Description = description;
             this.getter = getter;
             this.setter = setter;
+            this.Multiline = multiline;
         }
     }
     class ComboBoxBindingHelper
@@ -124,6 +126,31 @@ namespace BloodstarClockticaWpf
                 }
             }
         }
+        public string OtherNightReminder
+        {
+            get => character.OtherNightReminder;
+            set
+            {
+                if (value != character.OtherNightReminder)
+                {
+                    character.OtherNightReminder = value;
+                    OnPropertyChanged("OtherNightsReminder");
+                }
+            }
+        }
+        private string SetupString
+        {
+            get => character.Setup ? "True" : "False";
+            set
+            {
+                bool bValue = value == "True";
+                if (bValue != character.Setup)
+                {
+                    character.Setup = bValue;
+                    OnPropertyChanged("SetupString");
+                }
+            }
+        }
         public BitmapImage ImagePreview
         {
             get
@@ -164,10 +191,7 @@ namespace BloodstarClockticaWpf
         }
         public Image SourceImage
         {
-            get
-            {
-                return character.SourceImage;
-            }
+            get => character.SourceImage;
             set
             {
                 character.ProcessedImage = null;
@@ -177,6 +201,16 @@ namespace BloodstarClockticaWpf
                 OnPropertyChanged("SourceImage");
             }
         }
+        private IEnumerable<string> ReminderTokens
+        {
+            get => character.ReminderTokens;
+            set => character.ReminderTokens = new List<string>(value);
+        }
+        private IEnumerable<string> GlobalReminderTokens
+        {
+            get => character.GlobalReminderTokens;
+            set => character.GlobalReminderTokens = new List<string>(value);
+        }
         public string SourceImageButtonText => (character.SourceImage == null) ? "Click to import source image" : "";
 
 
@@ -185,6 +219,10 @@ namespace BloodstarClockticaWpf
         public ComboBoxBindingHelper TeamProperty { get; private set; }
         public StringBindingHelper AbilityProperty { get; private set; }
         public StringBindingHelper FirstNightReminderProperty { get; private set; }
+        public StringBindingHelper OtherNightReminderProperty { get; private set; }
+        public ComboBoxBindingHelper SetupProperty { get; private set; }
+        public StringBindingHelper ReminderTokensProperty { get; private set; }
+        public StringBindingHelper GlobalReminderTokensProperty { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -200,8 +238,8 @@ namespace BloodstarClockticaWpf
         }
         private void SetDefaults()
         {
-            IdProperty = new StringBindingHelper("Id", "The internal ID for this character, without spaces or special characters", () => Id, (id) => { Id = id; });
-            NameProperty = new StringBindingHelper("Name", "The internal ID for this character, without spaces or special characters", () => Name, (name) => { Name = name; });
+            IdProperty = new StringBindingHelper("Id", "The internal ID for this character, without spaces or special characters", () => Id, (id) => { Id = id; }, false);
+            NameProperty = new StringBindingHelper("Name", "The internal ID for this character, without spaces or special characters", () => Name, (name) => { Name = name; }, false);
             TeamProperty = new ComboBoxBindingHelper(
                 "Team",
                 "The team of the character",
@@ -209,12 +247,41 @@ namespace BloodstarClockticaWpf
                 () => Team,
                 (team) => { Team = team; }
             );
-            AbilityProperty = new StringBindingHelper("Ability", "The displayed ability text of the character", () => Ability, (ability) => { Ability = ability; } );
+            AbilityProperty = new StringBindingHelper("Ability", "The displayed ability text of the character", () => Ability, (ability) => { Ability = ability; }, false);
             FirstNightReminderProperty = new StringBindingHelper(
                 "First Night",
                 "Reminder text for first night",
                 () => FirstNightReminder,
-                (x) => { FirstNightReminder = x; }
+                (x) => { FirstNightReminder = x; },
+                false
+            );
+            OtherNightReminderProperty = new StringBindingHelper(
+                "Other Night",
+                "Reminder text for other nights",
+                () => OtherNightReminder,
+                (x) => { OtherNightReminder = x; },
+                false
+            ); 
+            SetupProperty = new ComboBoxBindingHelper(
+                 "Setup",
+                 "Whether this token affects setup (orange leaf), like the Drunk or Baron",
+                 new string[] { "False", "True" },
+                 () => SetupString,
+                 (x) => { SetupString = x; }
+             );
+            ReminderTokensProperty = new StringBindingHelper(
+                "Reminder Tokens",
+                "Reminder tokens for this character (one per line)",
+                () => string.Join(Environment.NewLine, ReminderTokens),
+                (x) => { ReminderTokens = from token in x.Split(new string[] { Environment.NewLine }, StringSplitOptions.None) select token; },
+                true
+            );
+            GlobalReminderTokensProperty = new StringBindingHelper(
+                "Global Reminder Tokens",
+                "Reminder tokens that are always available (one per line)",
+                () => string.Join(Environment.NewLine, GlobalReminderTokens),
+                (x) => { GlobalReminderTokens = from token in x.Split(new string[] { Environment.NewLine }, StringSplitOptions.None) select token; },
+                true
             );
         }
     }
