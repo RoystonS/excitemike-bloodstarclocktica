@@ -98,6 +98,7 @@ namespace BloodstarClockticaWpf
         /// <returns></returns>
         internal BcDocument OpenNoPrompts(string filePath)
         {
+            CharacterList.SelectedIndex = -1;
             var document = new BcDocument(filePath);
             return document;
         }
