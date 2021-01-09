@@ -123,6 +123,8 @@ namespace BloodstarClockticaWpf
 
         public bool Save(string path) => document.Save(path);
 
+        private bool updatingCharacterList;
+
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         public void SetDocument(BcDocument document)
@@ -136,39 +138,68 @@ namespace BloodstarClockticaWpf
         }
         public DocumentWrapper(BcDocument document)
         {
+            this.updatingCharacterList = false;
             this.document = document;
             CharacterList = new ObservableCollection<CharacterWrapper>();
-            CharacterList.CollectionChanged += (object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e) => { Dirty = true; };
             UpdateCharacterList();
+            CharacterList.CollectionChanged += CharacterList_CollectionChanged;
+        }
+        private void CharacterList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (!updatingCharacterList)
+            {
+                Dirty = true;
+            }
         }
 
         public void UpdateCharacterList()
         {
-            var numCharacters = document.Characters.Count;
-            for (var i = 0; i < numCharacters; ++i)
+            updatingCharacterList = true;
+            try
             {
-                if (i < CharacterList.Count)
+                var numCharacters = document.Characters.Count;
+                for (var i = 0; i < numCharacters; ++i)
                 {
-                    CharacterList[i].Character = document.Characters[i];
+                    if (i < CharacterList.Count)
+                    {
+                        CharacterList[i].Character = document.Characters[i];
+                    }
+                    else
+                    {
+                        var wrapper = new CharacterWrapper(document.Characters[i]);
+                        wrapper.PropertyChanged += Character_PropertyChanged;
+                        CharacterList.Add(wrapper);
+                    }
                 }
-                else
+                while (CharacterList.Count > numCharacters)
                 {
-                    CharacterList.Add(new CharacterWrapper(document.Characters[i]));
+                    CharacterList[CharacterList.Count - 1].PropertyChanged -= Character_PropertyChanged;
+                    CharacterList.RemoveAt(CharacterList.Count - 1);
                 }
+                OnPropertyChanged("CharacterList");
             }
-            while (CharacterList.Count > numCharacters)
+            finally
             {
-                CharacterList.RemoveAt(CharacterList.Count - 1);
+                updatingCharacterList = false;
             }
-            OnPropertyChanged("CharacterList");
         }
 
         public void AddCharacter()
         {
             var character = new BcCharacter(document);
             document.Characters.Add(character);
-            CharacterList.Add(new CharacterWrapper(character));
+            var wrapper = new CharacterWrapper(character);
+            wrapper.PropertyChanged += Character_PropertyChanged;
+            CharacterList.Add(wrapper);
             Dirty = true;
+        }
+
+        private void Character_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (!updatingCharacterList)
+            {
+                Dirty = true;
+            }
         }
 
         public void RemoveCharacter(int index)

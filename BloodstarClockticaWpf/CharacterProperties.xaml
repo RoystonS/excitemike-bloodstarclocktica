@@ -15,7 +15,7 @@
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
                 <Label DockPanel.Dock="Left" Grid.Row="0" Grid.Column="0" Content="{Binding Name}"/>
-                <TextBox Grid.Column="1" Text="{Binding Value}" TextWrapping="Wrap"/>
+                <TextBox Grid.Column="1" Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap"/>
             </Grid>
         </DataTemplate>
         <DataTemplate x:Key="RowComboBox">

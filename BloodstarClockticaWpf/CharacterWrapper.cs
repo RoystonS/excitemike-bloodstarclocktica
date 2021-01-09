@@ -18,14 +18,8 @@ namespace BloodstarClockticaWpf
         public string Description { get; private set; }
         public string Value
         {
-            get
-            {
-                return getter();
-            }
-            set
-            {
-                setter(value);
-            }
+            get => getter();
+            set => setter(value);
         }
         public StringBindingHelper(string name, string description, Func<string> getter, Action<string> setter)
         {
@@ -44,14 +38,8 @@ namespace BloodstarClockticaWpf
         public List<string> Options { get; private set; }
         public int SelectedIndex
         {
-            get
-            {
-                return Options.FindIndex(x => x==getter());
-            }
-            set
-            {
-                setter(Options[value]);
-            }
+            get => Options.FindIndex(x => x == getter());
+            set => setter(Options[value]);
         }
         public ComboBoxBindingHelper(string name, string description, IEnumerable<string> options, Func<string> getter, Action<string> setter)
         {
