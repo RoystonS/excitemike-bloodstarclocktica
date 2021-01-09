@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -75,12 +76,49 @@
   <ItemGroup>
     <Compile Include="BcCharacter.cs" />
     <Compile Include="BcDocument.cs" />
+    <Compile Include="BcImage.cs" />
     <Compile Include="BcMeta.cs" />
     <Compile Include="BcTeam.cs" />
+    <Compile Include="BitmapExtensionMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\demongradient.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\miniongradient.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\outsidergradient.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\texture.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\token.d0b9dbdf.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\townsfolkgradient.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\travelergradient.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

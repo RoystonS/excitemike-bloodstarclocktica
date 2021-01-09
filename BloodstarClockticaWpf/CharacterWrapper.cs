@@ -98,7 +98,8 @@ namespace BloodstarClockticaWpf
                 if (enumValue != character.Team)
                 {
                     character.Team = enumValue;
-                    OnPropertyChanged("Team");
+                    character.ProcessedImage = null;
+                    OnPropertyChanged("ImagePreview");
                 }
             }
         }
@@ -196,20 +197,29 @@ namespace BloodstarClockticaWpf
             {
                 character.ProcessedImage = null;
                 character.SourceImage = value;
-                OnPropertyChanged("CharacterImagePreview");
-                OnPropertyChanged("CharacterSourceImagePreview");
+                OnPropertyChanged("ImagePreview");
+                OnPropertyChanged("SourceImagePreview");
                 OnPropertyChanged("SourceImage");
+                OnPropertyChanged("SourceImageButtonText");
             }
         }
         private IEnumerable<string> ReminderTokens
         {
             get => character.ReminderTokens;
-            set => character.ReminderTokens = new List<string>(value);
+            set
+            {
+                character.ReminderTokens = new List<string>(value);
+                OnPropertyChanged("ReminderTokens");
+            }
         }
         private IEnumerable<string> GlobalReminderTokens
         {
             get => character.GlobalReminderTokens;
-            set => character.GlobalReminderTokens = new List<string>(value);
+            set
+            {
+                character.GlobalReminderTokens = new List<string>(value);
+                OnPropertyChanged("GlobalReminderTokens");
+            }
         }
         public string SourceImageButtonText => (character.SourceImage == null) ? "Click to import source image" : "";
 
@@ -270,14 +280,14 @@ namespace BloodstarClockticaWpf
                  (x) => { SetupString = x; }
              );
             ReminderTokensProperty = new StringBindingHelper(
-                "Reminder Tokens",
+                "Character",
                 "Reminder tokens for this character (one per line)",
                 () => string.Join(Environment.NewLine, ReminderTokens),
                 (x) => { ReminderTokens = from token in x.Split(new string[] { Environment.NewLine }, StringSplitOptions.None) select token; },
                 true
             );
             GlobalReminderTokensProperty = new StringBindingHelper(
-                "Global Reminder Tokens",
+                "Global",
                 "Reminder tokens that are always available (one per line)",
                 () => string.Join(Environment.NewLine, GlobalReminderTokens),
                 (x) => { GlobalReminderTokens = from token in x.Split(new string[] { Environment.NewLine }, StringSplitOptions.None) select token; },

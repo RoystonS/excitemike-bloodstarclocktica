@@ -78,7 +78,18 @@ namespace BloodstarClockticaLib
             }
         }
 
-        public Image ProcessedImage { get; set; }
+        private Image processedImage;
+        public Image ProcessedImage
+        {
+            get
+            {
+                if (processedImage != null) { return processedImage; }
+                if (null == SourceImage) { return null; }
+                ReprocessImage();
+                return processedImage;
+            }
+            set => processedImage = value;
+        }
 
         /// <summary>
         /// Get a unique character id
@@ -294,6 +305,14 @@ namespace BloodstarClockticaLib
                     ProcessedImage.Save(stream, ImageFormat.Png);
                 }
             }
+        }
+
+        /// <summary>
+        /// regenerate processed image
+        /// </summary>
+        private void ReprocessImage()
+        {
+            processedImage = BcImage.ProcessImage(SourceImage, BcImage.GetGradientForTeam(Team));
         }
     }
 }

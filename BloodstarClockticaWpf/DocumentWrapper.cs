@@ -113,7 +113,7 @@ namespace BloodstarClockticaWpf
                 Dirty = true;
                 OnPropertyChanged("Logo");
                 OnPropertyChanged("LogoButtonText");
-                OnPropertyChanged("LogoButtonImage");
+                OnPropertyChanged("LogoPreview");
             }
         }
 
