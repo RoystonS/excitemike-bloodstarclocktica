@@ -8,7 +8,8 @@
         Height="600" Width="800"
         Closing="Window_Closing"
         Style="{StaticResource WindowStyle}"
-        DataContext="{StaticResource DesignTimeDocument}">
+        DataContext="{StaticResource DesignTimeDocument}"
+        AllowsTransparency="True">
     <Window.Resources>
         <RoutedUICommand x:Key="NewFile" Text="New File">
             <RoutedUICommand.InputGestures>
@@ -60,17 +61,17 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <Menu Grid.Column="0">
+        <DockPanel Grid.Row="0">
+            <Button DockPanel.Dock="Right" Width="35" Style="{StaticResource TitleBarButton}" Click="Close_Click">
+                <Path Data="M 0,0 10,10 M 0,10 10,0" Stroke="{DynamicResource SolidBorderBrush}" StrokeThickness="2"/>
+            </Button>
+            <Button DockPanel.Dock="Right" Width="35" Style="{StaticResource TitleBarButton}" Click="MaximizeRestore_Click">
+            <Rectangle Width="12" Height="10" Stroke="{DynamicResource SolidBorderBrush}" StrokeThickness="2"/>
+            </Button>
+            <Button DockPanel.Dock="Right" Width="35" Style="{StaticResource TitleBarButton}" Click="Minimize_Click">
+                <Rectangle Width="12" Height="4" Stroke="{DynamicResource SolidBorderBrush}" StrokeThickness="2"/>
+            </Button>
+            <Menu DockPanel.Dock="Left">
                 <WindowChrome.IsHitTestVisibleInChrome>True</WindowChrome.IsHitTestVisibleInChrome>
                 <MenuItem Header="_File">
                     <MenuItem Command="{StaticResource NewFile}"/>
@@ -88,17 +89,15 @@
                 </MenuItem>
             </Menu>
 
-            <TextBlock Grid.Column="2" Text="{Binding WindowTitle}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-            <Button Grid.Column="4" Width="35" Style="{StaticResource TitleBarButton}" Click="Minimize_Click">
-                <Rectangle Width="12" Height="4" Stroke="{DynamicResource SolidBorderBrush}" StrokeThickness="2"/>
-            </Button>
-            <Button Grid.Column="5" Width="35" Style="{StaticResource TitleBarButton}" Click="MaximizeRestore_Click">
-                <Rectangle Width="12" Height="10" Stroke="{DynamicResource SolidBorderBrush}" StrokeThickness="2"/>
-            </Button>
-            <Button Grid.Column="6" Width="35" Style="{StaticResource TitleBarButton}" Click="Close_Click">
-                <Path Data="M 0,0 10,10 M 0,10 10,0" Stroke="{DynamicResource SolidBorderBrush}" StrokeThickness="2"/>
-            </Button>
-        </Grid>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="1" Text="{Binding WindowTitle}" VerticalAlignment="Center"/>
+            </Grid>
+        </DockPanel>
         <Separator Grid.Row="1"/>
         <Grid Grid.Row="2">
             <Grid.RowDefinitions>
