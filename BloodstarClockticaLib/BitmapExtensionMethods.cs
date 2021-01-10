@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace BloodstarClockticaLib
 {
-    internal static class BitmapExtensionMethods
+    public static class BitmapExtensionMethods
     {
         static readonly Random _GlobalRand = new Random();
         [ThreadStatic]
@@ -26,7 +26,7 @@ namespace BloodstarClockticaLib
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <returns>a new bitmap</returns>
-        internal static Bitmap Fit(this Bitmap source, int width, int height)
+        public static Bitmap Fit(this Bitmap source, int width, int height)
         {
             return new Bitmap(width, height).PasteZoomed(source, new Rectangle(0, 0, width, height));
         }
@@ -38,7 +38,7 @@ namespace BloodstarClockticaLib
         /// <param name="source"></param>
         /// <param name="rect"></param>
         /// <returns>destination image</returns>
-        internal static Bitmap PasteZoomed(this Bitmap destination, Bitmap source, Rectangle rect)
+        public static Bitmap PasteZoomed(this Bitmap destination, Bitmap source, Rectangle rect)
         {
             if (source.Width == 0 || source.Height == 0 || rect.Width == 0 || rect.Height == 0) { return destination; }
             var sourceAspect = (double)source.Width / source.Height;
@@ -71,7 +71,7 @@ namespace BloodstarClockticaLib
         /// <param name="width"></param>
         /// <param name="height"></param>
         /// <returns>resized copy of image</returns>
-        internal static Bitmap Resized(this Bitmap im, int width, int height)
+        public static Bitmap Resized(this Bitmap im, int width, int height)
         {
             var output = new Bitmap(width, height);
             using (Graphics g = Graphics.FromImage(output))
@@ -87,7 +87,7 @@ namespace BloodstarClockticaLib
         /// <param name="source"></param>
         /// <param name="rect"></param>
         /// <returns>new image</returns>
-        internal static Bitmap Scale(this Bitmap source, double factor)
+        public static Bitmap Scale(this Bitmap source, double factor)
         {
             var destination = new Bitmap((int)(source.Width * factor), (int)(source.Height * factor));
             using (Graphics g = Graphics.FromImage(destination))
@@ -102,7 +102,7 @@ namespace BloodstarClockticaLib
         /// </summary>
         /// <param name="im"></param>
         /// <returns>cropped copy of the image</returns>
-        internal static Bitmap Trim(this Bitmap im)
+        public static Bitmap Trim(this Bitmap im)
         {
             return im.Crop(im.GetBBox());
         }
@@ -113,7 +113,7 @@ namespace BloodstarClockticaLib
         /// <param name="im"></param>
         /// <param name="rect"></param>
         /// <returns>cropped copy of the imageimage</returns>
-        internal static Bitmap Crop(this Image im, Rectangle rect)
+        public static Bitmap Crop(this Image im, Rectangle rect)
         {
             var cropped = new Bitmap(rect.Width, rect.Height);
             using (Graphics g = Graphics.FromImage(cropped))

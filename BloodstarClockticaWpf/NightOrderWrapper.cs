@@ -23,8 +23,6 @@ namespace BloodstarClockticaWpf
         /// </summary>
         public ObservableCollection<NightOrderCharacterWrapper> SortedList { get; private set; }
 
-        private bool updatingCharacterList;
-
         public NightOrderWrapper() : this(new DocumentWrapper(), true)
         {
         }
@@ -52,7 +50,6 @@ namespace BloodstarClockticaWpf
         /// </summary>
         public void PopulateCharacterList()
         {
-            updatingCharacterList = true;
             try
             {
                 SortedList.Clear();
@@ -80,7 +77,6 @@ namespace BloodstarClockticaWpf
             }
             finally
             {
-                updatingCharacterList = false;
             }
         }
 

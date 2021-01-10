@@ -64,6 +64,7 @@ namespace BloodstarClockticaWpf
             set
             {
                 character = value;
+                cachedImagePreview = null;
                 OnPropertyChanged(null);
             }
         }
@@ -81,21 +82,25 @@ namespace BloodstarClockticaWpf
                 }
             }
         }
+        private BitmapImage cachedImagePreview;
         public BitmapImage ImagePreview
         {
             get
             {
-                // TODO: I should really cache these
                 if (character.ProcessedImage == null) { return null; }
+                if (cachedImagePreview != null) { return cachedImagePreview; }
                 using (var ms = new MemoryStream())
                 {
-                    character.ProcessedImage.Save(ms, ImageFormat.Png);
+                    var rect = BcImage.ProcessImageSettings.Position;
+                    rect.Inflate(10,10);
+                    character.ProcessedImage.Crop(rect).Save(ms, ImageFormat.Png);
                     ms.Position = 0;
                     var bi = new BitmapImage();
                     bi.BeginInit();
                     bi.CacheOption = BitmapCacheOption.OnLoad;
                     bi.StreamSource = ms;
                     bi.EndInit();
+                    cachedImagePreview = bi;
                     return bi;
                 }
             }
@@ -124,6 +129,7 @@ namespace BloodstarClockticaWpf
             get => character.SourceImage;
             set
             {
+                cachedImagePreview = null;
                 character.ProcessedImage = null;
                 character.SourceImage = value;
                 OnPropertyChanged("ImagePreview");
@@ -180,6 +186,7 @@ namespace BloodstarClockticaWpf
         {
             SetupProperties();
             this.character = character;
+            cachedImagePreview = null;
         }
         private void SetupProperties()
         {
@@ -222,6 +229,7 @@ namespace BloodstarClockticaWpf
                     if (enumValue != character.Team)
                     {
                         character.Team = enumValue;
+                        cachedImagePreview = null;
                         character.ProcessedImage = null;
                         OnPropertyChanged("Team");
                         OnPropertyChanged("TeamProperty");

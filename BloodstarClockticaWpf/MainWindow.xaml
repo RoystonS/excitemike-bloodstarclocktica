@@ -150,10 +150,10 @@
                             <ListView Name="CharacterList" ItemsSource="{Binding CharacterList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.RowSpan="5" SelectedIndex="0" Margin="0,0,6,0" SelectionMode="Single">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Width="40">
+                                        <GridViewColumn Width="48">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <Image Source="{Binding ImagePreview}" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="HighQuality" MaxWidth="100"/>
+                                                    <Image Source="{Binding ImagePreview}" RenderOptions.BitmapScalingMode="HighQuality" MaxWidth="48" MaxHeight="48"/>
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
@@ -196,7 +196,7 @@
                                     </Button>
                                 </GroupBox>
                                 <GroupBox Header="Processed Image" Grid.Column="1" Grid.Row="0" Margin="3,0,0,6">
-                                    <Image Source="{Binding ImagePreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <Image Source="{Binding ImagePreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" MaxWidth="539"/>
                                 </GroupBox>
 
                                 <!-- horizontal splitter -->

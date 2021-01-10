@@ -5,22 +5,22 @@ namespace BloodstarClockticaLib
 {
     public static class BcImage
     {
-        static class ProcessImageSettings
+        public class ProcessImageSettings
         {
-            internal static int DropShadowSize = 16;
-            internal static int DropShadowOffsetX = 0;
-            internal static int DropShadowOffsetY = 10;
-            internal static double DropShadowOpacity = 0.5;
-            internal static int Margin = 10;
-            internal static int OutputWidth = 539;
-            internal static int OutputHeight = 539;
-            internal static Rectangle Position = new Rectangle(120, 50, 300, 300);
-            internal static Bitmap TownsfolkGradient = Properties.Resources.TownsfolkGradient;
-            internal static Bitmap OutsiderGradient = Properties.Resources.OutsiderGradient;
-            internal static Bitmap MinionGradient = Properties.Resources.MinionGradient;
-            internal static Bitmap DemonGradient = Properties.Resources.DemonGradient;
-            internal static Bitmap TravelerGradient = Properties.Resources.TravelerGradient;
-            internal static double BorderSize = 2;
+            public static int DropShadowSize = 16;
+            public static int DropShadowOffsetX = 0;
+            public static int DropShadowOffsetY = 10;
+            public static double DropShadowOpacity = 0.5;
+            public static int Margin = 10;
+            public static int OutputWidth = 539;
+            public static int OutputHeight = 539;
+            public static Rectangle Position = new Rectangle(120, 50, 300, 300);
+            public static Bitmap TownsfolkGradient = Properties.Resources.TownsfolkGradient;
+            public static Bitmap OutsiderGradient = Properties.Resources.OutsiderGradient;
+            public static Bitmap MinionGradient = Properties.Resources.MinionGradient;
+            public static Bitmap DemonGradient = Properties.Resources.DemonGradient;
+            public static Bitmap TravelerGradient = Properties.Resources.TravelerGradient;
+            public static double BorderSize = 2;
         }
 
         /// <summary>
