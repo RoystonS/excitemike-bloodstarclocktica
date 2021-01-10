@@ -15,15 +15,17 @@ namespace BloodstarClockticaWpf
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool firstNightWindowOpen;
+        private bool otherNightWindowOpen;
         public static readonly string BaseTitle = "Bloodstar Clocktica";
-        public MainWindow()
+        public MainWindow() : this(new BcDocument())
         {
-            InitializeComponent();
-            DataContext = new DocumentWrapper(new BcDocument());
         }
         public MainWindow(BcDocument document)
         {
             InitializeComponent();
+            firstNightWindowOpen = false;
+            otherNightWindowOpen = false;
             Icon = BitmapSource.Create(1, 1, 0, 0, PixelFormats.Bgra32, null, new byte[4], 4);
             DataContext = new DocumentWrapper(document);
         }
@@ -98,7 +100,9 @@ namespace BloodstarClockticaWpf
         /// <returns></returns>
         internal BcDocument OpenNoPrompts(string filePath)
         {
+            CharacterList.UnselectAll();
             CharacterList.SelectedIndex = -1;
+            CharacterList.Focus();
             var document = new BcDocument(filePath);
             return document;
         }
@@ -184,12 +188,26 @@ namespace BloodstarClockticaWpf
         /// <param name="e"></param>
         private void FirstNight(object sender, ExecutedRoutedEventArgs e)
         {
-            throw new NotImplementedException();
-            //using (var dlg = new NightOrderWindow(true))
-            //{
-            //    dlg.ShowDialog(this);
-            //    BC.RefreshCharacterPane();
-            //}
+            if (firstNightWindowOpen) { return; }
+            var nightOrderWrapper = new NightOrderWrapper(DataContext as DocumentWrapper, true);
+            NightOrder dlg = new NightOrder(nightOrderWrapper)
+            {
+                Owner = this,
+                ShowActivated = true
+            };
+            dlg.Closed += (object _s, EventArgs _e) => { firstNightWindowOpen = false; };
+            firstNightWindowOpen = true;
+            try
+            {
+                IsEnabled = false;
+                Opacity = 0.65;
+                dlg.ShowDialog();
+            }
+            finally
+            {
+                IsEnabled = true;
+                Opacity = 1;
+            }
         }
 
         /// <summary>
@@ -199,7 +217,26 @@ namespace BloodstarClockticaWpf
         /// <param name="e"></param>
         private void OtherNights(object sender, ExecutedRoutedEventArgs e)
         {
-            throw new NotImplementedException();
+            if (otherNightWindowOpen) { return; }
+            var nightOrderWrapper = new NightOrderWrapper(DataContext as DocumentWrapper, false);
+            NightOrder dlg = new NightOrder(nightOrderWrapper)
+            {
+                Owner = this,
+                ShowActivated = true
+            };
+            dlg.Closed += (object _s, EventArgs _e) => { otherNightWindowOpen = false; };
+            otherNightWindowOpen = true;
+            try
+            {
+                IsEnabled = false;
+                Opacity = 0.65;
+                dlg.ShowDialog();
+            }
+            finally
+            {
+                IsEnabled = true;
+                Opacity = 1;
+            }
         }
 
         /// <summary>
@@ -245,7 +282,7 @@ namespace BloodstarClockticaWpf
         {
             var dlg = new OpenFileDialog
             {
-                Filter = "Images (*.jpg;*.png;*.bmp;*.gif)|*.jpg;*.png;*.bmp;*.gif",
+                Filter = "Images (*.jpg;*.png;*.bmp;*.gif)|*.jpg;*.png;*.bmp;*.gif"
             };
             if (dlg.ShowDialog(this) == true)
             {
@@ -262,6 +299,7 @@ namespace BloodstarClockticaWpf
             {
                 docWrapper.SwapCharacterOrder(index, index - 1);
                 CharacterList.SelectedIndex = index + 1;
+                CharacterList.Focus();
             }
         }
         private void DownButton_Click(object sender, RoutedEventArgs e)
@@ -272,6 +310,7 @@ namespace BloodstarClockticaWpf
             {
                 docWrapper.SwapCharacterOrder(index, index + 1);
                 CharacterList.SelectedIndex = index + 1;
+                CharacterList.Focus();
             }
         }
         private void AddButton_Click(object sender, RoutedEventArgs e)
@@ -279,6 +318,7 @@ namespace BloodstarClockticaWpf
             var docWrapper = (DataContext as DocumentWrapper);
             docWrapper.AddCharacter();
             CharacterList.SelectedIndex = docWrapper.CharacterList.Count - 1;
+            CharacterList.Focus();
         }
         private void DelButton_Click(object sender, RoutedEventArgs e)
         {
@@ -294,6 +334,7 @@ namespace BloodstarClockticaWpf
             if (CharacterList.SelectedIndex == -1 && CharacterList.Items.Count != 0)
             {
                 CharacterList.SelectedIndex = Math.Max(0, Math.Min(preferred, docWrapper.CharacterList.Count - 1));
+                CharacterList.Focus();
             }
         }
 

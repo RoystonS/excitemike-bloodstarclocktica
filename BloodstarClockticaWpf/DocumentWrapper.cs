@@ -43,11 +43,9 @@ namespace BloodstarClockticaWpf
             get => document.Dirty;
             set
             {
-                if (value != document.Dirty)
-                {
-                    document.Dirty = value;
-                    OnPropertyChanged("WindowTitle");
-                }
+                document.Dirty = value;
+                OnPropertyChanged("Dirty");
+                OnPropertyChanged("WindowTitle");
             }
         }
 
@@ -80,7 +78,7 @@ namespace BloodstarClockticaWpf
             }
         }
 
-        public string LogoButtonText => (document.Meta.Logo == null) ? "Click to import logo image"  : "";
+        public string LogoButtonText => (document.Meta.Logo == null) ? "Click to import logo image" : "";
         public BitmapImage LogoPreview
         {
             get
@@ -121,7 +119,15 @@ namespace BloodstarClockticaWpf
 
         public ObservableCollection<CharacterWrapper> CharacterList { get; set; }
 
-        public bool Save(string path) => document.Save(path);
+        public bool Save(string path)
+        {
+            if (document.Save(path))
+            {
+                Dirty = false;
+                return true;
+            }
+            return false;
+        }
 
         private bool updatingCharacterList;
 

@@ -35,9 +35,11 @@ namespace BloodstarClockticaWpf
     {
         private readonly Func<string> getter;
         private readonly Action<string> setter;
+
         public string Name { get; private set; }
         public string Description { get; private set; }
         public List<string> Options { get; private set; }
+        public string DisplayString => getter();
         public int SelectedIndex
         {
             get => Options.FindIndex(x => x == getter());
@@ -65,80 +67,7 @@ namespace BloodstarClockticaWpf
                 OnPropertyChanged(null);
             }
         }
-        public string Id
-        {
-            get => character.Id;
-            set
-            {
-                if (value != character.Id)
-                {
-                    character.Id = value;
-                    OnPropertyChanged("Id");
-                }
-            }
-        }
-        public string Name
-        {
-            get => character.Name;
-            set
-            {
-                if (value != character.Name)
-                {
-                    character.Name = value;
-                    OnPropertyChanged("Name");
-                }
-            }
-        }
-        public string Team
-        {
-            get => BcTeam.ToDisplayString(character.Team);
-            set
-            {
-                var enumValue = BcTeam.FromString(value);
-                if (enumValue != character.Team)
-                {
-                    character.Team = enumValue;
-                    character.ProcessedImage = null;
-                    OnPropertyChanged("ImagePreview");
-                }
-            }
-        }
-        public string Ability
-        {
-            get => character.Ability;
-            set
-            {
-                if (value != character.Ability)
-                {
-                    character.Ability = value;
-                    OnPropertyChanged("Ability");
-                }
-            }
-        }
-        public string FirstNightReminder
-        {
-            get => character.FirstNightReminder;
-            set
-            {
-                if (value != character.FirstNightReminder)
-                {
-                    character.FirstNightReminder = value;
-                    OnPropertyChanged("FirstNightReminder");
-                }
-            }
-        }
-        public string OtherNightReminder
-        {
-            get => character.OtherNightReminder;
-            set
-            {
-                if (value != character.OtherNightReminder)
-                {
-                    character.OtherNightReminder = value;
-                    OnPropertyChanged("OtherNightsReminder");
-                }
-            }
-        }
+        // TODO: what am I doing? this can just be a checkbox
         private string SetupString
         {
             get => character.Setup ? "True" : "False";
@@ -203,26 +132,32 @@ namespace BloodstarClockticaWpf
                 OnPropertyChanged("SourceImageButtonText");
             }
         }
-        private IEnumerable<string> ReminderTokens
-        {
-            get => character.ReminderTokens;
-            set
-            {
-                character.ReminderTokens = new List<string>(value);
-                OnPropertyChanged("ReminderTokens");
-            }
-        }
-        private IEnumerable<string> GlobalReminderTokens
-        {
-            get => character.GlobalReminderTokens;
-            set
-            {
-                character.GlobalReminderTokens = new List<string>(value);
-                OnPropertyChanged("GlobalReminderTokens");
-            }
-        }
         public string SourceImageButtonText => (character.SourceImage == null) ? "Click to import source image" : "";
 
+        public int FirstNightOrder
+        {
+            get => character.FirstNightOrder;
+            set
+            {
+                if (value != character.FirstNightOrder)
+                {
+                    character.FirstNightOrder = value;
+                    OnPropertyChanged("FirstNightOrder");
+                }
+            }
+        }
+        public int OtherNightOrder
+        {
+            get => character.OtherNightOrder;
+            set
+            {
+                if (value != character.OtherNightOrder)
+                {
+                    character.OtherNightOrder = value;
+                    OnPropertyChanged("OtherNightOrder");
+                }
+            }
+        }
 
         public StringBindingHelper IdProperty { get; private set; }
         public StringBindingHelper NameProperty { get; private set; }
@@ -239,39 +174,105 @@ namespace BloodstarClockticaWpf
 
         public CharacterWrapper()
         {
-            SetDefaults();
+            SetupProperties();
         }
         public CharacterWrapper(BcCharacter character)
         {
-            SetDefaults();
+            SetupProperties();
             this.character = character;
         }
-        private void SetDefaults()
+        private void SetupProperties()
         {
-            IdProperty = new StringBindingHelper("Id", "The internal ID for this character, without spaces or special characters", () => Id, (id) => { Id = id; }, false);
-            NameProperty = new StringBindingHelper("Name", "The internal ID for this character, without spaces or special characters", () => Name, (name) => { Name = name; }, false);
+            IdProperty = new StringBindingHelper(
+                "Id",
+                "The internal ID for this character, without spaces or special characters",
+                () => character.Id,
+                (value) =>
+                {
+                    if (value != character.Id)
+                    {
+                        character.Id = value;
+                        OnPropertyChanged("Id");
+                        OnPropertyChanged("IdProperty");
+                    }
+                },
+                false);
+            NameProperty = new StringBindingHelper(
+                "Name",
+                "The internal ID for this character, without spaces or special characters",
+                () => character.Name,
+                (value) =>
+                {
+                    if (value != character.Name)
+                    {
+                        character.Name = value;
+                        OnPropertyChanged("Name");
+                        OnPropertyChanged("NameProperty");
+                    }
+                },
+                false);
             TeamProperty = new ComboBoxBindingHelper(
                 "Team",
                 "The team of the character",
                 from BcTeam.TeamValue team in Enum.GetValues(typeof(BcTeam.TeamValue)) select BcTeam.ToDisplayString(team),
-                () => Team,
-                (team) => { Team = team; }
+                () => BcTeam.ToDisplayString(character.Team),
+                (value) =>
+                {
+                    var enumValue = BcTeam.FromString(value);
+                    if (enumValue != character.Team)
+                    {
+                        character.Team = enumValue;
+                        character.ProcessedImage = null;
+                        OnPropertyChanged("Team");
+                        OnPropertyChanged("TeamProperty");
+                        OnPropertyChanged("ImagePreview");
+                    }
+                }
             );
-            AbilityProperty = new StringBindingHelper("Ability", "The displayed ability text of the character", () => Ability, (ability) => { Ability = ability; }, false);
+            AbilityProperty = new StringBindingHelper(
+                "Ability",
+                "The displayed ability text of the character",
+                () => character.Ability,
+                (value) =>
+                {
+                    if (value != character.Ability)
+                    {
+                        character.Ability = value;
+                        OnPropertyChanged("Ability");
+                        OnPropertyChanged("AbilityProperty");
+                    }
+                },
+                false);
             FirstNightReminderProperty = new StringBindingHelper(
                 "First Night",
                 "Reminder text for first night",
-                () => FirstNightReminder,
-                (x) => { FirstNightReminder = x; },
+                () => character.FirstNightReminder,
+                (value) =>
+                {
+                    if (value != character.FirstNightReminder)
+                    {
+                        character.FirstNightReminder = value;
+                        OnPropertyChanged("FirstNightReminder");
+                        OnPropertyChanged("FirstNightReminderProperty");
+                    }
+                },
                 false
             );
             OtherNightReminderProperty = new StringBindingHelper(
                 "Other Night",
                 "Reminder text for other nights",
-                () => OtherNightReminder,
-                (x) => { OtherNightReminder = x; },
+                () => character.OtherNightReminder,
+                (value) =>
+                {
+                    if (value != character.OtherNightReminder)
+                    {
+                        character.OtherNightReminder = value;
+                        OnPropertyChanged("OtherNightsReminder");
+                        OnPropertyChanged("OtherNightsReminderProperty");
+                    }
+                },
                 false
-            ); 
+            );
             SetupProperty = new ComboBoxBindingHelper(
                  "Setup",
                  "Whether this token affects setup (orange leaf), like the Drunk or Baron",
@@ -282,15 +283,27 @@ namespace BloodstarClockticaWpf
             ReminderTokensProperty = new StringBindingHelper(
                 "Character",
                 "Reminder tokens for this character (one per line)",
-                () => string.Join(Environment.NewLine, ReminderTokens),
-                (x) => { ReminderTokens = from token in x.Split(new string[] { Environment.NewLine }, StringSplitOptions.None) select token; },
+                () => string.Join(Environment.NewLine, character.ReminderTokens),
+                (value) =>
+                {
+                    var tokens = from token in value.Split(new string[] { Environment.NewLine }, StringSplitOptions.None) select token;
+                    character.ReminderTokens = new List<string>(tokens);
+                    OnPropertyChanged("ReminderTokens");
+                    OnPropertyChanged("ReminderTokensProperty");
+                },
                 true
             );
             GlobalReminderTokensProperty = new StringBindingHelper(
                 "Global",
                 "Reminder tokens that are always available (one per line)",
-                () => string.Join(Environment.NewLine, GlobalReminderTokens),
-                (x) => { GlobalReminderTokens = from token in x.Split(new string[] { Environment.NewLine }, StringSplitOptions.None) select token; },
+                () => string.Join(Environment.NewLine, character.GlobalReminderTokens),
+                (value) =>
+                {
+                    var tokens = from token in value.Split(new string[] { Environment.NewLine }, StringSplitOptions.None) select token;
+                    character.GlobalReminderTokens = new List<string>(tokens);
+                    OnPropertyChanged("GlobalReminderTokens");
+                    OnPropertyChanged("GlobalReminderTokensProperty");
+                },
                 true
             );
         }

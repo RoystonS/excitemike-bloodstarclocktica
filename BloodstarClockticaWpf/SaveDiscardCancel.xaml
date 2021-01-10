@@ -5,38 +5,39 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BloodstarClockticaWpf"
         mc:Ignorable="d"
-        Title="Save Changes?" Height="150" Width="400" MinWidth="1" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Style="{StaticResource WindowStyle}">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
-            <RowDefinition Height="50"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
-        <Grid Grid.Row="0">
-            <TextBlock Text="Save Changes?" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <Button HorizontalAlignment="Right" Width="35" Height="25" Style="{StaticResource TitleBarButton}" Click="Close_Click">
-                <Path Data="M 0,0 10,10 M 0,10 10,0" Stroke="{DynamicResource SolidBorderBrush}" StrokeThickness="2"/>
-            </Button>
-        </Grid>
-        <Separator Grid.Row="1"/>
-        <TextBlock Grid.Column="0" Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" TextAlignment="Center">
+        Title="Save Changes?"
+        Height="150"
+        Width="400"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize" 
+        Style="{StaticResource WindowStyle}">
+    <Border BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="1">
+        <DockPanel>
+            <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="0,0,0,1">
+            <Grid>
+                <TextBlock Text="Save Changes?" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Button HorizontalAlignment="Right" Width="35" Height="25" Style="{StaticResource TitleBarButton}" Click="Close_Click">
+                    <Path Data="M 0,0 10,10 M 0,10 10,0" Stroke="{DynamicResource SolidBorderBrush}" StrokeThickness="2"/>
+                </Button>
+                </Grid>
+            </Border>
+
+            <Grid DockPanel.Dock="Bottom" Height="50">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="_Save" Click="Save_Click" Margin="6,0,3,6"/>
+                <Button Grid.Column="1" Content="_Discard" Click="Discard_Click" Margin="3,0,3,6"/>
+                <Button Grid.Column="2" Content="_Cancel" Click="Cancel_Click" Margin="3,0,6,6"/>
+            </Grid>
+            
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" TextAlignment="Center">
                 <Run Text="You have unsaved changes!"/>
                 <LineBreak/>
                 <Run Text="Would you like to save now or discard changes?"/>
-        </TextBlock>
-        <Grid Grid.Row="3">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Content="_Save" Click="Save_Click"/>
-            <Button Grid.Column="1" Content="_Discard" Click="Discard_Click"/>
-            <Button Grid.Column="2" Content="_Cancel" Click="Cancel_Click"/>
-        </Grid>
-    </Grid>
+            </TextBlock>
+        </DockPanel>
+    </Border>
 </Window>
