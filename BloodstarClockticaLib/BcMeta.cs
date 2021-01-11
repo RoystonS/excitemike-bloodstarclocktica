@@ -41,21 +41,17 @@ namespace BloodstarClockticaLib
         /// <summary>
         /// logo image for this edition
         /// </summary>
-        public Image Logo
-        {
-            get => logo;
-            set
-            {
-                logo = value;
-            }
-        }
-        private Image logo;
+        public Image Logo { get; set; }
 
         /// <summary>
         /// url root for links to uploaded files
         /// </summary>
-        public string UrlRoot => urlRoot;
-        private string urlRoot;
+        public string UrlRoot { get; set; }
+
+        /// <summary>
+        /// remember where we last exported to
+        /// </summary>
+        public string ExportToDiskPath { get; set; }
 
         private string sftpRemoteDirectory;
         private string sftpHost;
@@ -75,9 +71,9 @@ namespace BloodstarClockticaLib
         {
             name = "New Edition";
             author = "Your Name Here";
-            logo = null;
-            urlRoot = "https://meyermike.startlogic.com/botc";
-            sftpRemoteDirectory = "REPLACE ME";
+            Logo = null;
+            UrlRoot = "";
+            sftpRemoteDirectory = "REPLACE_THIS";
             sftpHost = "ftp.excitemike.com";
             sftpUser = "botc_homebrew";
             sftpPort = 2222;
@@ -124,7 +120,7 @@ namespace BloodstarClockticaLib
                                 var urlRoot = json.GetString();
                                 if ("" != urlRoot)
                                 {
-                                    this.urlRoot = urlRoot;
+                                    this.UrlRoot = urlRoot;
                                 }
                                 break;
                             case "exportToDiskPath":
@@ -162,7 +158,7 @@ namespace BloodstarClockticaLib
             {
                 using (var stream = logoEntry.Open())
                 {
-                    this.logo = Image.FromStream(stream);
+                    this.Logo = Image.FromStream(stream);
                 }
             }
         }
@@ -183,7 +179,7 @@ namespace BloodstarClockticaLib
                         json.WriteString("name", name);
                         json.WriteString("author", author);
                         json.WriteString("exportToDiskPath", exportToDiskPath);
-                        json.WriteString("urlRoot", urlRoot);
+                        json.WriteString("urlRoot", UrlRoot);
                         json.WriteString("sftpRemoteDirectory", sftpRemoteDirectory);
                         json.WriteString("sftpHost", sftpHost);
                         json.WriteNumber("sftpPort", sftpPort);
@@ -195,11 +191,11 @@ namespace BloodstarClockticaLib
             }
 
             // logo
-            if (logo != null)
+            if (Logo != null)
             {
                 using (var stream = archive.CreateEntry(LogoFile, CompressionLevel.Fastest).Open())
                 {
-                    logo.Save(stream, ImageFormat.Png);
+                    Logo.Save(stream, ImageFormat.Png);
                 }
             }
         }

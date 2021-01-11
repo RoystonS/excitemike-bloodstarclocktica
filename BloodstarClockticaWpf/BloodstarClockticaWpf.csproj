@@ -67,6 +67,9 @@
     <Compile Include="NightOrder.xaml.cs">
       <DependentUpon>NightOrder.xaml</DependentUpon>
     </Compile>
+    <Compile Include="StringDialog.xaml.cs">
+      <DependentUpon>StringDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SaveDiscardCancel.xaml.cs">
       <DependentUpon>SaveDiscardCancel.xaml</DependentUpon>
     </Compile>
@@ -90,6 +93,10 @@
     <Page Include="NightOrder.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="StringDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="SaveDiscardCancel.xaml">
       <SubType>Designer</SubType>

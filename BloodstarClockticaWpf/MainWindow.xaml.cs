@@ -1,6 +1,7 @@
 ﻿using BloodstarClockticaLib;
 using Microsoft.Win32;
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -77,16 +78,17 @@ namespace BloodstarClockticaWpf
         /// <returns></returns>
         private BcDocument OpenFileNoSavePrompt()
         {
+            var docDir = Properties.Settings.Default.DocumentDir;
+            if (docDir == null)
+            {
+                docDir = "";
+            }
             var dlg = new OpenFileDialog
             {
-                Filter = "Bloodstar Clocktica files (*.blood)|*.blood"
+                Filter = "Bloodstar Clocktica files (*.blood)|*.blood",
+                InitialDirectory = docDir
             };
-            var docDir = Properties.Settings.Default.DocumentDir;
-            if ((docDir != null) && (docDir != ""))
-            {
-                dlg.InitialDirectory = docDir;
-            }
-            if (dlg.ShowDialog() == true)
+            if (dlg.ShowDialog(this) == true)
             {
                 return OpenNoPrompts(dlg.FileName);
             }
@@ -123,7 +125,7 @@ namespace BloodstarClockticaWpf
         private bool SaveFile()
         {
             string path = (DataContext as DocumentWrapper).FilePath;
-            if ((path == null)||(path==""))
+            if ((path == null) || (path == ""))
             {
                 path = PromptForSaveLocation();
             }
@@ -163,18 +165,19 @@ namespace BloodstarClockticaWpf
         /// <returns>null if cancelled</returns>
         private string PromptForSaveLocation()
         {
+            var docDir = Properties.Settings.Default.DocumentDir;
+            if (docDir == null)
+            {
+                docDir = "";
+            }
             var dlg = new SaveFileDialog
             {
                 Filter = "Bloodstar Clocktica files (*.blood)|*.blood",
                 RestoreDirectory = true,
-                OverwritePrompt = true
+                OverwritePrompt = true,
+                InitialDirectory = docDir
             };
-            var docDir = Properties.Settings.Default.DocumentDir;
-            if ((docDir != null) && (docDir != ""))
-            {
-                dlg.InitialDirectory = docDir;
-            }
-            if (dlg.ShowDialog() == true)
+            if (dlg.ShowDialog(this) == true)
             {
                 return dlg.FileName;
             }
@@ -200,7 +203,7 @@ namespace BloodstarClockticaWpf
             try
             {
                 IsEnabled = false;
-                Opacity = 0.65;
+                Opacity = 0.85;
                 dlg.ShowDialog();
             }
             finally
@@ -368,6 +371,80 @@ namespace BloodstarClockticaWpf
         private void Close_Click(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        /// <summary>
+        /// Export files for uploading wherever however
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ExportToDisk(object sender, ExecutedRoutedEventArgs e)
+        {
+            var urlPrefix = PromptForUrlPrefix();
+            if (null != urlPrefix)
+            {
+                var folder = PromptForFolder();
+                if (null != folder)
+                {
+                    (DataContext as DocumentWrapper).ExportToDisk(folder, urlPrefix);
+                }
+            }
+        }
+
+        /// <summary>
+        /// ask for an export folder
+        /// </summary>
+        /// <returns></returns>
+        private string PromptForFolder()
+        {
+            var docWrapper = (DataContext as DocumentWrapper);
+            var folderDialog = new OpenFileDialog
+            {
+                ValidateNames = false,
+                CheckFileExists = false,
+                CheckPathExists = true,
+                FileName = "Folder Selection.",
+                Title = "Select Directory for Export",
+                InitialDirectory = docWrapper.ExportToDiskPath
+            };
+            if (true != folderDialog.ShowDialog(this))
+            {
+                return null;
+            }
+            var folder = Path.GetDirectoryName(folderDialog.FileName);
+            docWrapper.ExportToDiskPath = folder;
+            return folder;
+        }
+
+        /// <summary>
+        /// prompt for the imageUrlPrefix to use when exporting to disk
+        /// </summary>
+        /// <returns></returns>
+        private string PromptForUrlPrefix()
+        {
+            var docWrapper = (DataContext as DocumentWrapper);
+            var urlRoot = docWrapper.UrlRoot;
+            var defaultRoot = $"https://meyermik.startlogic.com/botc/{docWrapper.Name}";
+            if ("" == urlRoot)
+            {
+                urlRoot = defaultRoot;
+            }
+            var dlg = new StringDialog("Image URL Prefix", $"Enter a prefix for urls (e.g. {defaultRoot})", urlRoot)
+            {
+                Owner = this
+            };
+            dlg.ShowDialog();
+            return dlg.Result;
+        }
+
+        /// <summary>
+        /// Upload
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ExportToSftp(object sender, ExecutedRoutedEventArgs e)
+        {
+            (DataContext as DocumentWrapper).ExportToSftp();
         }
     }
 }

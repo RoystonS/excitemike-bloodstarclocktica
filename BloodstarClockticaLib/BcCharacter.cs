@@ -269,7 +269,7 @@ namespace BloodstarClockticaLib
                         json.WriteStartObject();
                         json.WriteString("id", Id);
                         json.WriteString("name", Name);
-                        json.WriteString("team", BcTeam.ToSaveString(Team));
+                        json.WriteString("team", BcTeam.ToExportString(Team));
                         json.WriteStartArray("reminders");
                         foreach (var reminder in ReminderTokens)
                         {

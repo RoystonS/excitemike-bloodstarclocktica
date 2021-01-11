@@ -222,7 +222,7 @@
         <CommandBinding Command="{StaticResource SaveFileAs}" Executed="SaveFileAs"/>
         <CommandBinding Command="{StaticResource FirstNight}" Executed="FirstNight"/>
         <CommandBinding Command="{StaticResource OtherNights}" Executed="OtherNights"/>
-        <CommandBinding Command="{StaticResource ExportToDisk}" Executed="FirstNight"/>
-        <CommandBinding Command="{StaticResource ExportToSftp}" Executed="OtherNights"/>
+        <CommandBinding Command="{StaticResource ExportToDisk}" Executed="ExportToDisk"/>
+        <CommandBinding Command="{StaticResource ExportToSftp}" Executed="ExportToSftp"/>
     </Window.CommandBindings>
 </Window>

@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="BcCharacter.cs" />
     <Compile Include="BcDocument.cs" />
+    <Compile Include="BcExport.cs" />
     <Compile Include="BcImage.cs" />
     <Compile Include="BcMeta.cs" />
     <Compile Include="BcTeam.cs" />

@@ -1,4 +1,5 @@
 ﻿using BloodstarClockticaLib;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
@@ -119,6 +120,23 @@ namespace BloodstarClockticaWpf
 
         public ObservableCollection<CharacterWrapper> CharacterList { get; set; }
 
+        /// <summary>
+        /// root url from with to look for /roles.json and images/*.png
+        /// </summary>
+        public string UrlRoot
+        {
+            get => document.Meta.UrlRoot;
+            set
+            {
+                if (value != document.Meta.UrlRoot)
+                {
+                    document.Meta.UrlRoot = value;
+                    Dirty = true;
+                    OnPropertyChanged(UrlRoot);
+                }
+            }
+        }
+
         public bool Save(string path)
         {
             if (document.Save(path))
@@ -127,6 +145,22 @@ namespace BloodstarClockticaWpf
                 return true;
             }
             return false;
+        }
+
+        /// <summary>
+        /// remember where we last exported to
+        /// </summary>
+        public string ExportToDiskPath
+        {
+            get => document.Meta.ExportToDiskPath;
+            set
+            {
+                if (value != document.Meta.ExportToDiskPath)
+                {
+                    document.Meta.ExportToDiskPath = value;
+                    Dirty = true;
+                }
+            }
         }
 
         private bool updatingCharacterList;
@@ -231,6 +265,20 @@ namespace BloodstarClockticaWpf
                 CharacterList[indexB] = temp;
             }
             Dirty = true;
+        }
+
+        /// <summary>
+        /// save output iles to disk
+        /// </summary>
+        public void ExportToDisk(string directory, string urlPrefix)
+        {
+            ExportToDiskPath = directory;
+            BcExport.ExportToDisk(document, directory, urlPrefix);
+        }
+        public void ExportToSftp()
+        {
+            throw new NotImplementedException();
+            //document.ExportToSftp();
         }
     }
 }

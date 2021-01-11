@@ -33,11 +33,11 @@ namespace BloodstarClockticaLib
         }
 
         /// <summary>
-        ///  team enum to name
+        /// team enum to name
         /// </summary>
         /// <param name="t"></param>
         /// <returns></returns>
-        public static string ToSaveString(TeamValue t)
+        public static string ToExportString(TeamValue t)
         {
             switch (t)
             {
