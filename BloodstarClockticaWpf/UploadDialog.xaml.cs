@@ -14,12 +14,19 @@ namespace BloodstarClockticaWpf
         {
             InitializeComponent();
             DocumentWrapper = docWrapper;
-            UrlRootTextField.Text = docWrapper.UrlRoot;
+
+            var urlRoot = docWrapper.UrlRoot;
+            if ("" == urlRoot)
+            {
+                urlRoot = $"https://meyermik.startlogic.com/botc/{docWrapper.Name}";
+            }
+            UrlRootTextField.Text = urlRoot;
+
             RemotePathTextField.Text = docWrapper.SftpRemoteDirectory;
             HostTextField.Text = docWrapper.SftpHost;
             PortControl.Value = docWrapper.SftpPort;
             UsernameTextField.Text = docWrapper.SftpUsername;
-            PasswordTextField.Text = Decrypt(Properties.Settings.Default.SavedPassword);
+            PasswordTextField.Password = Decrypt(Properties.Settings.Default.SavedPassword);
             RememberPasswordCheckBox.IsChecked = Properties.Settings.Default.RememberPassword;
         }
 

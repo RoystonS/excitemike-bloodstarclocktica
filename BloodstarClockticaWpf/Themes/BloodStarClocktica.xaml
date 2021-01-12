@@ -226,6 +226,13 @@
         <Setter Property="BorderBrush" Value="{DynamicResource SolidBorderBrush}" />
     </Style>
 
+    <Style TargetType="{x:Type PasswordBox}">
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SolidBorderBrush}" />
+    </Style>
+
     <Style TargetType="{x:Type xctk:IntegerUpDown}">
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />

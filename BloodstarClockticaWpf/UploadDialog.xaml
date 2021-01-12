@@ -53,7 +53,7 @@
             <TextBox Grid.Row="5" Grid.Column="1" Text="" x:Name="UsernameTextField" Margin="0,6,6,0"/>
             <Label Grid.Row="6" Grid.Column="0" Content="Password" Margin="6,6,0,0"/>
             <StackPanel Grid.Row="6" Grid.Column="1">
-                <TextBox Text="" x:Name="PasswordTextField" Margin="0,6,6,6"/>
+                <PasswordBox x:Name="PasswordTextField" Margin="0,6,6,6"/>
                 <CheckBox Content="Remember Password" x:Name="RememberPasswordCheckBox" Margin="0,0,6,6"/>
             </StackPanel>
             <!-- Port, Username, Password + remember -->
