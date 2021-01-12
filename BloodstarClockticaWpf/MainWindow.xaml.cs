@@ -203,13 +203,11 @@ namespace BloodstarClockticaWpf
             try
             {
                 IsEnabled = false;
-                Opacity = 0.85;
                 dlg.ShowDialog();
             }
             finally
             {
                 IsEnabled = true;
-                Opacity = 1;
             }
         }
 
@@ -232,13 +230,11 @@ namespace BloodstarClockticaWpf
             try
             {
                 IsEnabled = false;
-                Opacity = 0.65;
                 dlg.ShowDialog();
             }
             finally
             {
                 IsEnabled = true;
-                Opacity = 1;
             }
         }
 
@@ -444,7 +440,20 @@ namespace BloodstarClockticaWpf
         /// <param name="e"></param>
         private void ExportToSftp(object sender, ExecutedRoutedEventArgs e)
         {
-            (DataContext as DocumentWrapper).ExportToSftp();
+            var dlg = new UploadDialog(DataContext as DocumentWrapper)
+            {
+                Owner = this
+            };
+            try
+            {
+                IsEnabled = false;
+                dlg.ShowDialog();
+            }
+            finally
+            {
+                IsEnabled = true;
+                Opacity = 1;
+            }
         }
     }
 }

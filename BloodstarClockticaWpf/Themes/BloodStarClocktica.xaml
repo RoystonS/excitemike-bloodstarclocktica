@@ -3,6 +3,7 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   xmlns:local="clr-namespace:BloodstarClockticaWpf"
   xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
   mc:Ignorable="d"
   xmlns:d="http://schemas.microsoft.com/expression/blend/2008">
     <Color x:Key="TextColor">#FFEEEEEE</Color>
@@ -88,6 +89,20 @@
                 <WindowChrome CaptionHeight="32" ResizeBorderThickness="5"/>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="True">
+                <Setter Property="Effect" Value="{x:Null}"/>
+                <Setter Property="Opacity" Value="1"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Effect">
+                    <Setter.Value>
+                        <BlurEffect Radius="3"/>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Opacity" Value="0.85"/>
+            </Trigger>
+        </Style.Triggers>
     </Style>
 
     <Style x:Key="TitleBarButton" TargetType="{x:Type Button}" BasedOn="{x:Null}">
@@ -205,6 +220,13 @@
     </Style>
 
     <Style TargetType="{x:Type TextBox}">
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SolidBorderBrush}" />
+    </Style>
+
+    <Style TargetType="{x:Type xctk:IntegerUpDown}">
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />

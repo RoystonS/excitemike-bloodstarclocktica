@@ -53,11 +53,17 @@ namespace BloodstarClockticaLib
         /// </summary>
         public string ExportToDiskPath { get; set; }
 
-        private string sftpRemoteDirectory;
-        private string sftpHost;
-        private string sftpUser;
-        private int sftpPort;
-        private string exportToDiskPath;
+        /// <summary>
+        /// remote directory to upload to
+        /// </summary>
+        public string SftpRemoteDirectory { get; set; }
+
+        /// <summary>
+        /// host to upload to
+        /// </summary>
+        public string SftpHost { get; set; }
+        public string SftpUser { get; set; }
+        public int SftpPort { get; set; }
 
         /// <summary>
         /// default metadata
@@ -73,11 +79,11 @@ namespace BloodstarClockticaLib
             author = "Your Name Here";
             Logo = null;
             UrlRoot = "";
-            sftpRemoteDirectory = "REPLACE_THIS";
-            sftpHost = "ftp.excitemike.com";
-            sftpUser = "botc_homebrew";
-            sftpPort = 2222;
-            exportToDiskPath = null;
+            SftpRemoteDirectory = "REPLACE_THIS";
+            SftpHost = "ftp.excitemike.com";
+            SftpUser = "botc_homebrew";
+            SftpPort = 2222;
+            ExportToDiskPath = null;
         }
 
         /// <summary>
@@ -128,7 +134,7 @@ namespace BloodstarClockticaLib
                                     var path = json.GetString();
                                     if ("" != path)
                                     {
-                                        this.exportToDiskPath = path;
+                                        this.ExportToDiskPath = path;
                                     }
                                 }
                                 break;
@@ -136,17 +142,17 @@ namespace BloodstarClockticaLib
                                 var remoteDirectory = json.GetString();
                                 if ("" != remoteDirectory)
                                 {
-                                    this.sftpRemoteDirectory = remoteDirectory;
+                                    this.SftpRemoteDirectory = remoteDirectory;
                                 }
                                 break;
                             case "sftpHost":
-                                this.sftpHost = json.GetString();
+                                this.SftpHost = json.GetString();
                                 break;
                             case "sftpPort":
-                                this.sftpPort = json.GetInt32();
+                                this.SftpPort = json.GetInt32();
                                 break;
                             case "sftpUser":
-                                this.sftpUser = json.GetString();
+                                this.SftpUser = json.GetString();
                                 break;
                         }
                     }
@@ -178,12 +184,12 @@ namespace BloodstarClockticaLib
                         json.WriteStartObject();
                         json.WriteString("name", name);
                         json.WriteString("author", author);
-                        json.WriteString("exportToDiskPath", exportToDiskPath);
+                        json.WriteString("exportToDiskPath", ExportToDiskPath);
                         json.WriteString("urlRoot", UrlRoot);
-                        json.WriteString("sftpRemoteDirectory", sftpRemoteDirectory);
-                        json.WriteString("sftpHost", sftpHost);
-                        json.WriteNumber("sftpPort", sftpPort);
-                        json.WriteString("sftpUser", sftpUser);
+                        json.WriteString("sftpRemoteDirectory", SftpRemoteDirectory);
+                        json.WriteString("sftpHost", SftpHost);
+                        json.WriteNumber("sftpPort", SftpPort);
+                        json.WriteString("sftpUser", SftpUser);
                         json.WriteEndObject();
                         json.Flush();
                     }

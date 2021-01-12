@@ -5,7 +5,7 @@ using System.Windows.Media.Imaging;
 namespace BloodstarClockticaWpf
 {
     /// <summary>
-    /// Interaction logic for SaveDiscardCancel.xaml
+    /// Interaction logic for StringDialog.xaml
     /// </summary>
     public partial class StringDialog : Window
     {
