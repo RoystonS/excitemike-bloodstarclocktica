@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace BloodstarClockticaWpf
@@ -9,34 +11,127 @@ namespace BloodstarClockticaWpf
     /// </summary>
     public partial class UploadDialog : Window
     {
+        private bool closable;
         private DocumentWrapper DocumentWrapper { get; set; }
         internal UploadDialog(DocumentWrapper docWrapper)
         {
+            closable = true;
             InitializeComponent();
             DocumentWrapper = docWrapper;
 
-            var urlRoot = docWrapper.UrlRoot;
+            InitSettingsView();
+            InitProgressBar();
+            InitResults();
+        }
+
+        /// <summary>
+        /// set up the settings view
+        /// </summary>
+        private void InitSettingsView()
+        {
+            var urlRoot = DocumentWrapper.UrlRoot;
             if ("" == urlRoot)
             {
-                urlRoot = $"https://meyermik.startlogic.com/botc/{docWrapper.Name}";
+                urlRoot = $"https://meyermik.startlogic.com/botc/{DocumentWrapper.Name}";
             }
             UrlRootTextField.Text = urlRoot;
 
-            RemotePathTextField.Text = docWrapper.SftpRemoteDirectory;
-            HostTextField.Text = docWrapper.SftpHost;
-            PortControl.Value = docWrapper.SftpPort;
-            UsernameTextField.Text = docWrapper.SftpUsername;
+            RemotePathTextField.Text = DocumentWrapper.SftpRemoteDirectory;
+            HostTextField.Text = DocumentWrapper.SftpHost;
+            PortControl.Value = DocumentWrapper.SftpPort;
+            UsernameTextField.Text = DocumentWrapper.SftpUsername;
             PasswordTextField.Password = Decrypt(Properties.Settings.Default.SavedPassword);
             RememberPasswordCheckBox.IsChecked = Properties.Settings.Default.RememberPassword;
         }
 
         /// <summary>
+        /// set up the progressbar view
+        /// </summary>
+        private void InitProgressBar()
+        {
+            ProgressBar.Value = 0;
+            ProgressBar.Visibility = Visibility.Collapsed;
+        }
+
+        /// <summary>
+        /// set up the results view
+        /// </summary>
+        private void InitResults()
+        {
+            ResultsView.Visibility = Visibility.Collapsed;
+        }
+
+        /// <summary>
         /// accept entered string
         /// </summary>
-        private void Export_Click(object sender, RoutedEventArgs e)
+        private async void Export_Click(object _sender, RoutedEventArgs _e)
         {
-            throw new NotImplementedException();
-            Close();
+            SaveSettings();
+            GoToProgressView();
+            closable = false;
+            // do export
+            var progress = new Progress<double>(fraction => ProgressBar.Value = fraction);
+            try
+            {
+                await DocumentWrapper.ExportToSftp(PasswordTextField.Password, progress);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Error uploading via SFTP.\n{e.Message}\n{e.StackTrace}");
+            }
+            finally
+            {
+                closable = true;
+                GoToResultView();
+            }
+        }
+
+        /// <summary>
+        /// mess with visibilities to go to the progressbar view
+        /// </summary>
+        private void GoToProgressView()
+        {
+            CloseButton.Visibility = Visibility.Hidden;
+            ResultsView.Visibility = Visibility.Collapsed;
+            SettingsView.Visibility = Visibility.Collapsed;
+            ProgressBar.Value = 0;
+            ProgressBar.Visibility = Visibility.Visible;
+        }
+
+        /// <summary>
+        /// mess with visibilities to go to the results view
+        /// </summary>
+        private void GoToResultView()
+        {
+            Title = "Upload Complete!";
+            TitleText.Text = Title;
+            LinkTextBox.Text = $"{DocumentWrapper.RolesUrl}?{DateTime.Now:MMddHHmmss}";
+            CloseButton.Visibility = Visibility.Visible;
+            ProgressBar.Visibility = Visibility.Collapsed;
+            ResultsView.Visibility = Visibility.Visible;
+        }
+
+        /// <summary>
+        /// write choices to document and application settings
+        /// </summary>
+        private void SaveSettings()
+        {
+            DocumentWrapper.UrlRoot = UrlRootTextField.Text;
+            DocumentWrapper.SftpRemoteDirectory = RemotePathTextField.Text;
+            DocumentWrapper.SftpPort = (PortControl.Value != null) ? (int)PortControl.Value : 22;
+            DocumentWrapper.SftpUsername = UsernameTextField.Text;
+
+            Properties.Settings.Default.RememberPassword = true == RememberPasswordCheckBox.IsChecked;
+            Properties.Settings.Default.Save();
+            if (true == RememberPasswordCheckBox.IsChecked)
+            {
+                Properties.Settings.Default.SavedPassword = Encrypt(PasswordTextField.Password);
+            }
+            else
+            {
+                Properties.Settings.Default.SavedPassword = Encrypt("");
+            }
+            Properties.Settings.Default.Save();
         }
 
         /// <summary>
@@ -71,6 +166,30 @@ namespace BloodstarClockticaWpf
         private static string Decrypt(string encoded)
         {
             return Encrypt(encoded);
+        }
+
+        /// <summary>
+        /// open link on double click
+        /// </summary>
+        private void LinkTextBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Process.Start(LinkTextBox.Text);
+        }
+
+        /// <summary>
+        /// copy roles.json link to clipboard
+        /// </summary>
+        private void CopyToClipboard(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(LinkTextBox.Text);
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!closable)
+            {
+                e.Cancel = true;
+            }
         }
     }
 }

@@ -49,6 +49,11 @@ namespace BloodstarClockticaLib
         public string UrlRoot { get; set; }
 
         /// <summary>
+        /// prefix applied to image paths used when exporting to disk. e.g. "https://example.com/botc/SETNAME/images/"
+        /// </summary>
+        public string ExportToDiskImageUrlPrefix { get; set; }
+
+        /// <summary>
         /// remember where we last exported to
         /// </summary>
         public string ExportToDiskPath { get; set; }
@@ -62,7 +67,15 @@ namespace BloodstarClockticaLib
         /// host to upload to
         /// </summary>
         public string SftpHost { get; set; }
+
+        /// <summary>
+        /// username for sftp connection
+        /// </summary>
         public string SftpUser { get; set; }
+
+        /// <summary>
+        /// port for sftp connection
+        /// </summary>
         public int SftpPort { get; set; }
 
         /// <summary>
@@ -84,6 +97,7 @@ namespace BloodstarClockticaLib
             SftpUser = "botc_homebrew";
             SftpPort = 2222;
             ExportToDiskPath = null;
+            ExportToDiskImageUrlPrefix = null;
         }
 
         /// <summary>
@@ -154,6 +168,9 @@ namespace BloodstarClockticaLib
                             case "sftpUser":
                                 this.SftpUser = json.GetString();
                                 break;
+                            case "exportToDiskImageUrlPrefix":
+                                this.ExportToDiskImageUrlPrefix = json.GetString();
+                                break;
                         }
                     }
                 }
@@ -190,6 +207,7 @@ namespace BloodstarClockticaLib
                         json.WriteString("sftpHost", SftpHost);
                         json.WriteNumber("sftpPort", SftpPort);
                         json.WriteString("sftpUser", SftpUser);
+                        json.WriteString("exportToDiskImageUrlPrefix", ExportToDiskImageUrlPrefix);
                         json.WriteEndObject();
                         json.Flush();
                     }

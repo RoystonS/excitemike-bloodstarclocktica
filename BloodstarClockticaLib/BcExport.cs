@@ -1,23 +1,128 @@
-﻿using System.Drawing.Imaging;
+﻿using Renci.SshNet;
+using System;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 namespace BloodstarClockticaLib
 {
     public class BcExport
     {
         /// <summary>
+        /// do the upload
+        /// </summary>
+        public async static Task ExportViaSftp(BcDocument document, string password, IProgress<double> progress)
+        {
+            progress.Report(0);
+            var connectionInfo = new ConnectionInfo(
+                document.Meta.SftpHost,
+                document.Meta.SftpPort,
+                document.Meta.SftpUser,
+                new PasswordAuthenticationMethod(document.Meta.SftpUser, password),
+                new PrivateKeyAuthenticationMethod("rsa.key")
+            );
+
+            using (var client = new SftpClient(connectionInfo))
+            {
+                try
+                {
+                    client.Connect();
+                    await Task.Run(() => ExportViaSftp(document, client, progress));
+                }
+                finally
+                {
+                    client.Disconnect();
+                }
+            }
+        }
+
+        /// <summary>
+        /// do the upload
+        /// </summary>
+        private static void ExportViaSftp(BcDocument document, SftpClient client, IProgress<double> progress)
+        {
+            double num = 1;
+            double denom = 3 + document.Characters.Count;
+            progress.Report(num / denom);
+
+            // roles.json
+            try
+            {
+                client.ChangeDirectory(document.Meta.SftpRemoteDirectory);
+            }
+            catch (Renci.SshNet.Common.SftpPathNotFoundException)
+            {
+                client.CreateDirectory(document.Meta.SftpRemoteDirectory);
+                client.ChangeDirectory(document.Meta.SftpRemoteDirectory);
+            }
+            using (var stream = new MemoryStream())
+            {
+                var imageUrlPrefix = UrlCombine(document.Meta.UrlRoot, "images");
+                ExportRolesJson(document, stream, imageUrlPrefix);
+                stream.Position = 0;
+                client.UploadFile(stream, "roles.json", true);
+                progress.Report(num++ / denom);
+            }
+
+            // go to images directory
+            client.ChangeDirectory("/");
+            var remoteImagesDirectory = UrlCombine(document.Meta.SftpRemoteDirectory, "images");
+            try
+            {
+                client.ChangeDirectory(remoteImagesDirectory);
+            }
+            catch (Renci.SshNet.Common.SftpPathNotFoundException)
+            {
+                client.CreateDirectory(remoteImagesDirectory);
+                client.ChangeDirectory(remoteImagesDirectory);
+            }
+
+            // logo
+            if (document.Meta.Logo != null)
+            {
+                using (var stream = new MemoryStream())
+                {
+                    document.Meta.Logo.Save(stream, ImageFormat.Png);
+                    stream.Position = 0;
+                    client.UploadFile(stream, "logo.png", true);
+                }
+            }
+            progress.Report(num++ / denom);
+
+            // character tokens
+            foreach (var character in document.Characters)
+            {
+                if (character.ProcessedImage != null)
+                {
+                    using (var stream = new MemoryStream())
+                    {
+                        character.ProcessedImage.Save(stream, ImageFormat.Png);
+                        stream.Position = 0;
+                        client.UploadFile(stream, $"{character.Id}.png", true);
+                    }
+                }
+                progress.Report(num++ / denom);
+            }
+            progress.Report(num / denom);
+        }
+
+        /// <summary>
+        /// link to roles.json after upload
+        /// </summary>
+        public static string RolesUrl(BcDocument document) => UrlCombine(document.Meta.UrlRoot, "roles.json");
+
+        /// <summary>
         /// save output files to disk
         /// </summary>
-        public static void ExportToDisk(BcDocument document, string directory, string urlPrefix)
+        public static void ExportToDisk(BcDocument document, string directory, string imageUrlPrefix)
         {
-            document.Meta.UrlRoot = urlPrefix;
             // write out roles.json
             {
                 var path = Path.Combine(directory, "roles.json");
                 using (var stream = new FileStream(path, FileMode.Create))
                 {
-                    BcExport.ExportRolesJson(document, stream, UrlCombine(urlPrefix, "images"));
+                    BcExport.ExportRolesJson(document, stream, imageUrlPrefix);
                 }
             }
 
@@ -95,7 +200,7 @@ namespace BloodstarClockticaLib
             json.WriteString("id", character.Id);
             if (character.ProcessedImage != null)
             {
-                json.WriteString("image", $"{imageUrlPrefix}{character.Id}.png");
+                json.WriteString("image", UrlCombine(imageUrlPrefix, $"{character.Id}.png"));
             }
             json.WriteString("edition", "custom");
             json.WriteNumber("firstNight", character.FirstNightOrder);
@@ -132,6 +237,18 @@ namespace BloodstarClockticaLib
             if (a == "") { return b; }
             if (b == "") { return a; }
             return $"{a.TrimEnd('/', '\\')}/{b.TrimStart('/', '\\')}";
+        }
+
+        /// <summary>
+        /// add subpath onto url prefix without having to pay attention to whether the '/' is there at the end of a or start of b
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="c"></param>
+        /// <returns></returns>
+        private static string UrlCombine(string a, string b, string c)
+        {
+            return UrlCombine(UrlCombine(a, b), c);
         }
     }
 }

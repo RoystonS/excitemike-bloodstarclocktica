@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
 namespace BloodstarClockticaWpf
@@ -174,6 +175,24 @@ namespace BloodstarClockticaWpf
         }
 
         /// <summary>
+        /// prefix applied to image paths used when exporting to disk. e.g. "https://example.com/botc/SETNAME/images/"
+        /// </summary>
+        public string ExportToDiskImageUrlPrefix
+        {
+            get => document.Meta.ExportToDiskImageUrlPrefix;
+            set
+            {
+                if (value != document.Meta.ExportToDiskImageUrlPrefix)
+                {
+                    document.Meta.ExportToDiskImageUrlPrefix = value;
+                    Dirty = true;
+                    OnPropertyChanged("ExportToDiskImageUrlPrefix");
+                }
+            }
+        }
+        
+
+        /// <summary>
         /// remote directory to upload to
         /// </summary>
         public string SftpRemoteDirectory
@@ -272,6 +291,11 @@ namespace BloodstarClockticaWpf
                 }
             }
         }
+
+        /// <summary>
+        /// link to roles.json after upload
+        /// </summary>
+        public string RolesUrl => BcExport.RolesUrl(document);
 
         /// <summary>
         /// track whether we are in the middle of updating so we don't have ridiculous event cascades or mark dirty when we shouldn't
@@ -431,19 +455,16 @@ namespace BloodstarClockticaWpf
         /// <summary>
         /// save output files to disk
         /// </summary>
-        public void ExportToDisk(string directory, string urlPrefix)
+        public void ExportToDisk(string directory, string imageUrlPrefix)
         {
             ExportToDiskPath = directory;
-            BcExport.ExportToDisk(document, directory, urlPrefix);
+            ExportToDiskImageUrlPrefix = imageUrlPrefix;
+            BcExport.ExportToDisk(document, directory, imageUrlPrefix);
         }
 
         /// <summary>
         /// upload via sftp
         /// </summary>
-        public void ExportToSftp()
-        {
-            throw new NotImplementedException();
-            //document.ExportToSftp();
-        }
+        public async Task ExportToSftp(string password, IProgress<double> progress) => await BcExport.ExportViaSftp(document, password, progress);
     }
 }

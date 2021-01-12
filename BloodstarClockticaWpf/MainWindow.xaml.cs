@@ -3,8 +3,6 @@ using Microsoft.Win32;
 using System;
 using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -297,7 +295,7 @@ namespace BloodstarClockticaWpf
             if ((index != -1) && (index > 0))
             {
                 docWrapper.SwapCharacterOrder(index, index - 1);
-                CharacterList.SelectedIndex = index + 1;
+                CharacterList.SelectedIndex = index - 1;
                 CharacterList.Focus();
             }
         }
@@ -376,13 +374,13 @@ namespace BloodstarClockticaWpf
         /// <param name="e"></param>
         private void ExportToDisk(object sender, ExecutedRoutedEventArgs e)
         {
-            var urlPrefix = PromptForUrlPrefix();
-            if (null != urlPrefix)
+            var imageUrlPrefix = PromptForImageUrlPrefix();
+            if (null != imageUrlPrefix)
             {
                 var folder = PromptForFolder();
                 if (null != folder)
                 {
-                    (DataContext as DocumentWrapper).ExportToDisk(folder, urlPrefix);
+                    (DataContext as DocumentWrapper).ExportToDisk(folder, imageUrlPrefix);
                 }
             }
         }
@@ -416,16 +414,16 @@ namespace BloodstarClockticaWpf
         /// prompt for the imageUrlPrefix to use when exporting to disk
         /// </summary>
         /// <returns></returns>
-        private string PromptForUrlPrefix()
+        private string PromptForImageUrlPrefix()
         {
             var docWrapper = (DataContext as DocumentWrapper);
-            var urlRoot = docWrapper.UrlRoot;
-            var defaultRoot = $"https://meyermik.startlogic.com/botc/{docWrapper.Name}";
-            if ("" == urlRoot)
+            var urlPrefix = docWrapper.ExportToDiskImageUrlPrefix;
+            var defaultPrefix = $"https://example.com/botc/{docWrapper.Name}/images/";
+            if ("" == urlPrefix)
             {
-                urlRoot = defaultRoot;
+                urlPrefix = defaultPrefix;
             }
-            var dlg = new StringDialog("Image URL Prefix", $"Enter a prefix for urls (e.g. {defaultRoot})", urlRoot)
+            var dlg = new StringDialog("Image URL Prefix", $"Enter a prefix for urls (e.g. {defaultPrefix})", urlPrefix)
             {
                 Owner = this
             };

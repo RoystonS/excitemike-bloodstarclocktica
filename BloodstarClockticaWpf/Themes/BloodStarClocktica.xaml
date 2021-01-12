@@ -17,6 +17,20 @@
         <GradientStop Color="#FF3a3a3a" Offset="0.65"/>
         <GradientStop Color="#FF474747" Offset="1.0"/>
     </LinearGradientBrush>
+    <LinearGradientBrush x:Key="ProgressBarFill" StartPoint="0.5,0" EndPoint="0.5,1">
+        <GradientStop Color="#FF3977FF" Offset="0.0"/>
+        <GradientStop Color="#333977FF" Offset="1.0"/>
+    </LinearGradientBrush>
+    <RadialGradientBrush x:Key="_ProgressBarIndicatorAnimatedFill" GradientOrigin="0.5,0" RadiusX="0.5" RadiusY="0.5">
+        <GradientStop Color="#88FFFFFF" Offset="0.05"/>
+        <GradientStop Color="#00FFFFFF" Offset="0.95"/>
+    </RadialGradientBrush>
+    <LinearGradientBrush x:Key="ProgressBarIndicatorAnimatedFill" StartPoint="0,0.5" EndPoint="1,0.5">
+        <GradientStop Color="#003977FF" Offset="0.05"/>
+        <GradientStop Color="#6600FFFF" Offset="0.47"/>
+        <GradientStop Color="#6600FFFF" Offset="0.53"/>
+        <GradientStop Color="#003977FF" Offset="0.95"/>
+    </LinearGradientBrush>
     <DropShadowBitmapEffect x:Key="PopupDropShadow" ShadowDepth="1.5" Softness="0.15" />
 
     <Style x:Key="LabelBase" TargetType="{x:Type Label}">
@@ -403,6 +417,7 @@
 
     <BorderGapMaskConverter x:Key="BcBorderGapMaskConverter" />
     <Style TargetType="{x:Type GroupBox}" BasedOn="{x:Null}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="BorderBrush" Value="{DynamicResource SolidBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
@@ -680,4 +695,36 @@
         </Setter>
     </Style>
 
+    <!-- progress bar -->
+    <Style x:Key="{x:Type ProgressBar}" TargetType="{x:Type ProgressBar}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ProgressBar}">
+                    <Border x:Name="PART_Track" 
+                                CornerRadius="2"
+                                Background="{TemplateBinding Background}"
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                BorderBrush="{TemplateBinding BorderBrush}">
+                        <Border x:Name="PART_Indicator" CornerRadius="2"
+                                BorderThickness="0"
+                                HorizontalAlignment="Left"
+                                Background="{DynamicResource ProgressBarFill}"
+                                Margin="1,1,1,1">
+                            <Grid ClipToBounds="True">
+                                <Rectangle x:Name="PART_GlowRect"
+                                       Width="100" HorizontalAlignment="Left"
+                                       Fill="{DynamicResource ProgressBarIndicatorAnimatedFill}"
+                                       Margin="-100,0,0,0"
+                                       ClipToBounds="True" />
+                            </Grid>
+                        </Border>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource SolidBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+    </Style>
 </ResourceDictionary>
