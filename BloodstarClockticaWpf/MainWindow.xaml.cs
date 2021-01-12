@@ -455,5 +455,15 @@ namespace BloodstarClockticaWpf
                 Opacity = 1;
             }
         }
+
+        /// <summary>
+        /// menu callback version of Close
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Close(object sender, ExecutedRoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }

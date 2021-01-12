@@ -31,6 +31,11 @@
                 <KeyGesture>Ctrl+A</KeyGesture>
             </RoutedUICommand.InputGestures>
         </RoutedUICommand>
+        <RoutedUICommand x:Key="Close" Text="Close">
+            <RoutedUICommand.InputGestures>
+                <KeyGesture>Alt+F4</KeyGesture>
+            </RoutedUICommand.InputGestures>
+        </RoutedUICommand>
         <RoutedUICommand x:Key="FirstNight" Text="First Night">
             <RoutedUICommand.InputGestures>
                 <KeyGesture>Ctrl+1</KeyGesture>
@@ -75,6 +80,7 @@
                             <MenuItem Header="_Open" Command="{StaticResource OpenFile}" InputGestureText="Ctrl+O"/>
                             <MenuItem Header="_Save" Command="{StaticResource SaveFile}" InputGestureText="Ctrl+S"/>
                             <MenuItem Header="Save _As" Command="{StaticResource SaveFileAs}" InputGestureText="Ctrl+A"/>
+                            <MenuItem Header="_Close" Command="{StaticResource Close}" InputGestureText="Alt+F4"/>
                         </MenuItem>
                         <MenuItem Header="_Order">
                             <MenuItem Header="_First Night" Command="{StaticResource FirstNight}" InputGestureText="Ctrl+1"/>
@@ -220,6 +226,7 @@
         <CommandBinding Command="{StaticResource OpenFile}" Executed="OpenFile"/>
         <CommandBinding Command="{StaticResource SaveFile}" Executed="SaveFile"/>
         <CommandBinding Command="{StaticResource SaveFileAs}" Executed="SaveFileAs"/>
+        <CommandBinding Command="{StaticResource Close}" Executed="Close"/>
         <CommandBinding Command="{StaticResource FirstNight}" Executed="FirstNight"/>
         <CommandBinding Command="{StaticResource OtherNights}" Executed="OtherNights"/>
         <CommandBinding Command="{StaticResource ExportToDisk}" Executed="ExportToDisk"/>
