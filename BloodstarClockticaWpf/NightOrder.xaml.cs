@@ -58,30 +58,34 @@ namespace BloodstarClockticaWpf
                 var isFirstNight = now.IsFirstNight;
                 var characterList = now.SortedList;
                 var numCharacters = characterList.Count;
-                if ((0 < indexA) && (indexA <= numCharacters) && (0 < indexB) && (indexB <= numCharacters))
+                if ((0 <= indexA) && (indexA < numCharacters) && (0 <= indexB) && (indexB < numCharacters))
                 {
                     var characterA = characterList[indexA].Character;
                     var characterB = characterList[indexB].Character;
 
                     // swap in UI
                     {
-                        var temp = characterList[indexA];
-                        characterList[indexA] = characterList[indexB];
-                        characterList[indexB] = temp;
+                        characterList.Move(indexA, indexB);
                     }
 
                     // swap night order values
                     if (isFirstNight)
                     {
-                        var temp = characterA.FirstNightOrder;
-                        characterA.FirstNightOrder = characterB.FirstNightOrder;
-                        characterB.FirstNightOrder = temp;
+                        if ((characterA.FirstNightOrder != 0) && (characterB.FirstNightOrder != 0))
+                        {
+                            var temp = characterA.FirstNightOrder;
+                            characterA.FirstNightOrder = characterB.FirstNightOrder;
+                            characterB.FirstNightOrder = temp;
+                        }
                     }
                     else
                     {
-                        var temp = characterA.OtherNightOrder;
-                        characterA.OtherNightOrder = characterB.OtherNightOrder;
-                        characterB.OtherNightOrder = temp;
+                        if ((characterA.OtherNightOrder != 0) && (characterB.OtherNightOrder != 0))
+                        {
+                            var temp = characterA.OtherNightOrder;
+                            characterA.OtherNightOrder = characterB.OtherNightOrder;
+                            characterB.OtherNightOrder = temp;
+                        }
                     }
                     CharacterList.SelectedIndex = indexB;
                     CharacterList.Focus();
@@ -116,7 +120,7 @@ namespace BloodstarClockticaWpf
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CopyButton_Click(object sender, RoutedEventArgs e)
+        private void CopyToButton_Click(object sender, RoutedEventArgs e)
         {
             if (DataContext is NightOrderWrapper now)
             {
@@ -133,6 +137,34 @@ namespace BloodstarClockticaWpf
                         else
                         {
                             character.FirstNightReminderProperty.Value = character.OtherNightReminderProperty.Value;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Convenience thing for characters whose first+other night reminders are the same
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CopyFromButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is NightOrderWrapper now)
+            {
+                var firstNight = now.IsFirstNight;
+                if (sender is Button b)
+                {
+                    if (b.DataContext is NightOrderCharacterWrapper nocw)
+                    {
+                        var character = nocw.Character;
+                        if (firstNight)
+                        {
+                            character.FirstNightReminderProperty.Value = character.OtherNightReminderProperty.Value;
+                        }
+                        else
+                        {
+                            character.OtherNightReminderProperty.Value = character.FirstNightReminderProperty.Value;
                         }
                     }
                 }

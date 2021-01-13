@@ -16,7 +16,8 @@ namespace BloodstarClockticaWpf
         public string NightReminderLabel => IsFirstNight ? "First Night Reminder" : "Other Nights Reminder";
         public Visibility FirstNightVis => IsFirstNight ? Visibility.Visible : Visibility.Collapsed;
         public Visibility OtherNightVis => IsFirstNight ? Visibility.Collapsed : Visibility.Visible;
-        public string CopyButtonLabel => IsFirstNight ? "Copy to Other Nights Reminder" : "Copy to First Night Reminder";
+        public string CopyToButtonLabel => IsFirstNight ? "Copy to Other Nights Reminder" : "Copy to First Night Reminder";
+        public string CopyFromButtonLabel => IsFirstNight ? "Copy from First Night Reminder" : "Copy from Other Nights Reminder";
 
         /// <summary>
         /// characters in night order
@@ -33,6 +34,12 @@ namespace BloodstarClockticaWpf
             this.IsFirstNight = firstNight;
             SortedList = new ObservableCollection<NightOrderCharacterWrapper>();
             PopulateCharacterList();
+            SortedList.CollectionChanged += SortedList_CollectionChanged;
+        }
+
+        private void SortedList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            UpdateOrdinals();
         }
 
         /// <summary>
@@ -42,7 +49,10 @@ namespace BloodstarClockticaWpf
         /// <param name="e"></param>
         private void DocumentWrapper_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            PopulateCharacterList();
+            if (e.PropertyName == "CharacterList")
+            {
+                PopulateCharacterList();
+            }
         }
 
         /// <summary>
@@ -50,33 +60,67 @@ namespace BloodstarClockticaWpf
         /// </summary>
         public void PopulateCharacterList()
         {
-            try
+            SortedList.Clear();
+            var characters = DocumentWrapper.CharacterList
+                .OrderBy(characterWrapper => IsFirstNight ? characterWrapper.FirstNightOrder : characterWrapper.OtherNightOrder)
+                .Select(characterWrapper => new NightOrderCharacterWrapper(characterWrapper, IsFirstNight));
+            int nightCount = 0;
+            int nightReminderCount = 0;
+            foreach (var characterWrapper in characters)
             {
-                SortedList.Clear();
-                var characters = DocumentWrapper.CharacterList
-                    .OrderBy(characterWrapper => IsFirstNight ? characterWrapper.FirstNightOrder : characterWrapper.OtherNightOrder)
-                    .Select(characterWrapper => new NightOrderCharacterWrapper(characterWrapper, IsFirstNight));
-                int nightCount = 0;
-                foreach (var characterWrapper in characters)
-                {
-                    SortedList.Add(characterWrapper);
+                SortedList.Add(characterWrapper);
 
-                    // correct the order numbers as we build the list
-                    var reminder = IsFirstNight ? characterWrapper.Character.FirstNightReminderProperty.Value : characterWrapper.Character.OtherNightReminderProperty.Value;
-                    var nightOrder = (reminder == "") ? 0 : ++nightCount;
-                    if (IsFirstNight)
-                    {
-                        characterWrapper.Character.FirstNightOrder = nightOrder;
-                    }
-                    else
-                    {
-                        characterWrapper.Character.OtherNightOrder = nightOrder;
-                    }
+                // correct the order numbers as we build the list
+                var reminder = IsFirstNight ? characterWrapper.Character.FirstNightReminderProperty.Value : characterWrapper.Character.OtherNightReminderProperty.Value;
+                var nightReminderOrder = (reminder == "") ? 0 : ++nightReminderCount;
+                if (IsFirstNight)
+                {
+                    characterWrapper.Character.FirstNightOrder = ++nightCount;
                 }
-                OnPropertyChanged("SortedList");
+                else
+                {
+                    characterWrapper.Character.OtherNightOrder = ++nightCount;
+                }
             }
-            finally
+            UpdateOrdinals();
+            OnPropertyChanged("SortedList");
+        }
+
+        /// <summary>
+        /// update ordinal field for all characters
+        /// </summary>
+        private void UpdateOrdinals()
+        {
+            var nightReminderCount = 0;
+            foreach (var characterWrapper in SortedList)
             {
+                var reminder = IsFirstNight ? characterWrapper.Character.FirstNightReminderProperty.Value : characterWrapper.Character.OtherNightReminderProperty.Value;
+                characterWrapper.NightReminderOrdinal = (reminder == "") ? "-" : Ordinal(++nightReminderCount);
+            }
+        }
+
+        /// <summary>
+        /// convert a positive integer to an ordinal like "1st"
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        private static string Ordinal(int x)
+        {
+            if (x <= 0) { return x.ToString(); }
+            switch (x)
+            {
+                case 11:
+                case 12:
+                case 13:
+                    return $"{x}th";
+                default:
+                    switch (x % 10)
+                    {
+                        case 1: return $"{x}st";
+                        case 2: return $"{x}nd";
+                        case 3: return $"{x}rd";
+                        default: return $"{x}th";
+                    }
             }
         }
 

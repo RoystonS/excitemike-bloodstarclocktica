@@ -6,17 +6,22 @@ namespace BloodstarClockticaWpf
     {
         /// <summary>
         /// Ordinal string for when this character acts. like "1st"
+        /// Managed by NightOrderWrapper.cs
         /// </summary>
-        public string NightOrderOrdinal
+        public string NightReminderOrdinal
         {
-            get
+            get => nightReminderOrdinal;
+            set
             {
-                var order = firstNight ? Character.FirstNightOrder : Character.OtherNightOrder;
-                if (order <= 0) { return "-"; }
-                return Ordinal(order);
+                if (value != nightReminderOrdinal)
+                {
+                    nightReminderOrdinal = value;
+                    OnPropertyChanged("NightReminderOrdinal");
+                }
             }
         }
-        
+        private string nightReminderOrdinal;
+
         /// <summary>
         /// wrapper for other character properties
         /// </summary>
@@ -37,6 +42,7 @@ namespace BloodstarClockticaWpf
             Character = character;
             character.PropertyChanged += Character_PropertyChanged;
             this.firstNight = firstNight;
+            nightReminderOrdinal = "-";
         }
 
         /// <summary>
@@ -50,36 +56,11 @@ namespace BloodstarClockticaWpf
             {
                 case "FirstNightOrder":
                 case "OtherNightOrder":
-                    OnPropertyChanged("NightOrderOrdinal");
+                    OnPropertyChanged("NightReminderOrdinal");
                     break;
                 case null:
                     OnPropertyChanged(null);
                     break;
-            }
-        }
-
-        /// <summary>
-        /// convert a positive integer to an ordinal like "1st"
-        /// </summary>
-        /// <param name="x"></param>
-        /// <returns></returns>
-        private static string Ordinal(int x)
-        {
-            if (x <= 0) { return x.ToString(); }
-            switch (x)
-            {
-                case 11:
-                case 12:
-                case 13:
-                    return $"{x}th";
-                default:
-                    switch (x % 10)
-                    {
-                        case 1: return $"{x}st";
-                        case 2: return $"{x}nd";
-                        case 3: return $"{x}rd";
-                        default: return $"{x}th";
-                    }
             }
         }
 
