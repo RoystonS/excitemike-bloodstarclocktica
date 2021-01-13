@@ -13,7 +13,7 @@
         Style="{StaticResource WindowStyle}">
     <Border BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="1">
         <DockPanel>
-            <Border DockPanel.Dock="Top" BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="0,0,0,1">
+            <Border DockPanel.Dock="Top" BorderBrush="{Binding (Window.BorderBrush), RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" BorderThickness="0,0,0,1">
             <Grid>
                 <TextBlock Text="Save Changes?" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 <Button HorizontalAlignment="Right" Width="35" Height="25" Style="{StaticResource TitleBarButton}" Click="Close_Click">

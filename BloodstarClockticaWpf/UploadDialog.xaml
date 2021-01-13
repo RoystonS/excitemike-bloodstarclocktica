@@ -14,7 +14,7 @@
     <Border BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="1">
         <StackPanel>
             <!-- title bar -->
-            <Border Grid.ColumnSpan="2" BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="0,0,0,1">
+            <Border Grid.ColumnSpan="2" BorderBrush="{Binding (Window.BorderBrush), RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" BorderThickness="0,0,0,1">
                 <Grid>
                     <TextBlock x:Name="TitleText"  HorizontalAlignment="Center" VerticalAlignment="Center" Text="Export via SFTP"/>
                     <Button x:Name="CloseButton" HorizontalAlignment="Right" Width="35" Height="25" Style="{StaticResource TitleBarButton}" Click="Close_Click">
@@ -64,7 +64,7 @@
                         <ColumnDefinition/>
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Content="_Export" Click="Export_Click" Margin="6,0,3,6"/>
+                    <Button x:Name="ExportButton" Grid.Column="0" Content="_Export" Click="Export_Click" Margin="6,0,3,6"/>
                     <Button Grid.Column="1" Content="_Cancel" Click="Close_Click" Margin="3,0,6,6"/>
                 </Grid>
             </Grid>

@@ -16,7 +16,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
-            <Border BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="0,0,0,1">
+            <Border BorderBrush="{Binding (Window.BorderBrush), RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" BorderThickness="0,0,0,1">
                 <Grid>
                     <TextBlock x:Name="TitleLabel" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     <Button HorizontalAlignment="Right" Width="35" Height="25" Style="{StaticResource TitleBarButton}" Click="Close_Click">
