@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 
 namespace BloodstarClockticaWpf
@@ -86,7 +87,7 @@ namespace BloodstarClockticaWpf
                 Filter = "Bloodstar Clocktica files (*.blood)|*.blood",
                 InitialDirectory = docDir
             };
-            if (dlg.ShowDialog(this) == true)
+            if (true == DoBlurred(() => dlg.ShowDialog()))
             {
                 return OpenNoPrompts(dlg.FileName);
             }
@@ -175,7 +176,7 @@ namespace BloodstarClockticaWpf
                 OverwritePrompt = true,
                 InitialDirectory = docDir
             };
-            if (dlg.ShowDialog(this) == true)
+            if (true == DoBlurred(() => dlg.ShowDialog()))
             {
                 return dlg.FileName;
             }
@@ -198,15 +199,7 @@ namespace BloodstarClockticaWpf
             };
             dlg.Closed += (object _s, EventArgs _e) => { firstNightWindowOpen = false; };
             firstNightWindowOpen = true;
-            try
-            {
-                IsEnabled = false;
-                dlg.ShowDialog();
-            }
-            finally
-            {
-                IsEnabled = true;
-            }
+            DoBlurred(() => dlg.ShowDialog());
         }
 
         /// <summary>
@@ -225,15 +218,7 @@ namespace BloodstarClockticaWpf
             };
             dlg.Closed += (object _s, EventArgs _e) => { otherNightWindowOpen = false; };
             otherNightWindowOpen = true;
-            try
-            {
-                IsEnabled = false;
-                dlg.ShowDialog();
-            }
-            finally
-            {
-                IsEnabled = true;
-            }
+            DoBlurred(() => dlg.ShowDialog());
         }
 
         /// <summary>
@@ -246,7 +231,7 @@ namespace BloodstarClockticaWpf
             {
                 Owner = this
             };
-            dlg.ShowDialog();
+            DoBlurred(() => dlg.ShowDialog());
             switch (dlg.Result)
             {
                 case SaveDiscardCancelResult.Cancel:
@@ -281,7 +266,7 @@ namespace BloodstarClockticaWpf
             {
                 Filter = "Images (*.jpg;*.png;*.bmp;*.gif)|*.jpg;*.png;*.bmp;*.gif"
             };
-            if (dlg.ShowDialog(this) == true)
+            if (true == DoBlurred(() => dlg.ShowDialog(this)))
             {
                 return dlg.FileName;
             }
@@ -401,7 +386,7 @@ namespace BloodstarClockticaWpf
                 Title = "Select Directory for Export",
                 InitialDirectory = docWrapper.ExportToDiskPath
             };
-            if (true != folderDialog.ShowDialog(this))
+            if (true != DoBlurred(() => folderDialog.ShowDialog(this)))
             {
                 return null;
             }
@@ -427,7 +412,7 @@ namespace BloodstarClockticaWpf
             {
                 Owner = this
             };
-            dlg.ShowDialog();
+            DoBlurred(() => dlg.ShowDialog());
             return dlg.Result;
         }
 
@@ -442,16 +427,7 @@ namespace BloodstarClockticaWpf
             {
                 Owner = this
             };
-            try
-            {
-                IsEnabled = false;
-                dlg.ShowDialog();
-            }
-            finally
-            {
-                IsEnabled = true;
-                Opacity = 1;
-            }
+            DoBlurred(() => dlg.ShowDialog());
         }
 
         /// <summary>
@@ -462,6 +438,46 @@ namespace BloodstarClockticaWpf
         private void Close(object sender, ExecutedRoutedEventArgs e)
         {
             Close();
+        }
+
+        /// <summary>
+        /// blur the window while doing something
+        /// </summary>
+        /// <param name="f"></param>
+        private void DoBlurred(Action f)
+        {
+            try
+            {
+                Effect = new BlurEffect
+                {
+                    Radius = 5
+                };
+                f();
+            }
+            finally
+            {
+                Effect = null;
+            }
+        }
+
+        /// <summary>
+        /// blur the window while doing something
+        /// </summary>
+        /// <param name="f"></param>
+        private T DoBlurred<T>(Func<T> f)
+        {
+            try
+            {
+                Effect = new BlurEffect
+                {
+                    Radius = 5
+                };
+                return f();
+            }
+            finally
+            {
+                Effect = null;
+            }
         }
     }
 }

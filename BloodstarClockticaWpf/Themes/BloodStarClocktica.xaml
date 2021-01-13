@@ -103,20 +103,6 @@
                 <WindowChrome CaptionHeight="32" ResizeBorderThickness="5"/>
             </Setter.Value>
         </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsEnabled" Value="True">
-                <Setter Property="Effect" Value="{x:Null}"/>
-                <Setter Property="Opacity" Value="1"/>
-            </Trigger>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Effect">
-                    <Setter.Value>
-                        <BlurEffect Radius="3"/>
-                    </Setter.Value>
-                </Setter>
-                <Setter Property="Opacity" Value="0.85"/>
-            </Trigger>
-        </Style.Triggers>
     </Style>
 
     <Style x:Key="TitleBarButton" TargetType="{x:Type Button}" BasedOn="{x:Null}">
