@@ -124,6 +124,9 @@
             <Trigger Property="IsMouseOver" Value="true">
                 <Setter TargetName="Background" Property="BorderBrush" Value="{DynamicResource HoverBrush}"/>
             </Trigger>
+            <Trigger Property="IsPressed" Value="true">
+                <Setter Property="Background" TargetName="Background" Value="{DynamicResource HoverBrush}"/>
+            </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
@@ -208,6 +211,9 @@
                         <Trigger Property="InputGestureText" Value="">
                             <Setter Property="Visibility" Value="Collapsed" TargetName="Spacer" />
                         </Trigger>
+                        <Trigger Property="IsPressed" Value="true">
+                            <Setter Property="Background" TargetName="Border" Value="{DynamicResource HoverBrush}"/>
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -286,6 +292,9 @@
             <Trigger Property="IsFocused" Value="True">
                 <Setter Property="BorderBrush" Value="{DynamicResource HoverBrush}" TargetName="Border" />
             </Trigger>
+            <Trigger SourceName="Popup" Property="IsOpen" Value="true">
+                <Setter Property="Background" TargetName="ToggleButton" Value="{DynamicResource HoverBrush}"/>
+            </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
@@ -311,6 +320,9 @@
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter Property="Background" TargetName="Border" Value="{DynamicResource HoverBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -342,6 +354,7 @@
             </Trigger>
             <Trigger Property="IsPressed" Value="true">
                 <Setter Property="BorderBrush" TargetName="Background" Value="{DynamicResource HoverBrush}" />
+                <Setter Property="Background" TargetName="Background" Value="{DynamicResource HoverBrush}"/>
             </Trigger>
             <Trigger Property="IsEnabled" Value="false">
                 <Setter Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" TargetName="Background" />
@@ -376,6 +389,7 @@
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter Property="BorderBrush" TargetName="Background" Value="{DynamicResource HoverBrush}" />
+                            <Setter Property="Background" TargetName="Background" Value="{DynamicResource HoverBrush}"/>
                         </Trigger>
                         <Trigger Property="IsChecked" Value="true">
                             <Setter Property="BorderBrush" TargetName="Background" Value="{DynamicResource SolidBorderBrush}" />
