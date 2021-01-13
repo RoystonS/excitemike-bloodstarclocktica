@@ -150,19 +150,20 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition MinWidth="6" Width="Auto" SharedSizeGroup="MenuItemIconColumnGroup" />
                                 <ColumnDefinition Width="*" />
-                                <ColumnDefinition/>
+                                <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="Auto" SharedSizeGroup="MenuItemIGTColumnGroup" />
-                                <ColumnDefinition Width="6" />
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="6"/>
                             </Grid.ColumnDefinitions>
-                            <Border Grid.Column="0" Grid.ColumnSpan="4" Background="{DynamicResource HoverBrush}" Opacity="0" x:Name="HoverBorder" CornerRadius="1,1,1,1"/>
                             <ContentPresenter Margin="4,0,6,0" x:Name="Icon" VerticalAlignment="Center" ContentSource="Icon" />
                             <Grid Visibility="Collapsed" Margin="4,0,6,0" x:Name="GlyphPanel" VerticalAlignment="Center">
                                 <Path x:Name="GlyphPanelpath" VerticalAlignment="Center" Fill="{TemplateBinding Foreground}" Data="M0,2 L0,4.8 L2.5,7.4 L7.1,2.8 L7.1,0 L2.5,4.6 z" FlowDirection="LeftToRight" />
                             </Grid>
                             <ContentPresenter Grid.Column="1" x:Name="HeaderHost" RecognizesAccessKey="True" ContentSource="Header" Margin="2,1,2,1" />
                             <Border x:Name="Spacer" Width="18" Grid.Column="2"/>
-                            <TextBlock Grid.Column="3" Margin="{TemplateBinding Padding}" Text="{TemplateBinding InputGestureText}"/>
-                            <Grid Grid.Column="4" Margin="4,0,6,0" x:Name="ArrowPanel" VerticalAlignment="Center">
+                            <TextBlock Grid.Column="3" Text="{TemplateBinding InputGestureText}"/>
+                            <!-- arrow -->
+                            <Grid Grid.Column="4" x:Name="ArrowPanel" VerticalAlignment="Center" Visibility="Collapsed">
                                 <Path x:Name="ArrowPanelPath" VerticalAlignment="Center" Fill="{TemplateBinding Foreground}" Data="M0,0 L0,8 L4,4 z" />
                             </Grid>
                             <Popup IsOpen="{Binding Path=IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" Placement="Right" x:Name="SubMenuPopup" Focusable="false" AllowsTransparency="true" PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}">
@@ -174,6 +175,9 @@
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="HasItems" Value="True">
+                            <Setter Property="Visibility" TargetName="ArrowPanel" Value="Visible"/>
+                        </Trigger>
                         <Trigger Property="Role" Value="TopLevelHeader">
                             <Setter Property="Margin" Value="0,1,0,1" />
                             <Setter Property="Grid.IsSharedSizeScope" Value="true" />
@@ -182,17 +186,18 @@
                         </Trigger>
                         <Trigger Property="Role" Value="TopLevelItem">
                             <Setter Property="Margin" Value="0,1,0,1" />
-                            <Setter Property="Visibility" Value="Collapsed" TargetName="ArrowPanel" />
+                            <!-- <Setter Property="Visibility" Value="Collapsed" TargetName="ArrowPanel" /> -->
                         </Trigger>
                         <Trigger Property="Role" Value="SubmenuHeader">
                             <Setter Property="DockPanel.Dock" Value="Top" />
                             <Setter Property="Padding" Value="0,2,0,2" />
                             <Setter Property="Grid.IsSharedSizeScope" Value="true" />
+                            <!-- <Setter Property="Visibility" Value="Visible" TargetName="ArrowPanel" /> -->
                         </Trigger>
                         <Trigger Property="Role" Value="SubmenuItem">
                             <Setter Property="DockPanel.Dock" Value="Top" />
                             <Setter Property="Padding" Value="0,2,0,2" />
-                            <Setter Property="Visibility" Value="Collapsed" TargetName="ArrowPanel" />
+                            <!-- <Setter Property="Visibility" Value="Collapsed" TargetName="ArrowPanel" /> -->
                         </Trigger>
                         <Trigger Property="IsSuspendingPopupAnimation" Value="true">
                             <Setter Property="PopupAnimation" Value="None" TargetName="SubMenuPopup" />

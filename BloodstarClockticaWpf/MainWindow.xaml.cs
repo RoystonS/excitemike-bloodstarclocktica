@@ -1,8 +1,12 @@
 ﻿using BloodstarClockticaLib;
 using Microsoft.Win32;
 using System;
+using System.Collections;
+using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Effects;
 
@@ -16,6 +20,7 @@ namespace BloodstarClockticaWpf
         private bool firstNightWindowOpen;
         private bool otherNightWindowOpen;
         public static readonly string BaseTitle = "Bloodstar Clocktica";
+        
         public MainWindow() : this(new BcDocument())
         {
         }
@@ -25,6 +30,8 @@ namespace BloodstarClockticaWpf
             firstNightWindowOpen = false;
             otherNightWindowOpen = false;
             DataContext = new DocumentWrapper(document);
+
+            UpdateRecentDocumentsMenu();
         }
 
         /// <summary>
@@ -59,12 +66,7 @@ namespace BloodstarClockticaWpf
         {
             if (SavePromptIfDirty())
             {
-                var nextDoc = OpenFileNoSavePrompt();
-                if (nextDoc != null)
-                {
-                    (DataContext as DocumentWrapper).SetDocument(nextDoc);
-                    FixCharacterListSelection(0);
-                }
+                OpenFileNoSavePrompt();
             }
         }
 
@@ -72,7 +74,7 @@ namespace BloodstarClockticaWpf
         /// prompt for path to open, open it
         /// </summary>
         /// <returns></returns>
-        private BcDocument OpenFileNoSavePrompt()
+        private void OpenFileNoSavePrompt()
         {
             var docDir = Properties.Settings.Default.DocumentDir;
             if (docDir == null)
@@ -86,9 +88,8 @@ namespace BloodstarClockticaWpf
             };
             if (true == DoBlurred(() => dlg.ShowDialog()))
             {
-                return OpenNoPrompts(dlg.FileName);
+                OpenNoPrompts(dlg.FileName);
             }
-            return null;
         }
 
         /// <summary>
@@ -96,13 +97,72 @@ namespace BloodstarClockticaWpf
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        internal BcDocument OpenNoPrompts(string filePath)
+        internal void OpenNoPrompts(string filePath)
         {
+            AddToRecentDocuments(filePath);
             CharacterList.UnselectAll();
             CharacterList.SelectedIndex = -1;
             CharacterList.Focus();
             var document = new BcDocument(filePath);
-            return document;
+            (DataContext as DocumentWrapper).SetDocument(document);
+            FixCharacterListSelection(0);
+        }
+
+        /// <summary>
+        /// update Recent Documents list
+        /// </summary>
+        /// <param name="filePath"></param>
+        private void AddToRecentDocuments(string filePath)
+        {
+            if (null == Properties.Settings.Default.RecentFiles)
+            {
+                Properties.Settings.Default.RecentFiles = new System.Collections.Specialized.StringCollection();
+            }
+            var recentFiles = Properties.Settings.Default.RecentFiles;
+            recentFiles.Insert(0, filePath);
+
+            // truncate
+            while (recentFiles.Count > 10)
+            {
+                recentFiles.RemoveAt(recentFiles.Count - 1);
+            }
+
+            // remove duplicates
+            int i = 0;
+            while (i < recentFiles.Count)
+            {
+                var toRemove = recentFiles[i];
+                int j = i + 1;
+                while (j < recentFiles.Count)
+                {
+                    if (toRemove == recentFiles[j])
+                    {
+                        recentFiles.RemoveAt(j);
+                    }
+                    else
+                    {
+                        j++;
+                    }
+                }
+                i++;
+            }
+            Properties.Settings.Default.Save();
+
+            UpdateRecentDocumentsMenu();
+        }
+
+        /// <summary>
+        /// update recent documents menu
+        /// </summary>
+        private void UpdateRecentDocumentsMenu()
+        {
+            if (null == Properties.Settings.Default.RecentFiles)
+            {
+                Properties.Settings.Default.RecentFiles = new System.Collections.Specialized.StringCollection();
+            }
+
+            RecentFilesMenuItem.ItemsSource = from string x in Properties.Settings.Default.RecentFiles select x;
+            RecentFilesMenuItem.Visibility = (RecentFilesMenuItem.HasItems) ? Visibility.Visible : Visibility.Collapsed;
         }
 
         /// <summary>
@@ -129,6 +189,7 @@ namespace BloodstarClockticaWpf
             {
                 return false;
             }
+            AddToRecentDocuments(path);
             return (DataContext as DocumentWrapper).Save(path);
         }
 
@@ -152,6 +213,7 @@ namespace BloodstarClockticaWpf
             var path = PromptForSaveLocation();
             if (null == path) { return false; }
 
+            AddToRecentDocuments(path);
             return (DataContext as DocumentWrapper).Save(path);
         }
 
@@ -454,6 +516,22 @@ namespace BloodstarClockticaWpf
             finally
             {
                 Effect = null;
+            }
+        }
+
+        /// <summary>
+        /// open file from recent files
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RecentFilesMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (e.OriginalSource is MenuItem menuItem)
+            {
+                if (SavePromptIfDirty())
+                {
+                    OpenNoPrompts(menuItem.Header as string);
+                }
             }
         }
     }
