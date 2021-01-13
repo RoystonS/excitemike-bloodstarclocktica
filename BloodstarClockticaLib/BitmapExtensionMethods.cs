@@ -92,7 +92,7 @@ namespace BloodstarClockticaLib
             var destination = new Bitmap((int)(source.Width * factor), (int)(source.Height * factor));
             using (Graphics g = Graphics.FromImage(destination))
             {
-                g.DrawImage(source, new Rectangle(0,0,destination.Width, destination.Height));
+                g.DrawImage(source, new Rectangle(0, 0, destination.Width, destination.Height));
             }
             return destination;
         }
@@ -142,10 +142,10 @@ namespace BloodstarClockticaLib
                 this.bitmap = bitmap;
                 this.data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), lockMode, PixelFormat.Format32bppArgb);
             }
-             ~BitmapLock()
-             {
-                 Dispose();
-             }
+            ~BitmapLock()
+            {
+                Dispose();
+            }
 
             public void Dispose()
             {
@@ -329,7 +329,7 @@ namespace BloodstarClockticaLib
         /// <returns>new image containing convolve result</returns>
         internal static Bitmap Convolve(this Bitmap source, double[,] matrix)
         {
-            if ((matrix.GetLength(0) % 2 == 0)|| (matrix.GetLength(1) % 2 == 0)) { throw new ArgumentException("Convolve expects the dimensions to be odd"); }
+            if ((matrix.GetLength(0) % 2 == 0) || (matrix.GetLength(1) % 2 == 0)) { throw new ArgumentException("Convolve expects the dimensions to be odd"); }
             var xReach = matrix.GetLength(0) / 2;
             var yReach = matrix.GetLength(1) / 2;
             Bitmap destination = new Bitmap(source.Width, source.Height);
@@ -532,7 +532,8 @@ namespace BloodstarClockticaLib
         /// <returns>in-place modified original image</returns>
         internal static Bitmap AddNoiseToChannel(this Bitmap im, int channel, double sigma)
         {
-            return im.TransformChannel(channel, mean => {
+            return im.TransformChannel(channel, mean =>
+            {
                 var r = NextRand();
                 while (r < 1E-100)
                 {
@@ -620,14 +621,14 @@ namespace BloodstarClockticaLib
         {
             double sigma = radius / 2;
             int size = 2 * (int)Math.Ceiling(radius) + 1;
-            double[,] result = new double[size,size];
+            double[,] result = new double[size, size];
             double sum = 0.0;
-            for (int y=0; y<size; y++)
+            for (int y = 0; y < size; y++)
             {
                 for (int x = 0; x < size; x++)
                 {
                     var a = Gaussian(x, radius, sigma) * Gaussian(y, radius, sigma);
-                    result[y,x] = a;
+                    result[y, x] = a;
                     sum += a;
                 }
             }
@@ -635,7 +636,7 @@ namespace BloodstarClockticaLib
             {
                 for (int x = 0; x < size; x++)
                 {
-                    result[y,x] /= sum;
+                    result[y, x] /= sum;
                 }
             }
             return result;

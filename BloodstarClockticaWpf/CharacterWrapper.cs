@@ -110,7 +110,7 @@ namespace BloodstarClockticaWpf
                 using (var ms = new MemoryStream())
                 {
                     var rect = BcImage.ProcessImageSettings.Position;
-                    rect.Inflate(10,10);
+                    rect.Inflate(10, 10);
                     character.ProcessedImage.Crop(rect).Save(ms, ImageFormat.Png);
                     ms.Position = 0;
                     var bi = new BitmapImage();

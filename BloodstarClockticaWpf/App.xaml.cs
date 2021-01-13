@@ -1,5 +1,4 @@
-﻿using BloodstarClockticaLib;
-using System.Windows;
+﻿using System.Windows;
 
 namespace BloodstarClockticaWpf
 {

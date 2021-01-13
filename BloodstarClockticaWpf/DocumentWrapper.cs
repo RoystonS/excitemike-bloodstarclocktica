@@ -190,7 +190,7 @@ namespace BloodstarClockticaWpf
                 }
             }
         }
-        
+
 
         /// <summary>
         /// remote directory to upload to
@@ -259,7 +259,7 @@ namespace BloodstarClockticaWpf
                 }
             }
         }
-        
+
 
         /// <summary>
         /// write the document to a file

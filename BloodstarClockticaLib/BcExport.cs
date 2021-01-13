@@ -186,7 +186,7 @@ namespace BloodstarClockticaLib
             json.WriteString("author", document.Meta.Author);
             if (document.Meta.Logo != null)
             {
-                json.WriteString("logo", UrlCombine(imageUrlPrefix,"logo.png"));
+                json.WriteString("logo", UrlCombine(imageUrlPrefix, "logo.png"));
             }
             json.WriteEndObject();
         }
