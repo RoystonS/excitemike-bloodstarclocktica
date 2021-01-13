@@ -42,6 +42,7 @@ namespace BloodstarClockticaWpf
             UsernameTextField.Text = DocumentWrapper.SftpUsername;
             PasswordTextField.Password = Decrypt(Properties.Settings.Default.SavedPassword);
             RememberPasswordCheckBox.IsChecked = Properties.Settings.Default.RememberPassword;
+            ExportButton.IsDefault = true;
         }
 
         /// <summary>
@@ -91,6 +92,7 @@ namespace BloodstarClockticaWpf
         /// </summary>
         private void GoToProgressView()
         {
+            ExportButton.IsDefault = false;
             CloseButton.Visibility = Visibility.Hidden;
             ResultsView.Visibility = Visibility.Collapsed;
             SettingsView.Visibility = Visibility.Collapsed;
@@ -103,6 +105,7 @@ namespace BloodstarClockticaWpf
         /// </summary>
         private void GoToResultView()
         {
+            OkButton.IsDefault = true;
             Title = "Upload Complete!";
             TitleText.Text = Title;
             LinkTextBox.Text = $"{DocumentWrapper.RolesUrl}?{DateTime.Now:MMddHHmmss}";

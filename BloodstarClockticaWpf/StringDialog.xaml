@@ -45,8 +45,8 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Content="_OK" Click="Ok_Click" Margin="6,0,3,6"/>
-                <Button Grid.Column="1" Content="_Cancel" Click="Close_Click" Margin="3,0,6,6"/>
+                <Button Grid.Column="0" Content="_OK" Click="Ok_Click" Margin="6,0,3,6" IsDefault="True"/>
+                <Button Grid.Column="1" Content="_Cancel" Click="Close_Click" Margin="3,0,6,6" IsCancel="True"/>
             </Grid>
         </Grid>
     </Border>

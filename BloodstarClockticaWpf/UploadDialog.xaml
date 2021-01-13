@@ -65,7 +65,7 @@
                         <ColumnDefinition/>
                     </Grid.ColumnDefinitions>
                     <Button x:Name="ExportButton" Grid.Column="0" Content="_Export" Click="Export_Click" Margin="6,0,3,6"/>
-                    <Button Grid.Column="1" Content="_Cancel" Click="Close_Click" Margin="3,0,6,6"/>
+                    <Button Grid.Column="1" Content="_Cancel" Click="Close_Click" Margin="3,0,6,6" IsCancel="True"/>
                 </Grid>
             </Grid>
             
@@ -112,7 +112,8 @@
                         Margin="0,0,0,6"
                         Click="CopyToClipboard"
                         Padding="6"/>
-                <Button Grid.Row="3"
+                <Button x:Name="OkButton"
+                        Grid.Row="3"
                         Grid.Column="0"
                         Grid.ColumnSpan="2"
                         Content="_OK"

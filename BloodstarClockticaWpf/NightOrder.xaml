@@ -103,7 +103,7 @@
                     </GroupBox>
 
                     <!-- Done button -->
-                    <Button DockPanel.Dock="Bottom"  Content="_Done" Click="Close_Click" Height="50"/>
+                    <Button DockPanel.Dock="Bottom"  Content="_Done" Click="Close_Click" Height="50" IsCancel="True"/>
                     
                     <!-- just need something here to make dockpanel behave itself -->
                     <Border/>
