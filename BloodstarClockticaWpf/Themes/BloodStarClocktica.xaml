@@ -684,7 +684,7 @@
                             <Setter TargetName="Background" Property="BorderBrush" Value="{DynamicResource HoverBrush}"/>
                         </Trigger>
                         <Trigger Property="IsSelected" Value="true">
-                            <Setter TargetName="Background" Property="BorderBrush" Value="{DynamicResource HoverBrush}"/>
+                            <Setter TargetName="Background" Property="Background" Value="{DynamicResource HoverBrush}"/>
                         </Trigger>
                         <Trigger Property="IsFocused" Value="true">
                             <Setter TargetName="Background" Property="BorderBrush" Value="{DynamicResource HoverBrush}"/>
