@@ -21,7 +21,6 @@ namespace BloodstarClockticaWpf
         public SaveDiscardCancel()
         {
             InitializeComponent();
-            Icon = BitmapSource.Create(1, 1, 0, 0, PixelFormats.Bgra32, null, new byte[4], 4);
             Result = SaveDiscardCancelResult.Cancel;
         }
 
