@@ -31,6 +31,25 @@ namespace BloodstarClockticaWpf
             this.Multiline = multiline;
         }
     }
+    class BoolBindingHelper
+    {
+        private readonly Func<bool> getter;
+        private readonly Action<bool> setter;
+        public string Name { get; private set; }
+        public string Description { get; private set; }
+        public bool Value
+        {
+            get => getter();
+            set => setter(value);
+        }
+        public BoolBindingHelper(string name, string description, Func<bool> getter, Action<bool> setter)
+        {
+            Name = name;
+            Description = description;
+            this.getter = getter;
+            this.setter = setter;
+        }
+    }
     class ComboBoxBindingHelper
     {
         private readonly Func<string> getter;
@@ -68,17 +87,16 @@ namespace BloodstarClockticaWpf
                 OnPropertyChanged(null);
             }
         }
-        // TODO: what am I doing? this can just be a checkbox
-        private string SetupString
+
+        private bool Setup
         {
-            get => character.Setup ? "True" : "False";
+            get => character.Setup;
             set
             {
-                bool bValue = value == "True";
-                if (bValue != character.Setup)
+                if (value != character.Setup)
                 {
-                    character.Setup = bValue;
-                    OnPropertyChanged("SetupString");
+                    character.Setup = value;
+                    OnPropertyChanged("Setup");
                 }
             }
         }
@@ -171,7 +189,7 @@ namespace BloodstarClockticaWpf
         public StringBindingHelper AbilityProperty { get; private set; }
         public StringBindingHelper FirstNightReminderProperty { get; private set; }
         public StringBindingHelper OtherNightReminderProperty { get; private set; }
-        public ComboBoxBindingHelper SetupProperty { get; private set; }
+        public BoolBindingHelper SetupProperty { get; private set; }
         public StringBindingHelper ReminderTokensProperty { get; private set; }
         public StringBindingHelper GlobalReminderTokensProperty { get; private set; }
 
@@ -281,12 +299,11 @@ namespace BloodstarClockticaWpf
                 },
                 false
             );
-            SetupProperty = new ComboBoxBindingHelper(
+            SetupProperty = new BoolBindingHelper(
                  "Setup",
                  "Whether this token affects setup (orange leaf), like the Drunk or Baron",
-                 new string[] { "False", "True" },
-                 () => SetupString,
-                 (x) => { SetupString = x; }
+                 () => Setup,
+                 (x) => { Setup = x; }
              );
             ReminderTokensProperty = new StringBindingHelper(
                 "Character",

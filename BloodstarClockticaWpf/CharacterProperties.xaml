@@ -33,6 +33,19 @@
                 <ComboBox Grid.Column="1" ItemsSource="{Binding Options}" SelectedIndex="{Binding SelectedIndex}" Margin="0,0,0,4"/>
             </Grid>
         </DataTemplate>
+        <DataTemplate x:Key="RowCheckBox">
+            <Grid ToolTip="{Binding Description}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="Labels"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0" Grid.Column="0" Content="{Binding Name}"/>
+                <CheckBox Grid.Column="1" IsChecked="{Binding Value}" Margin="0,0,0,4"/>
+            </Grid>
+        </DataTemplate>
     </UserControl.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto" Background="{DynamicResource ControlBackgroundBrush}">
         <Border Margin="6,0,0,0">
@@ -49,7 +62,7 @@
                     <StackPanel>
                         <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding FirstNightReminderProperty}"/>
                         <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding OtherNightReminderProperty}"/>
-                        <ContentControl ContentTemplate="{StaticResource RowComboBox}" Content="{Binding SetupProperty}"/>
+                        <ContentControl ContentTemplate="{StaticResource RowCheckBox}" Content="{Binding SetupProperty}"/>
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Header="Tokens">
