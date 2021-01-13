@@ -30,7 +30,7 @@ namespace BloodstarClockticaWpf
         private void InitSettingsView()
         {
             var urlRoot = DocumentWrapper.UrlRoot;
-            if ("" == urlRoot)
+            if (string.IsNullOrEmpty(urlRoot))
             {
                 urlRoot = $"https://meyermik.startlogic.com/botc/{DocumentWrapper.Name}";
             }

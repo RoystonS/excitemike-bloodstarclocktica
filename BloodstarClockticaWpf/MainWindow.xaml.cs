@@ -26,7 +26,6 @@ namespace BloodstarClockticaWpf
             InitializeComponent();
             firstNightWindowOpen = false;
             otherNightWindowOpen = false;
-            Icon = BitmapSource.Create(1, 1, 0, 0, PixelFormats.Bgra32, null, new byte[4], 4);
             DataContext = new DocumentWrapper(document);
         }
 
@@ -438,26 +437,6 @@ namespace BloodstarClockticaWpf
         private void Close(object sender, ExecutedRoutedEventArgs e)
         {
             Close();
-        }
-
-        /// <summary>
-        /// blur the window while doing something
-        /// </summary>
-        /// <param name="f"></param>
-        private void DoBlurred(Action f)
-        {
-            try
-            {
-                Effect = new BlurEffect
-                {
-                    Radius = 5
-                };
-                f();
-            }
-            finally
-            {
-                Effect = null;
-            }
         }
 
         /// <summary>

@@ -238,17 +238,5 @@ namespace BloodstarClockticaLib
             if (b == "") { return a; }
             return $"{a.TrimEnd('/', '\\')}/{b.TrimStart('/', '\\')}";
         }
-
-        /// <summary>
-        /// add subpath onto url prefix without having to pay attention to whether the '/' is there at the end of a or start of b
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <param name="c"></param>
-        /// <returns></returns>
-        private static string UrlCombine(string a, string b, string c)
-        {
-            return UrlCombine(UrlCombine(a, b), c);
-        }
     }
 }

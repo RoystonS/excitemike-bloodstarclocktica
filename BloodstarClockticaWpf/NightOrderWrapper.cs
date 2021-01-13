@@ -63,7 +63,7 @@ namespace BloodstarClockticaWpf
             SortedList.Clear();
             var characters = DocumentWrapper.CharacterList
                 .OrderBy(characterWrapper => IsFirstNight ? characterWrapper.FirstNightOrder : characterWrapper.OtherNightOrder)
-                .Select(characterWrapper => new NightOrderCharacterWrapper(characterWrapper, IsFirstNight));
+                .Select(characterWrapper => new NightOrderCharacterWrapper(characterWrapper));
             int nightCount = 0;
             int nightReminderCount = 0;
             foreach (var characterWrapper in characters)

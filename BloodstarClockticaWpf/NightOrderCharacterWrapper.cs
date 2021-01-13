@@ -28,20 +28,13 @@ namespace BloodstarClockticaWpf
         public CharacterWrapper Character { get; private set; }
 
         /// <summary>
-        /// which night's order this is relative to
-        /// </summary>
-        private readonly bool firstNight;
-
-        /// <summary>
         /// create wrapper
         /// </summary>
         /// <param name="character"></param>
-        /// <param name="firstNight"></param>
-        public NightOrderCharacterWrapper(CharacterWrapper character, bool firstNight)
+        public NightOrderCharacterWrapper(CharacterWrapper character)
         {
             Character = character;
             character.PropertyChanged += Character_PropertyChanged;
-            this.firstNight = firstNight;
             nightReminderOrdinal = "-";
         }
 
