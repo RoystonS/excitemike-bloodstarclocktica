@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Text;
+using System.Text.Json;
 using System.Windows.Forms;
 
 namespace BloodstarClockticaLib
@@ -97,7 +99,7 @@ namespace BloodstarClockticaLib
             }
             catch (Exception e)
             {
-                MessageBox.Show($"{e.Message}\n{e.StackTrace}");
+                MessageBox.Show($"Something went wrong while saving: {e.Message}\n\nDebug info:\n{e.StackTrace}");
             }
             return false;
         }

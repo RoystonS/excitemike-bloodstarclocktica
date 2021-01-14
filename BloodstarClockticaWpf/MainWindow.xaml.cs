@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
@@ -532,6 +533,23 @@ namespace BloodstarClockticaWpf
                 {
                     OpenNoPrompts(menuItem.Header as string);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Add a character by copying an offical character
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void CloneOfficialMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var choices = DoBlurred(() => ChooseCharacter.Show(BcOfficial.OfficialCharacters, this));
+            if (choices != null)
+            {
+                var docWrapper = (DataContext as DocumentWrapper);
+                docWrapper.AddCharacters(docWrapper.CloneOfficialCharacters(choices));
+                CharacterList.SelectedIndex = docWrapper.CharacterList.Count - 1;
+                CharacterList.Focus();
             }
         }
     }

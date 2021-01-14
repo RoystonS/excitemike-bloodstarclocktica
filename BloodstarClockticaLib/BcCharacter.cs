@@ -118,14 +118,14 @@ namespace BloodstarClockticaLib
         /// <summary>
         /// create default character
         /// </summary>
+        public BcCharacter() : this(null) {}
+
+        /// <summary>
+        /// create default character
+        /// </summary>
         public BcCharacter(BcDocument document)
         {
-            SetDefaults(document);
-        }
-
-        private void SetDefaults(BcDocument document)
-        {
-            Id = UniqueCharacterId(document);
+            Id = (document != null) ? UniqueCharacterId(document) : "newcharacter";
             Name = "New Character";
             Team = BcTeam.TeamValue.Townsfolk;
             ReminderTokens = new BindingList<string>();
@@ -145,10 +145,8 @@ namespace BloodstarClockticaLib
         /// </summary>
         /// <param name="archive"></param>
         /// <param name="id"></param>
-        public BcCharacter(BcDocument document, ZipArchive archive, string id)
+        public BcCharacter(BcDocument document, ZipArchive archive, string id) : this(document)
         {
-            SetDefaults(document);
-
             var jsonEntry = archive.GetEntry($"{RoleDir}{BcDocument.PathSep}{id}.json");
             var srcImageEntry = archive.GetEntry($"{SourceImageDir}{BcDocument.PathSep}{id}.png");
             var processedImageEntry = archive.GetEntry($"{ProcessedImageDir}{BcDocument.PathSep}{id}.png");

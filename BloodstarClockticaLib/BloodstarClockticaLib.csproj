@@ -85,6 +85,7 @@
     <Compile Include="BcExport.cs" />
     <Compile Include="BcImage.cs" />
     <Compile Include="BcMeta.cs" />
+    <Compile Include="BcOfficial.cs" />
     <Compile Include="BcTeam.cs" />
     <Compile Include="BitmapExtensionMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -101,6 +102,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

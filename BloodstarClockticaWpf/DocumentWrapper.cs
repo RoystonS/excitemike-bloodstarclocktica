@@ -1,10 +1,12 @@
 ﻿using BloodstarClockticaLib;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
 
@@ -406,6 +408,27 @@ namespace BloodstarClockticaWpf
         }
 
         /// <summary>
+        /// add a new character to the set
+        /// </summary>
+        public void AddCharacter(CharacterWrapper character)
+        {
+            character.PropertyChanged += Character_PropertyChanged;
+            CharacterList.Add(character);
+            Dirty = true;
+        }
+
+        /// <summary>
+        /// add new characters to the set
+        /// </summary>
+        public void AddCharacters(IEnumerable<CharacterWrapper> characters)
+        {
+            foreach (var c in characters)
+            {
+                AddCharacter(c);
+            }
+        }
+
+        /// <summary>
         /// mark dirty when a character property changes
         /// </summary>
         /// <param name="sender"></param>
@@ -466,5 +489,16 @@ namespace BloodstarClockticaWpf
         /// upload via sftp
         /// </summary>
         public async Task ExportToSftp(string password, IProgress<double> progress) => await BcExport.ExportViaSftp(document, password, progress);
+
+        /// <summary>
+        /// create a copy of an official character
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        internal IEnumerable<CharacterWrapper> CloneOfficialCharacters(IEnumerable<string> ids)
+        {
+            return from id in ids
+                   select new CharacterWrapper(BcOfficial.CloneOfficialCharacter(document, id));
+        }
     }
 }

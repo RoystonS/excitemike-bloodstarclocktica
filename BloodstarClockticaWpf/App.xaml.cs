@@ -24,7 +24,7 @@ namespace BloodstarClockticaWpf
 
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            MessageBox.Show($"{e.Exception.Message}\n{e.Exception.StackTrace}");
+            MessageBox.Show($"Unhandled exception: {e.Exception.Message}\n\nDebug info:\n{e.Exception.StackTrace}");
             e.Handled = true;
         }
     }

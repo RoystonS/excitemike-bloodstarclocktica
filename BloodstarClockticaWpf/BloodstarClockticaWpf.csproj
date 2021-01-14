@@ -82,6 +82,9 @@
       <DependentUpon>CharacterProperties.xaml</DependentUpon>
     </Compile>
     <Compile Include="CharacterWrapper.cs" />
+    <Compile Include="ChooseCharacter.xaml.cs">
+      <DependentUpon>ChooseCharacter.xaml</DependentUpon>
+    </Compile>
     <Compile Include="NightOrderCharacterWrapper.cs" />
     <Compile Include="NightOrderWrapper.cs" />
     <Compile Include="NightOrder.xaml.cs">
@@ -113,6 +116,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="ChooseCharacter.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="NightOrder.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

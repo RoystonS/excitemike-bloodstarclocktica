@@ -77,7 +77,7 @@ namespace BloodstarClockticaWpf
             }
             catch (Exception e)
             {
-                MessageBox.Show($"Error uploading via SFTP.\n{e.Message}\n{e.StackTrace}");
+                MessageBox.Show($"Error uploading via SFTP.\n{e.Message}\n\nDebug info:\nn{e.Message}\n\n{e.StackTrace}");
             }
             finally
             {

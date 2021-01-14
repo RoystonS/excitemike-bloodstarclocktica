@@ -91,6 +91,32 @@ namespace BloodstarClockticaLib.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to [
+        ///  {
+        ///    &quot;id&quot;: &quot;washerwoman&quot;,
+        ///    &quot;name&quot;: &quot;Washerwoman&quot;,
+        ///    &quot;edition&quot;: &quot;tb&quot;,
+        ///    &quot;team&quot;: &quot;townsfolk&quot;,
+        ///    &quot;firstNight&quot;: 19,
+        ///    &quot;firstNightReminder&quot;: &quot;Show the character token of a Townsfolk in play. Point to two players, one of which is that character.&quot;,
+        ///    &quot;otherNight&quot;: 0,
+        ///    &quot;otherNightReminder&quot;: &quot;&quot;,
+        ///    &quot;reminders&quot;: [&quot;Townsfolk&quot;,
+        ///        &quot;Wrong&quot;],
+        ///    &quot;setup&quot;: false,
+        ///    &quot;ability&quot;: &quot;You start knowing that 1 of 2 players is a particular Townsfolk.&quot;
+        ///  },
+        ///  {
+        ///    &quot;id&quot;: &quot;librarian&quot;,
+        ///    [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string OfficialRolesJson {
+            get {
+                return ResourceManager.GetString("OfficialRolesJson", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap OutsiderGradient {
