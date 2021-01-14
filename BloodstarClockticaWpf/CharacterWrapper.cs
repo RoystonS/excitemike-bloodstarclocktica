@@ -183,6 +183,8 @@ namespace BloodstarClockticaWpf
             }
         }
 
+        // TODO: I hadn't learned about dependency properties when I made these. Convert.
+
         public StringBindingHelper IdProperty { get; private set; }
         public StringBindingHelper NameProperty { get; private set; }
         public ComboBoxBindingHelper TeamProperty { get; private set; }
@@ -248,7 +250,10 @@ namespace BloodstarClockticaWpf
                     {
                         character.Team = enumValue;
                         cachedImagePreview = null;
-                        character.ProcessedImage = null;
+                        if (character.SourceImage != null)
+                        {
+                            character.ProcessedImage = null;
+                        }
                         OnPropertyChanged("Team");
                         OnPropertyChanged("TeamProperty");
                         OnPropertyChanged("ImagePreview");
