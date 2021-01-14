@@ -145,5 +145,14 @@ namespace BloodstarClockticaWpf
             }
             return null;
         }
+
+        private void SelectAll_Click(object sender, RoutedEventArgs e)
+        {
+            CharacterList.SelectAll();
+        }
+        private void SelectNone_Click(object sender, RoutedEventArgs e)
+        {
+            CharacterList.SelectedIndex = -1;
+        }
     }
 }

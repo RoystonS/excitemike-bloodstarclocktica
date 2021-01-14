@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BloodstarClockticaWpf"
         mc:Ignorable="d"
-        Title="Choose Character(s)" Height="500" Width="500"
+        Title="Choose Character(s)" Height="600" Width="600"
         WindowStartupLocation="CenterOwner"
         Style="{StaticResource WindowStyle}"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
@@ -15,6 +15,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
+                <RowDefinition Height="30"/>
                 <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
             <!-- title bar -->
@@ -34,7 +35,7 @@
             </DockPanel>
             
             <!-- list of characters -->
-            <ListView Grid.Row="2" Name="CharacterList" ItemsSource="{Binding Characters}" Margin="6,0,6,6" SelectionMode="Multiple" SelectionChanged="CharacterList_SelectionChanged">
+            <ListView Grid.Row="2" x:Name="CharacterList" ItemsSource="{Binding Characters}" Margin="6,0,6,6" SelectionMode="Extended" SelectionChanged="CharacterList_SelectionChanged">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="Edition" DisplayMemberBinding="{Binding Edition}"/>
@@ -44,15 +45,27 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-
-            <!-- Done button -->
+            
+            <!-- select all/none -->
             <Grid Grid.Row="3" Margin="6,0,6,6">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition Width="6"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" x:Name="OkButton" Content="_OK" Click="Ok_Click" IsDefault="True" IsEnabled="{Binding AnySelected}"/>
+                <Button Grid.Column="0" Content="Select _All" Click="SelectAll_Click"/>
+                <Button Grid.Column="2" Content="Select _None" Click="SelectNone_Click"/>
+                
+            </Grid>
+
+            <!-- Done button -->
+            <Grid Grid.Row="4" Margin="6,0,6,6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="6"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Content="_OK" Click="Ok_Click" IsDefault="True" IsEnabled="{Binding AnySelected}"/>
                 <Button Grid.Column="2" Content="_Cancel" Click="Close_Click" IsCancel="True"/>
             </Grid>
         </Grid>
