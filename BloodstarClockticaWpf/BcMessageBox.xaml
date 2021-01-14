@@ -1,0 +1,39 @@
+﻿<Window x:Class="BloodstarClockticaWpf.BcMessageBox"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BloodstarClockticaWpf"
+        mc:Ignorable="d"
+        Width="600"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize" 
+        Style="{StaticResource WindowStyle}" SizeToContent="Height">
+    <Border BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="1">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+            <Border BorderBrush="{Binding (Window.BorderBrush), RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" BorderThickness="0,0,0,1">
+                <Grid>
+                    <TextBlock x:Name="TitleLabel" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Button HorizontalAlignment="Right" Width="35" Height="25" Style="{StaticResource TitleBarButton}" Click="Close_Click">
+                        <Path Data="M 0,0 10,10 M 0,10 10,0" Stroke="{DynamicResource SolidBorderBrush}" StrokeThickness="2"/>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <TextBox Grid.Row="1" x:Name="Message" 
+                     Text="Message" 
+                     Margin="6" 
+                     Background="Transparent"
+                     BorderThickness="0"
+                     IsReadOnly="True"
+                     TextWrapping="Wrap"/>
+
+            <Button Grid.Row="2" Content="_OK" Click="Ok_Click" Margin="6,0,3,6" IsDefault="True"/>
+        </Grid>
+    </Border>
+</Window>

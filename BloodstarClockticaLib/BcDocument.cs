@@ -83,25 +83,17 @@ namespace BloodstarClockticaLib
         /// <returns>whether it successfully saved</returns>
         public bool Save(string path)
         {
-            try
+            filePath = path;
+            using (Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write))
             {
-                filePath = path;
-                using (Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write))
+                using (ZipArchive archive = new ZipArchive(stream, ZipArchiveMode.Create))
                 {
-                    using (ZipArchive archive = new ZipArchive(stream, ZipArchiveMode.Create))
-                    {
-                        SaveMeta(archive);
-                        SaveCharacters(archive);
-                    }
+                    SaveMeta(archive);
+                    SaveCharacters(archive);
                 }
-                dirty = false;
-                return true;
             }
-            catch (Exception e)
-            {
-                MessageBox.Show($"Something went wrong while saving: {e.Message}\n\nDebug info:\n{e.StackTrace}");
-            }
-            return false;
+            dirty = false;
+            return true;
         }
 
         /// <summary>

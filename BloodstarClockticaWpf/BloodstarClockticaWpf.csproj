@@ -90,6 +90,9 @@
     <Compile Include="NightOrder.xaml.cs">
       <DependentUpon>NightOrder.xaml</DependentUpon>
     </Compile>
+    <Compile Include="BcMessageBox.xaml.cs">
+      <DependentUpon>BcMessageBox.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UploadDialog.xaml.cs">
       <DependentUpon>UploadDialog.xaml</DependentUpon>
     </Compile>
@@ -123,6 +126,10 @@
     <Page Include="NightOrder.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="BcMessageBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="UploadDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
