@@ -84,10 +84,10 @@ namespace BloodstarClockticaWpf
             }
             var dlg = new OpenFileDialog
             {
-                Filter = "Bloodstar Clocktica files (*.blood)|*.blood",
+                Filter = "Bloodstar Clocktica files (*.blood)|*.blood|All files (*.*)|*.*",
                 InitialDirectory = docDir
             };
-            if (true == DoBlurred(() => dlg.ShowDialog()))
+            if (true == DoBlurred(() => dlg.ShowDialog(this)))
             {
                 OpenNoPrompts(dlg.FileName);
             }
@@ -231,12 +231,12 @@ namespace BloodstarClockticaWpf
             }
             var dlg = new SaveFileDialog
             {
-                Filter = "Bloodstar Clocktica files (*.blood)|*.blood",
+                Filter = "Bloodstar Clocktica files (*.blood)|*.blood|All files (*.*)|*.*",
                 RestoreDirectory = true,
                 OverwritePrompt = true,
                 InitialDirectory = docDir
             };
-            if (true == DoBlurred(() => dlg.ShowDialog()))
+            if (true == DoBlurred(() => dlg.ShowDialog(this)))
             {
                 return dlg.FileName;
             }
@@ -324,7 +324,7 @@ namespace BloodstarClockticaWpf
         {
             var dlg = new OpenFileDialog
             {
-                Filter = "Images (*.jpg;*.png;*.bmp;*.gif)|*.jpg;*.png;*.bmp;*.gif"
+                Filter = "Images (*.jpg;*.png;*.bmp;*.gif)|*.jpg;*.png;*.bmp;*.gif|All files (*.*)|*.*"
             };
             if (true == DoBlurred(() => dlg.ShowDialog(this)))
             {
@@ -547,9 +547,35 @@ namespace BloodstarClockticaWpf
             if (choices != null)
             {
                 var docWrapper = (DataContext as DocumentWrapper);
-                docWrapper.AddCharacters(docWrapper.CloneOfficialCharacters(choices));
+                docWrapper.AddCharacters(docWrapper.CloneOfficialCharacters(from c in choices select c.Id));
                 CharacterList.SelectedIndex = docWrapper.CharacterList.Count - 1;
                 CharacterList.Focus();
+            }
+        }
+
+
+        /// <summary>
+        /// Add character(s) from a pre-existing roles.json
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ImportFromRolesJson_Click(object sender, RoutedEventArgs e)
+        {
+            var dlg = new OpenFileDialog
+            {
+                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*"
+            };
+            if (true == DoBlurred(() => dlg.ShowDialog(this)))
+            {
+                var characters = BcImport.ParseRolesJsonFromFile(dlg.FileName);
+                var choices = DoBlurred(() => ChooseCharacter.Show(characters, this));
+                if (choices != null)
+                {
+                    var docWrapper = (DataContext as DocumentWrapper);
+                    docWrapper.AddCharacters(docWrapper.ImportCharacters(choices));
+                    CharacterList.SelectedIndex = docWrapper.CharacterList.Count - 1;
+                    CharacterList.Focus();
+                }
             }
         }
     }

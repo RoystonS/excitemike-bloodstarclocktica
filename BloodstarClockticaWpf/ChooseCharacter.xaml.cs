@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using static BloodstarClockticaLib.BcImport;
 
 namespace BloodstarClockticaWpf
 {
@@ -15,16 +16,16 @@ namespace BloodstarClockticaWpf
         /// <summary>
         /// characters to choose from
         /// </summary>
-        public ObservableCollection<BcOfficial.OfficialCharacter> Characters
+        public ObservableCollection<RolesJsonCharacter> Characters
         {
-            get => (ObservableCollection<BcOfficial.OfficialCharacter>)GetValue(CharactersProperty);
+            get => (ObservableCollection<RolesJsonCharacter>)GetValue(CharactersProperty);
             set => SetValue(CharactersProperty, value);
         }
         public static readonly DependencyProperty CharactersProperty = DependencyProperty.Register(
             "Characters",
-            typeof(ObservableCollection<BcOfficial.OfficialCharacter>),
+            typeof(ObservableCollection<RolesJsonCharacter>),
             typeof(ChooseCharacter),
-            new PropertyMetadata(new ObservableCollection<BcOfficial.OfficialCharacter>())
+            new PropertyMetadata(new ObservableCollection<RolesJsonCharacter>())
         );
 
         /// <summary>
@@ -42,12 +43,12 @@ namespace BloodstarClockticaWpf
             new PropertyMetadata(false)
         );
 
-        private readonly IEnumerable<BcOfficial.OfficialCharacter> allCharacters;
+        private readonly IEnumerable<RolesJsonCharacter> allCharacters;
 
         /// <summary>
         /// where we store the choice made in this dialog
         /// </summary>
-        private IEnumerable<string> ChosenIds { get; set; }
+        private IEnumerable<RolesJsonCharacter> ChosenCharacters { get; set; }
 
         /// <summary>
         /// use to filter the list
@@ -66,10 +67,10 @@ namespace BloodstarClockticaWpf
                 (DependencyObject d, DependencyPropertyChangedEventArgs e) => (d as ChooseCharacter)?.UpdateCharacters(e.NewValue as string)
             ));
 
-        private ChooseCharacter(IEnumerable<BcOfficial.OfficialCharacter> characters)
+        private ChooseCharacter(IEnumerable<RolesJsonCharacter> characters)
         {
-            allCharacters = new List<BcOfficial.OfficialCharacter>(characters);
-            Characters = new ObservableCollection<BcOfficial.OfficialCharacter>(allCharacters);
+            allCharacters = new List<RolesJsonCharacter>(characters);
+            Characters = new ObservableCollection<RolesJsonCharacter>(allCharacters);
             AnySelected = false;
             InitializeComponent();
         }
@@ -81,7 +82,7 @@ namespace BloodstarClockticaWpf
         /// <param name="e"></param>
         private void Ok_Click(object sender, RoutedEventArgs e)
         {
-            ChosenIds = new List<string>(from BcOfficial.OfficialCharacter character in CharacterList.SelectedItems select character.Id);
+            ChosenCharacters = new List<RolesJsonCharacter>(from RolesJsonCharacter character in CharacterList.SelectedItems select character);
             DialogResult = true;
             Close();
         }
@@ -93,7 +94,7 @@ namespace BloodstarClockticaWpf
         /// <param name="e"></param>
         private void Close_Click(object sender, RoutedEventArgs e)
         {
-            ChosenIds = null;
+            ChosenCharacters = null;
             Close();
         }
 
@@ -126,7 +127,7 @@ namespace BloodstarClockticaWpf
         /// prompt the user to choose a character from the list
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<string> Show(IEnumerable<BcOfficial.OfficialCharacter> characters)
+        public static IEnumerable<RolesJsonCharacter> Show(IEnumerable<RolesJsonCharacter> characters)
         {
             return Show(characters, null);
         }
@@ -135,12 +136,12 @@ namespace BloodstarClockticaWpf
         /// prompt the user to choose a character from the list
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<string> Show(IEnumerable<BcOfficial.OfficialCharacter> characters, Window owner)
+        public static IEnumerable<RolesJsonCharacter> Show(IEnumerable<RolesJsonCharacter> characters, Window owner)
         {
             var dlg = new ChooseCharacter(characters) { Owner = owner };
             if (true == dlg.ShowDialog())
             {
-                return dlg.ChosenIds;
+                return dlg.ChosenCharacters;
             }
             return null;
         }

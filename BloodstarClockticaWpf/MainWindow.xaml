@@ -82,7 +82,7 @@
                             <MenuItem Header="Save _As" Command="{StaticResource SaveFileAs}" InputGestureText="Ctrl+A"/>
                             <MenuItem Header="_Close" Command="{StaticResource Close}" InputGestureText="Alt+F4"/>
                             <MenuItem Header="_Import">
-                                <MenuItem Header="_From roles.json"/>
+                                <MenuItem Header="_From roles.json" Click="ImportFromRolesJson_Click"/>
                                 <MenuItem Header="_Clone Official Character" Click="CloneOfficialMenuItem_Click"/>
                             </MenuItem>
                             <MenuItem x:Name="RecentFilesMenuItem"  Header="_Recent Files" Click="RecentFilesMenuItem_Click"/>

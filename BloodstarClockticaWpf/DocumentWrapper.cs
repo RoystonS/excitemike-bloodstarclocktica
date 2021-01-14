@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using static BloodstarClockticaLib.BcImport;
 
 namespace BloodstarClockticaWpf
 {
@@ -500,5 +501,16 @@ namespace BloodstarClockticaWpf
             return from id in ids
                    select new CharacterWrapper(BcOfficial.CloneOfficialCharacter(document, id));
         }
+        /// <summary>
+        /// impot a character from a loaded roles.json
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        internal IEnumerable<CharacterWrapper> ImportCharacters(IEnumerable<RolesJsonCharacter> characters)
+        {
+            return from character in characters
+                   select new CharacterWrapper(ImportCharacter(document, character));
+        }
+        
     }
 }
