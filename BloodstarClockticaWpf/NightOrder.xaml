@@ -52,8 +52,8 @@
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn DisplayMemberBinding="{Binding NightReminderOrdinal}" Width="45"/>
-                                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Character.NameProperty.Value}" Width="135"/>
-                                    <GridViewColumn Header="Team" DisplayMemberBinding="{Binding Character.TeamProperty.DisplayString}"/>
+                                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Character.NameProperty.Value}" Width="150"/>
+                                    <GridViewColumn Header="Team" DisplayMemberBinding="{Binding Character.TeamProperty.DisplayString}" Width="69"/>
                                 </GridView>
                             </ListView.View>
                         </ListView>

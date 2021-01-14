@@ -164,12 +164,12 @@
                                         <GridViewColumn Width="48">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <Image Source="{Binding ImagePreview}" RenderOptions.BitmapScalingMode="HighQuality" MaxWidth="48" MaxHeight="48"/>
+                                                    <Image Source="{Binding ImagePreview}" RenderOptions.BitmapScalingMode="HighQuality" MaxWidth="100" MaxHeight="100"/>
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
-                                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding NameProperty.Value}" Width="Auto"/>
-                                        <GridViewColumn Header="Team" DisplayMemberBinding="{Binding TeamProperty.DisplayString}"/>
+                                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding NameProperty.Value}" Width="120"/>
+                                        <GridViewColumn Header="Team" DisplayMemberBinding="{Binding TeamProperty.DisplayString}" Width="69"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
