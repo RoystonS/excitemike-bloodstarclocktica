@@ -260,16 +260,16 @@ namespace BloodstarClockticaLib
         /// <param name="document">if not null, used to ensure unique ids</param>
         /// <param name="id"></param>
         /// <returns></returns>
-        public static BcCharacter ImportCharacter(BcDocument document, RolesJsonCharacter character)
+        public static BcCharacter ImportCharacter(BcDocument document, RolesJsonCharacter character, bool mustChangeId)
         {
             var bcCharacter = (document != null) ? new BcCharacter(document) : new BcCharacter();
 
-            int i = 1;
-
-            var newId = character.Id + i;
-            if (document != null)
+            var newId = character.Id;
+            if ((document != null) && (mustChangeId || !document.IsIdAvailable(newId)))
             {
-                while (!document.IsIdAvailable(newId, -1))
+                int i = 1;
+                newId = character.Id + i;
+                while (!document.IsIdAvailable(newId))
                 {
                     ++i;
                     newId = character.Id + i;

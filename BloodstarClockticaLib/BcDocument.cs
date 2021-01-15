@@ -136,7 +136,14 @@ namespace BloodstarClockticaLib
         /// check whether the id is taken
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="characterIndex"></param>
+        /// <returns>true if the id is a unique one</returns>
+        internal bool IsIdAvailable(string id) => IsIdAvailable(id, -1);
+
+        /// <summary>
+        /// check whether the id is taken
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="characterIndex">character to skip when checking (usually the one you are changing)</param>
         /// <returns>true if the id is a unique one</returns>
         internal bool IsIdAvailable(string id, int characterIndex)
         {

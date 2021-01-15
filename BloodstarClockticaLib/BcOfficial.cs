@@ -74,7 +74,7 @@ namespace BloodstarClockticaLib
             {
                 return null;
             }
-            return ImportCharacter(document, officialCharacter);
+            return ImportCharacter(document, officialCharacter, true);
         }
     }
 }

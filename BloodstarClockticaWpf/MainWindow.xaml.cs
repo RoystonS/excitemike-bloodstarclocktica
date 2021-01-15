@@ -1,7 +1,6 @@
 ﻿using BloodstarClockticaLib;
 using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -562,11 +561,12 @@ namespace BloodstarClockticaWpf
         private void CloneOfficialMenuItem_Click(object _sender, RoutedEventArgs _e)
         {
             var docWrapper = (DataContext as DocumentWrapper);
-            var characters = DoBlurred(() => {
+            var characters = DoBlurred(() =>
+            {
                 var choices = ChooseCharacter.Show(BcOfficial.OfficialCharacters, this);
-                var ids = (from character in choices select character.Id).ToList();
                 if (choices != null)
                 {
+                    var ids = (from character in choices select character.Id).ToList();
                     return WithProgressPopup("Downloading Character Images...", (progress) => docWrapper.CloneOfficialCharacters(ids, progress));
                 }
                 return null;
@@ -594,9 +594,11 @@ namespace BloodstarClockticaWpf
                 Title = title
             };
             var progress = new Progress<double>(fraction => progressWindow.Value = fraction);
-            var work = Task.Run(() => {
+            var work = Task.Run(() =>
+            {
                 var result = f(progress);
-                Dispatcher.BeginInvoke((Action)(() => {
+                Dispatcher.BeginInvoke((Action)(() =>
+                {
                     progressWindow.Closing -= BlockClosing;
                     progressWindow.Close();
                 }));
@@ -625,21 +627,28 @@ namespace BloodstarClockticaWpf
         /// <param name="e"></param>
         private void ImportFromRolesJson_Click(object sender, RoutedEventArgs e)
         {
-            var dlg = new OpenFileDialog
+            var docWrapper = (DataContext as DocumentWrapper);
+            var characters = DoBlurred(() =>
             {
-                Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*"
-            };
-            if (true == DoBlurred(() => dlg.ShowDialog(this)))
-            {
-                var characters = BcImport.ParseRolesJsonFromFile(dlg.FileName);
-                var choices = DoBlurred(() => ChooseCharacter.Show(characters, this));
-                if (choices != null)
+                var dlg = new OpenFileDialog
                 {
-                    var docWrapper = (DataContext as DocumentWrapper);
-                    docWrapper.AddCharacters(docWrapper.ImportCharacters(choices));
-                    CharacterList.SelectedIndex = docWrapper.CharacterList.Count - 1;
-                    CharacterList.Focus();
+                    Filter = "JSON files (*.json)|*.json|All files (*.*)|*.*"
+                };
+                if (true == dlg.ShowDialog(this))
+                {
+                    var choices = ChooseCharacter.Show(BcImport.ParseRolesJsonFromFile(dlg.FileName), this);
+                    if (choices != null)
+                    {
+                        return WithProgressPopup("Downloading Character Images...", (progress) => docWrapper.ImportCharacters(choices, progress));
+                    }
                 }
+                return null;
+            });
+            if (null != characters)
+            {
+                docWrapper.AddCharacters(characters);
+                CharacterList.SelectedIndex = docWrapper.CharacterList.Count - 1;
+                CharacterList.Focus();
             }
         }
 
@@ -648,7 +657,8 @@ namespace BloodstarClockticaWpf
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private static void BlockClosing(object sender, System.ComponentModel.CancelEventArgs e) {
+        private static void BlockClosing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
             e.Cancel = true;
         }
     }

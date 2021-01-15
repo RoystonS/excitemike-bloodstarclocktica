@@ -534,7 +534,27 @@ namespace BloodstarClockticaWpf
         internal IEnumerable<CharacterWrapper> ImportCharacters(IEnumerable<RolesJsonCharacter> characters)
         {
             return from character in characters
-                   select new CharacterWrapper(ImportCharacter(document, character));
+                   select new CharacterWrapper(ImportCharacter(document, character, false));
+        }
+
+        /// <summary>
+        /// import a character from a loaded roles.json
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        internal IEnumerable<CharacterWrapper> ImportCharacters(IEnumerable<RolesJsonCharacter> characters, IProgress<double> progress)
+        {
+            var list = new List<RolesJsonCharacter>(characters);
+            var outputList = new List<CharacterWrapper>(list.Count);
+            double denom = list.Count;
+            int i = 0;
+            progress.Report(0);
+            foreach (var character in list)
+            {
+                outputList.Add(new CharacterWrapper(ImportCharacter(document, character, false)));
+                progress.Report((++i) / denom);
+            }
+            return outputList;
         }
 
     }
