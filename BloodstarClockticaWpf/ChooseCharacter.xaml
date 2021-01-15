@@ -20,35 +20,28 @@
         </Grid>
         
         <!-- filter -->
-        <DockPanel DockPanel.Dock="Top" Margin="6,6,6,6">
+        <DockPanel DockPanel.Dock="Top" Margin="6">
             <Label DockPanel.Dock="Left" Content="Filter" Margin="0,0,6,0"/>
             <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding FilterString, UpdateSourceTrigger=PropertyChanged}"/>
         </DockPanel>
 
-        <!-- ok/cancel button -->
-        <Grid DockPanel.Dock="Bottom" Margin="6,0,6,6" Height="50">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="6"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Content="_OK" Click="Ok_Click" IsDefault="True" IsEnabled="{Binding AnySelected}"/>
-            <Button Grid.Column="2" Content="_Cancel" Click="Close_Click" IsCancel="True"/>
-        </Grid>
-
-        <!-- select all/none -->
-        <Grid DockPanel.Dock="Bottom" Margin="6,0,6,6">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition Width="6"/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Content="Select _All" Click="SelectAll_Click"/>
-            <Button Grid.Column="2" Content="Select _None" Click="SelectNone_Click"/>
+        <!-- buttons -->
+        <Grid DockPanel.Dock="Right" Width="100" Margin="6,0,6,6">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="30"/>
+                <RowDefinition Height="30"/>
+                <RowDefinition/>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+            <Button Grid.Row="0" Content="Select _All" Click="SelectAll_Click" Margin="0,0,0,6"/>
+            <Button Grid.Row="1" Content="Select _None" Click="SelectNone_Click" Margin="0,0,0,6"/>
+            <Button Grid.Row="3" Grid.Column="0" Content="_OK" Click="Ok_Click" IsDefault="True" IsEnabled="{Binding AnySelected}" Margin="0,0,0,6"/>
+            <Button Grid.Row="4" Grid.Column="2" Content="_Cancel" Click="Close_Click" IsCancel="True"/>
         </Grid>
         
         <!-- list of characters -->
-        <ListView x:Name="CharacterList" ItemsSource="{Binding Characters}" Margin="6,0,6,6" SelectionMode="Extended" SelectionChanged="CharacterList_SelectionChanged">
+        <ListView x:Name="CharacterList" ItemsSource="{Binding Characters}" Margin="6,0,0,6" SelectionMode="Extended" SelectionChanged="CharacterList_SelectionChanged">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Edition" DisplayMemberBinding="{Binding Edition}"/>
