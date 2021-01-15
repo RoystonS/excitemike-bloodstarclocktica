@@ -511,6 +511,6 @@ namespace BloodstarClockticaWpf
             return from character in characters
                    select new CharacterWrapper(ImportCharacter(document, character));
         }
-        
+
     }
 }

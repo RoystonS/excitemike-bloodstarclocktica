@@ -118,7 +118,7 @@ namespace BloodstarClockticaLib
         /// <summary>
         /// create default character
         /// </summary>
-        public BcCharacter() : this(null) {}
+        public BcCharacter() : this(null) { }
 
         /// <summary>
         /// create default character

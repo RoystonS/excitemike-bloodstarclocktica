@@ -1,9 +1,6 @@
 ﻿using BloodstarClockticaLib;
 using Microsoft.Win32;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -21,7 +18,7 @@ namespace BloodstarClockticaWpf
         private bool firstNightWindowOpen;
         private bool otherNightWindowOpen;
         public static readonly string BaseTitle = "Bloodstar Clocktica";
-        
+
         public MainWindow() : this(new BcDocument())
         {
         }
