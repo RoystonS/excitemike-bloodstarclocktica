@@ -1,6 +1,7 @@
 ﻿using BloodstarClockticaLib;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Effects;
+using static BloodstarClockticaLib.BcImport;
 
 namespace BloodstarClockticaWpf
 {
@@ -98,13 +100,25 @@ namespace BloodstarClockticaWpf
         /// <returns></returns>
         internal void OpenNoPrompts(string filePath)
         {
-            AddToRecentDocuments(filePath);
             CharacterList.UnselectAll();
             CharacterList.SelectedIndex = -1;
             CharacterList.Focus();
-            var document = new BcDocument(filePath);
-            (DataContext as DocumentWrapper).SetDocument(document);
-            FixCharacterListSelection(0);
+            BcDocument document;
+            try
+            {
+                document = new BcDocument(filePath);
+            }
+            catch (InvalidDataException)
+            {
+                BcMessageBox.Show("Invalid Data", $"File \"{filePath}\" does not appear to be a valid Bloodstar Clocktica save file.", this);
+                return;
+            }
+            if (document != null)
+            {
+                AddToRecentDocuments(filePath);
+                (DataContext as DocumentWrapper).SetDocument(document);
+                FixCharacterListSelection(0);
+            }
         }
 
         /// <summary>
@@ -664,10 +678,23 @@ namespace BloodstarClockticaWpf
                 };
                 if (true == dlg.ShowDialog(this))
                 {
-                    var choices = ChooseCharacter.Show(BcImport.ParseRolesJsonFromFile(dlg.FileName), this);
-                    if (choices != null)
+                    IEnumerable<RolesJsonCharacter> foundCharacters;
+                    try
                     {
-                        return WithProgressPopup("Downloading Character Images...", (progress) => docWrapper.ImportCharacters(choices, progress));
+                        foundCharacters = ParseRolesJsonFromFile(dlg.FileName);
+                    }
+                    catch (InvalidDataException)
+                    {
+                        BcMessageBox.Show("Invalid Data", $"File \"{dlg.FileName}\" does not appear to be a JSON file", this);
+                        return null;
+                    }
+                    if (null != foundCharacters)
+                    {
+                        var choices = ChooseCharacter.Show(foundCharacters, this);
+                        if (choices != null)
+                        {
+                            return WithProgressPopup("Downloading Character Images...", (progress) => docWrapper.ImportCharacters(choices, progress));
+                        }
                     }
                 }
                 return null;
@@ -688,6 +715,35 @@ namespace BloodstarClockticaWpf
         private static void BlockClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = true;
+        }
+
+        /// <summary>
+        /// remove character image
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RemoveProcessed_Click(object sender, RoutedEventArgs e)
+        {
+            var docWrapper = (DataContext as DocumentWrapper);
+            var charWrapper = (CharacterList.SelectedItem as CharacterWrapper);
+            charWrapper.ProcessedImage = null;
+            docWrapper.Dirty = true;
+        }
+
+        /// <summary>
+        /// import an image to use as the final character image
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ImportCharacterImage_Click(object sender, RoutedEventArgs e)
+        {
+            var docWrapper = (DataContext as DocumentWrapper);
+            var charWrapper = (CharacterList.SelectedItem as CharacterWrapper);
+            var path = ChooseImage();
+            if (path == null) { return; }
+            charWrapper.SourceImage = null;
+            charWrapper.ProcessedImage = System.Drawing.Image.FromFile(path);
+            docWrapper.Dirty = true;
         }
     }
 }

@@ -82,9 +82,16 @@ namespace BloodstarClockticaLib
         /// <returns></returns>
         public static IEnumerable<RolesJsonCharacter> ParseRolesJsonFromFile(string filepath)
         {
-            using (var stream = new FileStream(filepath, FileMode.Open))
+            try
             {
-                return ParseRolesJson(stream);
+                using (var stream = new FileStream(filepath, FileMode.Open))
+                {
+                    return ParseRolesJson(stream);
+                }
+            }
+            catch (JsonException e)
+            {
+                throw new InvalidDataException(e.Message, e);
             }
         }
         /// <summary>
@@ -94,8 +101,15 @@ namespace BloodstarClockticaLib
         /// <returns></returns>
         public static IEnumerable<RolesJsonCharacter> ParseRolesJsonFromString(string jsonString)
         {
-            var bytes = Encoding.UTF8.GetBytes(jsonString);
-            return ParseRolesJson(bytes);
+            try
+            {
+                var bytes = Encoding.UTF8.GetBytes(jsonString);
+                return ParseRolesJson(bytes);
+            }
+            catch (JsonException e)
+            {
+                throw new InvalidDataException(e.Message, e);
+            }
         }
         /// <summary>
         /// load roles from a UTF-8-encoded JSON string 
@@ -104,8 +118,15 @@ namespace BloodstarClockticaLib
         /// <returns></returns>
         public static IEnumerable<RolesJsonCharacter> ParseRolesJson(byte[] bytes)
         {
-            var json = new Utf8JsonReader(bytes);
-            return ParseRolesJson(json);
+            try
+            {
+                var json = new Utf8JsonReader(bytes);
+                return ParseRolesJson(json);
+            }
+            catch (JsonException e)
+            {
+                throw new InvalidDataException(e.Message, e);
+            }
         }
         /// <summary>
         /// load roles from a stream of UTF-8-encoded JSON
@@ -114,10 +135,17 @@ namespace BloodstarClockticaLib
         /// <returns></returns>
         public static IEnumerable<RolesJsonCharacter> ParseRolesJson(Stream stream)
         {
-            var ms = new MemoryStream();
-            stream.CopyTo(ms);
-            Utf8JsonReader json = new Utf8JsonReader(new ReadOnlySpan<byte>(ms.ToArray()));
-            return ParseRolesJson(json);
+            try
+            {
+                var ms = new MemoryStream();
+                stream.CopyTo(ms);
+                Utf8JsonReader json = new Utf8JsonReader(new ReadOnlySpan<byte>(ms.ToArray()));
+                return ParseRolesJson(json);
+            }
+            catch (JsonException e)
+            {
+                throw new InvalidDataException(e.Message, e);
+            }
         }
         /// <summary>
         /// read roles from a Utf8JsonReader
@@ -287,16 +315,16 @@ namespace BloodstarClockticaLib
             bcCharacter.FirstNightReminder = character.FirstNightReminder;
             bcCharacter.OtherNightOrder = 0;
             bcCharacter.OtherNightReminder = character.OtherNightReminder;
-            try
+            if (!string.IsNullOrWhiteSpace(character.ImageUrl))
             {
-                if (!string.IsNullOrWhiteSpace(character.ImageUrl))
+                try
                 {
                     bcCharacter.ProcessedImage = DownloadImage(character.ImageUrl);
                 }
-            }
-            catch (System.Net.WebException)
-            {
-                Console.WriteLine("Failed to download image ({officialCharacter.ImageUrl})");
+                catch (System.Net.WebException)
+                {
+                    bcCharacter.ProcessedImage = Properties.Resources.DownloadError;
+                }
             }
 
             return bcCharacter;
