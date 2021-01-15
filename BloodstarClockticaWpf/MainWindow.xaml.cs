@@ -151,6 +151,23 @@ namespace BloodstarClockticaWpf
         }
 
         /// <summary>
+        /// update Recent Documents list
+        /// </summary>
+        /// <param name="filePath"></param>
+        private void RemoveFromRecentDocuments(string filePath)
+        {
+            if (null == Properties.Settings.Default.RecentFiles)
+            {
+                Properties.Settings.Default.RecentFiles = new System.Collections.Specialized.StringCollection();
+            }
+            var recentFiles = Properties.Settings.Default.RecentFiles;
+            recentFiles.Remove(filePath);
+            Properties.Settings.Default.Save();
+
+            UpdateRecentDocumentsMenu();
+        }
+
+        /// <summary>
         /// update recent documents menu
         /// </summary>
         private void UpdateRecentDocumentsMenu()
@@ -546,9 +563,20 @@ namespace BloodstarClockticaWpf
         {
             if (e.OriginalSource is MenuItem menuItem)
             {
-                if (SavePromptIfDirty())
+                if (menuItem.Header is string filePath)
                 {
-                    OpenNoPrompts(menuItem.Header as string);
+                    if (SavePromptIfDirty())
+                    {
+                        try
+                        {
+                            OpenNoPrompts(filePath);
+                        }
+                        catch (FileNotFoundException)
+                        {
+                            BcMessageBox.Show("File Not Found", $"File \"{filePath}\" appears to be missing. Removing from recent files.", this);
+                            RemoveFromRecentDocuments(filePath);
+                        }
+                    }
                 }
             }
         }
