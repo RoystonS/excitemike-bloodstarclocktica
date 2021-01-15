@@ -328,7 +328,7 @@ namespace BloodstarClockticaWpf
             );
             SetupProperty = new BoolBindingHelper(
                  "Setup",
-                 "Whether this token affects setup (orange leaf), like the Drunk or Baron",
+                 "Whether this character affects setup (orange leaf), like the Drunk or Baron",
                  () => Setup,
                  (x) => { Setup = x; }
              );
