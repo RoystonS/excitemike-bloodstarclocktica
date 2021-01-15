@@ -400,12 +400,15 @@ namespace BloodstarClockticaWpf
         /// </summary>
         public void AddCharacter()
         {
-            var character = new BcCharacter(document);
-            document.Characters.Add(character);
-            var wrapper = new CharacterWrapper(character);
-            wrapper.PropertyChanged += Character_PropertyChanged;
-            CharacterList.Add(wrapper);
-            Dirty = true;
+            AddCharacter(new BcCharacter(document));
+        }
+
+        /// <summary>
+        /// add a new character to the set
+        /// </summary>
+        public void AddCharacter(BcCharacter character)
+        {
+            AddCharacter(new CharacterWrapper(character));
         }
 
         /// <summary>
@@ -413,6 +416,7 @@ namespace BloodstarClockticaWpf
         /// </summary>
         public void AddCharacter(CharacterWrapper character)
         {
+            document.Characters.Add(character.Character);
             character.PropertyChanged += Character_PropertyChanged;
             CharacterList.Add(character);
             Dirty = true;
@@ -501,8 +505,29 @@ namespace BloodstarClockticaWpf
             return from id in ids
                    select new CharacterWrapper(BcOfficial.CloneOfficialCharacter(document, id));
         }
+
         /// <summary>
-        /// impot a character from a loaded roles.json
+        /// create a copy of an official character
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        internal IEnumerable<CharacterWrapper> CloneOfficialCharacters(IEnumerable<string> ids, IProgress<double> progress)
+        {
+            var list = new List<string>(ids);
+            var outputList = new List<CharacterWrapper>(list.Count);
+            double denom = list.Count;
+            int i = 0;
+            progress.Report(0);
+            foreach (var id in list)
+            {
+                outputList.Add(new CharacterWrapper(BcOfficial.CloneOfficialCharacter(document, id)));
+                progress.Report((++i) / denom);
+            }
+            return outputList;
+        }
+
+        /// <summary>
+        /// import a character from a loaded roles.json
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>

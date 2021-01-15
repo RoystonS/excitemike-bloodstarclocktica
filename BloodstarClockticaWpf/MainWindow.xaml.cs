@@ -1,8 +1,10 @@
 ﻿using BloodstarClockticaLib;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -500,6 +502,25 @@ namespace BloodstarClockticaWpf
         /// <summary>
         /// blur the window while doing something
         /// </summary>
+        private void DoBlurred(Action f)
+        {
+            try
+            {
+                Effect = new BlurEffect
+                {
+                    Radius = 5
+                };
+                f();
+            }
+            finally
+            {
+                Effect = null;
+            }
+        }
+
+        /// <summary>
+        /// blur the window while doing something
+        /// </summary>
         /// <param name="f"></param>
         private T DoBlurred<T>(Func<T> f)
         {
@@ -538,18 +559,64 @@ namespace BloodstarClockticaWpf
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void CloneOfficialMenuItem_Click(object sender, RoutedEventArgs e)
+        private void CloneOfficialMenuItem_Click(object _sender, RoutedEventArgs _e)
         {
-            var choices = DoBlurred(() => ChooseCharacter.Show(BcOfficial.OfficialCharacters, this));
-            if (choices != null)
+            var docWrapper = (DataContext as DocumentWrapper);
+            var characters = DoBlurred(() => {
+                var choices = ChooseCharacter.Show(BcOfficial.OfficialCharacters, this);
+                var ids = (from character in choices select character.Id).ToList();
+                if (choices != null)
+                {
+                    return WithProgressPopup("Downloading Character Images...", (progress) => docWrapper.CloneOfficialCharacters(ids, progress));
+                }
+                return null;
+            });
+            if (null != characters)
             {
-                var docWrapper = (DataContext as DocumentWrapper);
-                docWrapper.AddCharacters(docWrapper.CloneOfficialCharacters(from c in choices select c.Id));
+                docWrapper.AddCharacters(characters);
                 CharacterList.SelectedIndex = docWrapper.CharacterList.Count - 1;
                 CharacterList.Focus();
             }
         }
 
+        /// <summary>
+        /// show a progress popup while doing something
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="title"></param>
+        /// <param name="f"></param>
+        /// <returns></returns>
+        private T WithProgressPopup<T>(string title, Func<IProgress<double>, T> f)
+        {
+            var progressWindow = new ProgressDialog
+            {
+                Owner = this,
+                Title = title
+            };
+            var progress = new Progress<double>(fraction => progressWindow.Value = fraction);
+            var work = Task.Run(() => {
+                var result = f(progress);
+                Dispatcher.BeginInvoke((Action)(() => {
+                    progressWindow.Closing -= BlockClosing;
+                    progressWindow.Close();
+                }));
+                return result;
+            });
+            try
+            {
+                progressWindow.Closing += BlockClosing;
+                progressWindow.ShowDialog();
+                // the wait here is just because it's nice if we get to see the progessbar in its full state for a moment
+                var result = work.Result;
+                Task.Delay(10).Wait();
+                return result;
+            }
+            finally
+            {
+                progressWindow.Closing -= BlockClosing;
+                progressWindow.Close();
+            }
+        }
 
         /// <summary>
         /// Add character(s) from a pre-existing roles.json
@@ -574,6 +641,15 @@ namespace BloodstarClockticaWpf
                     CharacterList.Focus();
                 }
             }
+        }
+
+        /// <summary>
+        /// set as Closing event handler to block a window from closing
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private static void BlockClosing(object sender, System.ComponentModel.CancelEventArgs e) {
+            e.Cancel = true;
         }
     }
 }
