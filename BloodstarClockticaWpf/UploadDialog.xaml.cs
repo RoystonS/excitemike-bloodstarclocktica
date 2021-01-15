@@ -81,6 +81,10 @@ namespace BloodstarClockticaWpf
                 closable = true;
                 Close();
             }
+            finally
+            {
+                closable = true;
+            }
             GoToResultView();
         }
 
@@ -104,7 +108,6 @@ namespace BloodstarClockticaWpf
         {
             OkButton.IsDefault = true;
             Title = "Upload Complete!";
-            TitleText.Text = Title;
             LinkTextBox.Text = $"{DocumentWrapper.RolesUrl}?{DateTime.Now:MMddHHmmss}";
             CloseButton.Visibility = Visibility.Visible;
             ProgressBar.Visibility = Visibility.Collapsed;

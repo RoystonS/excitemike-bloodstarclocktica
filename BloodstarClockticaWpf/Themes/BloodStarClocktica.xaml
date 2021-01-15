@@ -34,6 +34,10 @@
         <GradientStop Color="#003977FF" Offset="0.95"/>
     </LinearGradientBrush>
     <DropShadowBitmapEffect x:Key="PopupDropShadow" ShadowDepth="1.5" Softness="0.15" />
+    <LinearGradientBrush x:Key="ActiveTitleBarBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#773977FF" Offset="0"/>
+        <GradientStop Color="#773977FF" Offset="1"/>
+    </LinearGradientBrush>
 
     <Style x:Key="LabelBase" TargetType="{x:Type Label}">
         <Setter Property="SnapsToDevicePixels" Value="true" />
@@ -97,6 +101,7 @@
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     </Style>
 
+    <!-- Window -->
     <Style x:Key="WindowStyle" TargetType="{x:Type Window}">
         <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
         <Setter Property="WindowStyle" Value="None"/>
@@ -104,12 +109,41 @@
         <Setter Property="BorderBrush" Value="{DynamicResource SolidBorderBrush}"/>
         <Setter Property="WindowChrome.WindowChrome">
             <Setter.Value>
-                <WindowChrome CaptionHeight="32" ResizeBorderThickness="5"/>
+                <WindowChrome CaptionHeight="26" ResizeBorderThickness="5"/>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Window}">
+                    <Border x:Name="Background" Background="{TemplateBinding Background}" BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="1">
+                        <Grid>
+                            <Border x:Name="TitleBarBackground"
+                                    DockPanel.Dock="Top"
+                                    BorderBrush="{Binding (Window.BorderBrush), RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                                    BorderThickness="0,0,0,1"
+                                    Height="30"
+                                    VerticalAlignment="Top"/>
+                            <ContentPresenter/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsActive" Value="True">
+                            <Setter TargetName="TitleBarBackground" Property="Background" Value="{DynamicResource ActiveTitleBarBrush}"/>
+                            <Setter TargetName="Background" Property="BorderBrush" Value="{DynamicResource HoverBrush}"/>
+                        </Trigger>
+                        <Trigger Property="WindowState" Value="Maximized">
+                            <Setter TargetName="Background" Property="BorderThickness" Value="6"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
             </Setter.Value>
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsActive" Value="True">
                 <Setter Property="BorderBrush" Value="{DynamicResource HoverBrush}"/>
+            </Trigger>
+            <Trigger Property="WindowState" Value="Maximized">
+                <Setter Property="BorderThickness" Value="6"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -139,6 +173,92 @@
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
+    <Style x:Key="BcCloseButton" TargetType="{x:Type Button}" BasedOn="{StaticResource TitleBarButton}">
+        <Setter Property="Template" Value="{DynamicResource BcCloseButtonTemplate}" />
+    </Style>
+    <ControlTemplate x:Key="BcCloseButtonTemplate" TargetType="{x:Type Button}">
+        <Grid x:Name="Grid" Width="35" Height="30">
+            <Border x:Name="Background" Background="Transparent" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" />
+            <Path Data="M 0,0 10,10 M 0,10 10,0" Stroke="{DynamicResource TextBrush}" StrokeThickness="2" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" />
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter TargetName="Background" Property="BorderBrush" Value="{DynamicResource HoverBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="true">
+                <Setter Property="Background" TargetName="Background" Value="{DynamicResource HoverBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="BcMaximizeRestoreButton" TargetType="{x:Type Button}" BasedOn="{StaticResource TitleBarButton}">
+        <Setter Property="Template" Value="{DynamicResource BcMaximizeRestoreButtonTemplate}" />
+    </Style>
+    <ControlTemplate x:Key="BcMaximizeRestoreButtonTemplate" TargetType="{x:Type Button}">
+        <Grid x:Name="Grid" Width="35" Height="30">
+            <Border x:Name="Background" Background="Transparent" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" />
+            <Path x:Name="MaximizeShape" Data="M 4,0 12,0 12,10 0,10 0,0 4,0" Stroke="{DynamicResource TextBrush}" StrokeThickness="2" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+            <Path x:Name="RestoreShape" Data="M 4,4 8,4 8,10 0,10 0,4 4,4 M 4,4 4,0 12,0 12,6 8,6" Stroke="{DynamicResource TextBrush}" StrokeThickness="2" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Visibility="Collapsed"/>
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" />
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter TargetName="Background" Property="BorderBrush" Value="{DynamicResource HoverBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="true">
+                <Setter Property="Background" TargetName="Background" Value="{DynamicResource HoverBrush}"/>
+            </Trigger>
+            <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=WindowState}" Value="Maximized">
+                <Setter TargetName="MaximizeShape" Property="Visibility" Value="Collapsed"/>
+                <Setter TargetName="RestoreShape" Property="Visibility" Value="Visible"/>
+            </DataTrigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <Style x:Key="BcMinimizeButton" TargetType="{x:Type Button}" BasedOn="{StaticResource TitleBarButton}">
+        <Setter Property="Template" Value="{DynamicResource BcMinimizeButtonTemplate}" />
+    </Style>
+    <ControlTemplate x:Key="BcMinimizeButtonTemplate" TargetType="{x:Type Button}">
+        <Grid x:Name="Grid" Width="35" Height="30">
+            <Border x:Name="Background" Background="Transparent" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1" />
+            <Rectangle Width="12" Height="4" Stroke="{DynamicResource TextBrush}" StrokeThickness="2" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" />
+        </Grid>
+        <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="true">
+                <Setter TargetName="Background" Property="BorderBrush" Value="{DynamicResource HoverBrush}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="true">
+                <Setter Property="Background" TargetName="Background" Value="{DynamicResource HoverBrush}"/>
+            </Trigger>
+        </ControlTemplate.Triggers>
+    </ControlTemplate>
+
+    <!-- Menu -->
+    <Style TargetType="{x:Type Menu}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Menu}">
+                    <Grid>
+                        <Border Margin="1" x:Name="Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" />
+                        <StackPanel Background="{TemplateBinding Background}" IsItemsHost="True" ClipToBounds="True" Orientation="Horizontal" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" TargetName="Border" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" TargetName="Border" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Menu items -->
     <Style TargetType="{x:Type MenuItem}" BasedOn="{x:Null}">
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="Background" Value="Transparent" />
@@ -188,18 +308,15 @@
                         </Trigger>
                         <Trigger Property="Role" Value="TopLevelItem">
                             <Setter Property="Margin" Value="0,1,0,1" />
-                            <!-- <Setter Property="Visibility" Value="Collapsed" TargetName="ArrowPanel" /> -->
                         </Trigger>
                         <Trigger Property="Role" Value="SubmenuHeader">
                             <Setter Property="DockPanel.Dock" Value="Top" />
                             <Setter Property="Padding" Value="0,2,0,2" />
                             <Setter Property="Grid.IsSharedSizeScope" Value="true" />
-                            <!-- <Setter Property="Visibility" Value="Visible" TargetName="ArrowPanel" /> -->
                         </Trigger>
                         <Trigger Property="Role" Value="SubmenuItem">
                             <Setter Property="DockPanel.Dock" Value="Top" />
                             <Setter Property="Padding" Value="0,2,0,2" />
-                            <!-- <Setter Property="Visibility" Value="Collapsed" TargetName="ArrowPanel" /> -->
                         </Trigger>
                         <Trigger Property="IsSuspendingPopupAnimation" Value="true">
                             <Setter Property="PopupAnimation" Value="None" TargetName="SubMenuPopup" />

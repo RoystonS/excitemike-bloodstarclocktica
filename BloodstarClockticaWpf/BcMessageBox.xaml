@@ -9,31 +9,18 @@
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize" 
         Style="{StaticResource WindowStyle}" SizeToContent="Height">
-    <Border BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="1">
+    <StackPanel>
         <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="50"/>
-            </Grid.RowDefinitions>
-            <Border BorderBrush="{Binding (Window.BorderBrush), RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" BorderThickness="0,0,0,1">
-                <Grid>
-                    <TextBlock x:Name="TitleLabel" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    <Button HorizontalAlignment="Right" Width="35" Height="25" Style="{StaticResource TitleBarButton}" Click="Close_Click">
-                        <Path Data="M 0,0 10,10 M 0,10 10,0" Stroke="{DynamicResource SolidBorderBrush}" StrokeThickness="2"/>
-                    </Button>
-                </Grid>
-            </Border>
-
-            <TextBox Grid.Row="1" x:Name="Message" 
-                     Text="Message" 
-                     Margin="6" 
-                     Background="Transparent"
-                     BorderThickness="0"
-                     IsReadOnly="True"
-                     TextWrapping="Wrap"/>
-
-            <Button Grid.Row="2" Content="_OK" Click="Ok_Click" Margin="6,0,3,6" IsDefault="True"/>
+            <Button Style="{StaticResource BcCloseButton}" HorizontalAlignment="Right" Click="Close_Click"/>
+            <TextBlock x:Name="TitleLabel" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Grid>
-    </Border>
+        <TextBox Grid.Row="0" x:Name="Message" 
+                    Text="Message" 
+                    Margin="6" 
+                    Background="Transparent"
+                    BorderThickness="0"
+                    IsReadOnly="True"
+                    TextWrapping="Wrap"/>
+        <Button Grid.Row="2" Content="_OK" Click="Ok_Click" Margin="6,0,3,6" Height="50" IsDefault="True"/>
+    </StackPanel>
 </Window>

@@ -9,65 +9,55 @@
         WindowStartupLocation="CenterOwner"
         Style="{StaticResource WindowStyle}"
         DataContext="{Binding RelativeSource={RelativeSource Self}}">
-    <Border BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="1">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
-                <RowDefinition Height="30"/>
-                <RowDefinition Height="50"/>
-            </Grid.RowDefinitions>
-            <!-- title bar -->
-            <Border Grid.Row="0" BorderBrush="{Binding (Window.BorderBrush), RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" BorderThickness="0,0,0,1">
-                <DockPanel>
-                    <Button DockPanel.Dock="Right" HorizontalAlignment="Right" Width="35" Height="25" Style="{StaticResource TitleBarButton}" Click="Close_Click">
-                        <Path Data="M 0,0 10,10 M 0,10 10,0" Stroke="{DynamicResource SolidBorderBrush}" StrokeThickness="2"/>
-                    </Button>
-                    <TextBlock Text="{Binding Title}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                </DockPanel>
-            </Border>
-
-            <!-- filter -->
-            <DockPanel Grid.Row="1" Margin="6,6,6,6">
-                <Label DockPanel.Dock="Left" Content="Filter" Margin="0,0,6,0"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding FilterString, UpdateSourceTrigger=PropertyChanged}"/>
+    <DockPanel>
+        <Grid DockPanel.Dock="Top">
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Style="{StaticResource BcCloseButton}" Click="Close_Click"/>
+                <Button DockPanel.Dock="Right" Style="{StaticResource BcMaximizeRestoreButton}" Click="MaximizeRestore_Click"/>
+                <Border/>
             </DockPanel>
-            
-            <!-- list of characters -->
-            <ListView Grid.Row="2" x:Name="CharacterList" ItemsSource="{Binding Characters}" Margin="6,0,6,6" SelectionMode="Extended" SelectionChanged="CharacterList_SelectionChanged">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Edition" DisplayMemberBinding="{Binding Edition}"/>
-                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"/>
-                        <GridViewColumn Header="Team" DisplayMemberBinding="{Binding Team}"/>
-                        <GridViewColumn Header="Ability" DisplayMemberBinding="{Binding Ability}"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
-            
-            <!-- select all/none -->
-            <Grid Grid.Row="3" Margin="6,0,6,6">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="6"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Content="Select _All" Click="SelectAll_Click"/>
-                <Button Grid.Column="2" Content="Select _None" Click="SelectNone_Click"/>
-                
-            </Grid>
-
-            <!-- Done button -->
-            <Grid Grid.Row="4" Margin="6,0,6,6">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition Width="6"/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Content="_OK" Click="Ok_Click" IsDefault="True" IsEnabled="{Binding AnySelected}"/>
-                <Button Grid.Column="2" Content="_Cancel" Click="Close_Click" IsCancel="True"/>
-            </Grid>
+            <TextBlock Text="{Binding Title}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Grid>
-    </Border>
+        
+        <!-- filter -->
+        <DockPanel DockPanel.Dock="Top" Margin="6,6,6,6">
+            <Label DockPanel.Dock="Left" Content="Filter" Margin="0,0,6,0"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding FilterString, UpdateSourceTrigger=PropertyChanged}"/>
+        </DockPanel>
+
+        <!-- ok/cancel button -->
+        <Grid DockPanel.Dock="Bottom" Margin="6,0,6,6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="6"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="_OK" Click="Ok_Click" IsDefault="True" IsEnabled="{Binding AnySelected}"/>
+            <Button Grid.Column="2" Content="_Cancel" Click="Close_Click" IsCancel="True"/>
+        </Grid>
+
+        <!-- select all/none -->
+        <Grid DockPanel.Dock="Bottom" Margin="6,0,6,6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="6"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="Select _All" Click="SelectAll_Click"/>
+            <Button Grid.Column="2" Content="Select _None" Click="SelectNone_Click"/>
+        </Grid>
+        
+        <!-- list of characters -->
+        <ListView x:Name="CharacterList" ItemsSource="{Binding Characters}" Margin="6,0,6,6" SelectionMode="Extended" SelectionChanged="CharacterList_SelectionChanged">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Edition" DisplayMemberBinding="{Binding Edition}"/>
+                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Name}"/>
+                    <GridViewColumn Header="Team" DisplayMemberBinding="{Binding Team}"/>
+                    <GridViewColumn Header="Ability" DisplayMemberBinding="{Binding Ability}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+    </DockPanel>
 </Window>

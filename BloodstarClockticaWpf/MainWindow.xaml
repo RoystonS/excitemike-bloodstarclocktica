@@ -60,172 +60,163 @@
     <Window.Title>
         <Binding Path="WindowTitle"/>
     </Window.Title>
-    <Border BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="1">
-        <DockPanel>
-            <Border DockPanel.Dock="Top" BorderBrush="{Binding (Window.BorderBrush), RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" BorderThickness="0,0,0,1">
-                <DockPanel>
-                    <Button DockPanel.Dock="Right" Width="35" Style="{StaticResource TitleBarButton}" Click="Close_Click">
-                        <Path Data="M 0,0 10,10 M 0,10 10,0" Stroke="{DynamicResource SolidBorderBrush}" StrokeThickness="2"/>
-                    </Button>
-                    <Button DockPanel.Dock="Right" Width="35" Style="{StaticResource TitleBarButton}" Click="MaximizeRestore_Click">
-                        <Rectangle Width="12" Height="10" Stroke="{DynamicResource SolidBorderBrush}" StrokeThickness="2"/>
-                    </Button>
-                    <Button DockPanel.Dock="Right" Width="35" Style="{StaticResource TitleBarButton}" Click="Minimize_Click">
-                        <Rectangle Width="12" Height="4" Stroke="{DynamicResource SolidBorderBrush}" StrokeThickness="2"/>
-                    </Button>
-                    <Menu DockPanel.Dock="Left">
-                        <WindowChrome.IsHitTestVisibleInChrome>True</WindowChrome.IsHitTestVisibleInChrome>
-                        <MenuItem Header="_File">
-                            <MenuItem Command="{StaticResource NewFile}"/>
-                            <MenuItem Header="_Open" Command="{StaticResource OpenFile}" InputGestureText="Ctrl+O"/>
-                            <MenuItem Header="_Save" Command="{StaticResource SaveFile}" InputGestureText="Ctrl+S"/>
-                            <MenuItem Header="Save _As" Command="{StaticResource SaveFileAs}" InputGestureText="Ctrl+A"/>
-                            <MenuItem Header="_Close" Command="{StaticResource Close}" InputGestureText="Alt+F4"/>
-                            <MenuItem Header="_Import">
-                                <MenuItem Header="_From roles.json" Click="ImportFromRolesJson_Click"/>
-                                <MenuItem Header="_Clone Official Character" Click="CloneOfficialMenuItem_Click"/>
-                            </MenuItem>
-                            <MenuItem x:Name="RecentFilesMenuItem"  Header="_Recent Files" Click="RecentFilesMenuItem_Click"/>
-                        </MenuItem>
-                        <MenuItem Header="_Order">
-                            <MenuItem Header="_First Night" Command="{StaticResource FirstNight}" InputGestureText="Ctrl+1"/>
-                            <MenuItem Header="_Other Nights" Command="{StaticResource OtherNights}" InputGestureText="Ctrl+2"/>
-                        </MenuItem>
-                        <MenuItem Header="_Export">
-                            <MenuItem Header="To _Disk" Command="{StaticResource ExportToDisk}" InputGestureText="F5"/>
-                            <MenuItem Header="_Upload" Command="{StaticResource ExportToSftp}" InputGestureText="Ctrl+F5"/>
-                        </MenuItem>
-                    </Menu>
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top">
+            <Button DockPanel.Dock="Right" Style="{StaticResource BcCloseButton}" Click="Close_Click"/>
+            <Button DockPanel.Dock="Right" Style="{StaticResource BcMaximizeRestoreButton}" Click="MaximizeRestore_Click"/>
+            <Button DockPanel.Dock="Right" Style="{StaticResource BcMinimizeButton}" Click="Minimize_Click"/>
+            <Menu DockPanel.Dock="Left" >
+                <WindowChrome.IsHitTestVisibleInChrome>True</WindowChrome.IsHitTestVisibleInChrome>
+                <MenuItem Header="_File">
+                    <MenuItem Command="{StaticResource NewFile}"/>
+                    <MenuItem Header="_Open" Command="{StaticResource OpenFile}" InputGestureText="Ctrl+O"/>
+                    <MenuItem Header="_Save" Command="{StaticResource SaveFile}" InputGestureText="Ctrl+S"/>
+                    <MenuItem Header="Save _As" Command="{StaticResource SaveFileAs}" InputGestureText="Ctrl+A"/>
+                    <MenuItem Header="_Close" Command="{StaticResource Close}" InputGestureText="Alt+F4"/>
+                    <MenuItem Header="_Import">
+                        <MenuItem Header="_From roles.json" Click="ImportFromRolesJson_Click"/>
+                        <MenuItem Header="_Clone Official Character" Click="CloneOfficialMenuItem_Click"/>
+                    </MenuItem>
+                    <MenuItem x:Name="RecentFilesMenuItem"  Header="_Recent Files" Click="RecentFilesMenuItem_Click"/>
+                </MenuItem>
+                <MenuItem Header="_Order">
+                    <MenuItem Header="_First Night" Command="{StaticResource FirstNight}" InputGestureText="Ctrl+1"/>
+                    <MenuItem Header="_Other Nights" Command="{StaticResource OtherNights}" InputGestureText="Ctrl+2"/>
+                </MenuItem>
+                <MenuItem Header="_Export">
+                    <MenuItem Header="To _Disk" Command="{StaticResource ExportToDisk}" InputGestureText="F5"/>
+                    <MenuItem Header="_Upload" Command="{StaticResource ExportToSftp}" InputGestureText="Ctrl+F5"/>
+                </MenuItem>
+            </Menu>
 
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="1" Text="{Binding WindowTitle}" VerticalAlignment="Center"/>
-                    </Grid>
-                </DockPanel>
-            </Border>
-            <Grid Margin="6,0,6,6">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
+            <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="300"/>
+                    <ColumnDefinition/>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <GroupBox Header="Meta" Grid.Row="0">
-                        <Grid Grid.Row="0">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="24"/>
-                                <RowDefinition Height="24"/>
-                                <RowDefinition Height="100"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <Label Content="Name" Grid.Row="0" Grid.Column="0"/>
-                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4"/>
-                            <Label Content="Author" Grid.Row="1"/>
-                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Author, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4"/>
-                            <Label Content="Logo" Grid.Row="2"/>
-                            <Button Grid.Row="2" Grid.Column="1" Click="LogoButton_Click">
-                                <Grid>
-                                    <Image Source="{Binding LogoPreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
-                                    <Label Content="{Binding LogoButtonText}" />
-                                </Grid>
-                            </Button>
-                        </Grid>
-                    </GroupBox>
-                    <GroupBox Header="Characters" Grid.Row="1" VerticalAlignment="Stretch">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="35"/>
-                            </Grid.ColumnDefinitions>
-                            <ListView Name="CharacterList" ItemsSource="{Binding CharacterList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.RowSpan="5" SelectedIndex="0" Margin="0,0,6,0" SelectionMode="Single">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Width="48">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <Image Source="{Binding ImagePreview}" RenderOptions.BitmapScalingMode="HighQuality" MaxWidth="100" MaxHeight="100"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding NameProperty.Value}" Width="120"/>
-                                        <GridViewColumn Header="Team" DisplayMemberBinding="{Binding TeamProperty.DisplayString}" Width="69"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                            <Button Grid.Row="0" Grid.Column="1" Content="/\" Click="UpButton_Click" Margin="0,0,0,6"/>
-                            <Button Grid.Row="1" Grid.Column="1" Content="\/" Click="DownButton_Click" Margin="0,0,0,6"/>
-                            <Button Grid.Row="2" Grid.Column="1" Content="Add" Click="AddButton_Click" Margin="0,0,0,6"/>
-                            <Button Grid.Row="3" Grid.Column="1" Content="Del" Click="DelButton_Click" Margin="0,0,0,6"/>
-                        </Grid>
-                    </GroupBox>
-                </Grid>
-
-                <!-- vertical splitter -->
-                <GridSplitter Grid.Column="1" HorizontalAlignment="Center" ShowsPreview="True" Width="6"/>
-
-                <!-- right side -->
-                <ContentControl Grid.Column="2" Content="{Binding ElementName=CharacterList, Path=SelectedItem}" VerticalAlignment="Stretch">
-                    <ContentControl.ContentTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="1*"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="2*"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
-                                <GroupBox Header="Source Image" Grid.Column="0" Grid.Row="0" Margin="0,0,3,6">
-                                    <Button Click="SourceImageButton_Click">
-                                        <Grid>
-                                            <Image Source="{Binding SourceImagePreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
-                                            <Label Content="{Binding SourceImageButtonText}" />
-                                        </Grid>
-                                    </Button>
-                                </GroupBox>
-                                <GroupBox Header="Processed Image" Grid.Column="1" Grid.Row="0" Margin="3,0,0,6">
-                                    <Image Source="{Binding ImagePreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" MaxWidth="539"/>
-                                </GroupBox>
-
-                                <!-- horizontal splitter -->
-                                <GridSplitter Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" ShowsPreview="True" Height="6"/>
-
-                                <local:CharacterProperties Grid.ColumnSpan="2" Grid.Row="2" DataContext="{Binding ElementName=CharacterList, Path=SelectedItem}"/>
-                            </Grid>
-                            <DataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding}" Value="{x:Null}">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                </DataTrigger>
-                            </DataTemplate.Triggers>
-                        </DataTemplate>
-                    </ContentControl.ContentTemplate>
-                </ContentControl>
+                <TextBlock Grid.Column="1" Text="{Binding WindowTitle}" VerticalAlignment="Center"/>
             </Grid>
         </DockPanel>
-    </Border>
+        
+        <Grid Margin="6,0,6,6">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="300"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <GroupBox Header="Meta" Grid.Row="0">
+                    <Grid Grid.Row="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="24"/>
+                            <RowDefinition Height="24"/>
+                            <RowDefinition Height="100"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Name" Grid.Row="0" Grid.Column="0"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4"/>
+                        <Label Content="Author" Grid.Row="1"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Author, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4"/>
+                        <Label Content="Logo" Grid.Row="2"/>
+                        <Button Grid.Row="2" Grid.Column="1" Click="LogoButton_Click">
+                            <Grid>
+                                <Image Source="{Binding LogoPreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <Label Content="{Binding LogoButtonText}" />
+                            </Grid>
+                        </Button>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="Characters" Grid.Row="1" VerticalAlignment="Stretch">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="35"/>
+                        </Grid.ColumnDefinitions>
+                        <ListView Name="CharacterList" ItemsSource="{Binding CharacterList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.RowSpan="5" SelectedIndex="0" Margin="0,0,6,0" SelectionMode="Single">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Width="48">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Image Source="{Binding ImagePreview}" RenderOptions.BitmapScalingMode="HighQuality" MaxWidth="100" MaxHeight="100"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding NameProperty.Value}" Width="120"/>
+                                    <GridViewColumn Header="Team" DisplayMemberBinding="{Binding TeamProperty.DisplayString}" Width="69"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        <Button Grid.Row="0" Grid.Column="1" Content="/\" Click="UpButton_Click" Margin="0,0,0,6"/>
+                        <Button Grid.Row="1" Grid.Column="1" Content="\/" Click="DownButton_Click" Margin="0,0,0,6"/>
+                        <Button Grid.Row="2" Grid.Column="1" Content="Add" Click="AddButton_Click" Margin="0,0,0,6"/>
+                        <Button Grid.Row="3" Grid.Column="1" Content="Del" Click="DelButton_Click" Margin="0,0,0,6"/>
+                    </Grid>
+                </GroupBox>
+            </Grid>
+
+            <!-- vertical splitter -->
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Center" ShowsPreview="True" Width="6"/>
+
+            <!-- right side -->
+            <ContentControl Grid.Column="2" Content="{Binding ElementName=CharacterList, Path=SelectedItem}" VerticalAlignment="Stretch">
+                <ContentControl.ContentTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="1*"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="2*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <GroupBox Header="Source Image" Grid.Column="0" Grid.Row="0" Margin="0,0,3,6">
+                                <Button Click="SourceImageButton_Click">
+                                    <Grid>
+                                        <Image Source="{Binding SourceImagePreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                        <Label Content="{Binding SourceImageButtonText}" />
+                                    </Grid>
+                                </Button>
+                            </GroupBox>
+                            <GroupBox Header="Processed Image" Grid.Column="1" Grid.Row="0" Margin="3,0,0,6">
+                                <Image Source="{Binding ImagePreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" MaxWidth="539"/>
+                            </GroupBox>
+
+                            <!-- horizontal splitter -->
+                            <GridSplitter Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" ShowsPreview="True" Height="6"/>
+
+                            <local:CharacterProperties Grid.ColumnSpan="2" Grid.Row="2" DataContext="{Binding ElementName=CharacterList, Path=SelectedItem}"/>
+                        </Grid>
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ContentControl.ContentTemplate>
+            </ContentControl>
+        </Grid>
+    </DockPanel>
     <Window.CommandBindings>
         <CommandBinding Command="{StaticResource NewFile}" Executed="NewFile"/>
         <CommandBinding Command="{StaticResource OpenFile}" Executed="OpenFile"/>

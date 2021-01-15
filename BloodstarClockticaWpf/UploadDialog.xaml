@@ -11,66 +11,64 @@
         Style="{StaticResource WindowStyle}" SizeToContent="WidthAndHeight"
         Title="Export via SFTP"
         Closing="Window_Closing">
-    <Border BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="1">
-        <StackPanel>
-            <!-- title bar -->
-            <Border Grid.ColumnSpan="2" BorderBrush="{Binding (Window.BorderBrush), RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" BorderThickness="0,0,0,1">
-                <Grid>
-                    <TextBlock x:Name="TitleText"  HorizontalAlignment="Center" VerticalAlignment="Center" Text="Export via SFTP"/>
-                    <Button x:Name="CloseButton" HorizontalAlignment="Right" Width="35" Height="25" Style="{StaticResource TitleBarButton}" Click="Close_Click">
-                        <Path Data="M 0,0 10,10 M 0,10 10,0" Stroke="{DynamicResource SolidBorderBrush}" StrokeThickness="2"/>
-                    </Button>
-                </Grid>
-            </Border>
-            
-            <!-- settings view -->
-            <Grid x:Name="SettingsView" Width="388" Margin="6">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+    <StackPanel>
+        <!-- title bar -->
+        <Grid>
+            <DockPanel>
+                <Button x:Name="CloseButton" DockPanel.Dock="Right" Style="{StaticResource BcCloseButton}" Click="Close_Click"/>
+                <Border/>
+            </DockPanel>
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding (Window.Title), RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"/>
+        </Grid>
 
-                    <RowDefinition Height="50"/>
-                </Grid.RowDefinitions>
+        <!-- settings view -->
+        <Grid x:Name="SettingsView" Width="388" Margin="6">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <!-- label/text rows -->
+            <Label Grid.Row="0" Grid.Column="0" Content="UrlRoot" ToolTip="Url prefix for roles.json. e.g. https://example.com/botc/SETNAME/"/>
+            <TextBox Grid.Row="0" Grid.Column="1" Text="" x:Name="UrlRootTextField" Margin="0,0,0,6"/>
+            <Label Grid.Row="1" Grid.Column="0" Content="RemotePath" ToolTip="FTP path for where to upload files for that user. e.g. /SETNAME/"/>
+            <TextBox Grid.Row="1" Grid.Column="1" Text="" x:Name="RemotePathTextField" Margin="0,0,0,6"/>
+            <Label Grid.Row="2" Grid.Column="0" Content="Host" ToolTip="SFTP host. e.g. ftp.example.com"/>
+            <TextBox Grid.Row="2" Grid.Column="1" Text="" x:Name="HostTextField" Margin="0,0,0,6"/>
+            <Label Grid.Row="3" Grid.Column="0" Content="Port" ToolTip="Port number to use for SFTP. Usually 22 or 2222."/>
+            <xctk:IntegerUpDown Grid.Row="3" Grid.Column="1" Name="PortControl" Margin="0,0,0,6" Width="55" HorizontalAlignment="Left"/>
+            <Label Grid.Row="4" Grid.Column="0" Content="Username" ToolTip="Username to use to log in to SFTP"/>
+            <TextBox Grid.Row="4" Grid.Column="1" Text="" x:Name="UsernameTextField" Margin="0,0,0,6"/>
+            <Label Grid.Row="5" Grid.Column="0" Content="Password" ToolTip="Password to use to log in to SFTP"/>
+            <StackPanel Grid.Row="5" Grid.Column="1">
+                <PasswordBox x:Name="PasswordTextField"/>
+                <CheckBox Content="Remember Password" x:Name="RememberPasswordCheckBox" Margin="0,6,0,6" ToolTip="If checked, password will be obfuscated slightly and stored somewhere in %LocalAppData%\BloodstarClockticaWpf"/>
+            </StackPanel>
+            <!-- Port, Username, Password + remember -->
+
+            <!-- buttons -->
+            <Grid Grid.Row="6" Grid.ColumnSpan="2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-
-                <!-- label/text rows -->
-                <Label Grid.Row="0" Grid.Column="0" Content="UrlRoot" ToolTip="Url prefix for roles.json. e.g. https://example.com/botc/SETNAME/"/>
-                <TextBox Grid.Row="0" Grid.Column="1" Text="" x:Name="UrlRootTextField" Margin="0,0,0,6"/>
-                <Label Grid.Row="1" Grid.Column="0" Content="RemotePath" ToolTip="FTP path for where to upload files for that user. e.g. /SETNAME/"/>
-                <TextBox Grid.Row="1" Grid.Column="1" Text="" x:Name="RemotePathTextField" Margin="0,0,0,6"/>
-                <Label Grid.Row="2" Grid.Column="0" Content="Host" ToolTip="SFTP host. e.g. ftp.example.com"/>
-                <TextBox Grid.Row="2" Grid.Column="1" Text="" x:Name="HostTextField" Margin="0,0,0,6"/>
-                <Label Grid.Row="3" Grid.Column="0" Content="Port" ToolTip="Port number to use for SFTP. Usually 22 or 2222."/>
-                <xctk:IntegerUpDown Grid.Row="3" Grid.Column="1" Name="PortControl" Margin="0,0,0,6" Width="55" HorizontalAlignment="Left"/>
-                <Label Grid.Row="4" Grid.Column="0" Content="Username" ToolTip="Username to use to log in to SFTP"/>
-                <TextBox Grid.Row="4" Grid.Column="1" Text="" x:Name="UsernameTextField" Margin="0,0,0,6"/>
-                <Label Grid.Row="5" Grid.Column="0" Content="Password" ToolTip="Password to use to log in to SFTP"/>
-                <StackPanel Grid.Row="5" Grid.Column="1">
-                    <PasswordBox x:Name="PasswordTextField"/>
-                    <CheckBox Content="Remember Password" x:Name="RememberPasswordCheckBox" Margin="0,6,0,6" ToolTip="If checked, password will be obfuscated slightly and stored somewhere in %LocalAppData%\BloodstarClockticaWpf"/>
-                </StackPanel>
-                <!-- Port, Username, Password + remember -->
-
-                <!-- buttons -->
-                <Grid Grid.Row="6" Grid.ColumnSpan="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <Button x:Name="ExportButton" Grid.Column="0" Content="_Export" Click="Export_Click" Margin="6,0,3,6"/>
-                    <Button Grid.Column="1" Content="_Cancel" Click="Close_Click" Margin="3,0,6,6" IsCancel="True"/>
-                </Grid>
+                <Button x:Name="ExportButton" Grid.Column="0" Content="_Export" Click="Export_Click" Margin="6,0,3,6"/>
+                <Button Grid.Column="1" Content="_Cancel" Click="Close_Click" Margin="3,0,6,6" IsCancel="True"/>
             </Grid>
-            
-            <!-- progressbar view -->
-            <ProgressBar x:Name="ProgressBar" 
+        </Grid>
+
+        <!-- progressbar view -->
+        <ProgressBar x:Name="ProgressBar" 
                          Width="500"
                          Height="50" 
                          Minimum="0" 
@@ -78,20 +76,20 @@
                          Value="0.5"
                          Margin="6"
                          SmallChange="1"/>
-            <!-- results view -->
-            <Grid x:Name="ResultsView" Margin="6">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="50"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Label Grid.Row="0" Grid.Column="0" Content="Roles.json is available at:" Margin="0,0,0,6"/>
-                <TextBox x:Name="LinkTextBox"  Grid.Row="1"
+        <!-- results view -->
+        <Grid x:Name="ResultsView" Margin="6">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Content="Roles.json is available at:" Margin="0,0,0,6"/>
+            <TextBox x:Name="LinkTextBox"  Grid.Row="1"
                          Grid.Column="0" 
                          Background="Transparent"
                          BorderThickness="0"
@@ -104,7 +102,7 @@
                          MouseDoubleClick="LinkTextBox_MouseDoubleClick" 
                          ToolTip="Double-click to open in browser"
                          MaxWidth="500"/>
-                <Button Grid.Row="0"
+            <Button Grid.Row="0"
                         Grid.Column="1"
                         Grid.RowSpan="3"
                         Content="_Copy to Clipboard"
@@ -112,14 +110,13 @@
                         Margin="0,0,0,6"
                         Click="CopyToClipboard"
                         Padding="6"/>
-                <Button x:Name="OkButton"
+            <Button x:Name="OkButton"
                         Grid.Row="3"
                         Grid.Column="0"
                         Grid.ColumnSpan="2"
                         Content="_OK"
                         MinHeight="50"
                         Click="Close_Click"/>
-            </Grid>
-        </StackPanel>
-    </Border>
+        </Grid>
+    </StackPanel>
 </Window>

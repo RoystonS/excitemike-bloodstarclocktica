@@ -9,45 +9,34 @@
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize" 
         Style="{StaticResource WindowStyle}" SizeToContent="Height">
-    <Border BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="1">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="50"/>
-            </Grid.RowDefinitions>
-            <Border BorderBrush="{Binding (Window.BorderBrush), RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" BorderThickness="0,0,0,1">
-                <Grid>
-                    <TextBlock x:Name="TitleLabel" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    <Button HorizontalAlignment="Right" Width="35" Height="25" Style="{StaticResource TitleBarButton}" Click="Close_Click">
-                        <Path Data="M 0,0 10,10 M 0,10 10,0" Stroke="{DynamicResource SolidBorderBrush}" StrokeThickness="2"/>
-                    </Button>
-                </Grid>
-            </Border>
+    <DockPanel>
+        <Grid DockPanel.Dock="Top">
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Style="{StaticResource BcCloseButton}" Click="Close_Click"/>
+                <Border/>
+            </DockPanel>
+            <TextBlock x:Name="TitleLabel" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
 
-            <Grid Grid.Row="1" VerticalAlignment="Center" Margin="6">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <TextBox x:Name="Message" 
+        <Grid DockPanel.Dock="Bottom" Height="50" Margin="6">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition Width="6"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="_OK" Click="Ok_Click" IsDefault="True"/>
+            <Button Grid.Column="2" Content="_Cancel" Click="Close_Click" IsCancel="True"/>
+        </Grid>
+
+        <StackPanel>
+            <TextBox x:Name="Message" 
                          Text="Message" 
-                         Margin="6" 
+                         Margin="6,6,6,6" 
                          Background="Transparent"
                          BorderThickness="0"
                          IsReadOnly="True"
                          TextWrapping="Wrap"/>
-                <TextBox Grid.Row="1" x:Name="TextField"/>
-            </Grid>
-
-            <Grid Grid.Row="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Content="_OK" Click="Ok_Click" Margin="6,0,3,6" IsDefault="True"/>
-                <Button Grid.Column="1" Content="_Cancel" Click="Close_Click" Margin="3,0,6,6" IsCancel="True"/>
-            </Grid>
-        </Grid>
-    </Border>
+            <TextBox Grid.Row="1" x:Name="TextField" Margin="6,0,6,0"/>
+        </StackPanel>
+    </DockPanel>
 </Window>

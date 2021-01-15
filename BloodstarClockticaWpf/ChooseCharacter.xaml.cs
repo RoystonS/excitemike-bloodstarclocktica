@@ -154,5 +154,22 @@ namespace BloodstarClockticaWpf
         {
             CharacterList.SelectedIndex = -1;
         }
+
+        /// <summary>
+        /// toggle maximized/restored
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void MaximizeRestore_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.WindowState == WindowState.Maximized)
+            {
+                this.WindowState = WindowState.Normal;
+            }
+            else
+            {
+                this.WindowState = WindowState.Maximized;
+            }
+        }
     }
 }

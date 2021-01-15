@@ -11,33 +11,30 @@
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize" 
         Style="{StaticResource WindowStyle}">
-    <Border BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="1">
-        <DockPanel>
-            <Border DockPanel.Dock="Top" BorderBrush="{Binding (Window.BorderBrush), RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" BorderThickness="0,0,0,1">
-            <Grid>
-                <TextBlock Text="Save Changes?" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                <Button HorizontalAlignment="Right" Width="35" Height="25" Style="{StaticResource TitleBarButton}" Click="Close_Click">
-                    <Path Data="M 0,0 10,10 M 0,10 10,0" Stroke="{DynamicResource SolidBorderBrush}" StrokeThickness="2"/>
-                </Button>
-                </Grid>
-            </Border>
+    <DockPanel>
+        <Grid DockPanel.Dock="Top">
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Style="{StaticResource BcCloseButton}" Click="Close_Click"/>
+                <Border/>
+            </DockPanel>
+            <TextBlock Text="Save Changes?" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
 
-            <Grid DockPanel.Dock="Bottom" Height="50">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Content="_Save" Click="Save_Click" Margin="6,0,3,6"/>
-                <Button Grid.Column="1" Content="_Discard" Click="Discard_Click" Margin="3,0,3,6"/>
-                <Button Grid.Column="2" Content="_Cancel" Click="Cancel_Click" Margin="3,0,6,6"/>
-            </Grid>
-            
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" TextAlignment="Center">
+        <Grid DockPanel.Dock="Bottom" Height="50">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="_Save" Click="Save_Click" Margin="6,0,3,6"/>
+            <Button Grid.Column="1" Content="_Discard" Click="Discard_Click" Margin="3,0,3,6"/>
+            <Button Grid.Column="2" Content="_Cancel" Click="Cancel_Click" Margin="3,0,6,6"/>
+        </Grid>
+
+        <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center" TextWrapping="WrapWithOverflow" TextAlignment="Center">
                 <Run Text="You have unsaved changes!"/>
                 <LineBreak/>
                 <Run Text="Would you like to save now or discard changes?"/>
-            </TextBlock>
-        </DockPanel>
-    </Border>
+        </TextBlock>
+    </DockPanel>
 </Window>
