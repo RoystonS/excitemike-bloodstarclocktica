@@ -26,7 +26,7 @@
         </DockPanel>
 
         <!-- ok/cancel button -->
-        <Grid DockPanel.Dock="Bottom" Margin="6,0,6,6">
+        <Grid DockPanel.Dock="Bottom" Margin="6,0,6,6" Height="50">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition Width="6"/>
