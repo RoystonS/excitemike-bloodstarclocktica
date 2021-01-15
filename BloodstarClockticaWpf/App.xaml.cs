@@ -9,6 +9,9 @@ namespace BloodstarClockticaWpf
     {
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+#if DEBUG
+            DispatcherUnhandledException -= Application_DispatcherUnhandledException;
+#endif
             MainWindow mainWindow;
             if (e.Args.Length == 1)
             {
@@ -24,7 +27,7 @@ namespace BloodstarClockticaWpf
 
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-            BcMessageBox.Show("Unhandled exception", $"{e.Exception.Message}\n\n{e.Exception}", this.MainWindow);
+            BcMessageBox.Show("Unhandled Exception", $"{e.Exception.Message}\n\n{e.Exception}", this.MainWindow);
             e.Handled = true;
         }
     }
