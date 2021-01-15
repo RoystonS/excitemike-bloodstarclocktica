@@ -147,16 +147,38 @@ namespace BloodstarClockticaWpf
             get => character.SourceImage;
             set
             {
-                cachedImagePreview = null;
-                character.ProcessedImage = null;
-                character.SourceImage = value;
-                OnPropertyChanged("ImagePreview");
-                OnPropertyChanged("SourceImagePreview");
-                OnPropertyChanged("SourceImage");
-                OnPropertyChanged("SourceImageButtonText");
+                if (value != character.SourceImage)
+                {
+                    cachedImagePreview = null;
+                    character.ProcessedImage = null;
+                    character.SourceImage = value;
+                    OnPropertyChanged("ImagePreview");
+                    OnPropertyChanged("SourceImagePreview");
+                    OnPropertyChanged("SourceImage");
+                    OnPropertyChanged("SourceImageButtonText");
+                }
             }
         }
         public string SourceImageButtonText => (character.SourceImage == null) ? "Click to import source image" : "";
+
+        public Image ProcessedImage
+        {
+            get => character.ProcessedImage;
+            set
+            {
+                if (value != character.ProcessedImage)
+                {
+                    cachedImagePreview = null;
+                    character.SourceImage = null;
+                    character.ProcessedImage = value;
+                    OnPropertyChanged("ProcessedImage");
+                    OnPropertyChanged("ImagePreview");
+                    OnPropertyChanged("SourceImagePreview");
+                    OnPropertyChanged("SourceImage");
+                    OnPropertyChanged("SourceImageButtonText");
+                }
+            }
+        }
 
         public int FirstNightOrder
         {

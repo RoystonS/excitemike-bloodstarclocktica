@@ -502,8 +502,7 @@ namespace BloodstarClockticaWpf
         /// <returns></returns>
         internal IEnumerable<CharacterWrapper> CloneOfficialCharacters(IEnumerable<string> ids)
         {
-            return from id in ids
-                   select new CharacterWrapper(BcOfficial.CloneOfficialCharacter(document, id));
+            return CloneOfficialCharacters(ids, null);
         }
 
         /// <summary>
@@ -517,11 +516,11 @@ namespace BloodstarClockticaWpf
             var outputList = new List<CharacterWrapper>(list.Count);
             double denom = list.Count;
             int i = 0;
-            progress.Report(0);
+            progress?.Report(0);
             foreach (var id in list)
             {
                 outputList.Add(new CharacterWrapper(BcOfficial.CloneOfficialCharacter(document, id)));
-                progress.Report((++i) / denom);
+                progress?.Report((++i) / denom);
             }
             return outputList;
         }
@@ -533,8 +532,7 @@ namespace BloodstarClockticaWpf
         /// <returns></returns>
         internal IEnumerable<CharacterWrapper> ImportCharacters(IEnumerable<RolesJsonCharacter> characters)
         {
-            return from character in characters
-                   select new CharacterWrapper(ImportCharacter(document, character, false));
+            return ImportCharacters(characters, null);
         }
 
         /// <summary>
@@ -548,11 +546,11 @@ namespace BloodstarClockticaWpf
             var outputList = new List<CharacterWrapper>(list.Count);
             double denom = list.Count;
             int i = 0;
-            progress.Report(0);
+            progress?.Report(0);
             foreach (var character in list)
             {
                 outputList.Add(new CharacterWrapper(ImportCharacter(document, character, false)));
-                progress.Report((++i) / denom);
+                progress?.Report((++i) / denom);
             }
             return outputList;
         }

@@ -745,5 +745,18 @@ namespace BloodstarClockticaWpf
             charWrapper.ProcessedImage = System.Drawing.Image.FromFile(path);
             docWrapper.Dirty = true;
         }
+
+        /// <summary>
+        /// remove source image
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RemoveSourceImage_Click(object sender, RoutedEventArgs e)
+        {
+            var docWrapper = (DataContext as DocumentWrapper);
+            var charWrapper = (CharacterList.SelectedItem as CharacterWrapper);
+            charWrapper.SourceImage = null;
+            docWrapper.Dirty = true;
+        }
     }
 }
