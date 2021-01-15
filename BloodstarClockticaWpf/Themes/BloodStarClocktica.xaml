@@ -23,10 +23,6 @@
         <GradientStop Color="#FF3977FF" Offset="0.0"/>
         <GradientStop Color="#333977FF" Offset="1.0"/>
     </LinearGradientBrush>
-    <RadialGradientBrush x:Key="_ProgressBarIndicatorAnimatedFill" GradientOrigin="0.5,0" RadiusX="0.5" RadiusY="0.5">
-        <GradientStop Color="#88FFFFFF" Offset="0.05"/>
-        <GradientStop Color="#00FFFFFF" Offset="0.95"/>
-    </RadialGradientBrush>
     <LinearGradientBrush x:Key="ProgressBarIndicatorAnimatedFill" StartPoint="0,0.5" EndPoint="1,0.5">
         <GradientStop Color="#003977FF" Offset="0.05"/>
         <GradientStop Color="#6600FFFF" Offset="0.47"/>
@@ -34,10 +30,14 @@
         <GradientStop Color="#003977FF" Offset="0.95"/>
     </LinearGradientBrush>
     <DropShadowBitmapEffect x:Key="PopupDropShadow" ShadowDepth="1.5" Softness="0.15" />
-    <LinearGradientBrush x:Key="ActiveTitleBarBrush" StartPoint="0,0" EndPoint="0,1">
+    <LinearGradientBrush x:Key="_ActiveTitleBarBrush" StartPoint="0,0" EndPoint="0,1">
         <GradientStop Color="#773977FF" Offset="0"/>
         <GradientStop Color="#773977FF" Offset="1"/>
     </LinearGradientBrush>
+    <RadialGradientBrush x:Key="ActiveTitleBarBrush" GradientOrigin="0.5,1" RadiusX="0.5" RadiusY="0.5" >
+        <GradientStop Color="#FF3977FF" Offset="0.0"/>
+        <GradientStop Color="#443977FF" Offset="1"/>
+    </RadialGradientBrush>
 
     <Style x:Key="LabelBase" TargetType="{x:Type Label}">
         <Setter Property="SnapsToDevicePixels" Value="true" />
