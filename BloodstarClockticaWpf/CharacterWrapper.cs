@@ -84,6 +84,7 @@ namespace BloodstarClockticaWpf
             {
                 character = value;
                 cachedImagePreview = null;
+                cachedSourceImagePreview = null;
                 OnPropertyChanged(null);
             }
         }
@@ -123,12 +124,17 @@ namespace BloodstarClockticaWpf
                 }
             }
         }
+        public int ImagePreviewMaxWidth => (ImagePreview == null) ? 0 : ImagePreview.PixelWidth;
+        public int ImagePreviewMaxHeight => (ImagePreview == null) ? 0 : ImagePreview.PixelHeight;
+
+        private BitmapImage cachedSourceImagePreview;
         public BitmapImage SourceImagePreview
         {
             get
             {
                 // TODO: I should really cache these
                 if (character.SourceImage == null) { return null; }
+                if (cachedSourceImagePreview != null) { return cachedSourceImagePreview; }
                 using (var ms = new MemoryStream())
                 {
                     character.SourceImage.Save(ms, ImageFormat.Png);
@@ -138,10 +144,13 @@ namespace BloodstarClockticaWpf
                     bi.CacheOption = BitmapCacheOption.OnLoad;
                     bi.StreamSource = ms;
                     bi.EndInit();
+                    cachedSourceImagePreview = bi;
                     return bi;
                 }
             }
         }
+        public int SourceImagePreviewMaxWidth => (SourceImagePreview == null) ? 0 : SourceImagePreview.PixelWidth;
+        public int SourceImagePreviewMaxHeight => (SourceImagePreview == null) ? 0 : SourceImagePreview.PixelHeight;
         public Image SourceImage
         {
             get => character.SourceImage;
@@ -150,10 +159,15 @@ namespace BloodstarClockticaWpf
                 if (value != character.SourceImage)
                 {
                     cachedImagePreview = null;
+                    cachedSourceImagePreview = null;
                     character.ProcessedImage = null;
                     character.SourceImage = value;
                     OnPropertyChanged("ImagePreview");
+                    OnPropertyChanged("ImagePreviewMaxHeight");
+                    OnPropertyChanged("ImagePreviewMaxWidth");
                     OnPropertyChanged("SourceImagePreview");
+                    OnPropertyChanged("SourceImagePreviewMaxHeight");
+                    OnPropertyChanged("SourceImagePreviewMaxWidth");
                     OnPropertyChanged("SourceImage");
                     OnPropertyChanged("SourceImageButtonText");
                 }
@@ -169,11 +183,16 @@ namespace BloodstarClockticaWpf
                 if (value != character.ProcessedImage)
                 {
                     cachedImagePreview = null;
+                    cachedSourceImagePreview = null;
                     character.SourceImage = null;
                     character.ProcessedImage = value;
                     OnPropertyChanged("ProcessedImage");
                     OnPropertyChanged("ImagePreview");
+                    OnPropertyChanged("ImagePreviewMaxHeight");
+                    OnPropertyChanged("ImagePreviewMaxWidth");
                     OnPropertyChanged("SourceImagePreview");
+                    OnPropertyChanged("SourceImagePreviewMaxHeight");
+                    OnPropertyChanged("SourceImagePreviewMaxWidth");
                     OnPropertyChanged("SourceImage");
                     OnPropertyChanged("SourceImageButtonText");
                 }
@@ -229,6 +248,7 @@ namespace BloodstarClockticaWpf
             SetupProperties();
             this.character = character;
             cachedImagePreview = null;
+            cachedSourceImagePreview = null;
         }
         private void SetupProperties()
         {
@@ -248,7 +268,7 @@ namespace BloodstarClockticaWpf
                 false);
             NameProperty = new StringBindingHelper(
                 "Name",
-                "The internal ID for this character, without spaces or special characters",
+                "The displayed name of this character",
                 () => character.Name,
                 (value) =>
                 {
@@ -272,6 +292,7 @@ namespace BloodstarClockticaWpf
                     {
                         character.Team = enumValue;
                         cachedImagePreview = null;
+                        cachedSourceImagePreview = null;
                         if (character.SourceImage != null)
                         {
                             character.ProcessedImage = null;
@@ -279,6 +300,8 @@ namespace BloodstarClockticaWpf
                         OnPropertyChanged("Team");
                         OnPropertyChanged("TeamProperty");
                         OnPropertyChanged("ImagePreview");
+                        OnPropertyChanged("ImagePreviewMaxHeight");
+                        OnPropertyChanged("ImagePreviewMaxWidth");
                     }
                 }
             );
