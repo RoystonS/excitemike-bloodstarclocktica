@@ -370,6 +370,7 @@ namespace BloodstarClockticaWpf
             {
                 docWrapper.SwapCharacterOrder(index, index - 1);
                 CharacterList.SelectedIndex = index - 1;
+                CharacterList.ScrollIntoView(CharacterList.SelectedItem);
                 CharacterList.Focus();
             }
         }
@@ -381,6 +382,7 @@ namespace BloodstarClockticaWpf
             {
                 docWrapper.SwapCharacterOrder(index, index + 1);
                 CharacterList.SelectedIndex = index + 1;
+                CharacterList.ScrollIntoView(CharacterList.SelectedItem);
                 CharacterList.Focus();
             }
         }
@@ -389,6 +391,7 @@ namespace BloodstarClockticaWpf
             var docWrapper = (DataContext as DocumentWrapper);
             docWrapper.AddCharacter();
             CharacterList.SelectedIndex = docWrapper.CharacterList.Count - 1;
+            CharacterList.ScrollIntoView(CharacterList.SelectedItem);
             CharacterList.Focus();
         }
         private void DelButton_Click(object sender, RoutedEventArgs e)
@@ -405,6 +408,7 @@ namespace BloodstarClockticaWpf
             if (CharacterList.SelectedIndex == -1 && CharacterList.Items.Count != 0)
             {
                 CharacterList.SelectedIndex = Math.Max(0, Math.Min(preferred, docWrapper.CharacterList.Count - 1));
+                CharacterList.ScrollIntoView(CharacterList.SelectedItem);
                 CharacterList.Focus();
             }
         }

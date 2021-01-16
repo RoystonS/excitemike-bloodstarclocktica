@@ -88,6 +88,7 @@ namespace BloodstarClockticaWpf
                         }
                     }
                     CharacterList.SelectedIndex = indexB;
+                    CharacterList.ScrollIntoView(CharacterList.SelectedItem);
                     CharacterList.Focus();
                 }
             }
