@@ -122,7 +122,7 @@ namespace BloodstarClockticaLib
                 var path = Path.Combine(directory, "roles.json");
                 using (var stream = new FileStream(path, FileMode.Create))
                 {
-                    BcExport.ExportRolesJson(document, stream, imageUrlPrefix);
+                    ExportRolesJson(document, stream, imageUrlPrefix);
                 }
             }
 
@@ -203,9 +203,9 @@ namespace BloodstarClockticaLib
                 json.WriteString("image", UrlCombine(imageUrlPrefix, $"{character.Id}.png"));
             }
             json.WriteString("edition", "custom");
-            json.WriteNumber("firstNight", character.FirstNightOrder);
+            json.WriteNumber("firstNight", string.IsNullOrWhiteSpace(character.FirstNightReminder) ? 0 : character.FirstNightOrder);
             json.WriteString("firstNightReminder", character.FirstNightReminder);
-            json.WriteNumber("otherNight", character.OtherNightOrder);
+            json.WriteNumber("otherNight", string.IsNullOrWhiteSpace(character.OtherNightReminder) ? 0 : character.OtherNightOrder);
             json.WriteString("otherNightReminder", character.OtherNightReminder);
             json.WriteStartArray("reminders");
             foreach (var reminder in character.ReminderTokens)
