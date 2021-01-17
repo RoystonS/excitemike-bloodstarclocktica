@@ -143,7 +143,7 @@ namespace BloodstarClockticaLib
             // write out each character's image
             foreach (var character in document.Characters)
             {
-                if (character.ProcessedImage != null)
+                if (character.IncludeInExport && (character.ProcessedImage != null))
                 {
                     var path = Path.Combine(imageDir, $"{character.Id}.png");
                     using (var stream = new FileStream(path, FileMode.Create))
@@ -168,7 +168,10 @@ namespace BloodstarClockticaLib
                 ExportMeta(document, json, imageUrlPrefix);
                 foreach (var character in document.Characters)
                 {
-                    ExportCharacter(character, json, imageUrlPrefix);
+                    if (character.IncludeInExport)
+                    {
+                        ExportCharacter(character, json, imageUrlPrefix);
+                    }
                 }
                 json.WriteEndArray();
                 json.Flush();
