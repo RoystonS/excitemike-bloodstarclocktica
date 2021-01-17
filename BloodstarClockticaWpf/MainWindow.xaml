@@ -154,7 +154,7 @@
                             <ListView Name="CharacterList" ItemsSource="{Binding CharacterList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.RowSpan="5" SelectedIndex="0" Margin="0,0,6,0" SelectionMode="Single">
                                 <ListView.View>
                                     <GridView>
-                                        <GridViewColumn Header="Use?" Width="Auto">
+                                        <GridViewColumn Header="Export?" Width="30">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <CheckBox IsChecked="{Binding IncludeInExport.Value}"/>

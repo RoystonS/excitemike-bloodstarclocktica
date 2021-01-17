@@ -213,13 +213,19 @@ namespace BloodstarClockticaLib
             json.WriteStartArray("reminders");
             foreach (var reminder in character.ReminderTokens)
             {
-                json.WriteStringValue(reminder);
+                if (!string.IsNullOrWhiteSpace(reminder))
+                {
+                    json.WriteStringValue(reminder);
+                }
             }
             json.WriteEndArray();
             json.WriteStartArray("remindersGlobal");
             foreach (var reminder in character.GlobalReminderTokens)
             {
-                json.WriteStringValue(reminder);
+                if (!string.IsNullOrWhiteSpace(reminder))
+                {
+                    json.WriteStringValue(reminder);
+                }
             }
             json.WriteEndArray();
             json.WriteBoolean("setup", character.Setup);
