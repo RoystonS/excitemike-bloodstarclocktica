@@ -802,6 +802,7 @@
     <!-- ListViewItem -->
     <Style x:Key="{x:Type ListViewItem}"
        TargetType="ListViewItem">
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="SnapsToDevicePixels" Value="true" />
         <Setter Property="OverridesDefaultStyle" Value="true" />
