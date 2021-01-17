@@ -105,9 +105,9 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="300"/>
+                    <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition/>
+                    <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
                 <Grid Grid.Column="0">
                     <Grid.RowDefinitions>
@@ -154,6 +154,13 @@
                             <ListView Name="CharacterList" ItemsSource="{Binding CharacterList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.RowSpan="5" SelectedIndex="0" Margin="0,0,6,0" SelectionMode="Single">
                                 <ListView.View>
                                     <GridView>
+                                        <GridViewColumn Header="Use?" Width="Auto">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <CheckBox IsChecked="{Binding IncludeInExport.Value}"/>
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
                                         <GridViewColumn Width="48">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
@@ -162,7 +169,8 @@
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
                                         <GridViewColumn Header="Name" DisplayMemberBinding="{Binding NameProperty.Value}" Width="120"/>
-                                        <GridViewColumn Header="Team" DisplayMemberBinding="{Binding TeamProperty.DisplayString}" Width="69"/>
+                                        <GridViewColumn Header="Team" DisplayMemberBinding="{Binding TeamProperty.DisplayString}" Width="68"/>
+                                        <GridViewColumn Header="Note" DisplayMemberBinding="{Binding Note.Value}" Width="93"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>

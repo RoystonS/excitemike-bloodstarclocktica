@@ -224,8 +224,7 @@ namespace BloodstarClockticaWpf
             }
         }
 
-        // TODO: I hadn't learned about dependency properties when I made these. Convert.
-
+        // TODO: it is kinda just confusing to have both X and XProperty. cut down to just these binding helpers and drop the suffix
         public StringBindingHelper IdProperty { get; private set; }
         public StringBindingHelper NameProperty { get; private set; }
         public ComboBoxBindingHelper TeamProperty { get; private set; }
@@ -234,7 +233,10 @@ namespace BloodstarClockticaWpf
         public StringBindingHelper OtherNightReminderProperty { get; private set; }
         public BoolBindingHelper SetupProperty { get; private set; }
         public StringBindingHelper ReminderTokensProperty { get; private set; }
-        public StringBindingHelper GlobalReminderTokensProperty { get; private set; }
+        public StringBindingHelper GlobalReminderTokens { get; private set; }
+
+        public BoolBindingHelper IncludeInExport { get; private set; }
+        public StringBindingHelper Note { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -368,7 +370,7 @@ namespace BloodstarClockticaWpf
                 },
                 true
             );
-            GlobalReminderTokensProperty = new StringBindingHelper(
+            GlobalReminderTokens = new StringBindingHelper(
                 "Global",
                 "Reminder tokens that are always available (one per line)",
                 () => string.Join(Environment.NewLine, character.GlobalReminderTokens),
@@ -377,7 +379,34 @@ namespace BloodstarClockticaWpf
                     var tokens = from token in value.Split(new string[] { Environment.NewLine }, StringSplitOptions.None) select token;
                     character.GlobalReminderTokens = new List<string>(tokens);
                     OnPropertyChanged("GlobalReminderTokens");
-                    OnPropertyChanged("GlobalReminderTokensProperty");
+                    OnPropertyChanged("GlobalReminderTokens");
+                },
+                true
+            );
+            IncludeInExport = new BoolBindingHelper(
+                "Include in Export",
+                "Whether this character should be included when exporting",
+                () => character.IncludeInExport,
+                (value) =>
+                {
+                    if (value != character.IncludeInExport)
+                    {
+                        character.IncludeInExport = value;
+                        OnPropertyChanged("IncludeInExport");
+                    }
+                }
+            );
+            Note = new StringBindingHelper(
+                "Note",
+                "Note displayed in Bloodstar Clocktica only. Not exported.",
+                () => character.Note,
+                (value) =>
+                {
+                    if (value != character.Note)
+                    {
+                        character.Note = value;
+                        OnPropertyChanged("Note");
+                    }
                 },
                 true
             );

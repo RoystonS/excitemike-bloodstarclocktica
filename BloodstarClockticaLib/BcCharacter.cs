@@ -46,7 +46,7 @@ namespace BloodstarClockticaLib
         public IEnumerable<string> GlobalReminderTokens { get; set; }
 
         /// <summary>
-        /// hether this token affects setup (orange leaf), like the Drunk or Baron
+        /// whether this token affects setup (orange leaf), like the Drunk or Baron
         /// </summary>
         public bool Setup { get; set; }
 
@@ -70,21 +70,19 @@ namespace BloodstarClockticaLib
         /// </summary>
         public string OtherNightReminder { get; set; }
 
+        /// <summary>
+        /// source image to be processed into botc-style character token art
+        /// </summary>
         public Image SourceImage { get; set; }
 
-        public string SourceImageButtonText
-        {
-            get
-            {
-                if (SourceImage == null)
-                {
-                    return "Click to import source image";
-                }
-                return "";
-            }
-        }
-
+        /// <summary>
+        /// backing field for ProcessedImage
+        /// </summary>
         private Image processedImage;
+
+        /// <summary>
+        /// character image, lazily created from source image if needed/possible
+        /// </summary>
         public Image ProcessedImage
         {
             get
@@ -96,6 +94,16 @@ namespace BloodstarClockticaLib
             }
             set => processedImage = value;
         }
+
+        /// <summary>
+        /// whether to export this character or leave it in set, unexported
+        /// </summary>
+        public bool IncludeInExport { get; set; }
+
+        /// <summary>
+        /// Note to display with the character
+        /// </summary>
+        public string Note { get; set; }
 
         /// <summary>
         /// Get a unique character id
@@ -138,6 +146,8 @@ namespace BloodstarClockticaLib
             OtherNightReminder = "";
             SourceImage = null;
             ProcessedImage = null;
+            IncludeInExport = true;
+            Note = "";
         }
 
         /// <summary>
@@ -224,6 +234,12 @@ namespace BloodstarClockticaLib
                             case "otherNightReminder":
                                 this.OtherNightReminder = json.GetString();
                                 break;
+                            case "includeInExport":
+                                IncludeInExport = json.GetBoolean();
+                                break;
+                            case "note":
+                                Note = json.GetString();
+                                break;
                             default:
                                 Console.Error.WriteLine($"unhandled property: \"{propertyName}\"");
                                 json.Skip();
@@ -286,6 +302,8 @@ namespace BloodstarClockticaLib
                         json.WriteNumber("otherNight", OtherNightOrder);
                         json.WriteString("firstNightReminder", FirstNightReminder);
                         json.WriteString("otherNightReminder", OtherNightReminder);
+                        json.WriteBoolean("includeInExport", IncludeInExport);
+                        json.WriteString("note", Note);
                         json.WriteEndObject();
                         json.Flush();
                     }

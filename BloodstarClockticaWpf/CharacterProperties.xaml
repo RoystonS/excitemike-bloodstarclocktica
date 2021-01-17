@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BloodstarClockticaWpf"
              mc:Ignorable="d" 
-             d:DesignHeight="320" d:DesignWidth="600">
+             d:DesignHeight="400" d:DesignWidth="600">
     <UserControl.Resources>
         <DataTemplate x:Key="RowTextField">
             <Grid ToolTip="{Binding Description}">
@@ -68,7 +68,13 @@
                 <GroupBox Header="Tokens">
                     <StackPanel>
                         <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding ReminderTokensProperty}"/>
-                        <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding GlobalReminderTokensProperty}"/>
+                        <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding GlobalReminderTokens}"/>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="Meta">
+                    <StackPanel>
+                        <ContentControl ContentTemplate="{StaticResource RowCheckBox}" Content="{Binding IncludeInExport}"/>
+                        <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding Note}"/>
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
