@@ -308,67 +308,136 @@ namespace BloodstarClockticaWpf
         /// <summary>
         /// text summarizing how much of what will be exported
         /// </summary>
-        public string StatusText
+        public string StatusText_Characters
         {
             get
             {
                 int exportedCharacterCount = 0;
                 int characterCount = 0;
+                foreach (var character in CharacterList)
+                {
+                    characterCount++;
+                    if (character.IncludeInExport.Value)
+                    {
+                        exportedCharacterCount++;
+                    }
+                }
+                return $"{exportedCharacterCount}/{characterCount} Characters";
+            }
+        }
+        /// <summary>
+        /// text summarizing how much of what will be exported
+        /// </summary>
+        public string StatusText_Townsfolk
+        {
+            get
+            {
                 int exportedTownsfolkCount = 0;
                 int townsfolkCount = 0;
+                foreach (var character in CharacterList)
+                {
+                    if (BcTeam.TeamValue.Townsfolk == BcTeam.FromString(character.TeamProperty.DisplayString))
+                    {
+                        townsfolkCount++;
+                        if (character.IncludeInExport.Value)
+                        {
+                            exportedTownsfolkCount++;
+                        }
+                    }
+                }
+                return $"{exportedTownsfolkCount}/{townsfolkCount} Townsfolk";
+            }
+        }
+        /// <summary>
+        /// text summarizing how much of what will be exported
+        /// </summary>
+        public string StatusText_Outsiders
+        {
+            get
+            {
                 int exportedOutsiderCount = 0;
                 int outsiderCount = 0;
+                foreach (var character in CharacterList)
+                {
+                    if (BcTeam.TeamValue.Outsider == BcTeam.FromString(character.TeamProperty.DisplayString))
+                    {
+                        outsiderCount++;
+                        if (character.IncludeInExport.Value)
+                        {
+                            exportedOutsiderCount++;
+                        }
+                    }
+                }
+                return $"{exportedOutsiderCount}/{outsiderCount} Outsiders";
+            }
+        }
+        /// <summary>
+        /// text summarizing how much of what will be exported
+        /// </summary>
+        public string StatusText_Minions
+        {
+            get
+            {
                 int exportedMinionCount = 0;
                 int minionCount = 0;
+                foreach (var character in CharacterList)
+                {
+                    if (BcTeam.TeamValue.Minion == BcTeam.FromString(character.TeamProperty.DisplayString))
+                    {
+                        minionCount++;
+                        if (character.IncludeInExport.Value)
+                        {
+                            exportedMinionCount++;
+                        }
+                    }
+                }
+                return $"{exportedMinionCount}/{minionCount} Minions";
+            }
+        }
+        /// <summary>
+        /// text summarizing how much of what will be exported
+        /// </summary>
+        public string StatusText_Demons
+        {
+            get
+            {
                 int exportedDemonCount = 0;
                 int demonCount = 0;
+                foreach (var character in CharacterList)
+                {
+                    if (BcTeam.TeamValue.Demon == BcTeam.FromString(character.TeamProperty.DisplayString))
+                    {
+                        demonCount++;
+                        if (character.IncludeInExport.Value)
+                        {
+                            exportedDemonCount++;
+                        }
+                    }
+                }
+                return $"{exportedDemonCount}/{demonCount} Demons";
+            }
+        }
+        /// <summary>
+        /// text summarizing how much of what will be exported
+        /// </summary>
+        public string StatusText_Travelers
+        {
+            get
+            {
                 int exportedTravelerCount = 0;
                 int travelerCount = 0;
                 foreach (var character in CharacterList)
                 {
-                    characterCount++;
-                    switch (BcTeam.FromString(character.TeamProperty.DisplayString))
+                    if (BcTeam.TeamValue.Traveler == BcTeam.FromString(character.TeamProperty.DisplayString))
                     {
-                        case BcTeam.TeamValue.Townsfolk:
-                            townsfolkCount++;
-                            break;
-                        case BcTeam.TeamValue.Outsider:
-                            outsiderCount++;
-                            break;
-                        case BcTeam.TeamValue.Minion:
-                            minionCount++;
-                            break;
-                        case BcTeam.TeamValue.Demon:
-                            demonCount++;
-                            break;
-                        case BcTeam.TeamValue.Traveler:
-                            travelerCount++;
-                            break;
-                    }
-                    if (character.IncludeInExport.Value)
-                    {
-                        exportedCharacterCount++;
-                        switch (BcTeam.FromString(character.TeamProperty.DisplayString))
+                        travelerCount++;
+                        if (character.IncludeInExport.Value)
                         {
-                            case BcTeam.TeamValue.Townsfolk:
-                                exportedTownsfolkCount++;
-                                break;
-                            case BcTeam.TeamValue.Outsider:
-                                exportedOutsiderCount++;
-                                break;
-                            case BcTeam.TeamValue.Minion:
-                                exportedMinionCount++;
-                                break;
-                            case BcTeam.TeamValue.Demon:
-                                exportedDemonCount++;
-                                break;
-                            case BcTeam.TeamValue.Traveler:
-                                exportedTravelerCount++;
-                                break;
+                            exportedTravelerCount++;
                         }
                     }
                 }
-                return $"{exportedCharacterCount}/{characterCount} Characters\t{exportedTownsfolkCount}/{townsfolkCount} Townsfolk\t{exportedOutsiderCount}/{outsiderCount} Outsiders\t{exportedMinionCount}/{minionCount} Minions\t{exportedDemonCount}/{demonCount} Demons\t{exportedTravelerCount}/{travelerCount} Travelers";
+                return $"{exportedTravelerCount}/{travelerCount} Travelers";
             }
         }
 

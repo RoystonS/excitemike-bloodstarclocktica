@@ -98,9 +98,19 @@
                 <TextBlock Grid.Column="1" Text="{Binding WindowTitle}" VerticalAlignment="Center"/>
             </Grid>
         </DockPanel>
+        
+        <!-- status bar -->
         <Border DockPanel.Dock="Bottom" Style="{DynamicResource StatusBarStyle}">
-            <Label Content="{Binding StatusText}" Margin="6"/>
+            <StackPanel Orientation="Horizontal" Margin="6">
+                <Label Content="{Binding StatusText_Characters}" Margin="0,0,6,0"/>
+                <Label Content="{Binding StatusText_Townsfolk}" Margin="0,0,6,0"/>
+                <Label Content="{Binding StatusText_Outsiders}" Margin="0,0,6,0"/>
+                <Label Content="{Binding StatusText_Minions}" Margin="0,0,6,0"/>
+                <Label Content="{Binding StatusText_Demons}" Margin="0,0,6,0"/>
+                <Label Content="{Binding StatusText_Travelers}" Margin="0,0,6,0"/>
+            </StackPanel>
         </Border>
+        
         <!-- splitter crashes if I don't have this AdornerDecorator. dunno why :( -->
         <AdornerDecorator>
             <Grid Margin="6,0,6,6">
