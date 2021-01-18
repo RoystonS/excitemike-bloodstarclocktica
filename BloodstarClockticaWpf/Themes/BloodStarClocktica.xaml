@@ -92,12 +92,25 @@
         </Setter>
     </Style>
 
-    <Style TargetType="{x:Type GridSplitter}">
+    <Style TargetType="{x:Type GridSplitter}" BasedOn="{x:Null}">
         <Setter Property="SnapsToDevicePixels" Value="true" />
-        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource ControlBackgroundBrush}" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Style.Triggers>
+            <Trigger Property="IsDragging" Value="True">
+                <Setter Property="Background" Value="{DynamicResource HoverBrush}"/>
+            </Trigger>
+            <Trigger Property="IsFocused" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource HoverBrush}"/>
+                <Setter Property="BorderThickness" Value="1" />
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="BorderBrush" Value="{DynamicResource HoverBrush}"/>
+                <Setter Property="BorderThickness" Value="1" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
+    
     <Style TargetType="{x:Type TextBlock}">
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     </Style>
@@ -870,5 +883,9 @@
         <Setter Property="BorderBrush" Value="{DynamicResource SolidBorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}"/>
+    </Style>
+
+    <Style x:Key="{x:Type ContentControl}" TargetType="{x:Type ContentControl}">
+        <Setter Property="IsTabStop" Value="False"/>
     </Style>
 </ResourceDictionary>

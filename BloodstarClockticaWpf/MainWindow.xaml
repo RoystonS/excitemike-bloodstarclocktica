@@ -160,7 +160,7 @@
                                         <GridViewColumn Header="Export?" Width="30">
                                             <GridViewColumn.CellTemplate>
                                                 <DataTemplate>
-                                                    <CheckBox IsChecked="{Binding IncludeInExport.Value}"/>
+                                                    <CheckBox IsChecked="{Binding IncludeInExport.Value}" IsTabStop="False"/>
                                                 </DataTemplate>
                                             </GridViewColumn.CellTemplate>
                                         </GridViewColumn>
