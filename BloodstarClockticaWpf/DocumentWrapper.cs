@@ -524,7 +524,7 @@ namespace BloodstarClockticaWpf
                     CharacterList.RemoveAt(CharacterList.Count - 1);
                 }
                 OnPropertyChanged("CharacterList");
-                OnPropertyChanged("StatusText");
+                StatusTextChanged();
             }
             finally
             {
@@ -556,7 +556,7 @@ namespace BloodstarClockticaWpf
             document.Characters.Add(character.Character);
             character.PropertyChanged += Character_PropertyChanged;
             CharacterList.Add(character);
-            OnPropertyChanged("StatusText");
+            StatusTextChanged();
             Dirty = true;
         }
 
@@ -584,7 +584,7 @@ namespace BloodstarClockticaWpf
                 {
                     case "TeamProperty":
                     case "IncludeInExport":
-                        OnPropertyChanged("StatusText");
+                        StatusTextChanged();
                         break;
                     default:
                         break;
@@ -603,7 +603,7 @@ namespace BloodstarClockticaWpf
             {
                 document.Characters.RemoveAt(index);
                 CharacterList.RemoveAt(index);
-                OnPropertyChanged("StatusText");
+                StatusTextChanged();
                 Dirty = true;
             }
         }
@@ -703,5 +703,17 @@ namespace BloodstarClockticaWpf
             return outputList;
         }
 
+        /// <summary>
+        /// send PropertyChanged events for the whole status bar
+        /// </summary>
+        private void StatusTextChanged()
+        {
+            OnPropertyChanged("StatusText_Characters");
+            OnPropertyChanged("StatusText_Townsfolk");
+            OnPropertyChanged("StatusText_Outsiders");
+            OnPropertyChanged("StatusText_Minions");
+            OnPropertyChanged("StatusText_Demons");
+            OnPropertyChanged("StatusText_Travelers");
+        }
     }
 }
