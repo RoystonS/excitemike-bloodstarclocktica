@@ -135,7 +135,7 @@ namespace BloodstarClockticaWpf
             recentFiles.Insert(0, filePath);
 
             // truncate
-            while (recentFiles.Count > 10)
+            while (recentFiles.Count > 9)
             {
                 recentFiles.RemoveAt(recentFiles.Count - 1);
             }
@@ -191,7 +191,8 @@ namespace BloodstarClockticaWpf
                 Properties.Settings.Default.RecentFiles = new System.Collections.Specialized.StringCollection();
             }
 
-            RecentFilesMenuItem.ItemsSource = from string x in Properties.Settings.Default.RecentFiles select x;
+            int i = 1;
+            RecentFilesMenuItem.ItemsSource = from string x in Properties.Settings.Default.RecentFiles select $"_{i++} {x}";
             RecentFilesMenuItem.Visibility = (RecentFilesMenuItem.HasItems) ? Visibility.Visible : Visibility.Collapsed;
         }
 
@@ -581,8 +582,9 @@ namespace BloodstarClockticaWpf
         {
             if (e.OriginalSource is MenuItem menuItem)
             {
-                if (menuItem.Header is string filePath)
+                if (menuItem.Header is string header)
                 {
+                    var filePath = header.Split(new char[] { ' ' }, 2)[1];
                     if (SavePromptIfDirty())
                     {
                         try
