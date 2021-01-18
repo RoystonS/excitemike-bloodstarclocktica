@@ -98,6 +98,9 @@
                 <TextBlock Grid.Column="1" Text="{Binding WindowTitle}" VerticalAlignment="Center"/>
             </Grid>
         </DockPanel>
+        <Border DockPanel.Dock="Bottom" Style="{DynamicResource StatusBarStyle}">
+            <Label Content="{Binding StatusText}" Margin="6"/>
+        </Border>
         <!-- splitter crashes if I don't have this AdornerDecorator. dunno why :( -->
         <AdornerDecorator>
             <Grid Margin="6,0,6,6">

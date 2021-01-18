@@ -38,6 +38,7 @@
         <GradientStop Color="#FF3977FF" Offset="0.0"/>
         <GradientStop Color="#443977FF" Offset="1"/>
     </RadialGradientBrush>
+    <SolidColorBrush x:Key="ActiveStatusBarBrush" Color="#443977FF"/>
 
     <Style x:Key="LabelBase" TargetType="{x:Type Label}">
         <Setter Property="SnapsToDevicePixels" Value="true" />
@@ -145,6 +146,17 @@
             <Trigger Property="WindowState" Value="Maximized">
                 <Setter Property="BorderThickness" Value="6"/>
             </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="StatusBarStyle" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource SolidBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="0,1,0,0"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding (Window.IsActive), RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}" Value="True">
+                <Setter Property="Background" Value="{DynamicResource ActiveStatusBarBrush}"/>
+            </DataTrigger>
         </Style.Triggers>
     </Style>
 

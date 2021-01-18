@@ -306,6 +306,73 @@ namespace BloodstarClockticaWpf
         private bool updatingCharacterList;
 
         /// <summary>
+        /// text summarizing how much of what will be exported
+        /// </summary>
+        public string StatusText
+        {
+            get
+            {
+                int exportedCharacterCount = 0;
+                int characterCount = 0;
+                int exportedTownsfolkCount = 0;
+                int townsfolkCount = 0;
+                int exportedOutsiderCount = 0;
+                int outsiderCount = 0;
+                int exportedMinionCount = 0;
+                int minionCount = 0;
+                int exportedDemonCount = 0;
+                int demonCount = 0;
+                int exportedTravelerCount = 0;
+                int travelerCount = 0;
+                foreach (var character in CharacterList)
+                {
+                    characterCount++;
+                    switch (BcTeam.FromString(character.TeamProperty.DisplayString))
+                    {
+                        case BcTeam.TeamValue.Townsfolk:
+                            townsfolkCount++;
+                            break;
+                        case BcTeam.TeamValue.Outsider:
+                            outsiderCount++;
+                            break;
+                        case BcTeam.TeamValue.Minion:
+                            minionCount++;
+                            break;
+                        case BcTeam.TeamValue.Demon:
+                            demonCount++;
+                            break;
+                        case BcTeam.TeamValue.Traveler:
+                            travelerCount++;
+                            break;
+                    }
+                    if (character.IncludeInExport.Value)
+                    {
+                        exportedCharacterCount++;
+                        switch (BcTeam.FromString(character.TeamProperty.DisplayString))
+                        {
+                            case BcTeam.TeamValue.Townsfolk:
+                                exportedTownsfolkCount++;
+                                break;
+                            case BcTeam.TeamValue.Outsider:
+                                exportedOutsiderCount++;
+                                break;
+                            case BcTeam.TeamValue.Minion:
+                                exportedMinionCount++;
+                                break;
+                            case BcTeam.TeamValue.Demon:
+                                exportedDemonCount++;
+                                break;
+                            case BcTeam.TeamValue.Traveler:
+                                exportedTravelerCount++;
+                                break;
+                        }
+                    }
+                }
+                return $"{exportedCharacterCount}/{characterCount} Characters\t{exportedTownsfolkCount}/{townsfolkCount} Townsfolk\t{exportedOutsiderCount}/{outsiderCount} Outsiders\t{exportedMinionCount}/{minionCount} Minions\t{exportedDemonCount}/{demonCount} Demons\t{exportedTravelerCount}/{travelerCount} Travelers";
+            }
+        }
+
+        /// <summary>
         /// listen for when  property changes
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
@@ -388,6 +455,7 @@ namespace BloodstarClockticaWpf
                     CharacterList.RemoveAt(CharacterList.Count - 1);
                 }
                 OnPropertyChanged("CharacterList");
+                OnPropertyChanged("StatusText");
             }
             finally
             {
@@ -419,6 +487,7 @@ namespace BloodstarClockticaWpf
             document.Characters.Add(character.Character);
             character.PropertyChanged += Character_PropertyChanged;
             CharacterList.Add(character);
+            OnPropertyChanged("StatusText");
             Dirty = true;
         }
 
@@ -442,6 +511,15 @@ namespace BloodstarClockticaWpf
         {
             if (!updatingCharacterList)
             {
+                switch (e.PropertyName)
+                {
+                    case "TeamProperty":
+                    case "IncludeInExport":
+                        OnPropertyChanged("StatusText");
+                        break;
+                    default:
+                        break;
+                }
                 Dirty = true;
             }
         }
@@ -456,6 +534,7 @@ namespace BloodstarClockticaWpf
             {
                 document.Characters.RemoveAt(index);
                 CharacterList.RemoveAt(index);
+                OnPropertyChanged("StatusText");
                 Dirty = true;
             }
         }
