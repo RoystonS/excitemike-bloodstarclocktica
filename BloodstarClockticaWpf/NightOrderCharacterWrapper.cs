@@ -34,27 +34,7 @@ namespace BloodstarClockticaWpf
         public NightOrderCharacterWrapper(CharacterWrapper character)
         {
             Character = character;
-            character.PropertyChanged += Character_PropertyChanged;
             nightReminderOrdinal = "-";
-        }
-
-        /// <summary>
-        /// when the internal character wrapper changes, this one's bindings may need refreshing, too
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Character_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            switch (e.PropertyName)
-            {
-                case "FirstNightOrder":
-                case "OtherNightOrder":
-                    OnPropertyChanged("NightReminderOrdinal");
-                    break;
-                case null:
-                    OnPropertyChanged(null);
-                    break;
-            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

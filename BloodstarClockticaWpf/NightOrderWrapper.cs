@@ -67,6 +67,7 @@ namespace BloodstarClockticaWpf
             int nightReminderCount = 0;
             foreach (var characterWrapper in characters)
             {
+                characterWrapper.Character.PropertyChanged += Character_PropertyChanged;
                 SortedList.Add(characterWrapper);
 
                 // correct the order numbers as we build the list
@@ -86,15 +87,40 @@ namespace BloodstarClockticaWpf
         }
 
         /// <summary>
+        /// ordinal may need updating as fields change
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Character_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            switch (e.PropertyName)
+            {
+                case "FirstNightOrder":
+                case "OtherNightOrder":
+                case "IncludeInExport":
+                case "FirstNightReminder":
+                case "OtherNightReminder":
+                    UpdateOrdinals();
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
         /// update ordinal field for all characters
         /// </summary>
         private void UpdateOrdinals()
         {
-            var nightReminderCount = 0;
+            var nightReminderCount = 1;
             foreach (var characterWrapper in SortedList)
             {
                 var reminder = IsFirstNight ? characterWrapper.Character.FirstNightReminderProperty.Value : characterWrapper.Character.OtherNightReminderProperty.Value;
-                characterWrapper.NightReminderOrdinal = (reminder == "") ? "-" : Ordinal(++nightReminderCount);
+                characterWrapper.NightReminderOrdinal = (reminder == "") ? "-" : Ordinal(nightReminderCount);
+                if ((reminder != "") && characterWrapper.Character.IncludeInExport.Value)
+                {
+                    nightReminderCount++;
+                }
             }
         }
 

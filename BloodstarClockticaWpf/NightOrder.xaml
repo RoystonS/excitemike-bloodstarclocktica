@@ -46,7 +46,25 @@
                     <ListView Name="CharacterList" ItemsSource="{Binding SortedList}" Grid.RowSpan="5" SelectedIndex="0" Margin="0,0,6,0" SelectionMode="Single">
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn DisplayMemberBinding="{Binding NightReminderOrdinal}" Width="45"/>
+                                <GridViewColumn Width="45">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock x:Name="Ordinal" Focusable="False" Text="{Binding NightReminderOrdinal}"/>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding Character.IncludeInExport.Value}" Value="False">
+                                                    <Setter TargetName="Ordinal" Property="Foreground" Value="{DynamicResource SolidBorderBrush}"/>
+                                                    <Setter TargetName="Ordinal" Property="Text">
+                                                        <Setter.Value>
+                                                            <MultiBinding StringFormat="({0})">
+                                                                <Binding Path="NightReminderOrdinal"/>
+                                                            </MultiBinding>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
                                 <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Character.NameProperty.Value}" Width="150"/>
                                 <GridViewColumn Header="Team" DisplayMemberBinding="{Binding Character.TeamProperty.DisplayString}" Width="69"/>
                             </GridView>
@@ -60,47 +78,20 @@
                 <GridSplitter Grid.Column="1" HorizontalAlignment="Center" ShowsPreview="True" Width="6"/>
 
                 <!-- right pane -->
-                <DockPanel Grid.Column="2">
-
-                    <!-- Character editors-->
-                    <GroupBox DockPanel.Dock="Top" Header="{Binding Character.NameProperty.Value}" DataContext="{Binding ElementName=CharacterList, Path=SelectedItem}" Margin="0,0,0,6">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <Label Content="Ability" Grid.Row="0" Grid.Column="0"/>
-                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Character.AbilityProperty.Value, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0,0,0,4" TextWrapping="Wrap"/>
-                            <Label Content="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.NightReminderLabel, Mode=OneWay}" Grid.Row="1"/>
-                            <StackPanel Grid.Row="1" Grid.Column="1">
-                                <TextBox Text="{Binding Character.FirstNightReminderProperty.Value, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,6" TextWrapping="Wrap" Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.FirstNightVis}"/>
-                                <TextBox Text="{Binding Character.OtherNightReminderProperty.Value, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,6" TextWrapping="Wrap" Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.OtherNightVis}"/>
-                                <Button Content="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.CopyToButtonLabel, Mode=OneWay}" Click="CopyToButton_Click" Margin="0,0,0,6" Height="35"/>
-                                <Button Content="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.CopyFromButtonLabel, Mode=OneWay}" Click="CopyFromButton_Click" Height="35"/>
-                                <Border/>
-                            </StackPanel>
-                        </Grid>
-                        <GroupBox.Style>
-                            <Style TargetType="{x:Type GroupBox}" BasedOn="{StaticResource {x:Type GroupBox}}">
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding}" Value="{x:Null}">
-                                        <Setter Property="GroupBox.Visibility" Value="Collapsed"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </GroupBox.Style>
-                    </GroupBox>
-
+                <Grid Grid.Column="2" DataContext="{Binding ElementName=CharacterList, Path=SelectedItem.Character}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition Height="50"/>
+                    </Grid.RowDefinitions>
+                    
+                    <local:CharacterProperties Margin="0,0,0,6"/>
+                    
                     <!-- Done button -->
-                    <Button DockPanel.Dock="Bottom"  Content="_Done" Click="Close_Click" Height="50" IsCancel="True"/>
+                    <Button Grid.Row="1"  Content="_Done" Click="Close_Click" IsCancel="True"/>
 
                     <!-- just need something here to make dockpanel behave itself -->
                     <Border/>
-                </DockPanel>
+                </Grid>
             </Grid>
         </DockPanel>
     </AdornerDecorator>
