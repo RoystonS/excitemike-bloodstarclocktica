@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BcCharacter.cs" />
+    <Compile Include="ICharacterInterface.cs" />
     <Compile Include="BcDocument.cs" />
     <Compile Include="BcExport.cs" />
     <Compile Include="BcImage.cs" />
@@ -95,6 +96,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="RolesJsonCharacter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

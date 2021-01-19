@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using BloodstarClockticaLib;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using static BloodstarClockticaLib.BcImport;
 
 namespace BloodstarClockticaWpf
 {
@@ -15,16 +15,16 @@ namespace BloodstarClockticaWpf
         /// <summary>
         /// characters to choose from
         /// </summary>
-        public ObservableCollection<RolesJsonCharacter> Characters
+        public ObservableCollection<ICharacterInterface> Characters
         {
-            get => (ObservableCollection<RolesJsonCharacter>)GetValue(CharactersProperty);
+            get => (ObservableCollection<ICharacterInterface>)GetValue(CharactersProperty);
             set => SetValue(CharactersProperty, value);
         }
         public static readonly DependencyProperty CharactersProperty = DependencyProperty.Register(
             "Characters",
-            typeof(ObservableCollection<RolesJsonCharacter>),
+            typeof(ObservableCollection<ICharacterInterface>),
             typeof(ChooseCharacter),
-            new PropertyMetadata(new ObservableCollection<RolesJsonCharacter>())
+            new PropertyMetadata(new ObservableCollection<ICharacterInterface>())
         );
 
         /// <summary>
@@ -42,12 +42,12 @@ namespace BloodstarClockticaWpf
             new PropertyMetadata(false)
         );
 
-        private readonly IEnumerable<RolesJsonCharacter> allCharacters;
+        private readonly IEnumerable<ICharacterInterface> allCharacters;
 
         /// <summary>
         /// where we store the choice made in this dialog
         /// </summary>
-        private IEnumerable<RolesJsonCharacter> ChosenCharacters { get; set; }
+        private IEnumerable<ICharacterInterface> ChosenCharacters { get; set; }
 
         /// <summary>
         /// use to filter the list
@@ -66,10 +66,10 @@ namespace BloodstarClockticaWpf
                 (DependencyObject d, DependencyPropertyChangedEventArgs e) => (d as ChooseCharacter)?.UpdateCharacters(e.NewValue as string)
             ));
 
-        private ChooseCharacter(IEnumerable<RolesJsonCharacter> characters)
+        private ChooseCharacter(IEnumerable<ICharacterInterface> characters)
         {
-            allCharacters = new List<RolesJsonCharacter>(characters);
-            Characters = new ObservableCollection<RolesJsonCharacter>(allCharacters);
+            allCharacters = new List<ICharacterInterface>(characters);
+            Characters = new ObservableCollection<ICharacterInterface>(allCharacters);
             AnySelected = false;
             InitializeComponent();
         }
@@ -81,7 +81,7 @@ namespace BloodstarClockticaWpf
         /// <param name="e"></param>
         private void Ok_Click(object sender, RoutedEventArgs e)
         {
-            ChosenCharacters = new List<RolesJsonCharacter>(from RolesJsonCharacter character in CharacterList.SelectedItems select character);
+            ChosenCharacters = new List<ICharacterInterface>(from object character in CharacterList.SelectedItems select character as ICharacterInterface);
             DialogResult = true;
             Close();
         }
@@ -105,7 +105,7 @@ namespace BloodstarClockticaWpf
             Characters.Clear();
             foreach (var character in allCharacters)
             {
-                if (character.PassesFilter(filterString))
+                if (PassesFilter(character, filterString))
                 {
                     Characters.Add(character);
                 }
@@ -120,6 +120,15 @@ namespace BloodstarClockticaWpf
         private void CharacterList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             AnySelected = ((CharacterList.SelectedItems != null) && (CharacterList.SelectedItems.Count != 0));
+        }
+
+        /// <summary>
+        /// override in derived class to support filtering
+        /// </summary>
+        /// <returns></returns>
+        private bool PassesFilter(ICharacterInterface character, string filterString)
+        {
+            return character.PassesFilter(filterString);
         }
 
         /// <summary>
@@ -140,7 +149,7 @@ namespace BloodstarClockticaWpf
             var dlg = new ChooseCharacter(characters) { Owner = owner };
             if (true == dlg.ShowDialog())
             {
-                return dlg.ChosenCharacters;
+                return dlg.ChosenCharacters.Cast<RolesJsonCharacter>();
             }
             return null;
         }
@@ -152,6 +161,29 @@ namespace BloodstarClockticaWpf
         private void SelectNone_Click(object sender, RoutedEventArgs e)
         {
             CharacterList.SelectedIndex = -1;
+        }
+
+        /// <summary>
+        /// prompt the user to choose a character from the list
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<BcCharacter> Show(IEnumerable<BcCharacter> characters)
+        {
+            return Show(characters, null);
+        }
+
+        /// <summary>
+        /// prompt the user to choose a character from the list
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<BcCharacter> Show(IEnumerable<BcCharacter> characters, Window owner)
+        {
+            var dlg = new ChooseCharacter(characters) { Owner = owner };
+            if (true == dlg.ShowDialog())
+            {
+                return dlg.ChosenCharacters.Cast<BcCharacter>();
+            }
+            return null;
         }
 
         /// <summary>

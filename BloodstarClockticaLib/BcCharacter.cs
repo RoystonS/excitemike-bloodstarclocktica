@@ -9,7 +9,7 @@ using System.Text.Json;
 
 namespace BloodstarClockticaLib
 {
-    public class BcCharacter
+    public class BcCharacter : ICharacterInterface
     {
         internal static string RoleDir = "roles";
         internal static string SourceImageDir = "src_images";
@@ -335,6 +335,38 @@ namespace BloodstarClockticaLib
         private void ReprocessImage()
         {
             processedImage = BcImage.ProcessImage(SourceImage, BcImage.GetGradientForTeam(Team));
+        }
+
+        /// <summary>
+        /// see if the character contains that text somewhere
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public bool PassesFilter(string s)
+        {
+            var needle = s.ToLower();
+            if (string.IsNullOrWhiteSpace(s))
+            {
+                return true;
+            }
+            var haystacks = new string[] {
+                    Id,
+                    Name,
+                    BcTeam.ToExportString(Team),
+                    Ability,
+                    string.Join("\n", ReminderTokens),
+                    string.Join("\n", GlobalReminderTokens),
+                    FirstNightReminder,
+                    OtherNightReminder,
+                    Note};
+            foreach (var haystack in haystacks)
+            {
+                if (haystack.ToLower().Contains(needle))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

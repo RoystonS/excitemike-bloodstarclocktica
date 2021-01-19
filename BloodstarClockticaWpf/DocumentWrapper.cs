@@ -704,6 +704,17 @@ namespace BloodstarClockticaWpf
         }
 
         /// <summary>
+        /// import already-made BcCharacters
+        /// </summary>
+        /// <param name="characters"></param>
+        /// <returns></returns>
+        internal IEnumerable<CharacterWrapper> ImportCharacters(IEnumerable<BcCharacter> characters)
+        {
+            // TODO: should this clone the characters?
+            return new List<CharacterWrapper>(from character in characters select new CharacterWrapper(character));
+        }
+
+        /// <summary>
         /// send PropertyChanged events for the whole status bar
         /// </summary>
         private void StatusTextChanged()

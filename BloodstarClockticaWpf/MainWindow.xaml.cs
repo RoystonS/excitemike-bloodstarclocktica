@@ -714,6 +714,57 @@ namespace BloodstarClockticaWpf
         }
 
         /// <summary>
+        /// Add character(s) from a Bloodstar Clocktica file
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ImportFromBlood_Click(object sender, RoutedEventArgs e)
+        {
+            var docWrapper = (DataContext as DocumentWrapper);
+            var characters = DoBlurred(() =>
+            {
+                var docDir = Properties.Settings.Default.DocumentDir;
+                if (docDir == null)
+                {
+                    docDir = "";
+                }
+                var dlg = new OpenFileDialog
+                {
+                    Filter = "Bloodstar Clocktica files (*.blood)|*.blood|All files (*.*)|*.*",
+                    InitialDirectory = docDir
+                };
+                if (true == dlg.ShowDialog(this))
+                {
+                    BcDocument document;
+                    try
+                    {
+                        document = new BcDocument(dlg.FileName);
+                    }
+                    catch (InvalidDataException)
+                    {
+                        BcMessageBox.Show("Invalid Data", $"File \"{dlg.FileName}\" does not appear to be a Bloodstar Clocktica file", this);
+                        return null;
+                    }
+                    if (null != document)
+                    {
+                        var choices = ChooseCharacter.Show(document.Characters, this);
+                        if (choices != null)
+                        {
+                            return docWrapper.ImportCharacters(choices);
+                        }
+                    }
+                }
+                return null;
+            });
+            if (null != characters)
+            {
+                docWrapper.AddCharacters(characters);
+                CharacterList.SelectedIndex = docWrapper.CharacterList.Count - 1;
+                CharacterList.Focus();
+            }
+        }
+
+        /// <summary>
         /// set as Closing event handler to block a window from closing
         /// </summary>
         /// <param name="sender"></param>
