@@ -888,4 +888,49 @@
     <Style x:Key="{x:Type ContentControl}" TargetType="{x:Type ContentControl}">
         <Setter Property="IsTabStop" Value="False"/>
     </Style>
+
+    <!-- checkbox -->
+    <Style TargetType="{x:Type CheckBox}">
+        <Setter Property="SnapsToDevicePixels" Value="true" />
+        <Setter Property="Background" Value="{DynamicResource ButtonBackgroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SolidBorderBrush}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type CheckBox}">
+                    <BulletDecorator Background="Transparent" x:Name="bulletDecorator">
+                        <BulletDecorator.Bullet>
+                            <Grid Width="16" Height="16">
+                                <Border x:Name="Background" Width="14" Height="14" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}"/>
+                                <Path x:Name="CheckIcon" Visibility="Collapsed" Stroke="{StaticResource TextBrush}" StrokeThickness="2" Stretch="None" Data="M 3,7 6,11 12,3" />
+                                <Rectangle Height="8" x:Name="IndeterminateIcon" Width="10" Opacity="0" Fill="{StaticResource SolidBorderBrush}" />
+                            </Grid>
+                        </BulletDecorator.Bullet>
+                        <ContentPresenter RecognizesAccessKey="True" Margin="5,0,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                    </BulletDecorator>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="CheckIcon" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="IsFocused" Value="True">
+                            <Setter TargetName="Background" Property="BorderBrush" Value="{DynamicResource HoverBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Background" Property="BorderBrush" Value="{DynamicResource HoverBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Background" Property="Background" Value="{DynamicResource HoverBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="false">
+                            <Setter Property="Background" Value="{DynamicResource DisabledBackgroundBrush}" TargetName="Background" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource DisabledBorderBrush}" TargetName="Background" />
+                            <Setter Property="Foreground" Value="{DynamicResource DisabledForegroundBrush}" />
+                            <Setter Property="Opacity" TargetName="bulletDecorator" Value="0.5" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>
