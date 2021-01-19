@@ -185,6 +185,7 @@ namespace BloodstarClockticaLib
         {
             json.WriteStartObject();
             json.WriteString("id", "_meta");
+            json.WriteString("exportTime", $"{DateTime.Now:U}");
             json.WriteString("name", document.Meta.Name);
             json.WriteString("author", document.Meta.Author);
             if (document.Meta.Logo != null)
