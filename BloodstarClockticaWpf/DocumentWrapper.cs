@@ -296,6 +296,22 @@ namespace BloodstarClockticaWpf
         }
 
         /// <summary>
+        /// remember whether the user likes to skip unchanged
+        /// </summary>
+        public bool SkipUnchanged
+        {
+            get => document.Meta.SkipUnchanged;
+            set
+            {
+                if (value != document.Meta.SkipUnchanged)
+                {
+                    document.Meta.SkipUnchanged = value;
+                    Dirty = true;
+                }
+            }
+        }
+
+        /// <summary>
         /// link to roles.json after upload
         /// </summary>
         public string RolesUrl => BcExport.RolesUrl(document);
@@ -641,7 +657,14 @@ namespace BloodstarClockticaWpf
         /// <summary>
         /// upload via sftp
         /// </summary>
-        public async Task ExportToSftp(string password, IProgress<double> progress) => await BcExport.ExportViaSftp(document, password, progress);
+        public async Task ExportToSftp(string password, IProgress<double> progress)
+        {
+            bool changedAny = await BcExport.ExportViaSftp(document, password, progress);
+            if (changedAny)
+            {
+                Dirty = true;
+            }
+        }
 
         /// <summary>
         /// create a copy of an official character
@@ -710,8 +733,7 @@ namespace BloodstarClockticaWpf
         /// <returns></returns>
         internal IEnumerable<CharacterWrapper> ImportCharacters(IEnumerable<BcCharacter> characters)
         {
-            // TODO: should this clone the characters?
-            return new List<CharacterWrapper>(from character in characters select new CharacterWrapper(character));
+            return new List<CharacterWrapper>(from character in characters select new CharacterWrapper(character.Clone(document)));
         }
 
         /// <summary>

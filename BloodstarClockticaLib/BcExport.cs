@@ -12,8 +12,9 @@ namespace BloodstarClockticaLib
         /// <summary>
         /// do the upload
         /// </summary>
-        public async static Task ExportViaSftp(BcDocument document, string password, IProgress<double> progress)
+        public async static Task<bool> ExportViaSftp(BcDocument document, string password, IProgress<double> progress)
         {
+            bool changedAny = false;
             progress.Report(0);
             var connectionInfo = new ConnectionInfo(
                 document.Meta.SftpHost,
@@ -23,24 +24,42 @@ namespace BloodstarClockticaLib
                 new PrivateKeyAuthenticationMethod("rsa.key")
             );
 
+            bool settingsChanged = (document.Meta.SftpHost != document.Meta.PrevSftpHost) || 
+                                   (document.Meta.SftpRemoteDirectory != document.Meta.PrevSftpRemoteDirectory) ||
+                                   (document.Meta.SftpPort != document.Meta.PrevSftpPort) ||
+                                   (document.Meta.SftpUser != document.Meta.PrevSftpUser);
+            if (settingsChanged)
+            {
+                changedAny |= document.MarkAllImagesInNeedOfReupload();
+            }
+
+            bool canSkipUnchanged = document.Meta.SkipUnchanged && !settingsChanged;
+
             using (var client = new SftpClient(connectionInfo))
             {
                 try
                 {
                     client.Connect();
-                    await Task.Run(() => ExportViaSftp(document, client, progress));
+                    await Task.Run(() => ExportViaSftp(document, client, canSkipUnchanged, progress));
+                    document.Meta.PrevSftpHost = document.Meta.SftpHost;
+                    document.Meta.PrevSftpRemoteDirectory = document.Meta.SftpRemoteDirectory;
+                    document.Meta.PrevSftpPort = document.Meta.SftpPort;
+                    document.Meta.PrevSftpUser = document.Meta.SftpUser;
+                    changedAny |= document.MarkAllImagesUploaded();
                 }
                 finally
                 {
                     client.Disconnect();
                 }
             }
+
+            return changedAny;
         }
 
         /// <summary>
         /// do the upload
         /// </summary>
-        private static void ExportViaSftp(BcDocument document, SftpClient client, IProgress<double> progress)
+        private static void ExportViaSftp(BcDocument document, SftpClient client, bool canSkipUnchanged, IProgress<double> progress)
         {
             double num = 1;
             double denom = 3 + document.Characters.Count;
@@ -81,11 +100,14 @@ namespace BloodstarClockticaLib
             // logo
             if (document.Meta.Logo != null)
             {
-                using (var stream = new MemoryStream())
+                if (!canSkipUnchanged || !document.Meta.LogoUploaded )
                 {
-                    document.Meta.Logo.Save(stream, ImageFormat.Png);
-                    stream.Position = 0;
-                    client.UploadFile(stream, "logo.png", true);
+                    using (var stream = new MemoryStream())
+                    {
+                        document.Meta.Logo.Save(stream, ImageFormat.Png);
+                        stream.Position = 0;
+                        client.UploadFile(stream, "logo.png", true);
+                    }
                 }
             }
             progress.Report(num++ / denom);
@@ -93,13 +115,19 @@ namespace BloodstarClockticaLib
             // character tokens
             foreach (var character in document.Characters)
             {
-                if (character.ProcessedImage != null)
+                if (character.IncludeInExport)
                 {
-                    using (var stream = new MemoryStream())
+                    if (character.ProcessedImage != null)
                     {
-                        character.ProcessedImage.Save(stream, ImageFormat.Png);
-                        stream.Position = 0;
-                        client.UploadFile(stream, $"{character.Id}.png", true);
+                        if (!canSkipUnchanged || !character.ImageUploaded)
+                        {
+                            using (var stream = new MemoryStream())
+                            {
+                                character.ProcessedImage.Save(stream, ImageFormat.Png);
+                                stream.Position = 0;
+                                client.UploadFile(stream, $"{character.Id}.png", true);
+                            }
+                        }
                     }
                 }
                 progress.Report(num++ / denom);

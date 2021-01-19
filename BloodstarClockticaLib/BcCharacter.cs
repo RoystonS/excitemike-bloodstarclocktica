@@ -18,7 +18,19 @@ namespace BloodstarClockticaLib
         /// <summary>
         /// the internal ID for this character, without spaces or special characters
         /// </summary>
-        public string Id { get; set; }
+        public string Id
+        {
+            get => id;
+            set
+            {
+                if (value != id)
+                {
+                    id = value;
+                    ImageUploaded = false;
+                }
+            }
+        }
+        private string id;
 
         /// <summary>
         /// the displayed name of this character
@@ -28,7 +40,19 @@ namespace BloodstarClockticaLib
         /// <summary>
         /// which category of character it is
         /// </summary>
-        public BcTeam.TeamValue Team { get; set; }
+        public BcTeam.TeamValue Team
+        {
+            get => team;
+            set
+            {
+                if (value != team)
+                {
+                    team = value;
+                    ImageUploaded = false;
+                }
+            }
+        }
+        private BcTeam.TeamValue team;
 
         /// <summary>
         /// The displayed ability text of the character
@@ -73,7 +97,16 @@ namespace BloodstarClockticaLib
         /// <summary>
         /// source image to be processed into botc-style character token art
         /// </summary>
-        public Image SourceImage { get; set; }
+        public Image SourceImage
+        {
+            get => sourceImage;
+            set
+            {
+                sourceImage = value;
+                ImageUploaded = false;
+            }
+        }
+        private Image sourceImage;
 
         /// <summary>
         /// backing field for ProcessedImage
@@ -92,8 +125,17 @@ namespace BloodstarClockticaLib
                 ReprocessImage();
                 return processedImage;
             }
-            set => processedImage = value;
+            set
+            {
+                processedImage = value;
+                ImageUploaded = false;
+            }
         }
+
+        /// <summary>
+        /// whether we think the copy on the server is up to date
+        /// </summary>
+        internal bool ImageUploaded { get; set; }
 
         /// <summary>
         /// whether to export this character or leave it in set, unexported
@@ -109,18 +151,19 @@ namespace BloodstarClockticaLib
         /// Get a unique character id
         /// </summary>
         /// <returns></returns>
-        internal static string UniqueCharacterId(BcDocument document)
+        internal static string UniqueCharacterId(BcDocument document, string baseId)
         {
-            var prefix = "newcharacter";
-            var n = 1;
+            var prefix = baseId;
             if (document != null)
             {
+                var n = 1;
                 while (!document.IsIdAvailable($"{prefix}{n}", -1))
                 {
                     n++;
                 }
+                return $"{prefix}{n}";
             }
-            return $"{prefix}{n}";
+            return baseId;
         }
 
         /// <summary>
@@ -133,9 +176,9 @@ namespace BloodstarClockticaLib
         /// </summary>
         public BcCharacter(BcDocument document)
         {
-            Id = (document != null) ? UniqueCharacterId(document) : "newcharacter";
+            id = UniqueCharacterId(document, "newcharacter");
             Name = "New Character";
-            Team = BcTeam.TeamValue.Townsfolk;
+            team = BcTeam.TeamValue.Townsfolk;
             ReminderTokens = new BindingList<string>();
             GlobalReminderTokens = new BindingList<string>();
             Setup = false;
@@ -144,10 +187,11 @@ namespace BloodstarClockticaLib
             OtherNightOrder = 0;
             FirstNightReminder = "";
             OtherNightReminder = "";
-            SourceImage = null;
-            ProcessedImage = null;
+            sourceImage = null;
+            processedImage = null;
             IncludeInExport = true;
             Note = "";
+            ImageUploaded = false;
         }
 
         /// <summary>
@@ -182,13 +226,13 @@ namespace BloodstarClockticaLib
                         switch (propertyName)
                         {
                             case "id":
-                                this.Id = json.GetString();
+                                id = json.GetString();
                                 break;
                             case "name":
                                 this.Name = json.GetString();
                                 break;
                             case "team":
-                                this.Team = BcTeam.FromString(json.GetString());
+                                team = BcTeam.FromString(json.GetString());
                                 break;
                             case "reminders":
                                 {
@@ -240,6 +284,9 @@ namespace BloodstarClockticaLib
                             case "note":
                                 Note = json.GetString();
                                 break;
+                            case "imageUploaded":
+                                ImageUploaded = json.GetBoolean();
+                                break;
                             default:
                                 Console.Error.WriteLine($"unhandled property: \"{propertyName}\"");
                                 json.Skip();
@@ -254,7 +301,7 @@ namespace BloodstarClockticaLib
             {
                 using (var stream = srcImageEntry.Open())
                 {
-                    this.SourceImage = Image.FromStream(stream);
+                    sourceImage = Image.FromStream(stream);
                 }
             }
 
@@ -263,7 +310,7 @@ namespace BloodstarClockticaLib
             {
                 using (var stream = processedImageEntry.Open())
                 {
-                    this.ProcessedImage = Image.FromStream(stream);
+                    processedImage = Image.FromStream(stream);
                 }
             }
         }
@@ -304,6 +351,7 @@ namespace BloodstarClockticaLib
                         json.WriteString("otherNightReminder", OtherNightReminder);
                         json.WriteBoolean("includeInExport", IncludeInExport);
                         json.WriteString("note", Note);
+                        json.WriteBoolean("imageUploaded", ImageUploaded);
                         json.WriteEndObject();
                         json.Flush();
                     }
@@ -335,6 +383,7 @@ namespace BloodstarClockticaLib
         private void ReprocessImage()
         {
             processedImage = BcImage.ProcessImage(SourceImage, BcImage.GetGradientForTeam(Team));
+            ImageUploaded = false;
         }
 
         /// <summary>
@@ -367,6 +416,33 @@ namespace BloodstarClockticaLib
                 }
             }
             return false;
+        }
+
+        /// <summary>
+        /// create a copy of this character
+        /// </summary>
+        /// <returns></returns>
+        public BcCharacter Clone(BcDocument document)
+        {
+            return new BcCharacter
+            {
+                Id = UniqueCharacterId(document, this.Id),
+                Name = Name,
+                Team = Team,
+                Ability = Ability,
+                ReminderTokens = new List<string>(ReminderTokens),
+                GlobalReminderTokens = new List<string>(GlobalReminderTokens),
+                Setup = Setup,
+                FirstNightOrder = FirstNightOrder,
+                FirstNightReminder = FirstNightReminder,
+                OtherNightOrder = OtherNightOrder,
+                OtherNightReminder = OtherNightReminder,
+                SourceImage = SourceImage,
+                ProcessedImage = ProcessedImage,
+                Note = Note,
+                IncludeInExport = true,
+                ImageUploaded = false
+            };
         }
     }
 }

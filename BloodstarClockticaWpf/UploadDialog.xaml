@@ -30,6 +30,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
 
                 <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
@@ -54,10 +55,14 @@
                 <PasswordBox x:Name="PasswordTextField"/>
                 <CheckBox Content="Remember Password" x:Name="RememberPasswordCheckBox" Margin="0,6,0,6" ToolTip="If checked, password will be obfuscated slightly and stored somewhere in %LocalAppData%\BloodstarClockticaWpf"/>
             </StackPanel>
+            <TextBlock Margin="0,0,6,6" Grid.Row="6" Grid.Column="0" ToolTip="Password to use to log in to SFTP">
+                
+            </TextBlock>
+            <CheckBox x:Name="SkipUnchanged" Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Content="Skip Unchanged" Margin="6,0,0,6" ToolTip="Only upload character image if the image has changed since the last upload."/>
             <!-- Port, Username, Password + remember -->
 
             <!-- buttons -->
-            <Grid Grid.Row="6" Grid.ColumnSpan="2">
+            <Grid Grid.Row="7" Grid.ColumnSpan="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>

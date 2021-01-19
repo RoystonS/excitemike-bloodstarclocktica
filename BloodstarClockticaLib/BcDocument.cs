@@ -157,5 +157,44 @@ namespace BloodstarClockticaLib
             }
             return true;
         }
+
+        /// <summary>
+        /// mark all images as in need of reexport
+        /// </summary>
+        internal bool MarkAllImagesInNeedOfReupload()
+        {
+            bool changedAny = false;
+            Meta.LogoUploaded = false;
+            foreach (var character in Characters)
+            {
+                if (character.ImageUploaded)
+                {
+                    changedAny = true;
+                }
+                character.ImageUploaded = false;
+            }
+            return changedAny;
+        }
+
+        /// <summary>
+        /// mark all images as in need of reexport
+        /// </summary>
+        internal bool MarkAllImagesUploaded()
+        {
+            bool changedAny = false;
+            Meta.LogoUploaded = true;
+            foreach (var character in Characters)
+            {
+                if (character.IncludeInExport)
+                {
+                    if (!character.ImageUploaded)
+                    {
+                        changedAny = true;
+                    }
+                    character.ImageUploaded = true;
+                }
+            }
+            return changedAny;
+        }
     }
 }

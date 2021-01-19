@@ -41,7 +41,21 @@ namespace BloodstarClockticaLib
         /// <summary>
         /// logo image for this edition
         /// </summary>
-        public Image Logo { get; set; }
+        public Image Logo
+        {
+            get => logo;
+            set
+            {
+                logo = value;
+                LogoUploaded = false;
+            }
+        }
+        private Image logo;
+
+        /// <summary>
+        /// Whether we think the server has an up to date version of the logo.
+        /// </summary>
+        internal bool LogoUploaded { get; set; }
 
         /// <summary>
         /// url root for links to uploaded files
@@ -79,6 +93,31 @@ namespace BloodstarClockticaLib
         public int SftpPort { get; set; }
 
         /// <summary>
+        /// whether to skip already-uploaded images during exports
+        /// </summary>
+        public bool SkipUnchanged { get; set; }
+
+        /// <summary>
+        /// setting of last successful upload
+        /// </summary>
+        internal string PrevSftpHost { get; set; }
+
+        /// <summary>
+        /// setting of last successful upload
+        /// </summary>
+        internal string PrevSftpRemoteDirectory { get; set; }
+
+        /// <summary>
+        /// setting of last successful upload
+        /// </summary>
+        internal int PrevSftpPort { get; set; }
+
+        /// <summary>
+        /// setting of last successful upload
+        /// </summary>
+        internal string PrevSftpUser { get; set; }
+
+        /// <summary>
         /// default metadata
         /// </summary>
         public BcMeta()
@@ -98,6 +137,12 @@ namespace BloodstarClockticaLib
             SftpPort = 2222;
             ExportToDiskPath = null;
             ExportToDiskImageUrlPrefix = null;
+            SkipUnchanged = true;
+            PrevSftpHost = "";
+            PrevSftpRemoteDirectory = "";
+            PrevSftpPort = -1;
+            PrevSftpUser = "";
+            LogoUploaded = false;
         }
 
         /// <summary>
@@ -171,6 +216,24 @@ namespace BloodstarClockticaLib
                             case "exportToDiskImageUrlPrefix":
                                 this.ExportToDiskImageUrlPrefix = json.GetString();
                                 break;
+                            case "skipUnchanged":
+                                SkipUnchanged = json.GetBoolean();
+                                break;
+                            case "prevSftpHost":
+                                PrevSftpHost = json.GetString();
+                                break;
+                            case "prevSftpRemoteDirectory":
+                                PrevSftpRemoteDirectory = json.GetString();
+                                break;
+                            case "prevSftpPort":
+                                PrevSftpPort = json.GetInt32();
+                                break;
+                            case "prevSftpUser":
+                                PrevSftpUser = json.GetString();
+                                break;
+                            case "logoUploaded":
+                                LogoUploaded = json.GetBoolean();
+                                break;
                         }
                     }
                 }
@@ -181,7 +244,7 @@ namespace BloodstarClockticaLib
             {
                 using (var stream = logoEntry.Open())
                 {
-                    this.Logo = Image.FromStream(stream);
+                    logo = Image.FromStream(stream);
                 }
             }
         }
@@ -208,6 +271,12 @@ namespace BloodstarClockticaLib
                         json.WriteNumber("sftpPort", SftpPort);
                         json.WriteString("sftpUser", SftpUser);
                         json.WriteString("exportToDiskImageUrlPrefix", ExportToDiskImageUrlPrefix);
+                        json.WriteBoolean("skipUnchanged", SkipUnchanged);
+                        json.WriteString("prevSftpHost", PrevSftpHost);
+                        json.WriteString("prevSftpRemoteDirectory", PrevSftpRemoteDirectory);
+                        json.WriteNumber("prevSftpPort", PrevSftpPort);
+                        json.WriteString("prevSftpUser", PrevSftpUser);
+                        json.WriteBoolean("logoUploaded", LogoUploaded);
                         json.WriteEndObject();
                         json.Flush();
                     }

@@ -41,6 +41,7 @@ namespace BloodstarClockticaWpf
             UsernameTextField.Text = DocumentWrapper.SftpUsername;
             PasswordTextField.Password = Decrypt(Properties.Settings.Default.SavedPassword);
             RememberPasswordCheckBox.IsChecked = Properties.Settings.Default.RememberPassword;
+            SkipUnchanged.IsChecked = DocumentWrapper.SkipUnchanged;
             ExportButton.IsDefault = true;
         }
 
@@ -123,6 +124,7 @@ namespace BloodstarClockticaWpf
             DocumentWrapper.SftpRemoteDirectory = RemotePathTextField.Text;
             DocumentWrapper.SftpPort = (PortControl.Value != null) ? (int)PortControl.Value : 22;
             DocumentWrapper.SftpUsername = UsernameTextField.Text;
+            DocumentWrapper.SkipUnchanged = SkipUnchanged.IsChecked ?? false;
 
             Properties.Settings.Default.RememberPassword = true == RememberPasswordCheckBox.IsChecked;
             Properties.Settings.Default.Save();
