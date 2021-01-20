@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -347,7 +348,10 @@ namespace BloodstarClockticaWpf
         {
             var path = ChooseImage();
             if (path == null) { return; }
-            (DataContext as DocumentWrapper).Logo = System.Drawing.Image.FromFile(path);
+            using (var temp = System.Drawing.Image.FromFile(path))
+            {
+                (DataContext as DocumentWrapper).Logo = new Bitmap(temp);
+            }
         }
 
         private string ChooseImage()
@@ -420,7 +424,10 @@ namespace BloodstarClockticaWpf
             if (path == null) { return; }
             var docWrapper = (DataContext as DocumentWrapper);
             var charWrapper = (CharacterList.SelectedItem as CharacterWrapper);
-            charWrapper.SourceImage = System.Drawing.Image.FromFile(path);
+            using (var temp = System.Drawing.Image.FromFile(path))
+            {
+                charWrapper.SourceImage = new Bitmap(temp);
+            }
             docWrapper.Dirty = true;
         }
 
@@ -799,7 +806,10 @@ namespace BloodstarClockticaWpf
             var path = ChooseImage();
             if (path == null) { return; }
             charWrapper.SourceImage = null;
-            charWrapper.ProcessedImage = System.Drawing.Image.FromFile(path);
+            using (var temp = System.Drawing.Image.FromFile(path))
+            {
+                charWrapper.ProcessedImage = new Bitmap(temp);
+            }
             docWrapper.Dirty = true;
         }
 
