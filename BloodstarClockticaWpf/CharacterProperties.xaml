@@ -48,9 +48,9 @@
         </DataTemplate>
     </UserControl.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto" Background="{DynamicResource ControlBackgroundBrush}">
-        <Border Margin="6,0,0,0">
+        <Border>
             <StackPanel Grid.IsSharedSizeScope="True">
-                <GroupBox Header="Character">
+                <GroupBox Header="Character" Margin="0,0,0,2">
                     <StackPanel>
                         <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding IdProperty}"/>
                         <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding NameProperty}"/>
@@ -58,14 +58,14 @@
                         <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding AbilityProperty}"/>
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Header="Reminders">
+                <GroupBox Header="Reminders" Margin="0,0,0,2">
                     <StackPanel>
                         <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding FirstNightReminderProperty}"/>
                         <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding OtherNightReminderProperty}"/>
                         <ContentControl ContentTemplate="{StaticResource RowCheckBox}" Content="{Binding SetupProperty}"/>
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Header="Tokens">
+                <GroupBox Header="Tokens" Margin="0,0,0,2">
                     <StackPanel>
                         <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding ReminderTokensProperty}"/>
                         <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding GlobalReminderTokens}"/>
