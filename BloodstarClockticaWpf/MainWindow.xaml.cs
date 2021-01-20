@@ -222,6 +222,7 @@ namespace BloodstarClockticaWpf
                 return false;
             }
             AddToRecentDocuments(path);
+            UpdateNightOrder();
             return (DataContext as DocumentWrapper).Save(path);
         }
 
@@ -246,6 +247,7 @@ namespace BloodstarClockticaWpf
             if (null == path) { return false; }
 
             AddToRecentDocuments(path);
+            UpdateNightOrder();
             return (DataContext as DocumentWrapper).Save(path);
         }
 
@@ -398,6 +400,7 @@ namespace BloodstarClockticaWpf
             CharacterList.SelectedIndex = docWrapper.CharacterList.Count - 1;
             CharacterList.ScrollIntoView(CharacterList.SelectedItem);
             CharacterList.Focus();
+            UpdateNightOrder();
         }
         private void DelButton_Click(object sender, RoutedEventArgs e)
         {
@@ -405,6 +408,7 @@ namespace BloodstarClockticaWpf
             var index = CharacterList.SelectedIndex;
             docWrapper.RemoveCharacter(index);
             FixCharacterListSelection(index);
+            UpdateNightOrder();
         }
 
         private void FixCharacterListSelection(int preferred)
@@ -466,6 +470,7 @@ namespace BloodstarClockticaWpf
                 var folder = PromptForFolder();
                 if (null != folder)
                 {
+                    UpdateNightOrder();
                     (DataContext as DocumentWrapper).ExportToDisk(folder, imageUrlPrefix);
                 }
             }
@@ -528,6 +533,7 @@ namespace BloodstarClockticaWpf
             {
                 Owner = this
             };
+            UpdateNightOrder();
             DoBlurred(() => dlg.ShowDialog());
         }
 
@@ -824,6 +830,32 @@ namespace BloodstarClockticaWpf
             var charWrapper = (CharacterList.SelectedItem as CharacterWrapper);
             charWrapper.SourceImage = null;
             docWrapper.Dirty = true;
+        }
+
+        /// <summary>
+        /// update night order fields
+        /// </summary>
+        private void UpdateNightOrder()
+        {
+            var docWrapper = (DataContext as DocumentWrapper);
+            {
+                var firstNightCharacters = docWrapper.CharacterList
+                    .OrderBy(characterWrapper => characterWrapper.FirstNightOrder);
+                int nightCount = 0;
+                foreach (var characterWrapper in firstNightCharacters)
+                {
+                    characterWrapper.FirstNightOrder = ++nightCount;
+                }
+            }
+            {
+                var otherNightCharacters = docWrapper.CharacterList
+                    .OrderBy(characterWrapper => characterWrapper.OtherNightOrder);
+                int nightCount = 0;
+                foreach (var characterWrapper in otherNightCharacters)
+                {
+                    characterWrapper.OtherNightOrder = ++nightCount;
+                }
+            }
         }
     }
 }
