@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace BloodstarClockticaWpf
 {
@@ -37,7 +40,7 @@ namespace BloodstarClockticaWpf
 
             RemotePathTextField.Text = DocumentWrapper.SftpRemoteDirectory;
             HostTextField.Text = DocumentWrapper.SftpHost;
-            PortControl.Value = DocumentWrapper.SftpPort;
+            PortTextField.Text = DocumentWrapper.SftpPort.ToString();
             UsernameTextField.Text = DocumentWrapper.SftpUsername;
             PasswordTextField.Password = Decrypt(Properties.Settings.Default.SavedPassword);
             RememberPasswordCheckBox.IsChecked = Properties.Settings.Default.RememberPassword;
@@ -122,7 +125,7 @@ namespace BloodstarClockticaWpf
         {
             DocumentWrapper.UrlRoot = UrlRootTextField.Text;
             DocumentWrapper.SftpRemoteDirectory = RemotePathTextField.Text;
-            DocumentWrapper.SftpPort = (PortControl.Value != null) ? (int)PortControl.Value : 22;
+            DocumentWrapper.SftpPort = int.TryParse(PortTextField.Text, out int port) ? port : 22;
             DocumentWrapper.SftpUsername = UsernameTextField.Text;
             DocumentWrapper.SkipUnchanged = SkipUnchanged.IsChecked ?? false;
 
@@ -194,6 +197,81 @@ namespace BloodstarClockticaWpf
             if (!closable)
             {
                 e.Cancel = true;
+            }
+        }
+
+        /// <summary>
+        /// allow only numbers in the Port field
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PortTextField_PreviewTextInput(object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            if ((e.Text == null) || (!e.Text.All(char.IsDigit)))
+            {
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// allow only numbers in the Port field
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PortTextField_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string text = (string)e.DataObject.GetData(typeof(string));
+                if ((text == null) || (!text.All(char.IsDigit)))
+                {
+                    e.CancelCommand();
+                }
+            }
+            else
+            {
+                e.CancelCommand();
+            }
+        }
+
+        /// <summary>
+        /// allow only numbers in the Port field
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void PortTextField_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            int selectionStart = textBox.SelectionStart;
+            int selectionLength = textBox.SelectionLength;
+
+            string newText = string.Empty;
+            var i = 0;
+            foreach (char c in textBox.Text.ToCharArray())
+            {
+                if (char.IsDigit(c))
+                {
+                    newText += c;
+                }
+                else
+                {
+                    if (i < selectionStart)
+                    {
+                        selectionStart--;
+                    }
+                    else if (i < selectionStart + selectionLength)
+                    {
+                        selectionLength--;
+                    }
+                }
+                i++;
+            }
+
+            if (newText != textBox.Text)
+            {
+                textBox.Text = newText;
+                textBox.SelectionStart = selectionStart;
+                textBox.SelectionLength = selectionLength;
             }
         }
     }

@@ -4,7 +4,6 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BloodstarClockticaWpf"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize" 
@@ -47,7 +46,7 @@
             <Label Grid.Row="2" Grid.Column="0" Content="Host" ToolTip="SFTP host. e.g. ftp.example.com"/>
             <TextBox Grid.Row="2" Grid.Column="1" Text="" x:Name="HostTextField" Margin="0,0,0,6"/>
             <Label Grid.Row="3" Grid.Column="0" Content="Port" ToolTip="Port number to use for SFTP. Usually 22 or 2222."/>
-            <xctk:IntegerUpDown Grid.Row="3" Grid.Column="1" Name="PortControl" Margin="0,0,0,6" Width="55" HorizontalAlignment="Left"/>
+            <TextBox Grid.Row="3" Grid.Column="1" Name="PortTextField" Margin="0,0,0,6" PreviewTextInput="PortTextField_PreviewTextInput" DataObject.Pasting="PortTextField_Pasting" TextChanged="PortTextField_TextChanged"/>
             <Label Grid.Row="4" Grid.Column="0" Content="Username" ToolTip="Username to use to log in to SFTP"/>
             <TextBox Grid.Row="4" Grid.Column="1" Text="" x:Name="UsernameTextField" Margin="0,0,0,6"/>
             <Label Grid.Row="5" Grid.Column="0" Content="Password" ToolTip="Password to use to log in to SFTP"/>
