@@ -24,7 +24,7 @@ namespace BloodstarClockticaLib
                 new PrivateKeyAuthenticationMethod("rsa.key")
             );
 
-            bool settingsChanged = (document.Meta.SftpHost != document.Meta.PrevSftpHost) || 
+            bool settingsChanged = (document.Meta.SftpHost != document.Meta.PrevSftpHost) ||
                                    (document.Meta.SftpRemoteDirectory != document.Meta.PrevSftpRemoteDirectory) ||
                                    (document.Meta.SftpPort != document.Meta.PrevSftpPort) ||
                                    (document.Meta.SftpUser != document.Meta.PrevSftpUser);
@@ -100,7 +100,7 @@ namespace BloodstarClockticaLib
             // logo
             if (document.Meta.Logo != null)
             {
-                if (!canSkipUnchanged || !document.Meta.LogoUploaded )
+                if (!canSkipUnchanged || !document.Meta.LogoUploaded)
                 {
                     using (var stream = new MemoryStream())
                     {

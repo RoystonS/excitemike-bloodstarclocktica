@@ -132,7 +132,6 @@ namespace BloodstarClockticaWpf
         {
             get
             {
-                // TODO: I should really cache these
                 if (character.SourceImage == null) { return null; }
                 if (cachedSourceImagePreview != null) { return cachedSourceImagePreview; }
                 using (var ms = new MemoryStream())

@@ -115,8 +115,8 @@ namespace BloodstarClockticaWpf
         {
             get
             {
-                // TODO: I should really cache these
                 if (document.Meta.Logo == null) { return null; }
+                if (logoPreview != null) { return logoPreview; }
                 using (var ms = new MemoryStream())
                 {
                     document.Meta.Logo.Save(ms, ImageFormat.Png);
@@ -126,10 +126,12 @@ namespace BloodstarClockticaWpf
                     bi.CacheOption = BitmapCacheOption.OnLoad;
                     bi.StreamSource = ms;
                     bi.EndInit();
+                    logoPreview = bi;
                     return bi;
                 }
             }
         }
+        private BitmapImage logoPreview;
 
         /// <summary>
         /// logo image data
@@ -143,6 +145,7 @@ namespace BloodstarClockticaWpf
             set
             {
                 document.Meta.Logo = value;
+                logoPreview = null;
                 Dirty = true;
                 OnPropertyChanged("Logo");
                 OnPropertyChanged("LogoButtonText");
