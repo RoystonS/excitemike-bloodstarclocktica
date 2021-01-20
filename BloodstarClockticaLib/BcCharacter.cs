@@ -226,7 +226,7 @@ namespace BloodstarClockticaLib
                         switch (propertyName)
                         {
                             case "id":
-                                id = json.GetString();
+                                this.id = json.GetString();
                                 break;
                             case "name":
                                 this.Name = json.GetString();
