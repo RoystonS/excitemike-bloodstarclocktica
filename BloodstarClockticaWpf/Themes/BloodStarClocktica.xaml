@@ -148,20 +148,13 @@
                             <Setter TargetName="Background" Property="BorderBrush" Value="{DynamicResource HoverBrush}"/>
                         </Trigger>
                         <Trigger Property="WindowState" Value="Maximized">
-                            <Setter TargetName="Background" Property="BorderThickness" Value="6"/>
+                            <Setter TargetName="Background" Property="BorderThickness" Value="{Binding Source={x:Static SystemParameters.WindowResizeBorderThickness}}"/>
+                            <Setter TargetName="Background" Property="BorderBrush" Value="Transparent"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsActive" Value="True">
-                <Setter Property="BorderBrush" Value="{DynamicResource HoverBrush}"/>
-            </Trigger>
-            <Trigger Property="WindowState" Value="Maximized">
-                <Setter Property="BorderThickness" Value="6"/>
-            </Trigger>
-        </Style.Triggers>
     </Style>
 
     <Style x:Key="StatusBarStyle" TargetType="{x:Type Border}">
