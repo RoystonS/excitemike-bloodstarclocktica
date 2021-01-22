@@ -479,6 +479,7 @@ namespace BloodstarClockticaWpf
         {
             this.document = document;
             UpdateCharacterList();
+            logoPreview = null;
             OnPropertyChanged(null);
         }
 
