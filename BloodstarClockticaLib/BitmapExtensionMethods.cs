@@ -594,7 +594,7 @@ namespace BloodstarClockticaLib
         {
             var overlay = im
                 .EdgeDetect()
-                .GaussianBlurChannel(3, size)
+                .GaussianBlurChannel(2, size)
                 .TransformChannel(3, alpha => { return (byte)Math.Min(255, alpha * size); });
             return im.AlphaComposite(overlay);
         }
