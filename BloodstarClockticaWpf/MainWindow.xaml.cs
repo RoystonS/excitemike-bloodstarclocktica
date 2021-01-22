@@ -550,25 +550,6 @@ namespace BloodstarClockticaWpf
         /// <summary>
         /// blur the window while doing something
         /// </summary>
-        private void DoBlurred(Action f)
-        {
-            try
-            {
-                Effect = new BlurEffect
-                {
-                    Radius = 5
-                };
-                f();
-            }
-            finally
-            {
-                Effect = null;
-            }
-        }
-
-        /// <summary>
-        /// blur the window while doing something
-        /// </summary>
         /// <param name="f"></param>
         private T DoBlurred<T>(Func<T> f)
         {
