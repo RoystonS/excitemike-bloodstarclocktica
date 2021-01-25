@@ -590,12 +590,14 @@ namespace BloodstarClockticaLib
         /// </summary>
         /// <param name="im"></param>
         /// <returns>image modified in-place</returns>
-        internal static Bitmap AddBorder(this Bitmap im, double size)
+        internal static Bitmap AddBorder(this Bitmap im, double blurSize, double alphaThreshMin, double alphaThreshMax)
         {
+            byte max = (byte) (255 * alphaThreshMax);
+            byte min = (byte) (255 * alphaThreshMin);
             var overlay = im
                 .EdgeDetect()
-                .GaussianBlurChannel(2, size)
-                .TransformChannel(3, alpha => { return (byte)Math.Min(255, alpha * size); });
+                .GaussianBlurChannel(3, blurSize)
+                .TransformChannel(3, alpha => { return (byte)Math.Max(0, Math.Min(255, 255 * (alpha - min) / (max - min))); });
             return im.AlphaComposite(overlay);
         }
 

@@ -19,7 +19,9 @@ namespace BloodstarClockticaLib
             public static Bitmap MinionGradient = Properties.Resources.MinionGradient;
             public static Bitmap DemonGradient = Properties.Resources.DemonGradient;
             public static Bitmap TravelerGradient = Properties.Resources.TravelerGradient;
-            public static double BorderSize = 2;
+            public static double BorderBlur = 3;
+            public static double BorderAlphaThreshMin = 0.3;
+            public static double BorderAlphaThreshMax = 0.45;
         }
 
         /// <summary>
@@ -35,7 +37,7 @@ namespace BloodstarClockticaLib
             return new Bitmap(ProcessImageSettings.OutputWidth, ProcessImageSettings.OutputHeight)
                 .PasteZoomed(colored, ProcessImageSettings.Position)
                 .Multiply(Properties.Resources.Texture)
-                .AddBorder(ProcessImageSettings.BorderSize)
+                .AddBorder(ProcessImageSettings.BorderBlur, ProcessImageSettings.BorderAlphaThreshMin, ProcessImageSettings.BorderAlphaThreshMax)
                 .AddDropShadow(ProcessImageSettings.DropShadowSize, ProcessImageSettings.DropShadowOffsetX, ProcessImageSettings.DropShadowOffsetY, ProcessImageSettings.DropShadowOpacity);
         }
 
