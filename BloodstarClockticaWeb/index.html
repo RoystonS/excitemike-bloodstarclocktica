@@ -5,21 +5,21 @@
 <title>roles.json viewer</title>
 <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap" rel="stylesheet">
 <style>
-body { background-color: #333; color:#eee; font-family:Roboto Condensed,sans-serif;}
-.crop {width:64px;height:64px;overflow:hidden;margin: auto}
-/*.crop img{object-fit:contain;width:111px;height:111px;margin:-9px 0 0 -23px}*/
-.crop img{object-fit:contain;width:64px;height:64px}
-table { table-layout:fixed; border-collapse: separate;}
-th, td{border-bottom: 1px solid #666;padding:0 0 4px 0}
-tr td:nth-child(1) {text-align: center}
+body { background-color: #333; color:#eee; font-family:Roboto Condensed,sans-serif}
+.crop {width:60px;height:60px;overflow:hidden;margin: auto}
+.crop img{object-fit:contain;width:86px;height:86px;margin:-3px 0 0 -13px}
+table {table-layout:fixed;border-collapse:separate;max-width:700px;margin:auto;border-top:1px solid #666;border-spacing:0}
+th, td {border-left:0;border-right:0;border-top:0;border-bottom: 1px solid #666}
+tr td:nth-child(1) {text-align: center;padding:2px 0 6px 0;text-shadow:0 -1px 1px #000, 1px 0px 1px #000, 0px 1px 1px #000, -1px 0px 1px #000;vertical-align:bottom;height:86px;width:86px}
+tr td:nth-child(2) {padding:6px}
 </style>
 </head>
-<input placeholder="link to roles.json" value="" id="link" size="36"/><button id="button">View</button>
-<hr/>
+<div style="display:grid;max-width:700px;gap:4px;grid-template-columns: 1fr 50px;margin:0 auto 6px auto" ><input placeholder="link to roles.json" value="" id="link" size="36" style="grid-column:1"/><button id="button" style="grid-column:2">View</button></div>
 <div id="view"></div>
 <script>
 "use strict";
 let busy = false;
+const imageSize=92;
 const tag = (theTag, contents) => `<${theTag}>${contents || ""}</${theTag}>`;
 const table = s => tag("table", s);
 const thead = s => tag("thead", s);
@@ -27,12 +27,13 @@ const tbody = s => tag("tbody", s);
 const tr = s => tag("tr", s);
 const th = s => tag("th", s);
 const td = s => tag("td", s);
-const sub = s => tag("sub", s);
+const imgTd = (src, contents) => `<td style="background-image:url('${src}');background-size:${imageSize}px ${imageSize}px;background-repeat:no-repeat;background-position:top">${contents || ""}</td>`;
+const small = s => tag("small", s);
 const b = s => tag("b", s);
 const cropImg = src => (src && `<div class='crop'><img src='${src}'/></div>`) || "";
 const img = src => (src && `<img src='${src}'>`) || "";
 const formatCharacter = character => tr(
-        td([b(character.name), sub(character.team), cropImg(character.image)].join("<br/>")) +
+        imgTd(character.image, [b(character.name), small(character.team)].join("<br/>")) +
         td(character.ability)
     );
 const formatRolesJson = rolesJson => table(
