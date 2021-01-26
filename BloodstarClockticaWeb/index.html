@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+<title>roles.json viewer</title>
+<link href="https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap" rel="stylesheet">
+<style>
+body { background-color: #333; color:#eee; font-family:Roboto Condensed,sans-serif;}
+.crop {width:64px;height:64px;overflow:hidden;margin: auto}
+/*.crop img{object-fit:contain;width:111px;height:111px;margin:-9px 0 0 -23px}*/
+.crop img{object-fit:contain;width:64px;height:64px}
+table { table-layout:fixed; border-collapse: separate;}
+th, td{border-bottom: 1px solid #666;padding:0 0 4px 0}
+tr td:nth-child(1) {text-align: center}
+</style>
+</head>
+<input placeholder="link to roles.json" value="" id="link" size="36"/><button id="button">View</button>
+<hr/>
+<div id="view"></div>
+<script>
+"use strict";
+let busy = false;
+const tag = (theTag, contents) => `<${theTag}>${contents || ""}</${theTag}>`;
+const table = s => tag("table", s);
+const thead = s => tag("thead", s);
+const tbody = s => tag("tbody", s);
+const tr = s => tag("tr", s);
+const th = s => tag("th", s);
+const td = s => tag("td", s);
+const sub = s => tag("sub", s);
+const b = s => tag("b", s);
+const cropImg = src => (src && `<div class='crop'><img src='${src}'/></div>`) || "";
+const img = src => (src && `<img src='${src}'>`) || "";
+const formatCharacter = character => tr(
+        td([b(character.name), sub(character.team), cropImg(character.image)].join("<br/>")) +
+        td(character.ability)
+    );
+const formatRolesJson = rolesJson => table(
+        tbody(
+            rolesJson.filter(c => c.id !== "_meta").map(formatCharacter).join("")
+        )
+    );
+const viewRolesJson = (address) => {
+    if (busy) { return; }
+    const viewDiv = document.getElementById("view");
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', address, true);
+    xhr.responseType = 'json';
+    xhr.onload = function () {
+        busy = false;
+        const status = xhr.status;
+        if (status !== 200) {
+            viewDiv.innerHTML = "<span class='error'>Something went wrong: " + xhr.response + "</span>";
+        } else {
+            viewDiv.innerHTML = formatRolesJson(xhr.response);
+        }
+    };
+    try {
+        busy = true;
+        xhr.send();
+    } catch {
+        busy = false;
+    }
+}
+document.getElementById("button").addEventListener("click", e => viewRolesJson(document.getElementById("link").value));
+
+let match = (new RegExp('[?&]url=([^&]*)')).exec(location.search);
+if (match) {
+    let url = match[1];
+    document.getElementById("link").value = url;
+    viewRolesJson(url);
+}
+
+</script>
+</html>
