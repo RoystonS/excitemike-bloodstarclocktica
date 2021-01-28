@@ -1,7 +1,9 @@
 import fileinput
 import re
-import shutil
 
+#
+# INCREMENT VERSION NUMBER
+#
 assembly_re = re.compile("\[assembly: AssemblyVersion\(\"([^\"]*)\"\)\]")
 wsx_re = re.compile('\s*<Product.*Version="([^"]*)"')
 
@@ -38,4 +40,40 @@ with fileinput.input(wxs_path, inplace=True) as f:
             print(line.replace(f'Version="{old_version}"', f'Version="{version}"', 1), end='')
         else:
             print(line, end='')
+
+#
+# BUILD
+#
+import subprocess
+result = subprocess.run([r'C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe', 'Installer/Installer.wixproj', '/p:Configuration=Release'])
+if 0 != result.returncode:
+    exit(result.returncode)
+
+#
+# UPLOAD
+#
+try:
+    import paramiko
+except ModuleNotFoundError:
+    import subprocess
+    subprocess.run("python -m pip install --upgrade pip")
+    subprocess.run("python -m pip install --upgrade paramiko")
+import json
+login_info = json.load(open('ftpinfo.json', "r"))
+host = login_info["host"]
+port = login_info["port"]
+user = login_info["user"]
+passwd = login_info["passwd"]
+    
+def create_sftp():
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(host, port, user, passwd)
+    sftp = ssh.open_sftp()
+    sftp.sshclient = ssh
+    return sftp
+    
+with create_sftp() as sftp:
+    sftp.put('Installer/bin/Release/BloodstarClockticaInstaller.msi', 'BloodstarClockticaInstaller.msi')
+
 
