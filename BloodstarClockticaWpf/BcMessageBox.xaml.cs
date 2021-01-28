@@ -24,7 +24,10 @@ namespace BloodstarClockticaWpf
             Title = title;
             TitleLabel.Text = title;
             Message.Text = message;
-            Owner = owner ?? Application.Current.MainWindow;
+            if (owner != null)
+            {
+                Owner = owner;
+            }
         }
 
         /// <summary>
