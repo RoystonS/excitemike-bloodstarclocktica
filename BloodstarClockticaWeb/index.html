@@ -18,7 +18,7 @@ tr td:nth-child(2) {padding:6px}
 <div id="view"></div>
 <script>
 "use strict";
-let busy = false;
+const fallbackImg = "https://raw.githubusercontent.com/bra1n/townsquare/main/src/assets/icons/custom.png";
 const imageSize=92;
 const tag = (theTag, contents) => `<${theTag}>${contents || ""}</${theTag}>`;
 const table = s => tag("table", s);
@@ -27,11 +27,11 @@ const tbody = s => tag("tbody", s);
 const tr = s => tag("tr", s);
 const th = s => tag("th", s);
 const td = s => tag("td", s);
-const imgTd = (src, contents) => `<td style="background-image:url('${src}');background-size:${imageSize}px ${imageSize}px;background-repeat:no-repeat;background-position:top">${contents || ""}</td>`;
+const imgTd = (src, contents) => `<td style="background-image:url('${src || fallbackImg}');background-size:${imageSize}px ${imageSize}px;background-repeat:no-repeat;background-position:top">${contents || ""}</td>`;
 const small = s => tag("small", s);
 const b = s => tag("b", s);
-const cropImg = src => (src && `<div class='crop'><img src='${src}'/></div>`) || "";
-const img = src => (src && `<img src='${src}'>`) || "";
+const cropImg = src => `<div class='crop'><img src='${src || fallbackImg}'/></div>`;
+const img = src => `<img src='${src || fallbackImg}'>`;
 const formatCharacter = character => tr(
         imgTd(character.image, [b(character.name), small(character.team)].join("<br/>")) +
         td(character.ability)
@@ -41,29 +41,40 @@ const formatRolesJson = rolesJson => table(
             rolesJson.filter(c => c.id !== "_meta").map(formatCharacter).join("")
         )
     );
+const button = document.getElementById("button");
 const viewRolesJson = (address) => {
-    if (busy) { return; }
     const viewDiv = document.getElementById("view");
     const xhr = new XMLHttpRequest();
-    xhr.open('GET', address, true);
     xhr.responseType = 'json';
-    xhr.onload = function () {
-        busy = false;
+    xhr.addEventListener("load", function () {
+        button.disabled = false;
         const status = xhr.status;
         if (status !== 200) {
             viewDiv.innerHTML = "<span class='error'>Something went wrong: " + xhr.response + "</span>";
         } else {
             viewDiv.innerHTML = formatRolesJson(xhr.response);
         }
-    };
+    });
+    xhr.addEventListener("loadend", function (e) { button.disabled = false });
+    xhr.addEventListener("error", function (e) {
+        button.disabled = false;
+        viewDiv.innerHTML = "<span class='error'>Something went wrong: " + e + "</span>";
+    });
+    xhr.addEventListener("abort", function (e) {
+        button.disabled = false;
+        viewDiv.innerHTML = "<span class='error'>Something went wrong: " + e + "</span>";
+    });
+    xhr.open('GET', address, true);
     try {
-        busy = true;
+        button.disabled = true;
         xhr.send();
-    } catch {
-        busy = false;
+    } catch (e) {
+        button.disabled = false;
+        viewDiv.innerHTML = "<span class='error'>Something went wrong: " + e + "</span>";
+        throw e;
     }
 }
-document.getElementById("button").addEventListener("click", e => viewRolesJson(document.getElementById("link").value));
+button.addEventListener("click", e => viewRolesJson(document.getElementById("link").value));
 
 let match = (new RegExp('[?&]url=([^&]*)')).exec(location.search);
 if (match) {
