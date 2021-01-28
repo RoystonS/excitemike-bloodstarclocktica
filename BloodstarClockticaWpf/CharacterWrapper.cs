@@ -235,6 +235,7 @@ namespace BloodstarClockticaWpf
         public StringBindingHelper GlobalReminderTokens { get; private set; }
 
         public BoolBindingHelper IncludeInExport { get; private set; }
+        public StringBindingHelper Attribution { get; private set; }
         public StringBindingHelper Note { get; private set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -405,6 +406,20 @@ namespace BloodstarClockticaWpf
                     {
                         character.Note = value;
                         OnPropertyChanged("Note");
+                    }
+                },
+                true
+            );
+            Attribution = new StringBindingHelper(
+                "Attribution",
+                "Unused by clocktower.online, but included in exported JSON. Good place to give credit to image creator, for example.",
+                () => character.Attribution,
+                (value) =>
+                {
+                    if (value != character.Attribution)
+                    {
+                        character.Attribution = value;
+                        OnPropertyChanged("Attribution");
                     }
                 },
                 true

@@ -143,9 +143,14 @@ namespace BloodstarClockticaLib
         public bool IncludeInExport { get; set; }
 
         /// <summary>
-        /// Note to display with the character
+        /// Note to display with the character in Bloodstar Clocktica
         /// </summary>
         public string Note { get; set; }
+
+        /// <summary>
+        /// unused by clocktower.online, but included in exported JSON. Good place to give credit to image creator, for example.
+        /// </summary>
+        public string Attribution { get; set; }
 
         /// <summary>
         /// Get a unique character id
@@ -192,6 +197,7 @@ namespace BloodstarClockticaLib
             IncludeInExport = true;
             Note = "";
             ImageUploaded = false;
+            Attribution = "";
         }
 
         /// <summary>
@@ -287,6 +293,9 @@ namespace BloodstarClockticaLib
                             case "imageUploaded":
                                 ImageUploaded = json.GetBoolean();
                                 break;
+                            case "attribution":
+                                Attribution = json.GetString();
+                                break;
                             default:
                                 Console.Error.WriteLine($"unhandled property: \"{propertyName}\"");
                                 json.Skip();
@@ -352,6 +361,10 @@ namespace BloodstarClockticaLib
                         json.WriteBoolean("includeInExport", IncludeInExport);
                         json.WriteString("note", Note);
                         json.WriteBoolean("imageUploaded", ImageUploaded);
+                        if (!string.IsNullOrWhiteSpace(Attribution))
+                        {
+                            json.WriteString("attribution", Attribution);
+                        }
                         json.WriteEndObject();
                         json.Flush();
                     }
@@ -407,7 +420,8 @@ namespace BloodstarClockticaLib
                     string.Join("\n", GlobalReminderTokens),
                     FirstNightReminder,
                     OtherNightReminder,
-                    Note};
+                    Note,
+                    Attribution};
             foreach (var haystack in haystacks)
             {
                 if (haystack.ToLower().Contains(needle))
@@ -441,7 +455,8 @@ namespace BloodstarClockticaLib
                 ProcessedImage = ProcessedImage,
                 Note = Note,
                 IncludeInExport = true,
-                ImageUploaded = false
+                ImageUploaded = false,
+                Attribution = Attribution
             };
         }
     }

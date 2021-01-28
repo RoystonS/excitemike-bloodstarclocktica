@@ -2,6 +2,7 @@
 using System;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -248,19 +249,26 @@ namespace BloodstarClockticaLib
                 }
             }
             json.WriteEndArray();
-            json.WriteStartArray("remindersGlobal");
-            foreach (var reminder in character.GlobalReminderTokens)
+            if (character.GlobalReminderTokens.Any())
             {
-                if (!string.IsNullOrWhiteSpace(reminder))
+                json.WriteStartArray("remindersGlobal");
+                foreach (var reminder in character.GlobalReminderTokens)
                 {
-                    json.WriteStringValue(reminder);
+                    if (!string.IsNullOrWhiteSpace(reminder))
+                    {
+                        json.WriteStringValue(reminder);
+                    }
                 }
+                json.WriteEndArray();
             }
-            json.WriteEndArray();
             json.WriteBoolean("setup", character.Setup);
             json.WriteString("name", character.Name);
             json.WriteString("team", BcTeam.ToExportString(character.Team));
             json.WriteString("ability", character.Ability);
+            if (!string.IsNullOrWhiteSpace(character.Attribution))
+            {
+                json.WriteString("attribution", character.Attribution);
+            }
             json.WriteEndObject();
         }
 

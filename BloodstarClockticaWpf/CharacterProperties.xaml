@@ -74,6 +74,7 @@
                 <GroupBox Header="Meta">
                     <StackPanel>
                         <ContentControl ContentTemplate="{StaticResource RowCheckBox}" Content="{Binding IncludeInExport}"/>
+                        <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding Attribution}"/>
                         <ContentControl ContentTemplate="{StaticResource RowTextField}" Content="{Binding Note}"/>
                     </StackPanel>
                 </GroupBox>
