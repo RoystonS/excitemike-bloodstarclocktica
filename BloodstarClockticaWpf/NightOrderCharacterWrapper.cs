@@ -23,17 +23,25 @@ namespace BloodstarClockticaWpf
         private string nightReminderOrdinal;
 
         /// <summary>
+        /// text to display for the night reminder
+        /// </summary>
+        public string NightReminder => IsFirstNight ? Character.FirstNightReminderProperty.Value : Character.OtherNightReminderProperty.Value;
+
+        /// <summary>
         /// wrapper for other character properties
         /// </summary>
         public CharacterWrapper Character { get; private set; }
+
+        public bool IsFirstNight { get; private set; }
 
         /// <summary>
         /// create wrapper
         /// </summary>
         /// <param name="character"></param>
-        public NightOrderCharacterWrapper(CharacterWrapper character)
+        public NightOrderCharacterWrapper(CharacterWrapper character, bool isFirstNight)
         {
             Character = character;
+            IsFirstNight = isFirstNight;
             nightReminderOrdinal = "-";
         }
 

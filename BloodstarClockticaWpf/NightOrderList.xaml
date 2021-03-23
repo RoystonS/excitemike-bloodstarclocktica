@@ -41,7 +41,9 @@
                     </GridViewColumn>
                     <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Character.NameProperty.Value}" Width="150"/>
                     <GridViewColumn Header="Team" DisplayMemberBinding="{Binding Character.TeamProperty.DisplayString}" Width="69"/>
-                    <GridViewColumn Header="Ability" DisplayMemberBinding="{Binding Character.AbilityProperty.Value}" Width="250"/>
+                    <GridViewColumn
+                        Header="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=ReminderColumnLabel}"
+                        DisplayMemberBinding="{Binding NightReminder}" Width="250"/>
                 </GridView>
             </ListView.View>
             <ListView.ItemContainerStyle>

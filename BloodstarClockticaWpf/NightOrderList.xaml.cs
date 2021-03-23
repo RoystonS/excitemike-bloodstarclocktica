@@ -13,6 +13,24 @@ namespace BloodstarClockticaWpf
             InitializeComponent();
         }
 
+        public string ReminderColumnLabel {
+            get
+            {
+                if (DataContext is NightOrderWrapper now)
+                {
+                    var isFirstNight = now.IsFirstNight;
+                    var characterList = now.SortedList;
+                    if (characterList.Count > 0)
+                    {
+                        var character = characterList[0];
+                        var prefix = isFirstNight ? character.Character.FirstNightReminderProperty.Name : character.Character.OtherNightReminderProperty.Name;
+                        return $"{prefix} Reminder";
+                    }
+                }
+                return "";
+            }
+        }
+
         private void SwapOrder(int indexA, int indexB)
         {
             if (DataContext is NightOrderWrapper now)
