@@ -33,7 +33,7 @@ namespace BloodstarClockticaWpf
             var urlRoot = DocumentWrapper.UrlRoot;
             if (string.IsNullOrEmpty(urlRoot))
             {
-                urlRoot = $"https://meyermik.startlogic.com/botc/{DocumentWrapper.Name}";
+                urlRoot = $"https://www.meyermike.com/botc/{DocumentWrapper.Name}";
             }
             UrlRootTextField.Text = urlRoot;
 
@@ -111,7 +111,7 @@ namespace BloodstarClockticaWpf
         {
             OkButton.IsDefault = true;
             Title = "Upload Complete!";
-            LinkTextBox.Text = $"{DocumentWrapper.RolesUrl}?{DateTime.Now:MMddHHmmss}";
+            LinkTextBox.Text = $"{DocumentWrapper.RolesUrl}";
             CloseButton.Visibility = Visibility.Visible;
             ProgressBar.Visibility = Visibility.Collapsed;
             ResultsView.Visibility = Visibility.Visible;
