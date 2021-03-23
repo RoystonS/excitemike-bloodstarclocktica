@@ -82,10 +82,13 @@ namespace BloodstarClockticaWpf
             get => character;
             set
             {
-                character = value;
-                cachedImagePreview = null;
-                cachedSourceImagePreview = null;
-                OnPropertyChanged(null);
+                if (character != value)
+                {
+                    character = value;
+                    cachedImagePreview = null;
+                    cachedSourceImagePreview = null;
+                    OnPropertyChanged(null);
+                }
             }
         }
 

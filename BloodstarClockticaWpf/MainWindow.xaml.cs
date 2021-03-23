@@ -28,6 +28,7 @@ namespace BloodstarClockticaWpf
         {
             InitializeComponent();
             DataContext = new DocumentWrapper(document);
+            FixCharacterListSelection(0);
 
             UpdateRecentDocumentsMenu();
         }

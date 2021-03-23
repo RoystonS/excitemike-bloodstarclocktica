@@ -513,10 +513,10 @@ namespace BloodstarClockticaWpf
             updatingCharacterList = false;
             this.document = document;
             CharacterList = new ObservableCollection<CharacterWrapper>();
-            UpdateCharacterList();
-            CharacterList.CollectionChanged += CharacterList_CollectionChanged;
             FirstNightOrder = new NightOrderWrapper(this, true);
             OtherNightOrder = new NightOrderWrapper(this, false);
+            CharacterList.CollectionChanged += CharacterList_CollectionChanged;
+            UpdateCharacterList();
         }
 
         /// <summary>
@@ -538,33 +538,40 @@ namespace BloodstarClockticaWpf
         /// </summary>
         public void UpdateCharacterList()
         {
-            updatingCharacterList = true;
-            try
+            if (!updatingCharacterList)
             {
-                var numCharacters = document.Characters.Count;
-                for (var i = 0; i < numCharacters; ++i)
+                updatingCharacterList = true;
+                FirstNightOrder.PauseUpdates();
+                OtherNightOrder.PauseUpdates();
+                try
                 {
-                    if (i < CharacterList.Count)
+                    var numCharacters = document.Characters.Count;
+                    for (var i = 0; i < numCharacters; ++i)
                     {
-                        CharacterList[i].Character = document.Characters[i];
+                        if (i < CharacterList.Count)
+                        {
+                            CharacterList[i].Character = document.Characters[i];
+                        }
+                        else
+                        {
+                            var wrapper = new CharacterWrapper(document.Characters[i]);
+                            wrapper.PropertyChanged += Character_PropertyChanged;
+                            CharacterList.Add(wrapper);
+                        }
                     }
-                    else
+                    while (CharacterList.Count > numCharacters)
                     {
-                        var wrapper = new CharacterWrapper(document.Characters[i]);
-                        wrapper.PropertyChanged += Character_PropertyChanged;
-                        CharacterList.Add(wrapper);
+                        CharacterList[CharacterList.Count - 1].PropertyChanged -= Character_PropertyChanged;
+                        CharacterList.RemoveAt(CharacterList.Count - 1);
                     }
+                    OnPropertyChanged("CharacterList");
+                    StatusTextChanged();
                 }
-                while (CharacterList.Count > numCharacters)
+                finally
                 {
-                    CharacterList[CharacterList.Count - 1].PropertyChanged -= Character_PropertyChanged;
-                    CharacterList.RemoveAt(CharacterList.Count - 1);
+                    FirstNightOrder.ResumeUpdates();
+                    OtherNightOrder.ResumeUpdates();
                 }
-                OnPropertyChanged("CharacterList");
-                StatusTextChanged();
-            }
-            finally
-            {
                 updatingCharacterList = false;
             }
         }

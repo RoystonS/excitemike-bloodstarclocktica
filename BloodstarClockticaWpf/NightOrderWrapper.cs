@@ -17,7 +17,8 @@ namespace BloodstarClockticaWpf
         public Visibility OtherNightVis => IsFirstNight ? Visibility.Collapsed : Visibility.Visible;
         public string CopyToButtonLabel => IsFirstNight ? "Copy to Other Nights Reminder" : "Copy to First Night Reminder";
         public string CopyFromButtonLabel => IsFirstNight ? "Copy from First Night Reminder" : "Copy from Other Nights Reminder";
-        private bool updatingList = false;
+        private bool pauseUpdates = false;
+        private bool refreshNeeded = false;
 
         /// <summary>
         /// characters in night order
@@ -37,9 +38,34 @@ namespace BloodstarClockticaWpf
             SortedList.CollectionChanged += SortedList_CollectionChanged;
         }
 
+        /// <summary>
+        /// use when making multiple changes to the character list to do one big refresh at the end instead of a bunch of work at each intermediate step
+        /// </summary>
+        public void PauseUpdates()
+        {
+            pauseUpdates = true;
+        }
+
+        /// <summary>
+        /// do the full refresh after PauseUpdates
+        /// </summary>
+        public void ResumeUpdates()
+        {
+            pauseUpdates = false;
+            if (refreshNeeded)
+            {
+                PopulateCharacterList();
+                refreshNeeded = false;
+            }
+        }
+
         private void SortedList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            if (!updatingList)
+            if (pauseUpdates)
+            {
+                refreshNeeded = true;
+            }
+            else
             {
                 UpdateOrdinals();
             }
@@ -54,7 +80,11 @@ namespace BloodstarClockticaWpf
         {
             if ((e.PropertyName == null) || (e.PropertyName == "CharacterList"))
             {
-                if (!updatingList)
+                if (pauseUpdates)
+                {
+                    refreshNeeded = true;
+                }
+                else
                 {
                     PopulateCharacterList();
                 }
@@ -66,8 +96,13 @@ namespace BloodstarClockticaWpf
         /// </summary>
         public void PopulateCharacterList()
         {
-            updatingList = true;
+            // not sure it's necessary, but but we can clear those old listeners since we're making all-new character wrappers
+            foreach (var characterWrapper in SortedList)
+            {
+                characterWrapper.Character.PropertyChanged -= Character_PropertyChanged;
+            }
             SortedList.Clear();
+
             var characters = DocumentWrapper.CharacterList
                 .OrderBy(characterWrapper => IsFirstNight ? characterWrapper.FirstNightOrder : characterWrapper.OtherNightOrder)
                 .Select(characterWrapper => new NightOrderCharacterWrapper(characterWrapper));
@@ -92,7 +127,6 @@ namespace BloodstarClockticaWpf
             }
             UpdateOrdinals();
             OnPropertyChanged("SortedList");
-            updatingList = false;
         }
 
         /// <summary>
@@ -102,7 +136,11 @@ namespace BloodstarClockticaWpf
         /// <param name="e"></param>
         private void Character_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (!updatingList)
+            if (pauseUpdates)
+            {
+                refreshNeeded = true;
+            }
+            else
             {
                 switch (e.PropertyName)
                 {
@@ -134,6 +172,8 @@ namespace BloodstarClockticaWpf
         /// </summary>
         private void UpdateOrdinals()
         {
+            bool pauseUpdatesBackup = pauseUpdates;
+            pauseUpdates = true;
             var nightReminderCount = 1;
             foreach (var characterWrapper in SortedList)
             {
@@ -144,6 +184,7 @@ namespace BloodstarClockticaWpf
                     nightReminderCount++;
                 }
             }
+            pauseUpdates = pauseUpdatesBackup;
         }
 
         /// <summary>
