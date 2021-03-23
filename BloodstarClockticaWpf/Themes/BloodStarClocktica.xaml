@@ -110,7 +110,7 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-    
+
     <Style TargetType="{x:Type TextBlock}">
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     </Style>
@@ -602,7 +602,7 @@
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 Background="Transparent"
-                                SnapsToDevicePixels="true">
+                                SnapsToDevicePixels="True">
                             <Border.OpacityMask>
                                 <MultiBinding Converter="{StaticResource BcBorderGapMaskConverter}" ConverterParameter="6">
                                     <Binding ElementName="Header" Path="ActualWidth"/>
@@ -971,7 +971,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <!-- scroll button -->
     <Style x:Key="BcScrollRepeatButtonStyle" d:IsControlPart="True" TargetType="{x:Type RepeatButton}">
         <Setter Property="Background" Value="Transparent" />
@@ -988,7 +988,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <!-- scroll bar -->
     <Style TargetType="{x:Type ScrollBar}">
         <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
@@ -1004,7 +1004,7 @@
                         </Grid.RowDefinitions>
                         <RepeatButton x:Name="DecreaseRepeat" Command="ScrollBar.LineUpCommand">
                             <Path Margin="2,2,2,2" VerticalAlignment="Stretch" Height="Auto" Fill="{DynamicResource DimForegroundBrush}" Stretch="Fill" Stroke="{x:Null}" Data="M 0,10 10,10 5.5,0 4.5,0" x:Name="DecreaseArrow" />
-                         </RepeatButton>
+                        </RepeatButton>
                         <Track Grid.Row="1" x:Name="PART_Track" Orientation="Vertical" IsDirectionReversed="true">
                             <Track.Thumb>
                                 <Thumb Style="{DynamicResource BcThumbStyle}" Background="{x:Null}" Foreground="{x:Null}" />
@@ -1032,6 +1032,56 @@
                             <Setter Property="Command" Value="ScrollBar.LineRightCommand" TargetName="IncreaseRepeat" />
                             <Setter Property="Command" Value="ScrollBar.PageLeftCommand" TargetName="PageDown" />
                             <Setter Property="Command" Value="ScrollBar.PageRightCommand" TargetName="PageUp" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- tab control -->
+    <Style TargetType="{x:Type TabControl}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SolidBorderBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Setter Property="Background" Value="Transparent"/>
+    </Style>
+
+    <!-- tab item -->
+    <Style TargetType="{x:Type TabItem}" BasedOn="{x:Null}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SolidBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ControlBackgroundBrush}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TabItem}">
+                    <Border
+                         x:Name="Background"
+                         BorderBrush="{DynamicResource SolidBorderBrush}"
+                         BorderThickness="0,0,0,1"
+                         Background="Transparent"
+                         Margin="0,0,0,0">
+                        <ContentPresenter
+                            x:Name="ContentSite"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"
+                            ContentSource="Header"
+                            Margin="6,2"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter TargetName="Background" Property="BorderBrush" Value="{DynamicResource HoverBrush}" />
+                            <Setter TargetName="Background" Property="BorderThickness" Value="0,0,0,3" />
+                            <Setter TargetName="ContentSite" Property="Margin" Value="6,2,6,5" />
+                        </Trigger>
+                        <Trigger Property="IsFocused" Value="true">
+                            <Setter TargetName="Background" Property="BorderBrush" Value="{DynamicResource HoverBrush}" />
+                        </Trigger>
+                        <Trigger SourceName="Background" Property="IsMouseOver" Value="true">
+                            <Setter TargetName="Background" Property="BorderBrush" Value="{DynamicResource HoverBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

@@ -72,10 +72,10 @@
       <DependentUpon>ChooseCharacter.xaml</DependentUpon>
     </Compile>
     <Compile Include="NightOrderCharacterWrapper.cs" />
-    <Compile Include="NightOrderWrapper.cs" />
-    <Compile Include="NightOrder.xaml.cs">
-      <DependentUpon>NightOrder.xaml</DependentUpon>
+    <Compile Include="NightOrderList.xaml.cs">
+      <DependentUpon>NightOrderList.xaml</DependentUpon>
     </Compile>
+    <Compile Include="NightOrderWrapper.cs" />
     <Compile Include="BcMessageBox.xaml.cs">
       <DependentUpon>BcMessageBox.xaml</DependentUpon>
     </Compile>
@@ -112,13 +112,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="NightOrder.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="BcMessageBox.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="NightOrderList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ProgressDialog.xaml">
       <Generator>MSBuild:Compile</Generator>

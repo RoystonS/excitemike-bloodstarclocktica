@@ -19,8 +19,6 @@ namespace BloodstarClockticaWpf
     /// </summary>
     public partial class MainWindow : Window
     {
-        private bool firstNightWindowOpen;
-        private bool otherNightWindowOpen;
         public static readonly string BaseTitle = "Bloodstar Clocktica";
 
         public MainWindow() : this(new BcDocument())
@@ -29,8 +27,6 @@ namespace BloodstarClockticaWpf
         public MainWindow(BcDocument document)
         {
             InitializeComponent();
-            firstNightWindowOpen = false;
-            otherNightWindowOpen = false;
             DataContext = new DocumentWrapper(document);
 
             UpdateRecentDocumentsMenu();
@@ -274,44 +270,6 @@ namespace BloodstarClockticaWpf
                 return dlg.FileName;
             }
             return null;
-        }
-
-        /// <summary>
-        /// open editor for first night order
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void FirstNight(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (firstNightWindowOpen) { return; }
-            var nightOrderWrapper = new NightOrderWrapper(DataContext as DocumentWrapper, true);
-            NightOrder dlg = new NightOrder(nightOrderWrapper)
-            {
-                Owner = this,
-                ShowActivated = true
-            };
-            dlg.Closed += (object _s, EventArgs _e) => { firstNightWindowOpen = false; };
-            firstNightWindowOpen = true;
-            DoBlurred(() => dlg.ShowDialog());
-        }
-
-        /// <summary>
-        /// open editor for other nights order
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OtherNights(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (otherNightWindowOpen) { return; }
-            var nightOrderWrapper = new NightOrderWrapper(DataContext as DocumentWrapper, false);
-            NightOrder dlg = new NightOrder(nightOrderWrapper)
-            {
-                Owner = this,
-                ShowActivated = true
-            };
-            dlg.Closed += (object _s, EventArgs _e) => { otherNightWindowOpen = false; };
-            otherNightWindowOpen = true;
-            DoBlurred(() => dlg.ShowDialog());
         }
 
         /// <summary>

@@ -65,9 +65,12 @@ namespace BloodstarClockticaWpf
             get => document.Dirty;
             set
             {
-                document.Dirty = value;
-                OnPropertyChanged("Dirty");
-                OnPropertyChanged("WindowTitle");
+                if (document.Dirty != value)
+                {
+                    document.Dirty = value;
+                    OnPropertyChanged("Dirty");
+                    OnPropertyChanged("WindowTitle");
+                }
             }
         }
 
@@ -162,6 +165,16 @@ namespace BloodstarClockticaWpf
         /// characters in the set
         /// </summary>
         public ObservableCollection<CharacterWrapper> CharacterList { get; set; }
+
+        /// <summary>
+        /// Night order of characters in the set
+        /// </summary>
+        public NightOrderWrapper FirstNightOrder { get; private set; }
+
+        /// <summary>
+        /// Night order of characters in the set
+        /// </summary>
+        public NightOrderWrapper OtherNightOrder { get; private set; }
 
         /// <summary>
         /// root url from with to look for /roles.json and images/*.png
@@ -277,6 +290,7 @@ namespace BloodstarClockticaWpf
             if (document.Save(path))
             {
                 Dirty = false;
+                OnPropertyChanged("WindowTitle");
                 return true;
             }
             return false;
@@ -501,6 +515,8 @@ namespace BloodstarClockticaWpf
             CharacterList = new ObservableCollection<CharacterWrapper>();
             UpdateCharacterList();
             CharacterList.CollectionChanged += CharacterList_CollectionChanged;
+            FirstNightOrder = new NightOrderWrapper(this, true);
+            OtherNightOrder = new NightOrderWrapper(this, false);
         }
 
         /// <summary>
@@ -512,6 +528,7 @@ namespace BloodstarClockticaWpf
         {
             if (!updatingCharacterList)
             {
+                UpdateCharacterList();
                 Dirty = true;
             }
         }
@@ -640,11 +657,7 @@ namespace BloodstarClockticaWpf
                 document.Characters[indexA] = document.Characters[indexB];
                 document.Characters[indexB] = temp;
             }
-            {
-                var temp = CharacterList[indexA];
-                CharacterList[indexA] = CharacterList[indexB];
-                CharacterList[indexB] = temp;
-            }
+            CharacterList.Move(indexA, indexB);
             Dirty = true;
         }
 

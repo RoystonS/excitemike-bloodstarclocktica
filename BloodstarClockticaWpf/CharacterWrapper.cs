@@ -223,6 +223,9 @@ namespace BloodstarClockticaWpf
             }
         }
 
+        public string FirstNightTooltip => "Ability:  " + character.Ability + "\n\n1st Night Reminder:  " + character.FirstNightReminder;
+        public string OtherNightTooltip => "Ability:  " + character.Ability + "\n\nOther Night Reminder:  " + character.OtherNightReminder;
+
         // TODO: it is kinda just confusing to have both X and XProperty. cut down to just these binding helpers and drop the suffix
         public StringBindingHelper IdProperty { get; private set; }
         public StringBindingHelper NameProperty { get; private set; }

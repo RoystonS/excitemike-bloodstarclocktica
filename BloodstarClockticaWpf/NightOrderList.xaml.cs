@@ -1,53 +1,16 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
 
 namespace BloodstarClockticaWpf
 {
     /// <summary>
-    /// Interaction logic for NightOrder.xaml
+    /// Interaction logic for NightOrderList.xaml
     /// </summary>
-    partial class NightOrder : Window
+    public partial class NightOrderList : UserControl
     {
-        public NightOrder(object dataContext)
+        public NightOrderList()
         {
             InitializeComponent();
-            DataContext = dataContext;
-        }
-
-        /// <summary>
-        /// leave night order view
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Close_Click(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
-
-        /// <summary>
-        /// minimize
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void Minimize_Click(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
-
-        /// <summary>
-        /// maximize/restore
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void MaximizeRestore_Click(object sender, RoutedEventArgs e)
-        {
-            if (this.WindowState == WindowState.Maximized)
-            {
-                this.WindowState = WindowState.Normal;
-            }
-            else
-            {
-                this.WindowState = WindowState.Maximized;
-            }
         }
 
         private void SwapOrder(int indexA, int indexB)

@@ -17,6 +17,7 @@ namespace BloodstarClockticaWpf
         public Visibility OtherNightVis => IsFirstNight ? Visibility.Collapsed : Visibility.Visible;
         public string CopyToButtonLabel => IsFirstNight ? "Copy to Other Nights Reminder" : "Copy to First Night Reminder";
         public string CopyFromButtonLabel => IsFirstNight ? "Copy from First Night Reminder" : "Copy from Other Nights Reminder";
+        private bool updatingList = false;
 
         /// <summary>
         /// characters in night order
@@ -38,7 +39,10 @@ namespace BloodstarClockticaWpf
 
         private void SortedList_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
-            UpdateOrdinals();
+            if (!updatingList)
+            {
+                UpdateOrdinals();
+            }
         }
 
         /// <summary>
@@ -48,9 +52,12 @@ namespace BloodstarClockticaWpf
         /// <param name="e"></param>
         private void DocumentWrapper_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "CharacterList")
+            if ((e.PropertyName == null) || (e.PropertyName == "CharacterList"))
             {
-                PopulateCharacterList();
+                if (!updatingList)
+                {
+                    PopulateCharacterList();
+                }
             }
         }
 
@@ -59,6 +66,7 @@ namespace BloodstarClockticaWpf
         /// </summary>
         public void PopulateCharacterList()
         {
+            updatingList = true;
             SortedList.Clear();
             var characters = DocumentWrapper.CharacterList
                 .OrderBy(characterWrapper => IsFirstNight ? characterWrapper.FirstNightOrder : characterWrapper.OtherNightOrder)
@@ -84,6 +92,7 @@ namespace BloodstarClockticaWpf
             }
             UpdateOrdinals();
             OnPropertyChanged("SortedList");
+            updatingList = false;
         }
 
         /// <summary>
@@ -93,17 +102,30 @@ namespace BloodstarClockticaWpf
         /// <param name="e"></param>
         private void Character_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            switch (e.PropertyName)
+            if (!updatingList)
             {
-                case "FirstNightOrder":
-                case "OtherNightOrder":
-                case "IncludeInExport":
-                case "FirstNightReminder":
-                case "OtherNightReminder":
-                    UpdateOrdinals();
-                    break;
-                default:
-                    break;
+                switch (e.PropertyName)
+                {
+                    case "FirstNightOrder":
+                    case "FirstNightReminder":
+                        if (IsFirstNight)
+                        {
+                            UpdateOrdinals();
+                        }
+                        break;
+                    case "OtherNightOrder":
+                    case "OtherNightReminder":
+                        if (!IsFirstNight)
+                        {
+                            UpdateOrdinals();
+                        }
+                        break;
+                    case "IncludeInExport":
+                        UpdateOrdinals();
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
@@ -151,25 +173,5 @@ namespace BloodstarClockticaWpf
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    /// <summary>
-    /// comparer used to sort by night order
-    /// </summary>
-    class NightOrderComparer : Comparer<CharacterWrapper>
-    {
-        readonly bool firstNight;
-        public NightOrderComparer(bool firstNight)
-        {
-            this.firstNight = firstNight;
-        }
-        public override int Compare(CharacterWrapper x, CharacterWrapper y)
-        {
-            if (firstNight)
-            {
-                return x.FirstNightOrder.CompareTo(y.FirstNightOrder);
-            }
-            return x.OtherNightOrder.CompareTo(y.OtherNightOrder);
-        }
     }
 }
