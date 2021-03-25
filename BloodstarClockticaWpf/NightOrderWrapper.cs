@@ -159,6 +159,7 @@ namespace BloodstarClockticaWpf
                         }
                         break;
                     case "IncludeInExport":
+                    case null:
                         UpdateOrdinals();
                         break;
                     default:

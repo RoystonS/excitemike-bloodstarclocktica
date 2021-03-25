@@ -351,8 +351,8 @@ namespace BloodstarClockticaWpf
                     if (value != character.OtherNightReminder)
                     {
                         character.OtherNightReminder = value;
-                        OnPropertyChanged("OtherNightsReminder");
-                        OnPropertyChanged("OtherNightsReminderProperty");
+                        OnPropertyChanged("OtherNightReminder");
+                        OnPropertyChanged("OtherNightReminderProperty");
                     }
                 },
                 false
