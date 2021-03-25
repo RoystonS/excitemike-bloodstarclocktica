@@ -107,7 +107,7 @@ namespace BloodstarClockticaLib.Properties {
         ///    &quot;name&quot;: &quot;Washerwoman&quot;,
         ///    &quot;edition&quot;: &quot;tb&quot;,
         ///    &quot;team&quot;: &quot;townsfolk&quot;,
-        ///    &quot;firstNight&quot;: 19,
+        ///    &quot;firstNight&quot;: 23,
         ///    &quot;firstNightReminder&quot;: &quot;Show the character token of a Townsfolk in play. Point to two players, one of which is that character.&quot;,
         ///    &quot;otherNight&quot;: 0,
         ///    &quot;otherNightReminder&quot;: &quot;&quot;,
