@@ -119,17 +119,62 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="3*"/>
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <GroupBox Header="Meta" Grid.Row="0">
-                        <Grid Grid.Row="0">
+
+                <!-- left side = character list -->
+                <GroupBox Grid.Column="0" Header="Characters" VerticalAlignment="Stretch">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition Height="30"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="35"/>
+                        </Grid.ColumnDefinitions>
+                        <ListView Name="CharacterList" ItemsSource="{Binding CharacterList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.RowSpan="5" SelectedIndex="0" Margin="0,0,6,0" SelectionMode="Single">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Export?" Width="30">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <CheckBox IsChecked="{Binding IncludeInExport.Value}" IsTabStop="False"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Width="48">
+                                        <GridViewColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Image Source="{Binding ImagePreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" Width="36" Height="36"/>
+                                            </DataTemplate>
+                                        </GridViewColumn.CellTemplate>
+                                    </GridViewColumn>
+                                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding NameProperty.Value}" Width="120"/>
+                                    <GridViewColumn Header="Team" DisplayMemberBinding="{Binding TeamProperty.DisplayString}" Width="68"/>
+                                    <GridViewColumn Header="Note" DisplayMemberBinding="{Binding Note.Value}" Width="93"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                        <Button Grid.Row="0" Grid.Column="1" Content="/\" Click="UpButton_Click" Margin="0,0,0,6"/>
+                        <Button Grid.Row="1" Grid.Column="1" Content="\/" Click="DownButton_Click" Margin="0,0,0,6"/>
+                        <Button Grid.Row="2" Grid.Column="1" Content="Add" Click="AddButton_Click" Margin="0,0,0,6"/>
+                        <Button Grid.Row="3" Grid.Column="1" Content="Del" Click="DelButton_Click" Margin="0,0,0,6"/>
+                    </Grid>
+                </GroupBox>
+
+                <!-- vertical splitter -->
+                <GridSplitter Grid.Column="1" HorizontalAlignment="Center" ShowsPreview="True" Width="6"/>
+
+                <!-- right side -->
+                <TabControl Grid.Column="2">
+                    <TabItem Header="Meta">
+                        <Grid Margin="0,6,0,0">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="24"/>
                                 <RowDefinition Height="24"/>
-                                <RowDefinition Height="100"/>
+                                <RowDefinition Height="200"/>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
@@ -140,137 +185,121 @@
                             <Label Content="Author" Grid.Row="1"/>
                             <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Author, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4"/>
                             <Label Content="Logo" Grid.Row="2"/>
-                            <Button Grid.Row="2" Grid.Column="1" Click="LogoButton_Click">
-                                <Grid>
-                                    <Image Source="{Binding LogoPreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
-                                    <Label Content="{Binding LogoButtonText}" />
-                                </Grid>
-                            </Button>
+                            <Grid Grid.Row="2" Grid.Column="1" >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Image Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Source="{Binding LogoPreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <Button Grid.Row="1" Grid.Column="0" MinWidth="80" Height="25" Click="LogoButton_Click" Content="Import"/>
+                                <ContentControl Content="{Binding}" Grid.Row="1" Grid.Column="2">
+                                    <ContentControl.ContentTemplate>
+                                        <DataTemplate>
+                                            <Button x:Name="RemoveLogoButton" Grid.Row="1" Grid.Column="2" MinWidth="80" Height="25" Visibility="Visible" Click="RemoveLogoButton_Click" Content="Remove"/>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding LogoPreview}" Value="{x:Null}">
+                                                    <Setter TargetName="RemoveLogoButton" Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </ContentControl.ContentTemplate>
+                                </ContentControl>
+                            </Grid>
                         </Grid>
-                    </GroupBox>
-                    <GroupBox Header="Characters" Grid.Row="1" VerticalAlignment="Stretch">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition Height="30"/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition Width="35"/>
-                            </Grid.ColumnDefinitions>
-                            <ListView Name="CharacterList" ItemsSource="{Binding CharacterList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.RowSpan="5" SelectedIndex="0" Margin="0,0,6,0" SelectionMode="Single">
-                                <ListView.View>
-                                    <GridView>
-                                        <GridViewColumn Header="Export?" Width="30">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <CheckBox IsChecked="{Binding IncludeInExport.Value}" IsTabStop="False"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                        <GridViewColumn Width="48">
-                                            <GridViewColumn.CellTemplate>
-                                                <DataTemplate>
-                                                    <Image Source="{Binding ImagePreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" Width="36" Height="36"/>
-                                                </DataTemplate>
-                                            </GridViewColumn.CellTemplate>
-                                        </GridViewColumn>
-                                        <GridViewColumn Header="Name" DisplayMemberBinding="{Binding NameProperty.Value}" Width="120"/>
-                                        <GridViewColumn Header="Team" DisplayMemberBinding="{Binding TeamProperty.DisplayString}" Width="68"/>
-                                        <GridViewColumn Header="Note" DisplayMemberBinding="{Binding Note.Value}" Width="93"/>
-                                    </GridView>
-                                </ListView.View>
-                            </ListView>
-                            <Button Grid.Row="0" Grid.Column="1" Content="/\" Click="UpButton_Click" Margin="0,0,0,6"/>
-                            <Button Grid.Row="1" Grid.Column="1" Content="\/" Click="DownButton_Click" Margin="0,0,0,6"/>
-                            <Button Grid.Row="2" Grid.Column="1" Content="Add" Click="AddButton_Click" Margin="0,0,0,6"/>
-                            <Button Grid.Row="3" Grid.Column="1" Content="Del" Click="DelButton_Click" Margin="0,0,0,6"/>
-                        </Grid>
-                    </GroupBox>
-                </Grid>
-
-                <!-- vertical splitter -->
-                <GridSplitter Grid.Column="1" HorizontalAlignment="Center" ShowsPreview="True" Width="6"/>
-
-                <!-- right side -->
-                <TabControl Grid.Column="2">
+                    </TabItem>
                     <TabItem Header="Edit Character">
-                        <ContentControl Margin="6,0,6,0" Content="{Binding ElementName=CharacterList, Path=SelectedItem}" VerticalAlignment="Stretch">
-                            <ContentControl.ContentTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="1*"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="2*"/>
-                                        </Grid.RowDefinitions>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition/>
-                                            <ColumnDefinition/>
-                                        </Grid.ColumnDefinitions>
-                                        <GroupBox Header="Source Image" Grid.Column="0" Grid.Row="0" Margin="0,0,3,6">
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition/>
-                                                    <RowDefinition Height="Auto"/>
-                                                </Grid.RowDefinitions>
-                                                <Image Source="{Binding SourceImagePreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" MaxWidth="{Binding SourceImagePreviewMaxWidth}" MaxHeight="{Binding SourceImagePreviewMaxHeight}"/>
-                                                <Grid Grid.Row="1">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition/>
-                                                        <ColumnDefinition Width="6"/>
-                                                        <ColumnDefinition/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <Button Grid.Column="0" x:Name="ImportSourceImage" Content="Import" Click="SourceImageButton_Click" MinWidth="80" Height="25"/>
-                                                    <Button Grid.Column="2" x:Name="RemoveSource" Content="Remove" Click="RemoveSourceImage_Click" MinWidth="80" Height="25"/>
+                        <Grid>
+                            <ContentControl Margin="6,0,6,0" Content="{Binding ElementName=CharacterList, Path=SelectedItem}" VerticalAlignment="Stretch">
+                                <ContentControl.ContentTemplate>
+                                    <DataTemplate>
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="1*"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="2*"/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition/>
+                                                <ColumnDefinition/>
+                                            </Grid.ColumnDefinitions>
+                                            <GroupBox Header="Source Image" Grid.Column="0" Grid.Row="0" Margin="0,0,3,6">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Image Source="{Binding SourceImagePreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" MaxWidth="{Binding SourceImagePreviewMaxWidth}" MaxHeight="{Binding SourceImagePreviewMaxHeight}"/>
+                                                    <Grid Grid.Row="1">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition/>
+                                                            <ColumnDefinition Width="6"/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Button Grid.Column="0" x:Name="ImportSourceImage" Content="Import" Click="SourceImageButton_Click" MinWidth="80" Height="25"/>
+                                                        <Button Grid.Column="2" x:Name="RemoveSource" Content="Remove" Click="RemoveSourceImage_Click" MinWidth="80" Height="25"/>
+                                                    </Grid>
                                                 </Grid>
-                                            </Grid>
-                                        </GroupBox>
-                                        <GroupBox Header="Character Image" Grid.Column="1" Grid.Row="0" Margin="3,0,0,6">
-                                            <Grid>
-                                                <Grid.RowDefinitions>
-                                                    <RowDefinition/>
-                                                    <RowDefinition Height="Auto"/>
-                                                </Grid.RowDefinitions>
-                                                <Image Source="{Binding ImagePreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" MaxWidth="{Binding ImagePreviewMaxWidth}" MaxHeight="{Binding ImagePreviewMaxHeight}"/>
-                                                <Grid Grid.Row="1">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition/>
-                                                        <ColumnDefinition Width="6"/>
-                                                        <ColumnDefinition/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <Button Grid.Column="0" x:Name="ImportCharacterImage" Content="Import" Click="ImportCharacterImage_Click" MinWidth="80" Height="25"/>
-                                                    <Button Grid.Column="2" x:Name="RemoveProcessed" Content="Remove" Visibility="Collapsed" Click="RemoveProcessed_Click" MinWidth="80" Height="25"  Margin="6,0,0,0"/>
+                                            </GroupBox>
+                                            <GroupBox Header="Character Image" Grid.Column="1" Grid.Row="0" Margin="3,0,0,6">
+                                                <Grid>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Image Source="{Binding ImagePreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" MaxWidth="{Binding ImagePreviewMaxWidth}" MaxHeight="{Binding ImagePreviewMaxHeight}"/>
+                                                    <Grid Grid.Row="1">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition/>
+                                                            <ColumnDefinition Width="6"/>
+                                                            <ColumnDefinition/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Button Grid.Column="0" x:Name="ImportCharacterImage" Content="Import" Click="ImportCharacterImage_Click" MinWidth="80" Height="25"/>
+                                                        <Button Grid.Column="2" x:Name="RemoveProcessed" Content="Remove" Visibility="Collapsed" Click="RemoveProcessed_Click" MinWidth="80" Height="25"  Margin="6,0,0,0"/>
+                                                    </Grid>
                                                 </Grid>
-                                            </Grid>
-                                        </GroupBox>
+                                            </GroupBox>
 
-                                        <!-- horizontal splitter -->
-                                        <GridSplitter Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" ShowsPreview="True" Height="6"/>
+                                            <!-- horizontal splitter -->
+                                            <GridSplitter Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" ShowsPreview="True" Height="6"/>
 
-                                        <!-- character properties and night order -->
-                                        <local:CharacterProperties Grid.ColumnSpan="2" Grid.Row="2" DataContext="{Binding ElementName=CharacterList, Path=SelectedItem}"/>
-                                    </Grid>
-                                    <DataTemplate.Triggers>
-                                        <DataTrigger Binding="{Binding}" Value="{x:Null}">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding SourceImage}" Value="{x:Null}">
-                                            <Setter TargetName="RemoveProcessed" Property="Visibility" Value="Visible"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding ImagePreview}" Value="{x:Null}">
-                                            <Setter TargetName="RemoveProcessed" Property="Visibility" Value="Collapsed"/>
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding SourceImage}" Value="{x:Null}">
-                                            <Setter TargetName="RemoveSource" Property="Visibility" Value="Collapsed"/>
-                                        </DataTrigger>
-                                    </DataTemplate.Triggers>
-                                </DataTemplate>
-                            </ContentControl.ContentTemplate>
-                        </ContentControl>
+                                            <!-- character properties and night order -->
+                                            <local:CharacterProperties Grid.ColumnSpan="2" Grid.Row="2" DataContext="{Binding ElementName=CharacterList, Path=SelectedItem}"/>
+                                        </Grid>
+                                        <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding SourceImage}" Value="{x:Null}">
+                                                <Setter TargetName="RemoveProcessed" Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding ImagePreview}" Value="{x:Null}">
+                                                <Setter TargetName="RemoveProcessed" Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding SourceImage}" Value="{x:Null}">
+                                                <Setter TargetName="RemoveSource" Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+                                </ContentControl.ContentTemplate>
+                            </ContentControl>
+                            <ContentControl Margin="6,0,6,0" Content="{Binding ElementName=CharacterList, Path=SelectedIndex}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <ContentControl.ContentTemplate>
+                                    <DataTemplate>
+                                        <Label x:Name="NoCharLabel" Visibility="Collapsed" Content="No Character Selected"/>
+                                        <DataTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding}" Value="-1">
+                                                <Setter TargetName="NoCharLabel" Property="Visibility" Value="Visible"/>
+                                            </DataTrigger>
+                                        </DataTemplate.Triggers>
+                                    </DataTemplate>
+                                </ContentControl.ContentTemplate>
+                            </ContentControl>
+                        </Grid>
                     </TabItem>
                     <TabItem Header="First Night Order">
                         <local:NightOrderList 

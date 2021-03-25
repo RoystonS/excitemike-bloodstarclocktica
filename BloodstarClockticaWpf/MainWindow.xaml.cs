@@ -315,6 +315,11 @@ namespace BloodstarClockticaWpf
             }
         }
 
+        private void RemoveLogoButton_Click(object sender, RoutedEventArgs e)
+        {
+            (DataContext as DocumentWrapper).Logo = null;
+        }
+
         private string ChooseImage()
         {
             var dlg = new OpenFileDialog
