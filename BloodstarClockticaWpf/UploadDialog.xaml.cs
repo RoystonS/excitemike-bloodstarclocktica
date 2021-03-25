@@ -146,6 +146,7 @@ namespace BloodstarClockticaWpf
         /// </summary>
         private void Close_Click(object sender, RoutedEventArgs e)
         {
+            SaveSettings();
             Close();
         }
 
