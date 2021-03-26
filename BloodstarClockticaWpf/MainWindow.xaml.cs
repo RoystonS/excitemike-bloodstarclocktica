@@ -220,7 +220,23 @@ namespace BloodstarClockticaWpf
             }
             AddToRecentDocuments(path);
             UpdateNightOrder();
-            return (DataContext as DocumentWrapper).Save(path);
+            var tempPath = Path.GetTempFileName();
+
+            bool success;
+            try
+            {
+                success = (DataContext as DocumentWrapper).Save(tempPath);
+            }
+            catch
+            {
+                throw;
+            }
+
+            if (success)
+            {
+                File.Copy(path, tempPath);
+            }
+            return success;
         }
 
         /// <summary>
