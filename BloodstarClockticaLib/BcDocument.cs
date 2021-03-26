@@ -80,15 +80,34 @@ namespace BloodstarClockticaLib
         public bool Save(string path)
         {
             filePath = path;
-            using (Stream stream = new FileStream(path, FileMode.Create, FileAccess.Write))
+
+            // write zip to temp location first so that if something horrible happens, the previous save isn't corrupted
+            bool success = false;
+            var tempPath = Path.GetTempFileName();
+            try
             {
-                using (ZipArchive archive = new ZipArchive(stream, ZipArchiveMode.Create))
+                using (Stream stream = new FileStream(tempPath, FileMode.Create, FileAccess.Write))
                 {
-                    SaveMeta(archive);
-                    SaveCharacters(archive);
+                    using (ZipArchive archive = new ZipArchive(stream, ZipArchiveMode.Create))
+                    {
+                        SaveMeta(archive);
+                        SaveCharacters(archive);
+                        success = true;
+                    }
                 }
             }
-            dirty = false;
+            catch
+            {
+                throw;
+            }
+
+            // write temp file to final location
+            if (success)
+            {
+                dirty = false;
+                File.Copy(tempPath, path, true);
+            }
+
             return true;
         }
 
