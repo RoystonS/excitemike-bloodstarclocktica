@@ -239,6 +239,11 @@ namespace BloodstarClockticaWpf
         public BoolBindingHelper SetupProperty { get; private set; }
         public StringBindingHelper ReminderTokensProperty { get; private set; }
         public StringBindingHelper GlobalReminderTokens { get; private set; }
+        public StringBindingHelper AlmanacFlavorProperty { get; private set; }
+        public StringBindingHelper AlmanacOverviewProperty { get; private set; }
+        public StringBindingHelper AlmanacExamplesProperty { get; private set; }
+        public StringBindingHelper AlmanacHowToRunProperty { get; private set; }
+        public StringBindingHelper AlmanacTipProperty { get; private set; }
 
         public BoolBindingHelper IncludeInExport { get; private set; }
         public StringBindingHelper Attribution { get; private set; }
@@ -426,6 +431,78 @@ namespace BloodstarClockticaWpf
                     {
                         character.Attribution = value;
                         OnPropertyChanged("Attribution");
+                    }
+                },
+                true
+            );
+            AlmanacFlavorProperty = new StringBindingHelper(
+                "Flavor",
+                "Flavor text for the character. For official sets, these are written as though spoken by from the character.",
+                () => character.AlmanacEntry.Flavor,
+                (value) =>
+                {
+                    if (value != character.AlmanacEntry.Flavor)
+                    {
+                        character.AlmanacEntry.Flavor = value;
+                        OnPropertyChanged("Flavor");
+                    }
+                },
+                true
+            );
+            
+            AlmanacOverviewProperty = new StringBindingHelper(
+                "Overview",
+                "Typically begins with a short, high-level description of what the character does followed by detailed clarifications of the ability.",
+                () => character.AlmanacEntry.Overview,
+                (value) =>
+                {
+                    if (value != character.AlmanacEntry.Overview)
+                    {
+                        character.AlmanacEntry.Overview = value;
+                        OnPropertyChanged("Overview");
+                    }
+                },
+                true
+            );
+            AlmanacExamplesProperty = new StringBindingHelper(
+                "Examples",
+                "Describe a few newline-separated game situations to help illustrate how the ability works and interacts with other characters.",
+                () => character.AlmanacEntry.Examples,
+                (value) =>
+                {
+                    if (value != character.AlmanacEntry.Examples)
+                    {
+                        character.AlmanacEntry.Examples = value;
+                        OnPropertyChanged("Examples");
+                    }
+                },
+                true
+            );
+            AlmanacHowToRunProperty = new StringBindingHelper(
+                "How to run",
+                "Describe what the storyteller needs to do for this character. Include anything like any additional setup (like the Washewoman's reminder tokens), or the process for waking the player at night, if they apply.",
+                () => character.AlmanacEntry.HowToRun,
+                (value) =>
+                {
+                    if (value != character.AlmanacEntry.HowToRun)
+                    {
+                        character.AlmanacEntry.HowToRun = value;
+                        OnPropertyChanged("HowToRun");
+                    }
+                },
+                true
+            );
+            AlmanacTipProperty = new StringBindingHelper(
+                "Tip",
+                @"Newline-separated tips for how to run the character well. Not all characters need this!\n
+                For example, the Ravenkeeper's reads: ""We advise you to discourage or even ban players from taling about what they are doing at night as they are doing it.""",
+                () => character.AlmanacEntry.Tip,
+                (value) =>
+                {
+                    if (value != character.AlmanacEntry.Tip)
+                    {
+                        character.AlmanacEntry.Tip = value;
+                        OnPropertyChanged("Tip");
                     }
                 },
                 true

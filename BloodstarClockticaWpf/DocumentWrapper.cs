@@ -279,6 +279,41 @@ namespace BloodstarClockticaWpf
             }
         }
 
+        /// <summary>
+        /// see SynopsisToolTip
+        /// </summary>
+        public string Synopsis
+        {
+            get => document.Meta.Synopsis;
+            set
+            {
+                if (value != document.Meta.Synopsis)
+                {
+                    document.Meta.Synopsis = value;
+                    Dirty = true;
+                    OnPropertyChanged("Synopsis");
+                }
+            }
+        }
+        public string SynopsisToolTip => "Intro text for the set's Almanac. For Trouble Brewing, this started like \"Clouds roll in over Ravenswood Bluff...\"";
+
+        /// <summary>
+        /// see OverviewToolTip
+        /// </summary>
+        public string Overview
+        {
+            get => document.Meta.Overview;
+            set
+            {
+                if (value != document.Meta.Overview)
+                {
+                    document.Meta.Overview = value;
+                    Dirty = true;
+                    OnPropertyChanged("Overview");
+                }
+            }
+        }
+        public string OverviewToolTip => "Almanac's description of the custom edition as a whole";
 
         /// <summary>
         /// write the document to a file

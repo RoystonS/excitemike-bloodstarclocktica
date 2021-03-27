@@ -184,6 +184,7 @@ namespace BloodstarClockticaLib
         {
             bool changedAny = false;
             Meta.LogoUploaded = false;
+            Meta.AlmanacImagesUploaded = false;
             foreach (var character in Characters)
             {
                 if (character.ImageUploaded)
@@ -202,6 +203,7 @@ namespace BloodstarClockticaLib
         {
             bool changedAny = false;
             Meta.LogoUploaded = true;
+            Meta.AlmanacImagesUploaded = true;
             foreach (var character in Characters)
             {
                 if (character.IncludeInExport)

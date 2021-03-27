@@ -58,6 +58,11 @@ namespace BloodstarClockticaLib
         internal bool LogoUploaded { get; set; }
 
         /// <summary>
+        /// Whether we think the server has an up to date version of the almanac images.
+        /// </summary>
+        internal bool AlmanacImagesUploaded { get; set; }
+
+        /// <summary>
         /// url root for links to uploaded files
         /// </summary>
         public string UrlRoot { get; set; }
@@ -118,6 +123,16 @@ namespace BloodstarClockticaLib
         internal string PrevSftpUser { get; set; }
 
         /// <summary>
+        /// Intro text for the set's Almanac. For Trouble Brewing, this started like "Clouds roll in over Ravenswood Bluff..."
+        /// </summary>
+        public string Synopsis { get; set; }
+
+        /// <summary>
+        /// Almanac's description of the custom edition as a whole.
+        /// </summary>
+        public string Overview { get; set; }
+
+        /// <summary>
         /// default metadata
         /// </summary>
         public BcMeta()
@@ -143,6 +158,8 @@ namespace BloodstarClockticaLib
             PrevSftpPort = -1;
             PrevSftpUser = "";
             LogoUploaded = false;
+            Synopsis = "";
+            Overview = "";
         }
 
         /// <summary>
@@ -234,6 +251,15 @@ namespace BloodstarClockticaLib
                             case "logoUploaded":
                                 LogoUploaded = json.GetBoolean();
                                 break;
+                            case "almanacImagesUploaded":
+                                AlmanacImagesUploaded = json.GetBoolean();
+                                break;
+                            case "synopsis":
+                                Synopsis = json.GetString();
+                                break;
+                            case "overview":
+                                Overview = json.GetString();
+                                break;
                         }
                     }
                 }
@@ -277,6 +303,9 @@ namespace BloodstarClockticaLib
                         json.WriteNumber("prevSftpPort", PrevSftpPort);
                         json.WriteString("prevSftpUser", PrevSftpUser);
                         json.WriteBoolean("logoUploaded", LogoUploaded);
+                        json.WriteBoolean("almanacImagesUploaded", AlmanacImagesUploaded);
+                        json.WriteString("synopsis", Synopsis);
+                        json.WriteString("overview", Overview);
                         json.WriteEndObject();
                         json.Flush();
                     }

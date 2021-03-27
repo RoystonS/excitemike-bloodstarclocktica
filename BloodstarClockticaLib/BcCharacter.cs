@@ -153,6 +153,11 @@ namespace BloodstarClockticaLib
         public string Attribution { get; set; }
 
         /// <summary>
+        /// Group the almanac-specific fields
+        /// </summary>
+        public BcCharacterAlmanacEntry AlmanacEntry { get; }
+
+        /// <summary>
         /// Get a unique character id
         /// </summary>
         /// <returns></returns>
@@ -174,7 +179,10 @@ namespace BloodstarClockticaLib
         /// <summary>
         /// create default character
         /// </summary>
-        public BcCharacter() : this(null) { }
+        public BcCharacter() : this(null)
+        {
+            AlmanacEntry = new BcCharacterAlmanacEntry();
+        }
 
         /// <summary>
         /// create default character
@@ -198,6 +206,7 @@ namespace BloodstarClockticaLib
             Note = "";
             ImageUploaded = false;
             Attribution = "";
+            AlmanacEntry = new BcCharacterAlmanacEntry();
         }
 
         /// <summary>
@@ -243,7 +252,7 @@ namespace BloodstarClockticaLib
                             case "reminders":
                                 {
                                     var list = new BindingList<string>();
-                                    if (json.TokenType != JsonTokenType.StartArray) { throw new Exception("Expected an array for reminder_tokens"); }
+                                    if (json.TokenType != JsonTokenType.StartArray) { throw new Exception("Expected an array for reminders"); }
                                     json.Read();
                                     while (json.TokenType != JsonTokenType.EndArray)
                                     {
@@ -256,7 +265,7 @@ namespace BloodstarClockticaLib
                             case "globalReminders":
                                 {
                                     var list = new BindingList<string>();
-                                    if (json.TokenType != JsonTokenType.StartArray) { throw new Exception("Expected an array for reminder_tokens"); }
+                                    if (json.TokenType != JsonTokenType.StartArray) { throw new Exception("Expected an array for globalReminders"); }
                                     json.Read();
                                     while (json.TokenType != JsonTokenType.EndArray)
                                     {
@@ -295,6 +304,9 @@ namespace BloodstarClockticaLib
                                 break;
                             case "attribution":
                                 Attribution = json.GetString();
+                                break;
+                            case "almanacEntry":
+                                AlmanacEntry = new BcCharacterAlmanacEntry(json);
                                 break;
                             default:
                                 Console.Error.WriteLine($"unhandled property: \"{propertyName}\"");
@@ -365,6 +377,7 @@ namespace BloodstarClockticaLib
                         {
                             json.WriteString("attribution", Attribution);
                         }
+                        AlmanacEntry.Save(json, "almanacEntry");
                         json.WriteEndObject();
                         json.Flush();
                     }

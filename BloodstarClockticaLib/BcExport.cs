@@ -62,8 +62,9 @@ namespace BloodstarClockticaLib
         /// </summary>
         private static void ExportViaSftp(BcDocument document, SftpClient client, bool canSkipUnchanged, IProgress<double> progress)
         {
+            var imageUrlPrefix = UrlCombine(document.Meta.UrlRoot, "images");
             double num = 1;
-            double denom = 3 + document.Characters.Count;
+            double denom = 5 + document.Characters.Count;
             progress.Report(num / denom);
 
             // roles.json
@@ -78,10 +79,18 @@ namespace BloodstarClockticaLib
             }
             using (var stream = new MemoryStream())
             {
-                var imageUrlPrefix = UrlCombine(document.Meta.UrlRoot, "images");
                 ExportRolesJson(document, stream, imageUrlPrefix);
                 stream.Position = 0;
                 client.UploadFile(stream, "roles.json", true);
+                progress.Report(num++ / denom);
+            }
+
+            // almanac html
+            using (var stream = new MemoryStream())
+            {
+                BcAlmanacExport.ExportAlmanac(document, stream, imageUrlPrefix);
+                stream.Position = 0;
+                client.UploadFile(stream, "almanac.html", true);
                 progress.Report(num++ / denom);
             }
 
@@ -133,6 +142,20 @@ namespace BloodstarClockticaLib
                 }
                 progress.Report(num++ / denom);
             }
+
+            // almanac images
+            {
+                if (!canSkipUnchanged || !document.Meta.AlmanacImagesUploaded)
+                {
+                    using (var stream = new MemoryStream())
+                    {
+                        Properties.Resources.Paper.Save(stream, ImageFormat.Png);
+                        stream.Position = 0;
+                        client.UploadFile(stream, "paper.png", true);
+                    }
+                }
+                progress.Report(num++ / denom);
+            }
             progress.Report(num / denom);
         }
 
@@ -180,6 +203,11 @@ namespace BloodstarClockticaLib
                         character.ProcessedImage.Save(stream, ImageFormat.Png);
                     }
                 }
+            }
+
+            // write Almanac
+            {
+                BcAlmanacExport.ExportAlmanac(document, directory, imageUrlPrefix);
             }
         }
 
@@ -278,7 +306,7 @@ namespace BloodstarClockticaLib
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        private static string UrlCombine(string a, string b)
+        public static string UrlCombine(string a, string b)
         {
             if (a == "") { return b; }
             if (b == "") { return a; }

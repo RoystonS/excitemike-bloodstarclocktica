@@ -80,7 +80,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BcAlmanacExport.cs" />
     <Compile Include="BcCharacter.cs" />
+    <Compile Include="BcCharacterAlmanacEntry.cs" />
     <Compile Include="ICharacterInterface.cs" />
     <Compile Include="BcDocument.cs" />
     <Compile Include="BcExport.cs" />
@@ -134,6 +136,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\DownloadError.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\paper.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -170,47 +170,66 @@
                 <!-- right side -->
                 <TabControl Grid.Column="2">
                     <TabItem Header="Meta">
-                        <Grid Margin="0,6,0,0">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="24"/>
-                                <RowDefinition Height="24"/>
-                                <RowDefinition Height="200"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-                            <Label Content="Name" Grid.Row="0" Grid.Column="0"/>
-                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4"/>
-                            <Label Content="Author" Grid.Row="1"/>
-                            <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Author, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4"/>
-                            <Label Content="Logo" Grid.Row="2"/>
-                            <Grid Grid.Row="2" Grid.Column="1" >
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition/>
-                                    <ColumnDefinition Width="6"/>
-                                    <ColumnDefinition/>
-                                </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <Grid Margin="0,6,0,0">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition/>
+                                    <RowDefinition Height="24"/>
+                                    <RowDefinition Height="24"/>
+                                    <RowDefinition Height="Auto"/>
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
-                                <Image Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Source="{Binding LogoPreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
-                                <Button Grid.Row="1" Grid.Column="0" MinWidth="80" Height="25" Click="LogoButton_Click" Content="Import"/>
-                                <ContentControl Content="{Binding}" Grid.Row="1" Grid.Column="2">
-                                    <ContentControl.ContentTemplate>
-                                        <DataTemplate>
-                                            <Button x:Name="RemoveLogoButton" Grid.Row="1" Grid.Column="2" MinWidth="80" Height="25" Visibility="Visible" Click="RemoveLogoButton_Click" Content="Remove"/>
-                                            <DataTemplate.Triggers>
-                                                <DataTrigger Binding="{Binding LogoPreview}" Value="{x:Null}">
-                                                    <Setter TargetName="RemoveLogoButton" Property="Visibility" Value="Collapsed"/>
-                                                </DataTrigger>
-                                            </DataTemplate.Triggers>
-                                        </DataTemplate>
-                                    </ContentControl.ContentTemplate>
-                                </ContentControl>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="Name" Grid.Row="0" Grid.Column="0"/>
+                                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4"/>
+                                <Label Content="Author" Grid.Row="1"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Author, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4"/>
+                                <Label Content="Logo" Grid.Row="2"/>
+                                <Grid Grid.Row="2" Grid.Column="1" Margin="0,0,0,4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="6"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Image Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Source="{Binding LogoPreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" Height="200"/>
+                                    <Button Grid.Row="1" Grid.Column="0" MinWidth="80" Height="25" Click="LogoButton_Click" Content="Import"/>
+                                    <ContentControl Content="{Binding}" Grid.Row="1" Grid.Column="2">
+                                        <ContentControl.ContentTemplate>
+                                            <DataTemplate>
+                                                <Button x:Name="RemoveLogoButton" Grid.Row="1" Grid.Column="2" MinWidth="80" Height="25" Visibility="Visible" Click="RemoveLogoButton_Click" Content="Remove"/>
+                                                <DataTemplate.Triggers>
+                                                    <DataTrigger Binding="{Binding LogoPreview}" Value="{x:Null}">
+                                                        <Setter TargetName="RemoveLogoButton" Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                </DataTemplate.Triggers>
+                                            </DataTemplate>
+                                        </ContentControl.ContentTemplate>
+                                    </ContentControl>
+                                </Grid>
                             </Grid>
-                        </Grid>
+                            <GroupBox Grid.Row="3" Header="Almanac">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="Synopsis" Grid.Row="0" ToolTip="{Binding SynopsisToolTip}"/>
+                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Synopsis, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4" TextWrapping="Wrap" AcceptsReturn="True" ToolTip="{Binding SynopsisToolTip}"/>
+                                    <Label Content="Overview" Grid.Row="1" ToolTip="{Binding OverviewToolTip}"/>
+                                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Overview, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,4" TextWrapping="Wrap" AcceptsReturn="True" ToolTip="{Binding OverviewToolTip}"/>
+                                </Grid>
+                            </GroupBox>
+                        </StackPanel>
                     </TabItem>
                     <TabItem Header="Edit Character">
                         <Grid>
