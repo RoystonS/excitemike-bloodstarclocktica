@@ -112,6 +112,7 @@ namespace BloodstarClockticaWpf
             OkButton.IsDefault = true;
             Title = "Upload Complete!";
             LinkTextBox.Text = $"{DocumentWrapper.RolesUrl}";
+            AlmanacLinkTextBox.Text = $"{DocumentWrapper.AlmanacUrl}";
             CloseButton.Visibility = Visibility.Visible;
             ProgressBar.Visibility = Visibility.Collapsed;
             ResultsView.Visibility = Visibility.Visible;
@@ -181,7 +182,10 @@ namespace BloodstarClockticaWpf
         /// </summary>
         private void LinkTextBox_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            Process.Start(LinkTextBox.Text);
+            if (sender is TextBox textBox)
+            {
+                Process.Start(textBox.Text);
+            }
         }
 
         /// <summary>
@@ -190,6 +194,14 @@ namespace BloodstarClockticaWpf
         private void CopyToClipboard(object sender, RoutedEventArgs e)
         {
             Clipboard.SetText(LinkTextBox.Text);
+        }
+
+        /// <summary>
+        /// copy roles.json link to clipboard
+        /// </summary>
+        private void CopyAlmanacLinkToClipboard(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(AlmanacLinkTextBox.Text);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

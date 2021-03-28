@@ -165,6 +165,11 @@ namespace BloodstarClockticaLib
         public static string RolesUrl(BcDocument document) => UrlCombine(document.Meta.UrlRoot, "roles.json");
 
         /// <summary>
+        /// link to almanac after upload
+        /// </summary>
+        public static string AlmanacUrl(BcDocument document) => UrlCombine(document.Meta.UrlRoot, "almanac.html");
+
+        /// <summary>
         /// save output files to disk
         /// </summary>
         public static void ExportToDisk(BcDocument document, string directory, string imageUrlPrefix)

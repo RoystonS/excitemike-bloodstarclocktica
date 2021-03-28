@@ -93,27 +93,50 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Label Grid.Row="0" Grid.Column="0" Content="Roles.json is available at:" Margin="0,0,0,6"/>
-            <TextBox x:Name="LinkTextBox"  Grid.Row="1"
-                         Grid.Column="0" 
-                         Background="Transparent"
-                         BorderThickness="0"
-                         IsReadOnly="True"
-                         TextWrapping="Wrap"
-                         Margin="0,0,6,6"
-                         Text="https://example.com/botc/custom_edition?123456"
-                         FontWeight="Bold"
-                         TextDecorations="Underline"
-                         MouseDoubleClick="LinkTextBox_MouseDoubleClick" 
-                         ToolTip="Double-click to open in browser"
-                         MaxWidth="500"/>
-            <Button Grid.Row="0"
-                        Grid.Column="1"
-                        Grid.RowSpan="3"
-                        Content="_Copy to Clipboard"
-                        MinHeight="50"
-                        Margin="0,0,0,6"
-                        Click="CopyToClipboard"
-                        Padding="6"/>
+            <TextBox
+                x:Name="LinkTextBox"  Grid.Row="1"
+                Grid.Column="0" 
+                Background="Transparent"
+                BorderThickness="0"
+                IsReadOnly="True"
+                TextWrapping="Wrap"
+                Margin="0,0,6,6"
+                Text="https://example.com/botc/custom_edition/roles.json"
+                FontWeight="Bold"
+                TextDecorations="Underline"
+                MouseDoubleClick="LinkTextBox_MouseDoubleClick" 
+                ToolTip="Double-click to open in browser"
+                MaxWidth="500"
+                VerticalAlignment="Center"/>
+            <Button
+                Grid.Row="1"
+                Grid.Column="1"
+                Content="_Copy to Clipboard"
+                Margin="0,0,0,6"
+                Click="CopyToClipboard"
+                Padding="6 3 6 3"/>
+            <TextBox
+                x:Name="AlmanacLinkTextBox" Grid.Row="2"
+                Grid.Column="0" 
+                Background="Transparent"
+                BorderThickness="0"
+                IsReadOnly="True"
+                TextWrapping="Wrap"
+                Margin="0,0,6,6"
+                Text="https://example.com/botc/custom_edition/almanac.html"
+                FontWeight="Bold"
+                TextDecorations="Underline"
+                MouseDoubleClick="LinkTextBox_MouseDoubleClick" 
+                ToolTip="Double-click to open in browser"
+                MaxWidth="500"
+                VerticalAlignment="Center"/>
+            <Button
+                Grid.Row="2"
+                Grid.Column="1"
+                Content="_Copy to Clipboard"
+                Margin="0,0,0,6"
+                Click="CopyAlmanacLinkToClipboard"
+                Padding="6 3 6 3"/>
             <Button x:Name="OkButton"
                         Grid.Row="3"
                         Grid.Column="0"

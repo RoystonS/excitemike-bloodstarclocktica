@@ -369,6 +369,11 @@ namespace BloodstarClockticaWpf
         public string RolesUrl => BcExport.RolesUrl(document);
 
         /// <summary>
+        /// link to almanac after upload
+        /// </summary>
+        public string AlmanacUrl => BcExport.AlmanacUrl(document);
+
+        /// <summary>
         /// track whether we are in the middle of updating so we don't have ridiculous event cascades or mark dirty when we shouldn't
         /// </summary>
         private bool updatingCharacterList;
