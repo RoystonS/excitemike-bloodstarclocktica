@@ -1,5 +1,4 @@
-﻿using Renci.SshNet;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
@@ -61,7 +60,8 @@ namespace BloodstarClockticaLib
             <link href=""https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap"" rel=""stylesheet"">
             <link rel=""preconnect"" href=""https://fonts.gstatic.com"">
             <link href=""https://fonts.googleapis.com/css2?family=PT+Serif&display=swap"" rel=""stylesheet"">
-            <link href=""https://fonts.googleapis.com/css2?family=Nova+Script&display=swap"" rel=""stylesheet"">";
+            <link href=""https://fonts.googleapis.com/css2?family=Nova+Script&display=swap"" rel=""stylesheet"">
+            <link href=""https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap"" rel=""stylesheet"">";
         private const string Styles = @"
             html,body{height:100%}
             body{
@@ -84,7 +84,11 @@ namespace BloodstarClockticaLib
             *::-webkit-scrollbar-thumb {
                 background:#999;
             }
-            h1, h2, h3, h4, h5, h6, h7 {margin:4px 0 4px 0;}
+            h1, h2, h3, h4, h5, h6, h7 {
+                margin:4px 0 4px 0;
+                font-family: 'Nova Script', cursive;
+                text-transform:uppercase;
+            }
             h1, h2{font-size:48px}
             h3, h4, h5, h6, h7 {font-size:24px}
             hr{width:80%}
@@ -96,7 +100,7 @@ namespace BloodstarClockticaLib
                 display:flex;
                 flex-flow:column nowrap;
                 margin:0;
-                padding:0;
+                padding:8px;
                 height:100vh;
                 overflow-x:hidden;
                 overflow-y:auto;
@@ -141,21 +145,21 @@ namespace BloodstarClockticaLib
                 position:relative;
             }
             .page img{
-                max-width:95vw;
+                max-width:90vw;
             }
             .page-contents{
                 margin:0;
-                padding:64px;
+                padding:96px 64px;
                 display:flex;
                 flex-flow: column nowrap;
                 align-items: center;
                 background-repeat: no-repeat;
                 background-size: 384px;
                 background-position: top;
-                background-position-y: 4px;
+                background-position-y: 48px;
                 color:#333;
             }
-            .spacer{height:200px}
+            .spacer{height:220px}
             #synopsis p, #overview p{width:60%}
 
             /*paper effect*/
@@ -185,25 +189,33 @@ namespace BloodstarClockticaLib
                 color:#ccf
             }
             .team{
-                font-family: 'Nova Script', cursive;
+                font-family: 'MedievalSharp', cursive;
                 writing-mode:vertical-rl;
                 text-orientation: upright;
                 text-transform: uppercase;
                 position: absolute;
-                top: 64px;
+                top: 96px;
                 left: 64px;
                 letter-spacing:-8px;
                 width:unset;
                 font-size:36px;
                 margin:0;
             }
-            .script{
-              font-family: 'Nova Script', cursive;
-              text-transform:uppercase;
-            }
             p{
                 margin-top:0.5em;
                 margin-bottom:0.5em;
+            }
+            .inline-logo{
+                float:left;
+                margin:-8px 8px 0 -18%;
+                width:128px;
+            }
+            #synopsis p{
+                font-family: 'MedievalSharp', cursive;
+                color:#933;
+            }
+            #overview p{
+                font-family: 'MedievalSharp', cursive
             }
             p.ability{
                 width:60%;
@@ -213,8 +225,9 @@ namespace BloodstarClockticaLib
             p.flavor{
                 width:60%;
                 font-style:italic;
-                color:#966e49;
+                color:#704c29;
                 text-align:center;
+                font-size:16px;
             }
             p.overview{
                 width:80%;
@@ -232,33 +245,63 @@ namespace BloodstarClockticaLib
                 background:rgba(255, 255, 255, 0.35);
                 border:4px solid #933;
             }
-            .townsfolk{
-                color:#003fb2;
+
+            /* big initial letter */
+            .page-contents p.overview:nth-child(6)::first-letter {
+                font-family: 'MedievalSharp', cursive;
+                font-size: 5rem;
+                float:left;
+                margin:0 4px 0 -8px;
             }
-            .outsider{
-                color:#006893;
+
+            /* bullets */
+            p.overview{
+                position:relative;
+                margin-left:40px;
             }
-            .minion{
-                color:#9f0000;
+            p.overview::before {
+                content:'♦';
+                font-size:28px;
+                position:absolute;
+                line-height:0.9;
+                top:0;
+                left:-24px;
             }
-            .demon{
-                color:#940000;
+            p.overview:nth-child(6) {
+                margin-left:0;
             }
-            .traveler{
-                color:#553412;
+            p.overview:nth-child(6)::before {
+                content:none;
             }
+
             @media only screen and (max-width:799px){
-                .page-contents{padding:8%;}
-                .team{left:8%;}
+                .page-contents{
+                    padding:8vw;
+                    background-position-y:1vw;
+                    background-size:48vw;
+                }
+                .spacer{
+                    height:26vw;
+                }
                 body{font-size:16px;}
+                p.flavor{font-size:14px;}
+                .page-contents p.overview:nth-child(6)::first-letter {font-size: 4rem;}
                 h1, h2{font-size:36px}
                 h3, h4, h5, h6, h7 {font-size:18px}
                 .team{
                     font-size:20px;
                     letter-spacing:-4px;
+                    left:8vw;
+                    top:8vw;
                 }
             }
             @media only screen and (max-width:650px){
+                .page-contents{
+                    background-size:57vw;
+                }
+                .spacer{
+                    height:31vw;
+                }
                 .almanac-row{
                     flex-flow:column nowrap;
                     justify-content:start;
@@ -280,11 +323,16 @@ namespace BloodstarClockticaLib
                     flex:0 1 auto;
                 }
                 #synopsis p, #overview p {width:100%}
-                .page-contents{padding:32px;}
-                .team{display:none}
-                p.ability, p.flavor, p.overview, p.example, p.how-to-run, p.tip{
-                    width:100%;
+                .team{
+                    font-size:3vw;
+                    letter-spacing:0;
+                    top:10vw;
                 }
+                p.ability, p.flavor, p.overview, p.example, p.how-to-run{
+                    width:80vw%;
+                }
+                p.tip{width:75vw;}
+                .inline-logo{margin-left:0}
             }
             /* disable filter on mobile */
             @media (pointer:none), (pointer:coarse) {
@@ -297,9 +345,32 @@ namespace BloodstarClockticaLib
             Write(Styles);
             Write("\n.page::before{background-image:url('");
             Write(BcExport.UrlCombine(imageUrlPrefix, "paper.png"));
-            Write("');");
+            Write("');}");
+            Write(GenerateTeamColorStyles("townsfolk", "003fb2"));
+            Write(GenerateTeamColorStyles("outsider", "006893"));
+            Write(GenerateTeamColorStyles("minion", "9f0000"));
+            Write(GenerateTeamColorStyles("demon", "940000"));
+            Write(GenerateTeamColorStyles("traveler", "553412"));
             Write("</style>");
-        }   
+        }
+        private string GenerateTeamColorStyles(string name, string colorHex)
+        {
+            return $@"
+                .{name} h1,
+                .{name} h2,
+                .{name} h3,
+                .{name} h4,
+                .{name} h5,
+                .{name} h6,
+                .{name} h7,
+                .{name} .ability,
+                .{name} .team,
+                .{name} p.overview::before,
+                .{name} p.overview:nth-child(6)::first-letter {{
+                    color:#{colorHex};
+                }}
+                ";
+        }
         private void Body()
         {
             writer.Write("<body>");
@@ -388,8 +459,8 @@ namespace BloodstarClockticaLib
             if (!string.IsNullOrWhiteSpace(document.Meta.Overview))
             {
                 Write(@"<li class=""page"" id=""overview""><div class=""page-contents"">");
-                Write($@"<img src=""{BcExport.UrlCombine(imageUrlPrefix, "logo.png")}"" alt=""{document.Meta.Name}"">");
-                WriteParagraphs(document.Meta.Overview, null);
+                var inlineLogo = $@"<img src=""{BcExport.UrlCombine(imageUrlPrefix, "logo.png")}"" alt=""{document.Meta.Name}"" class=""inline-logo"">";
+                WriteParagraphs(inlineLogo + document.Meta.Overview, null);
                 Write($@"</div></li>");
             }
         }
@@ -414,7 +485,7 @@ namespace BloodstarClockticaLib
                 Write(@">");
 
                 // name
-                Write(@"<h2 class=""script"">");
+                Write(@"<h2>");
                 Write(character.Name);
                 Write("</h2>");
 
@@ -444,14 +515,14 @@ namespace BloodstarClockticaLib
                 // Examples
                 if (!string.IsNullOrWhiteSpace(character.AlmanacEntry.Examples))
                 {
-                    Write(@"<h3 class=""script"">Examples</h3>");
+                    Write(@"<h3>Examples</h3>");
                     WriteParagraphs(character.AlmanacEntry.Examples, "example");
                 }
 
                 // How to run
                 if (!string.IsNullOrWhiteSpace(character.AlmanacEntry.HowToRun))
                 {
-                    Write(@"<h3 class=""script"">How to Run</h3>");
+                    Write(@"<h3>How to Run</h3>");
                     WriteParagraphs(character.AlmanacEntry.HowToRun, "how-to-run");
                 }
 
