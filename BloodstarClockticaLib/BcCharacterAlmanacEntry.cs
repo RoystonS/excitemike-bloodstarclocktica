@@ -44,7 +44,7 @@ namespace BloodstarClockticaLib
         /// read from json
         /// </summary>
         /// <param name="json"></param>
-        public BcCharacterAlmanacEntry(Utf8JsonReader json)
+        public BcCharacterAlmanacEntry(ref Utf8JsonReader json)
         {
             if (json.TokenType != JsonTokenType.StartObject) { throw new Exception("Expected an object for almanac entries"); }
 
@@ -76,7 +76,7 @@ namespace BloodstarClockticaLib
                             Tip = json.GetString();
                             break;
                         default:
-                            Console.Error.WriteLine($"unhandled property: \"{propertyName}\"");
+                            Console.Error.WriteLine($"unhandled almanac entry property: \"{propertyName}\"");
                             json.Skip();
                             break;
                     }

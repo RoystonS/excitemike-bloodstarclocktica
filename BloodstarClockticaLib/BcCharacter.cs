@@ -306,10 +306,10 @@ namespace BloodstarClockticaLib
                                 Attribution = json.GetString();
                                 break;
                             case "almanacEntry":
-                                AlmanacEntry = new BcCharacterAlmanacEntry(json);
+                                AlmanacEntry = new BcCharacterAlmanacEntry(ref json);
                                 break;
                             default:
-                                Console.Error.WriteLine($"unhandled property: \"{propertyName}\"");
+                                Console.Error.WriteLine($"unhandled character property: \"{propertyName}\"");
                                 json.Skip();
                                 break;
                         }
