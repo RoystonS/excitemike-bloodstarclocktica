@@ -10,8 +10,8 @@ namespace BloodstarClockticaLib
 {
     internal class AlmanacExporter
     {
-        private BcDocument document;
-        private string imageUrlPrefix;
+        private readonly BcDocument document;
+        private readonly string imageUrlPrefix;
         private StreamWriter writer;
         internal AlmanacExporter(BcDocument document, string imageUrlPrefix)
         {
@@ -50,7 +50,7 @@ namespace BloodstarClockticaLib
             Style();
             Write($"</head>");
         }
-        private string Meta = @"<meta charset=""utf-8""><meta name=""viewport"" content=""width=device-width,initial-scale=1"">";
+        private const string Meta = @"<meta charset=""utf-8""><meta name=""viewport"" content=""width=device-width,initial-scale=1"">";
         private void Title()
         {
             Write("<title>");
