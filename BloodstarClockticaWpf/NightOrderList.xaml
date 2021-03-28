@@ -65,7 +65,7 @@
                 </Style>
             </ListView.ItemContainerStyle>
         </ListView>
-        <Button Grid.Row="0" Grid.Column="1" Content="/\" Click="UpButton_Click" Margin="0,0,0,6"/>
-        <Button Grid.Row="1" Grid.Column="1" Content="\/" Click="DownButton_Click" Margin="0,0,0,6"/>
+        <Button Grid.Row="0" Grid.Column="1" Content="▲" PreviewMouseDown="UpButton_Click" Margin="0,0,0,6"/>
+        <Button Grid.Row="1" Grid.Column="1" Content="▼" PreviewMouseDown="DownButton_Click" Margin="0,0,0,6"/>
     </Grid>
 </UserControl>

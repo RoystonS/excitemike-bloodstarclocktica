@@ -336,6 +336,10 @@ namespace BloodstarClockticaWpf
 
         private void UpButton_Click(object sender, RoutedEventArgs e)
         {
+            RepeatWhileHeld(sender as Button, MoveUp);
+        }
+        private bool MoveUp()
+        {
             var docWrapper = (DataContext as DocumentWrapper);
             var index = CharacterList.SelectedIndex;
             if ((index != -1) && (index > 0))
@@ -343,10 +347,15 @@ namespace BloodstarClockticaWpf
                 docWrapper.SwapCharacterOrder(index, index - 1);
                 CharacterList.SelectedIndex = index - 1;
                 CharacterList.ScrollIntoView(CharacterList.SelectedItem);
-                CharacterList.Focus();
+                return true;
             }
+            return false;
         }
         private void DownButton_Click(object sender, RoutedEventArgs e)
+        {
+            RepeatWhileHeld(sender as Button, MoveDown);
+        }
+        private bool MoveDown()
         {
             var docWrapper = (DataContext as DocumentWrapper);
             var index = CharacterList.SelectedIndex;
@@ -355,7 +364,28 @@ namespace BloodstarClockticaWpf
                 docWrapper.SwapCharacterOrder(index, index + 1);
                 CharacterList.SelectedIndex = index + 1;
                 CharacterList.ScrollIntoView(CharacterList.SelectedItem);
-                CharacterList.Focus();
+                return true;
+            }
+            return false;
+        }
+        private static void RepeatWhileHeld(Button button, Func<bool> func)
+        {
+            if (func())
+            {
+                Task.Delay(400).ContinueWith(t =>
+                {
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() => RepeatWhileHeld_2(button, func)));
+                });
+            }
+        }
+        private static void RepeatWhileHeld_2(Button button, Func<bool> func)
+        {
+            if (button.IsPressed && func())
+            {
+                Task.Delay(200).ContinueWith(t =>
+                {
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() => RepeatWhileHeld_2(button, func)));
+                });
             }
         }
         private void AddButton_Click(object sender, RoutedEventArgs e)
@@ -364,7 +394,6 @@ namespace BloodstarClockticaWpf
             docWrapper.AddCharacter();
             CharacterList.SelectedIndex = docWrapper.CharacterList.Count - 1;
             CharacterList.ScrollIntoView(CharacterList.SelectedItem);
-            CharacterList.Focus();
             UpdateNightOrder();
         }
         private void DelButton_Click(object sender, RoutedEventArgs e)

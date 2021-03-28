@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace BloodstarClockticaWpf
@@ -69,7 +71,6 @@ namespace BloodstarClockticaWpf
                     }
                     CharacterList.SelectedIndex = indexB;
                     CharacterList.ScrollIntoView(CharacterList.SelectedItem);
-                    CharacterList.Focus();
                 }
             }
         }
@@ -81,8 +82,7 @@ namespace BloodstarClockticaWpf
         /// <param name="e"></param>
         private void UpButton_Click(object sender, RoutedEventArgs e)
         {
-            var index = CharacterList.SelectedIndex;
-            SwapOrder(index, index - 1);
+            RepeatWhileHeld(sender as Button, MoveUp);
         }
 
         /// <summary>
@@ -92,8 +92,48 @@ namespace BloodstarClockticaWpf
         /// <param name="e"></param>
         private void DownButton_Click(object sender, RoutedEventArgs e)
         {
+            RepeatWhileHeld(sender as Button, MoveDown);
+        }
+
+        private bool MoveUp()
+        {
             var index = CharacterList.SelectedIndex;
-            SwapOrder(index, index + 1);
+            if (index > 0)
+            {
+                SwapOrder(index, index - 1);
+                return true;
+            }
+            return false;
+        }
+        private bool MoveDown()
+        {
+            var index = CharacterList.SelectedIndex;
+            if (index+1 < CharacterList.Items.Count)
+            {
+                SwapOrder(index, index + 1);
+                return true;
+            }
+            return false;
+        }
+        private static void RepeatWhileHeld(Button button, Func<bool> func)
+        {
+            if (func())
+            {
+                Task.Delay(400).ContinueWith(t =>
+                {
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() => RepeatWhileHeld_2(button, func)));
+                });
+            }
+        }
+        private static void RepeatWhileHeld_2(Button button, Func<bool> func)
+        {
+            if (button.IsPressed && func())
+            {
+                Task.Delay(200).ContinueWith(t =>
+                {
+                    Application.Current.Dispatcher.BeginInvoke(new Action(() => RepeatWhileHeld_2(button, func)));
+                });
+            }
         }
     }
 }
