@@ -234,93 +234,95 @@
                         </ScrollViewer>
                     </TabItem>
                     <TabItem Header="Edit Character">
-                        <Grid>
-                            <ContentControl Margin="6,0,6,0" Content="{Binding ElementName=CharacterList, Path=SelectedItem}" VerticalAlignment="Stretch">
-                                <ContentControl.ContentTemplate>
-                                    <DataTemplate>
-                                        <Grid>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="1*"/>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="2*"/>
-                                            </Grid.RowDefinitions>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition/>
-                                                <ColumnDefinition/>
-                                            </Grid.ColumnDefinitions>
-                                            <GroupBox Header="Source Image" Grid.Column="0" Grid.Row="0" Margin="0,0,3,6">
-                                                <Grid>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition/>
-                                                        <RowDefinition Height="Auto"/>
-                                                    </Grid.RowDefinitions>
-                                                    <Image Source="{Binding SourceImagePreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" MaxWidth="{Binding SourceImagePreviewMaxWidth}" MaxHeight="{Binding SourceImagePreviewMaxHeight}"/>
-                                                    <Grid Grid.Row="1">
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition/>
-                                                            <ColumnDefinition Width="6"/>
-                                                            <ColumnDefinition/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <Button Grid.Column="0" x:Name="ImportSourceImage" Content="Import" Click="SourceImageButton_Click" MinWidth="80" Height="25"/>
-                                                        <Button Grid.Column="2" x:Name="RemoveSource" Content="Remove" Click="RemoveSourceImage_Click" MinWidth="80" Height="25"/>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                            <Grid>
+                                <ContentControl Margin="6,0,6,0" Content="{Binding ElementName=CharacterList, Path=SelectedItem}" VerticalAlignment="Stretch">
+                                    <ContentControl.ContentTemplate>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="1*"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="2*"/>
+                                                </Grid.RowDefinitions>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition/>
+                                                </Grid.ColumnDefinitions>
+                                                <GroupBox Header="Source Image" Grid.Column="0" Grid.Row="0" Margin="0,0,3,6">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition/>
+                                                            <RowDefinition Height="Auto"/>
+                                                        </Grid.RowDefinitions>
+                                                        <Image Source="{Binding SourceImagePreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" MaxWidth="{Binding SourceImagePreviewMaxWidth}" MaxHeight="{Binding SourceImagePreviewMaxHeight}"/>
+                                                        <Grid Grid.Row="1">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition/>
+                                                                <ColumnDefinition Width="6"/>
+                                                                <ColumnDefinition/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <Button Grid.Column="0" x:Name="ImportSourceImage" Content="Import" Click="SourceImageButton_Click" MinWidth="80" Height="25"/>
+                                                            <Button Grid.Column="2" x:Name="RemoveSource" Content="Remove" Click="RemoveSourceImage_Click" MinWidth="80" Height="25"/>
+                                                        </Grid>
                                                     </Grid>
-                                                </Grid>
-                                            </GroupBox>
-                                            <GroupBox Header="Character Image" Grid.Column="1" Grid.Row="0" Margin="3,0,0,6">
-                                                <Grid>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition/>
-                                                        <RowDefinition Height="Auto"/>
-                                                    </Grid.RowDefinitions>
-                                                    <Image Source="{Binding ImagePreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" MaxWidth="{Binding ImagePreviewMaxWidth}" MaxHeight="{Binding ImagePreviewMaxHeight}"/>
-                                                    <Grid Grid.Row="1">
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition/>
-                                                            <ColumnDefinition Width="6"/>
-                                                            <ColumnDefinition/>
-                                                        </Grid.ColumnDefinitions>
-                                                        <Button Grid.Column="0" x:Name="ImportCharacterImage" Content="Import" Click="ImportCharacterImage_Click" MinWidth="80" Height="25"/>
-                                                        <Button Grid.Column="2" x:Name="RemoveProcessed" Content="Remove" Visibility="Collapsed" Click="RemoveProcessed_Click" MinWidth="80" Height="25"  Margin="6,0,0,0"/>
+                                                </GroupBox>
+                                                <GroupBox Header="Character Image" Grid.Column="1" Grid.Row="0" Margin="3,0,0,6">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition/>
+                                                            <RowDefinition Height="Auto"/>
+                                                        </Grid.RowDefinitions>
+                                                        <Image Source="{Binding ImagePreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" MaxWidth="{Binding ImagePreviewMaxWidth}" MaxHeight="{Binding ImagePreviewMaxHeight}"/>
+                                                        <Grid Grid.Row="1">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition/>
+                                                                <ColumnDefinition Width="6"/>
+                                                                <ColumnDefinition/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <Button Grid.Column="0" x:Name="ImportCharacterImage" Content="Import" Click="ImportCharacterImage_Click" MinWidth="80" Height="25"/>
+                                                            <Button Grid.Column="2" x:Name="RemoveProcessed" Content="Remove" Visibility="Collapsed" Click="RemoveProcessed_Click" MinWidth="80" Height="25"  Margin="6,0,0,0"/>
+                                                        </Grid>
                                                     </Grid>
-                                                </Grid>
-                                            </GroupBox>
+                                                </GroupBox>
 
-                                            <!-- horizontal splitter -->
-                                            <GridSplitter Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" ShowsPreview="True" Height="6"/>
+                                                <!-- horizontal splitter -->
+                                                <GridSplitter Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" ShowsPreview="True" Height="6"/>
 
-                                            <!-- character properties and night order -->
-                                            <local:CharacterProperties Grid.ColumnSpan="2" Grid.Row="2" DataContext="{Binding ElementName=CharacterList, Path=SelectedItem}"/>
-                                        </Grid>
-                                        <DataTemplate.Triggers>
-                                            <DataTrigger Binding="{Binding}" Value="{x:Null}">
-                                                <Setter Property="Visibility" Value="Collapsed"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding SourceImage}" Value="{x:Null}">
-                                                <Setter TargetName="RemoveProcessed" Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding ImagePreview}" Value="{x:Null}">
-                                                <Setter TargetName="RemoveProcessed" Property="Visibility" Value="Collapsed"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding SourceImage}" Value="{x:Null}">
-                                                <Setter TargetName="RemoveSource" Property="Visibility" Value="Collapsed"/>
-                                            </DataTrigger>
-                                        </DataTemplate.Triggers>
-                                    </DataTemplate>
-                                </ContentControl.ContentTemplate>
-                            </ContentControl>
-                            <ContentControl Margin="6,0,6,0" Content="{Binding ElementName=CharacterList, Path=SelectedIndex}" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <ContentControl.ContentTemplate>
-                                    <DataTemplate>
-                                        <Label x:Name="NoCharLabel" Visibility="Collapsed" Content="No Character Selected"/>
-                                        <DataTemplate.Triggers>
-                                            <DataTrigger Binding="{Binding}" Value="-1">
-                                                <Setter TargetName="NoCharLabel" Property="Visibility" Value="Visible"/>
-                                            </DataTrigger>
-                                        </DataTemplate.Triggers>
-                                    </DataTemplate>
-                                </ContentControl.ContentTemplate>
-                            </ContentControl>
-                        </Grid>
+                                                <!-- character properties and night order -->
+                                                <local:CharacterProperties Grid.ColumnSpan="2" Grid.Row="2" DataContext="{Binding ElementName=CharacterList, Path=SelectedItem}"/>
+                                            </Grid>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding SourceImage}" Value="{x:Null}">
+                                                    <Setter TargetName="RemoveProcessed" Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding ImagePreview}" Value="{x:Null}">
+                                                    <Setter TargetName="RemoveProcessed" Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding SourceImage}" Value="{x:Null}">
+                                                    <Setter TargetName="RemoveSource" Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </ContentControl.ContentTemplate>
+                                </ContentControl>
+                                <ContentControl Margin="6,0,6,0" Content="{Binding ElementName=CharacterList, Path=SelectedIndex}" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <ContentControl.ContentTemplate>
+                                        <DataTemplate>
+                                            <Label x:Name="NoCharLabel" Visibility="Collapsed" Content="No Character Selected"/>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding}" Value="-1">
+                                                    <Setter TargetName="NoCharLabel" Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </ContentControl.ContentTemplate>
+                                </ContentControl>
+                            </Grid>
+                        </ScrollViewer>
                     </TabItem>
                     <TabItem Header="First Night Order">
                         <local:NightOrderList 
