@@ -180,7 +180,7 @@ namespace BloodstarClockticaLib
               margin:0;
               padding:0;
               text-align:center;
-              font-size:14px;
+              font-size:12px;
               flex:none;
               font-family:'Roboto Condensed',sans-serif;
             }
