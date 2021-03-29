@@ -91,7 +91,7 @@ namespace BloodstarClockticaLib
             }
             h1, h2{font-size:48px}
             h3, h4, h5, h6, h7 {font-size:24px}
-            hr{width:80%}
+            hr{width:80%;border:1px solid}
             ol.nav {
                 flex:0 0 124px;
                 font-family:'Roboto Condensed',sans-serif;
@@ -363,6 +363,7 @@ namespace BloodstarClockticaLib
                 .{name} p.overview:nth-child(6)::first-letter {{
                     color:#{colorHex};
                 }}
+                .{name} hr {{border-color:#{colorHex}}}
                 ";
         }
         private void Body()
