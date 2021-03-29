@@ -42,6 +42,8 @@
     <SolidColorBrush x:Key="ActiveStatusBarBrush" Color="#443977FF"/>
     <SolidColorBrush x:Key="ToolTipBackgroundBrush" Color="#ff363a53"/>
     <SolidColorBrush x:Key="ToolTipBorderBrush" Color="#ff3977ff"/>
+    <SolidColorBrush x:Key="ImageBgBrush" Color="#333333"/>
+    <SolidColorBrush x:Key="ImageBorderBrush" Color="#666"/>
 
     <Style x:Key="LabelBase" TargetType="{x:Type Label}">
         <Setter Property="SnapsToDevicePixels" Value="true" />
@@ -588,14 +590,22 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type GroupBox}">
-                    <DockPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="1*"/>
+                        </Grid.RowDefinitions>
+                        
                         <!-- header -->
                         <Border DockPanel.Dock="Top" x:Name="Header">
                             <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" ContentSource="Header" RecognizesAccessKey="True" />
                         </Border>
 
                         <!-- border with gap for header -->
-                        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                        <Border Grid.Row="1" BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="6 0 0 0"
                                 Background="Transparent"
                                 SnapsToDevicePixels="True">
@@ -603,7 +613,7 @@
                             <!-- content -->
                             <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Margin="{TemplateBinding Padding}" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="1" />
                         </Border>
-                    </DockPanel>
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -1085,6 +1095,13 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style x:Key="BcImageHolder" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{DynamicResource ImageBgBrush}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource ImageBorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="4"/>
     </Style>
 
 </ResourceDictionary>
