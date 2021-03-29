@@ -494,8 +494,7 @@ namespace BloodstarClockticaWpf
             );
             AlmanacTipProperty = new StringBindingHelper(
                 "Tip",
-                @"Newline-separated tips for how to run the character well. Not all characters need this!\n
-                For example, the Ravenkeeper's reads: ""We advise you to discourage or even ban players from taling about what they are doing at night as they are doing it.""",
+                "Newline-separated tips for how to run the character well. Not all characters need this!\nFor example, the Ravenkeeper's reads: “We advise you to discourage or even ban players from taling about what they are doing at night as they are doing it.”",
                 () => character.AlmanacEntry.Tip,
                 (value) =>
                 {
