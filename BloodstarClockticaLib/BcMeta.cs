@@ -128,7 +128,7 @@ namespace BloodstarClockticaLib
         public string Synopsis { get; set; }
 
         /// <summary>
-        /// Almanac's description of the custom edition as a whole.
+        /// Describe what it's like to play this custom edition.
         /// </summary>
         public string Overview { get; set; }
 

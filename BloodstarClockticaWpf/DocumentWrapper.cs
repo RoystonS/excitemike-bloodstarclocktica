@@ -313,7 +313,7 @@ namespace BloodstarClockticaWpf
                 }
             }
         }
-        public string OverviewToolTip => "Almanac's description of the custom edition as a whole";
+        public string OverviewToolTip => "Describe what it's like to play this custom edition";
 
         /// <summary>
         /// write the document to a file
