@@ -121,20 +121,22 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- left side = character list -->
-                <GroupBox Grid.Column="0" Header="Characters" VerticalAlignment="Stretch">
+                <DockPanel Grid.Column="0">
+                    <TextBlock DockPanel.Dock="Top" Style="{StaticResource BcHeading}" Text="Characters"/>
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="30"/>
                             <RowDefinition Height="30"/>
-                            <RowDefinition/>
+                            <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
                             <ColumnDefinition Width="35"/>
                         </Grid.ColumnDefinitions>
-                        <ListView Name="CharacterList" ItemsSource="{Binding CharacterList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Grid.RowSpan="5" SelectedIndex="0" Margin="0,0,6,0" SelectionMode="Single">
+
+                        <ListView Grid.RowSpan="5" Name="CharacterList" ItemsSource="{Binding CharacterList, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" SelectedIndex="0" SelectionMode="Single" Margin="0,0,6,0">
                             <ListView.View>
                                 <GridView>
                                     <GridViewColumn Header="Export?" Width="30">
@@ -157,22 +159,22 @@
                                 </GridView>
                             </ListView.View>
                         </ListView>
-                        <Button
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            Content="▲"
-                            PreviewMouseDown="UpButton_Click"
-                            Margin="0,0,0,6"/>
-                        <Button
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Content="▼"
-                            PreviewMouseDown="DownButton_Click"
-                            Margin="0,0,0,6"/>
-                        <Button Grid.Row="2" Grid.Column="1" Content="Add" Click="AddButton_Click" Margin="0,0,0,6"/>
-                        <Button Grid.Row="3" Grid.Column="1" Content="Del" Click="DelButton_Click" Margin="0,0,0,6"/>
+                    <Button
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Content="▲"
+                        PreviewMouseDown="UpButton_Click"
+                        Margin="0,0,0,6"/>
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Content="▼"
+                        PreviewMouseDown="DownButton_Click"
+                        Margin="0,0,0,6"/>
+                    <Button Grid.Row="2" Grid.Column="1" Content="Add" Click="AddButton_Click" Margin="0,0,0,6"/>
+                    <Button Grid.Row="3" Grid.Column="1" Content="Del" Click="DelButton_Click" Margin="0,0,0,6"/>
                     </Grid>
-                </GroupBox>
+                </DockPanel>
 
                 <!-- vertical splitter -->
                 <GridSplitter Grid.Column="1" HorizontalAlignment="Center" ShowsPreview="True" Width="6"/>
