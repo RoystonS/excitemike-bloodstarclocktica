@@ -171,7 +171,6 @@ namespace BloodstarClockticaLib
                 right:0;
                 bottom:0;
                 box-shadow:0 0 4px #999, 0 0 96px #966e49 inset;
-                filter:url(#displacement);
                 z-index:-1;
                 background-color:#eadbca;
             }
@@ -333,11 +332,6 @@ namespace BloodstarClockticaLib
                 }
                 p.tip{width:75vw;}
                 .inline-logo{margin-left:0}
-            }
-            /* disable filter on mobile */
-            @media (pointer:none), (pointer:coarse) {
-                .page::before{filter:none}
-                
             }";
         private void Style()
         {
@@ -420,7 +414,6 @@ namespace BloodstarClockticaLib
             Synopsis();
             Overview();
             Characters();
-            Write(SvgFilter);
             Write(GeneratedBy);
             Write(@"</ol>");
         }
@@ -538,13 +531,6 @@ namespace BloodstarClockticaLib
                 Write("</p>");
             }
         }
-        private const string SvgFilter = @"
-            <svg style=""position:absolute;z-index:-1"">
-                <filter id = ""displacement"">
-                    <feturbulence x = ""0"" y=""0"" baseFrequency=""0.02"" numOctaves=""2"" seed=""1""></feturbulence>
-                    <feDisplacementMap in=""SourceGraphic"" scale=""10""/>
-                </filter>
-            </svg>";
         private const string GeneratedBy = @"<li class=""generated-by"">this almanac generated using <a href=""http://meyermike.com/md/?botctools"">Bloodstar Clocktica</a></li>";
     }
 
