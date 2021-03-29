@@ -100,8 +100,8 @@ namespace BloodstarClockticaLib
                 display:flex;
                 flex-flow:column nowrap;
                 margin:0;
-                padding:8px;
-                height:100vh;
+                padding:1vh 0 1vh 0;
+                height:98vh;
                 overflow-x:hidden;
                 overflow-y:auto;
             }
