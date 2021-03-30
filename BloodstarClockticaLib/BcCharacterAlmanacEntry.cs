@@ -27,7 +27,7 @@ namespace BloodstarClockticaLib
 
         /// <summary>
         /// Newline-separated tips for how to run the character well. Not all characters need this!
-        /// For example, the Ravenkeeper's reads: "We advise you to discourage or even ban players from taling about what they are doing at night as they are doing it."
+        /// For example, the Ravenkeeper's reads: "We advise you to discourage or even ban players from talking about what they are doing at night as they are doing it."
         /// </summary>
         public string Tip { get; set; }
 
