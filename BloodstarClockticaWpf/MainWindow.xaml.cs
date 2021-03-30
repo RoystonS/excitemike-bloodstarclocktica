@@ -503,7 +503,7 @@ namespace BloodstarClockticaWpf
         {
             var docWrapper = (DataContext as DocumentWrapper);
             var urlPrefix = docWrapper.ExportToDiskImageUrlPrefix;
-            var defaultPrefix = $"https://example.com/botc/{docWrapper.Name}/images/";
+            var defaultPrefix = $"https://example.com/botc/{docWrapper.Name}/images/ or ./images/";
             if ("" == urlPrefix)
             {
                 urlPrefix = defaultPrefix;
