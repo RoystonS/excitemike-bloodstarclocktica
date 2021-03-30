@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -67,28 +68,54 @@ namespace BloodstarClockticaWpf
         /// <summary>
         /// accept entered string
         /// </summary>
-        private async void Export_Click(object _sender, RoutedEventArgs _e)
+        private void Export_Click(object _sender, RoutedEventArgs _e)
         {
             SaveSettings();
             GoToProgressView();
             closable = false;
-            // do export
-            var progress = new Progress<double>(fraction => ProgressBar.Value = fraction);
-            try
+            Task.Delay(1).ContinueWith(t => Application.Current.Dispatcher.BeginInvoke(new Action(async () =>
             {
-                await DocumentWrapper.ExportToSftp(PasswordTextField.Password, progress);
-            }
-            catch (Exception e)
-            {
-                BcMessageBox.Show("Error uploading", $"Error uploading via SFTP.\n\n{e}", this);
-                closable = true;
-                Close();
-            }
-            finally
-            {
-                closable = true;
-            }
-            GoToResultView();
+                bool success = false;
+                // do export
+                var progress = new Progress<double>(fraction => ProgressBar.Value = fraction);
+                try
+                {
+                    await DocumentWrapper.ExportToSftp(PasswordTextField.Password, progress);
+                    success = true;
+                }
+                catch (System.Net.Sockets.SocketException e)
+                {
+                    string message = $"Error uploading via SFTP.\n\n{e}";
+                    switch (e.SocketErrorCode)
+                    {
+                        case System.Net.Sockets.SocketError.HostNotFound:
+                            message = $@"Host ""{DocumentWrapper.SftpHost}:{DocumentWrapper.SftpPort}""not found. Check your internet connection!";
+                            break;
+                        default:
+                            message = $"Error uploading via SFTP. {e.Message}.";
+                            break;
+                    }
+                    BcMessageBox.Show("Error uploading", message);
+                }
+                catch (Exception e)
+                {
+                    BcMessageBox.Show("Error uploading", $"Error uploading via SFTP.\n\n{e}", this);
+                    closable = true;
+                    Close();
+                }
+                finally
+                {
+                    closable = true;
+                }
+                if (success)
+                {
+                    GoToResultView();
+                }
+                else
+                {
+                    Close();
+                }
+            })));
         }
 
         /// <summary>
@@ -125,6 +152,7 @@ namespace BloodstarClockticaWpf
         {
             DocumentWrapper.UrlRoot = UrlRootTextField.Text;
             DocumentWrapper.SftpRemoteDirectory = RemotePathTextField.Text;
+            DocumentWrapper.SftpHost = HostTextField.Text;
             DocumentWrapper.SftpPort = int.TryParse(PortTextField.Text, out int port) ? port : 22;
             DocumentWrapper.SftpUsername = UsernameTextField.Text;
             DocumentWrapper.SkipUnchanged = SkipUnchanged.IsChecked ?? false;
