@@ -187,6 +187,7 @@ namespace BloodstarClockticaWpf
                 if (value != character.SourceImage)
                 {
                     cachedImagePreview = null;
+                    cachedImageOnTokenPreview = null;
                     cachedSourceImagePreview = null;
                     character.ProcessedImage = null;
                     character.SourceImage = value;
@@ -214,6 +215,7 @@ namespace BloodstarClockticaWpf
                 if (value != character.ProcessedImage)
                 {
                     cachedImagePreview = null;
+                    cachedImageOnTokenPreview = null;
                     cachedSourceImagePreview = null;
                     character.SourceImage = null;
                     character.ProcessedImage = value;
@@ -337,6 +339,7 @@ namespace BloodstarClockticaWpf
                     if (enumValue != character.Team)
                     {
                         character.Team = enumValue;
+                        cachedImagePreview = null;
                         cachedImageOnTokenPreview = null;
                         cachedSourceImagePreview = null;
                         if (character.SourceImage != null)
