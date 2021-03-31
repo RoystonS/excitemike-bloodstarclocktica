@@ -246,7 +246,7 @@ namespace BloodstarClockticaLib
             }
 
             /* big initial letter */
-            .page-contents p.overview:nth-child(6)::first-letter {
+            p.bigletter::first-letter {
                 font-family: 'MedievalSharp', cursive;
                 font-size: 5rem;
                 float:left;
@@ -254,23 +254,18 @@ namespace BloodstarClockticaLib
             }
 
             /* bullets */
-            p.overview{
+            p.overview-bullet{
                 position:relative;
-                margin-left:40px;
+                margin-left:26px;
+                width:77%;
             }
-            p.overview::before {
+            p.overview-bullet::before {
                 content:'♦';
                 font-size:28px;
                 position:absolute;
                 line-height:0.9;
                 top:0;
                 left:-24px;
-            }
-            p.overview:nth-child(6) {
-                margin-left:0;
-            }
-            p.overview:nth-child(6)::before {
-                content:none;
             }
 
             @media only screen and (max-width:799px){
@@ -284,7 +279,7 @@ namespace BloodstarClockticaLib
                 }
                 body{font-size:16px;}
                 p.flavor{font-size:14px;}
-                .page-contents p.overview:nth-child(6)::first-letter {font-size: 4rem;}
+                p.bigletter::first-letter {font-size: 4rem;}
                 h1, h2{font-size:36px}
                 h3, h4, h5, h6, h7 {font-size:18px}
                 .team{
@@ -363,8 +358,8 @@ namespace BloodstarClockticaLib
                 .{name} h7,
                 .{name} .ability,
                 .{name} .team,
-                .{name} p.overview::before,
-                .{name} p.overview:nth-child(6)::first-letter {{
+                .{name} p.overview-bullet::before,
+                .{name} p.bigletter::first-letter {{
                     color:#{colorHex};
                 }}
                 .{name} hr {{border-color:#{colorHex}}}
@@ -428,19 +423,27 @@ namespace BloodstarClockticaLib
                 .Select(x => x.Trim())
                 .Where(x => !string.IsNullOrEmpty(x));
         }
-        private IEnumerable<string> SurroundItems(IEnumerable<string> items, string before, string after)
-        {
-            foreach (var item in items)
-            {
-                yield return before;
-                yield return item;
-                yield return after;
-            }
-        }
         private void WriteParagraphs(string original, string cssClass)
         {
-            var before = string.IsNullOrWhiteSpace(cssClass) ? "<p>" : $@"<p class=""{cssClass}"">";
-            Write(SurroundItems(SplitLines(original), before, "</p>"));
+            WriteParagraphs(original, cssClass, cssClass);
+        }
+        private void WriteParagraphs(string original, string cssClassFirst, string cssClassOther)
+        {
+            var beforeFirst = string.IsNullOrWhiteSpace(cssClassFirst) ? "<p>" : $@"<p class=""{cssClassFirst}"">";
+            var beforeOther = string.IsNullOrWhiteSpace(cssClassOther) ? "<p>" : $@"<p class=""{cssClassOther}"">";
+            var i = SplitLines(original).GetEnumerator();
+            if (i.MoveNext())
+            {
+                Write(beforeFirst);
+                Write(i.Current);
+                Write("</p>");
+            }
+            while (i.MoveNext())
+            {
+                Write(beforeOther);
+                Write(i.Current);
+                Write("</p>");
+            }
         }
         private void Synopsis()
         {
@@ -488,12 +491,12 @@ namespace BloodstarClockticaLib
                 Write("</h2>");
 
                 // ability
+                Write(@"<p class=""ability"">");
                 if (!string.IsNullOrWhiteSpace(character.Ability))
                 {
-                    Write(@"<p class=""ability"">");
                     Write(character.Ability);
-                    Write("</p>");
                 }
+                Write("</p>");
 
                 // line
                 Write("<hr>");
@@ -501,13 +504,15 @@ namespace BloodstarClockticaLib
                 // flavor
                 if (!string.IsNullOrWhiteSpace(character.AlmanacEntry.Flavor))
                 {
-                    WriteParagraphs("“" + character.AlmanacEntry.Flavor + "”", "flavor");
+                    Write(@"<p class=""flavor"">“");
+                    Write(character.AlmanacEntry.Flavor);
+                    Write("”</p>");
                 }
 
                 // overview
                 if (!string.IsNullOrWhiteSpace(character.AlmanacEntry.Overview))
                 {
-                    WriteParagraphs(character.AlmanacEntry.Overview, "overview");
+                    WriteParagraphs(character.AlmanacEntry.Overview, "overview bigletter", "overview overview-bullet");
                 }
 
                 // Examples
