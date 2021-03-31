@@ -820,5 +820,38 @@ namespace BloodstarClockticaWpf
                 }
             }
         }
+
+        /// <summary>
+        /// reopen most recent file
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Reopen()
+        {
+            var docWrapper = (DataContext as DocumentWrapper);
+            if (docWrapper.Dirty) { return; }
+            var recentFiles = Properties.Settings.Default.RecentFiles;
+            if (recentFiles.Count == 0) { return; }
+            var lastFile = recentFiles[0];
+            try
+            {
+                OpenNoPrompts(lastFile);
+            }
+            catch (Exception e)
+            {
+                if (e is FileNotFoundException | e is DirectoryNotFoundException)
+                {
+                    BcMessageBox.Show("File Not Found", $"File \"{lastFile}\" appears to be missing. Removing from recent files.", this);
+                    RemoveFromRecentDocuments(lastFile);
+                    return;
+                }
+                throw;
+            }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            Reopen();
+        }
     }
 }

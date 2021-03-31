@@ -9,7 +9,8 @@
         Closing="Window_Closing"
         Style="{StaticResource WindowStyle}"
         DataContext="{StaticResource DesignTimeDocument}"
-        AllowsTransparency="True">
+        AllowsTransparency="True"
+        Loaded="Window_Loaded">
     <Window.Resources>
         <RoutedUICommand x:Key="NewFile" Text="New File">
             <RoutedUICommand.InputGestures>
@@ -34,16 +35,6 @@
         <RoutedUICommand x:Key="Close" Text="Close">
             <RoutedUICommand.InputGestures>
                 <KeyGesture>Alt+F4</KeyGesture>
-            </RoutedUICommand.InputGestures>
-        </RoutedUICommand>
-        <RoutedUICommand x:Key="FirstNight" Text="First Night">
-            <RoutedUICommand.InputGestures>
-                <KeyGesture>Ctrl+1</KeyGesture>
-            </RoutedUICommand.InputGestures>
-        </RoutedUICommand>
-        <RoutedUICommand x:Key="OtherNights" Text="Other Nights">
-            <RoutedUICommand.InputGestures>
-                <KeyGesture>Ctrl+2</KeyGesture>
             </RoutedUICommand.InputGestures>
         </RoutedUICommand>
         <RoutedUICommand x:Key="ExportToDisk" Text="Other Nights">
