@@ -25,6 +25,7 @@ namespace BloodstarClockticaLib
                     return TeamValue.Minion;
                 case "demon":
                     return TeamValue.Demon;
+                case "traveller":
                 case "traveler":
                     return TeamValue.Traveler;
                 default:
