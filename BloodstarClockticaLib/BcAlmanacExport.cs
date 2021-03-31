@@ -250,7 +250,7 @@ namespace BloodstarClockticaLib
                 font-family: 'MedievalSharp', cursive;
                 font-size: 5rem;
                 float:left;
-                margin:0 4px 0 -8px;
+                margin:-4px 4px 0 -8px;
             }
 
             /* bullets */
@@ -332,6 +332,10 @@ namespace BloodstarClockticaLib
                 }
                 p.tip{width:75vw;}
                 .inline-logo{margin-left:0}
+            }
+            @media only screen and (max-width:450px){
+                h1, h2{font-size:8vw}
+                h3, h4, h5, h6, h7 {font-size:4vw}
             }";
         private void Style()
         {
