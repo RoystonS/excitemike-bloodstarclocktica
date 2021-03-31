@@ -36,7 +36,7 @@ namespace BloodstarClockticaWpf
             "PreviewOnToken",
             typeof(bool),
             typeof(DocumentWrapper),
-            new PropertyMetadata(false)
+            new PropertyMetadata(true)
         );
 
         /// <summary>

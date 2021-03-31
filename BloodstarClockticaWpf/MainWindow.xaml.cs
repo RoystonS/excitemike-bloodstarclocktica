@@ -763,19 +763,6 @@ namespace BloodstarClockticaWpf
         }
 
         /// <summary>
-        /// remove character image
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void RemoveProcessed_Click(object sender, RoutedEventArgs e)
-        {
-            var docWrapper = (DataContext as DocumentWrapper);
-            var charWrapper = (CharacterList.SelectedItem as CharacterWrapper);
-            charWrapper.ProcessedImage = null;
-            docWrapper.Dirty = true;
-        }
-
-        /// <summary>
         /// import an image to use as the final character image
         /// </summary>
         /// <param name="sender"></param>
@@ -795,15 +782,16 @@ namespace BloodstarClockticaWpf
         }
 
         /// <summary>
-        /// remove source image
+        /// remove character image
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void RemoveSourceImage_Click(object sender, RoutedEventArgs e)
+        private void ClearImage_Click(object sender, RoutedEventArgs e)
         {
-            var docWrapper = (DataContext as DocumentWrapper);
             var charWrapper = (CharacterList.SelectedItem as CharacterWrapper);
             charWrapper.SourceImage = null;
+            charWrapper.ProcessedImage = null;
+            var docWrapper = (DataContext as DocumentWrapper);
             docWrapper.Dirty = true;
         }
 

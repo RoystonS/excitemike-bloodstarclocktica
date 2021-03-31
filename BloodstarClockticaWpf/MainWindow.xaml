@@ -265,73 +265,65 @@
                                                 </Grid.RowDefinitions>
 
                                                 <!-- images -->
-                                                <Grid Margin="0 0 0 3">
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto"/>
-                                                        <RowDefinition Height="1*" />
-                                                        <RowDefinition Height="6"/>
-                                                        <RowDefinition Height="Auto"/>
-                                                    </Grid.RowDefinitions>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="1*"/>
-                                                        <ColumnDefinition Width="1*"/>
-                                                        <ColumnDefinition Width="6"/>
-                                                        <ColumnDefinition Width="1*"/>
-                                                        <ColumnDefinition Width="1*"/>
-                                                    </Grid.ColumnDefinitions>
+                                                <DockPanel>
+                                                    <!-- header & checkbox-->
+                                                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0 0 0 6">
+                                                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Character Image" Style="{DynamicResource BcHeading}" Margin="0 0 6 3"/>
+                                                        <CheckBox
+                                                            x:Name="PreviewOnTokenCheckBox"
+                                                            Grid.Row="0"
+                                                            Grid.Column="2"
+                                                            IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.PreviewOnToken, UpdateSourceTrigger=PropertyChanged}"
+                                                            Content="Preview on token"
+                                                            VerticalAlignment="Center"/>
+                                                    </StackPanel>
 
-                                                    <!-- Source Image -->
-                                                    <TextBlock
-                                                        Grid.Row="0"
-                                                        Grid.Column="0"
-                                                        Grid.ColumnSpan="2"
-                                                        Text="Source Image"
-                                                        Style="{DynamicResource BcHeading}"/>
+                                                    <!-- buttons -->
+                                                    <Grid DockPanel.Dock="Left" Margin="0 0 6 6">
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="6"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="6"/>
+                                                            <RowDefinition Height="Auto"/>
+                                                        </Grid.RowDefinitions>
+                                                        <!-- Import and auto-style -->
+                                                        <Button
+                                                            Grid.Row="0"
+                                                            x:Name="ImportSourceImage"
+                                                            Content="Import and Style"
+                                                            Click="SourceImageButton_Click"
+                                                            Padding="8 4 8 4"/>
+                                                        <!-- Import pre-styled-->
+                                                        <Button
+                                                            Grid.Row="2"
+                                                            x:Name="ImportCharacterImage"
+                                                            Content="Import Pre-Styled"
+                                                            Click="ImportCharacterImage_Click"
+                                                            Padding="8 4 8 4"/>
+                                                        <!-- Remove Image -->
+                                                        <Button
+                                                            Grid.Row="4"
+                                                            x:Name="ClearA"
+                                                            Content="Clear"
+                                                            Click="ClearImage_Click"
+                                                            Padding="8 4 8 4"/>
+                                                        <Button
+                                                            Grid.Row="4"
+                                                            x:Name="ClearB"
+                                                            Content="Clear"
+                                                            Click="ClearImage_Click"
+                                                            Padding="8 4 8 4"/>
+                                                    </Grid>
+                                                    
+                                                    <!-- Processed Image -->
                                                     <Border
                                                         Grid.Row="1"
                                                         Grid.Column="0"
                                                         Grid.ColumnSpan="2"
-                                                        Style="{DynamicResource BcImageHolder}">
-                                                        <Image
-                                                            Source="{Binding SourceImagePreview}"
-                                                            Stretch="Uniform"
-                                                            RenderOptions.BitmapScalingMode="HighQuality"
-                                                            MaxWidth="{Binding SourceImagePreviewMaxWidth}"
-                                                            MaxHeight="{Binding SourceImagePreviewMaxHeight}"/>
-                                                    </Border>
-                                                    <Button
-                                                        Grid.Column="0"
-                                                        Grid.Row="3"
-                                                        x:Name="ImportSourceImage"
-                                                        Content="Import"
-                                                        Click="SourceImageButton_Click"
-                                                        MinWidth="80"
-                                                        Height="25"
-                                                        Margin="0 0 3 0"/>
-                                                    <Button
-                                                        Grid.Column="1"
-                                                        Grid.Row="3"
-                                                        x:Name="RemoveSource"
-                                                        Content="Remove"
-                                                        Click="RemoveSourceImage_Click"
-                                                        MinWidth="80"
-                                                        Height="25"
-                                                        Margin="3 0 0 0"/>
-
-                                                    <!-- Procesed Image -->
-                                                    <TextBlock Grid.Row="0" Grid.Column="3" Text="Character Image" Style="{DynamicResource BcHeading}"/>
-                                                    <CheckBox
-                                                        x:Name="PreviewOnTokenCheckBox"
-                                                        Grid.Row="0"
-                                                        Grid.Column="4"
-                                                        IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.PreviewOnToken, UpdateSourceTrigger=PropertyChanged}"
-                                                        Content="Preview on token"
-                                                        VerticalAlignment="Center"/>
-                                                    <Border
-                                                        Grid.Row="1"
-                                                        Grid.Column="3"
-                                                        Grid.ColumnSpan="2"
-                                                        Style="{DynamicResource BcImageHolder}">
+                                                        Grid.RowSpan="4"
+                                                        Style="{DynamicResource BcImageHolder}"
+                                                        Margin="0 0 0 6">
                                                         <ContentControl Content="{Binding}">
                                                             <ContentControl.ContentTemplate>
                                                                 <DataTemplate>
@@ -367,26 +359,7 @@
                                                             </ContentControl.ContentTemplate>
                                                         </ContentControl>
                                                     </Border>
-                                                    <Button
-                                                        Grid.Column="3"
-                                                        Grid.Row="3"
-                                                        x:Name="ImportCharacterImage"
-                                                        Content="Import"
-                                                        Click="ImportCharacterImage_Click"
-                                                        MinWidth="80"
-                                                        Height="25"
-                                                        Margin="0 0 3 0"/>
-                                                    <Button
-                                                        Grid.Column="4"
-                                                        Grid.Row="3"
-                                                        x:Name="RemoveProcessed" 
-                                                        Content="Remove"
-                                                        Visibility="Collapsed"
-                                                        Click="RemoveProcessed_Click"
-                                                        MinWidth="80"
-                                                        Height="25"
-                                                        Margin="3,0,0,0"/>
-                                                </Grid>
+                                                </DockPanel>
 
                                                 <!-- splitter -->
                                                 <GridSplitter
@@ -407,13 +380,13 @@
                                                     <Setter Property="Visibility" Value="Collapsed"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding SourceImage}" Value="{x:Null}">
-                                                    <Setter TargetName="RemoveProcessed" Property="Visibility" Value="Visible"/>
+                                                    <Setter TargetName="ClearB" Property="Visibility" Value="Visible"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding ImagePreview}" Value="{x:Null}">
-                                                    <Setter TargetName="RemoveProcessed" Property="Visibility" Value="Collapsed"/>
+                                                    <Setter TargetName="ClearB" Property="Visibility" Value="Collapsed"/>
                                                 </DataTrigger>
                                                 <DataTrigger Binding="{Binding SourceImage}" Value="{x:Null}">
-                                                    <Setter TargetName="RemoveSource" Property="Visibility" Value="Collapsed"/>
+                                                    <Setter TargetName="ClearA" Property="Visibility" Value="Collapsed"/>
                                                 </DataTrigger>
                                             </DataTemplate.Triggers>
                                         </DataTemplate>
