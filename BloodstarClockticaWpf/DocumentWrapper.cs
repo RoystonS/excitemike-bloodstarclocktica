@@ -8,6 +8,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media.Imaging;
 using static BloodstarClockticaLib.BcImport;
 
@@ -16,12 +17,27 @@ namespace BloodstarClockticaWpf
     /// <summary>
     /// wrapping document so it can be an INotifyPropertyChanged
     /// </summary>
-    class DocumentWrapper : INotifyPropertyChanged
+    class DocumentWrapper : DependencyObject, INotifyPropertyChanged
     {
         /// <summary>
         /// wrapped document
         /// </summary>
         private BcDocument document;
+
+        /// <summary>
+        /// whether to preview the character image as a character token
+        /// </summary>
+        public bool PreviewOnToken
+        {
+            get => (bool)GetValue(PreviewOnTokenProperty);
+            set => SetValue(PreviewOnTokenProperty, value);
+        }
+        public static readonly DependencyProperty PreviewOnTokenProperty = DependencyProperty.Register(
+            "PreviewOnToken",
+            typeof(bool),
+            typeof(DocumentWrapper),
+            new PropertyMetadata(false)
+        );
 
         /// <summary>
         /// Name of the set
@@ -35,10 +51,16 @@ namespace BloodstarClockticaWpf
                 {
                     document.Meta.Name = value;
                     Dirty = true;
-                    OnPropertyChanged("Name");
                 }
+                SetValue(NameProperty, document.Meta.Name);
             }
         }
+        public static readonly DependencyProperty NameProperty = DependencyProperty.Register(
+            "Name",
+            typeof(string),
+            typeof(DocumentWrapper),
+            new PropertyMetadata(string.Empty)
+        );
 
         /// <summary>
         /// Author of the set

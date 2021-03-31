@@ -271,12 +271,12 @@ namespace BloodstarClockticaLib
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        private static Image DownloadImage(string url)
+        private static Bitmap DownloadImage(string url)
         {
             using (var webClient = new WebClient())
             {
                 var stream = new MemoryStream(webClient.DownloadData(url));
-                return Image.FromStream(stream);
+                return new Bitmap(stream);
             }
         }
     }

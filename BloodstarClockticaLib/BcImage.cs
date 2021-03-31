@@ -30,7 +30,7 @@ namespace BloodstarClockticaLib
         /// <param name="source"></param>
         /// <param name="colorGradient"></param>
         /// <returns>processed copy of the image</returns>
-        public static Image ProcessImage(Image source, Bitmap colorGradient)
+        public static Bitmap ProcessImage(Image source, Bitmap colorGradient)
         {
             var trimmed = new Bitmap(source).Trim();
             var colored = trimmed.SetRGB(255, 255, 255).Multiply(colorGradient.Resized(trimmed.Width, trimmed.Height));

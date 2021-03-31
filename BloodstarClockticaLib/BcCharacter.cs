@@ -111,12 +111,12 @@ namespace BloodstarClockticaLib
         /// <summary>
         /// backing field for ProcessedImage
         /// </summary>
-        private Image processedImage;
+        private Bitmap processedImage;
 
         /// <summary>
         /// character image, lazily created from source image if needed/possible
         /// </summary>
-        public Image ProcessedImage
+        public Bitmap ProcessedImage
         {
             get
             {
@@ -331,7 +331,7 @@ namespace BloodstarClockticaLib
             {
                 using (var stream = processedImageEntry.Open())
                 {
-                    processedImage = Image.FromStream(stream);
+                    processedImage = new Bitmap(stream);
                 }
             }
         }

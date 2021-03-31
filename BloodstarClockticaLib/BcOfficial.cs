@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using static BloodstarClockticaLib.BcImport;
 
@@ -6,6 +7,8 @@ namespace BloodstarClockticaLib
 {
     public class BcOfficial
     {
+        public static Bitmap TokenImage => Properties.Resources.Token;
+
         /// <summary>
         /// lazily-created list of official characters
         /// </summary>

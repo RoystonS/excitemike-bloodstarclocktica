@@ -150,7 +150,7 @@
                                         <GridViewColumn.CellTemplate>
                                             <DataTemplate>
                                                 <Border Style="{DynamicResource BcImageHolder}">
-                                                    <Image Source="{Binding ImagePreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" Width="36" Height="36"/>
+                                                    <Image Source="{Binding ImagePreview}" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" Width="36" Height="36" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                 </Border>
                                             </DataTemplate>
                                         </GridViewColumn.CellTemplate>
@@ -251,7 +251,7 @@
                     </TabItem>
                     <TabItem Header="Edit Character">
                         <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <Grid>                                
+                            <Grid>
                                 <!-- character controls -->
                                 <ContentControl Margin="6,0,6,0" Content="{Binding ElementName=CharacterList, Path=SelectedItem}" VerticalAlignment="Stretch">
                                     <ContentControl.ContentTemplate>
@@ -306,7 +306,8 @@
                                                         Content="Import"
                                                         Click="SourceImageButton_Click"
                                                         MinWidth="80"
-                                                        Height="25"/>
+                                                        Height="25"
+                                                        Margin="0 0 3 0"/>
                                                     <Button
                                                         Grid.Column="1"
                                                         Grid.Row="3"
@@ -314,21 +315,57 @@
                                                         Content="Remove"
                                                         Click="RemoveSourceImage_Click"
                                                         MinWidth="80"
-                                                        Height="25"/>
+                                                        Height="25"
+                                                        Margin="3 0 0 0"/>
 
                                                     <!-- Procesed Image -->
                                                     <TextBlock Grid.Row="0" Grid.Column="3" Text="Character Image" Style="{DynamicResource BcHeading}"/>
+                                                    <CheckBox
+                                                        x:Name="PreviewOnTokenCheckBox"
+                                                        Grid.Row="0"
+                                                        Grid.Column="4"
+                                                        IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.PreviewOnToken, UpdateSourceTrigger=PropertyChanged}"
+                                                        Content="Preview on token"
+                                                        VerticalAlignment="Center"/>
                                                     <Border
                                                         Grid.Row="1"
                                                         Grid.Column="3"
                                                         Grid.ColumnSpan="2"
                                                         Style="{DynamicResource BcImageHolder}">
-                                                        <Image 
-                                                            Source="{Binding ImagePreview}"
-                                                            Stretch="Uniform"
-                                                            RenderOptions.BitmapScalingMode="HighQuality"
-                                                            MaxWidth="{Binding ImagePreviewMaxWidth}"
-                                                            MaxHeight="{Binding ImagePreviewMaxHeight}"/>
+                                                        <ContentControl Content="{Binding}">
+                                                            <ContentControl.ContentTemplate>
+                                                                <DataTemplate>
+                                                                    <Grid>
+                                                                        <Image
+                                                                            x:Name="ImagePreview"
+                                                                            Source="{Binding ImagePreview}"
+                                                                            Stretch="Uniform"
+                                                                            RenderOptions.BitmapScalingMode="HighQuality"
+                                                                            MaxWidth="{Binding ImagePreviewMaxWidth}"
+                                                                            MaxHeight="{Binding ImagePreviewMaxHeight}"/>
+                                                                        <Image
+                                                                            x:Name="ImageOnTokenPreview"
+                                                                            Source="{Binding ImageOnTokenPreview}"
+                                                                            Stretch="Uniform"
+                                                                            RenderOptions.BitmapScalingMode="HighQuality"
+                                                                            MaxWidth="{Binding ImageOnTokenPreviewMaxWidth}"
+                                                                            MaxHeight="{Binding ImageOnTokenPreviewMaxHeight}"/>
+                                                                    </Grid>
+                                                                    <DataTemplate.Triggers>
+                                                                        <DataTrigger
+                                                                            Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.PreviewOnToken}"
+                                                                            Value="True">
+                                                                            <Setter TargetName="ImagePreview" Property="Visibility" Value="Hidden"/>
+                                                                        </DataTrigger>
+                                                                        <DataTrigger
+                                                                            Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=DataContext.PreviewOnToken}"
+                                                                            Value="False">
+                                                                            <Setter TargetName="ImageOnTokenPreview" Property="Visibility" Value="Hidden"/>
+                                                                        </DataTrigger>
+                                                                    </DataTemplate.Triggers>
+                                                                </DataTemplate>
+                                                            </ContentControl.ContentTemplate>
+                                                        </ContentControl>
                                                     </Border>
                                                     <Button
                                                         Grid.Column="3"
@@ -337,7 +374,8 @@
                                                         Content="Import"
                                                         Click="ImportCharacterImage_Click"
                                                         MinWidth="80"
-                                                        Height="25"/>
+                                                        Height="25"
+                                                        Margin="0 0 3 0"/>
                                                     <Button
                                                         Grid.Column="4"
                                                         Grid.Row="3"
@@ -347,7 +385,7 @@
                                                         Click="RemoveProcessed_Click"
                                                         MinWidth="80"
                                                         Height="25"
-                                                        Margin="6,0,0,0"/>
+                                                        Margin="3,0,0,0"/>
                                                 </Grid>
 
                                                 <!-- splitter -->

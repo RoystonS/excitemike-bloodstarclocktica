@@ -450,7 +450,7 @@ namespace BloodstarClockticaLib
         /// <param name="bottom"></param>
         /// <param name="top"></param>
         /// <returns>im1</returns>
-        internal static Bitmap AlphaComposite(this Bitmap im1, Bitmap im2)
+        public static Bitmap AlphaComposite(this Bitmap im1, Image im2)
         {
             using (Graphics g = Graphics.FromImage(im1))
             {
