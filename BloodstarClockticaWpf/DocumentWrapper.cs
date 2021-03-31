@@ -51,16 +51,10 @@ namespace BloodstarClockticaWpf
                 {
                     document.Meta.Name = value;
                     Dirty = true;
+                    OnPropertyChanged("Name");
                 }
-                SetValue(NameProperty, document.Meta.Name);
             }
         }
-        public static readonly DependencyProperty NameProperty = DependencyProperty.Register(
-            "Name",
-            typeof(string),
-            typeof(DocumentWrapper),
-            new PropertyMetadata(string.Empty)
-        );
 
         /// <summary>
         /// Author of the set
