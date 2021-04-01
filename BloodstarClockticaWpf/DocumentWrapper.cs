@@ -311,7 +311,7 @@ namespace BloodstarClockticaWpf
                 }
             }
         }
-        public string SynopsisToolTip => "Intro text for the set's Almanac. For Trouble Brewing, this started like \"Clouds roll in over Ravenswood Bluff...\"";
+        public string SynopsisToolTip => "Markdown suported!\nIntro text for the set's Almanac. For Trouble Brewing, this started like \"Clouds roll in over Ravenswood Bluff...\"";
 
         /// <summary>
         /// see OverviewToolTip
@@ -329,7 +329,7 @@ namespace BloodstarClockticaWpf
                 }
             }
         }
-        public string OverviewToolTip => "Describe what it's like to play this custom edition";
+        public string OverviewToolTip => "Markdown suported!\nDescribe what it's like to play this custom edition";
 
         /// <summary>
         /// write the document to a file

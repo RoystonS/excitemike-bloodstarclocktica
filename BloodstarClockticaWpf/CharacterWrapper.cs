@@ -476,7 +476,7 @@ namespace BloodstarClockticaWpf
             );
             AlmanacFlavorProperty = new StringBindingHelper(
                 "Flavor",
-                "Flavor text for the character. For official sets, these are written as though spoken by from the character.",
+                "Markdown supported!\nFlavor text for the character. For official sets, these are written as though spoken by from the character.",
                 () => character.AlmanacEntry.Flavor,
                 (value) =>
                 {
@@ -491,7 +491,7 @@ namespace BloodstarClockticaWpf
             
             AlmanacOverviewProperty = new StringBindingHelper(
                 "Overview",
-                "Typically begins with a short, high-level description of what the character does followed by detailed clarifications of the ability.",
+                "Markdown supported!\nTypically begins with a short, high-level description of what the character does followed by detailed clarifications of the ability.",
                 () => character.AlmanacEntry.Overview,
                 (value) =>
                 {
@@ -505,7 +505,7 @@ namespace BloodstarClockticaWpf
             );
             AlmanacExamplesProperty = new StringBindingHelper(
                 "Examples",
-                "Describe a few newline-separated game situations to help illustrate how the ability works and interacts with other characters.",
+                "Markdown supported!\nDescribe a few newline-separated game situations to help illustrate how the ability works and interacts with other characters.",
                 () => character.AlmanacEntry.Examples,
                 (value) =>
                 {
@@ -519,7 +519,7 @@ namespace BloodstarClockticaWpf
             );
             AlmanacHowToRunProperty = new StringBindingHelper(
                 "How to run",
-                "Describe what the storyteller needs to do for this character. Include anything like any additional setup (like the Washewoman's reminder tokens), or the process for waking the player at night, if they apply.",
+                "Markdown supported!\nDescribe what the storyteller needs to do for this character. Include anything like any additional setup (like the Washewoman's reminder tokens), or the process for waking the player at night, if they apply.",
                 () => character.AlmanacEntry.HowToRun,
                 (value) =>
                 {
@@ -533,7 +533,7 @@ namespace BloodstarClockticaWpf
             );
             AlmanacTipProperty = new StringBindingHelper(
                 "Tip",
-                "Newline-separated tips for how to run the character well. Not all characters need this!\nFor example, the Ravenkeeper's reads: “We advise you to discourage or even ban players from talking about what they are doing at night as they are doing it.”",
+                "Markdown supported!\nNewline-separated tips for how to run the character well. Not all characters need this!\nFor example, the Ravenkeeper's reads: “We advise you to discourage or even ban players from talking about what they are doing at night as they are doing it.”",
                 () => character.AlmanacEntry.Tip,
                 (value) =>
                 {
