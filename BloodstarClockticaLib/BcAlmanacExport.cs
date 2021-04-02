@@ -64,13 +64,12 @@ namespace BloodstarClockticaLib
             <link href=""https://fonts.googleapis.com/css2?family=Nova+Script&display=swap"" rel=""stylesheet"">
             <link href=""https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap"" rel=""stylesheet"">";
         private const string Styles = @"
-            html,body{height:100%}
+            html,body{height:100%;font-size:16px}
             body{
                 background:#333;
                 color:#eee;
                 font-family:'PT Serif', serif;
                 margin:0;
-                font-size:20px;
                 text-align:justify;
                 scrollbar-color:#999 #666;
                 scrollbar-width:thin;
@@ -86,23 +85,23 @@ namespace BloodstarClockticaLib
                 background:#999;
             }
             h1, h2, h3, h4, h5, h6, h7 {
-                margin:4px 0 4px 0;
+                margin:0.2rem 0 0.2rem 0;
                 font-family: 'Nova Script', cursive;
                 text-transform:uppercase;
             }
-            h1, h2{font-size:48px}
-            h3, h4, h5, h6, h7 {font-size:24px}
+            h1, h2{font-size:2.4rem}
+            h3, h4, h5, h6, h7 {font-size:1.2rem}
             hr{width:80%;border:1px solid}
             ol.nav {
                 flex:0 0 124px;
                 font-family:'Roboto Condensed',sans-serif;
-                font-size:14px;
+                font-size:1rem;
                 list-style:none;
                 display:flex;
                 flex-flow:column nowrap;
                 margin:0;
-                padding:1vh 0 1vh 0;
-                height:98vh;
+                padding:1vh 0.2rem 1vh 0.2rem;
+                height:97vh;
                 overflow-x:hidden;
                 overflow-y:auto;
             }
@@ -126,7 +125,7 @@ namespace BloodstarClockticaLib
                 overflow:hidden;
             }
             .almanac-viewport {
-                flex:0 1 1000px;
+                flex:0 1 800px;
                 list-style:none;
                 margin:0;
                 padding:0;
@@ -142,7 +141,7 @@ namespace BloodstarClockticaLib
             .page {
                 list-style:none;
                 flex: none;
-                margin:0.5em;
+                margin:0 0.6rem 0.6rem 0;
                 position:relative;
             }
             .page img{
@@ -150,17 +149,17 @@ namespace BloodstarClockticaLib
             }
             .page-contents{
                 margin:auto;
-                padding:96px 64px;
+                padding:4.8rem 3.7rem;
                 display:flex;
                 flex-flow: column nowrap;
                 align-items: center;
                 background-repeat: no-repeat;
-                background-size: 384px;
+                background-size: 19.2rem;
                 background-position: top;
-                background-position-y: 48px;
+                background-position-y: 2.4rem;
                 color:#333;
             }
-            .spacer{height:220px}
+            .spacer{height:11rem}
             #synopsis > .page-contents > p, #overview > .page-contents > p{
                 width:60%;
             }
@@ -173,17 +172,16 @@ namespace BloodstarClockticaLib
                 top:0;
                 right:0;
                 bottom:0;
-                box-shadow:0 0 4px #999, 0 0 96px #966e49 inset;
+                box-shadow:0 0 4.5rem #966e49 inset;
                 z-index:-1;
                 background-color:#eadbca;
             }
 
             .generated-by{
               list-style:none;
-              margin:0;
-              padding:0;
+              padding:0 0 1rem 0;
               text-align:center;
-              font-size:12px;
+              font-size:0.6rem;
               flex:none;
               font-family:'Roboto Condensed',sans-serif;
             }
@@ -196,28 +194,25 @@ namespace BloodstarClockticaLib
                 text-orientation: upright;
                 text-transform: uppercase;
                 position: absolute;
-                top: 96px;
-                left: 64px;
-                letter-spacing:-8px;
+                top: 4.8rem;
+                left: 3.2rem;
+                letter-spacing:-0.4rem;
                 width:unset;
-                font-size:36px;
+                font-size:1.8rem;
                 margin:0;
             }
             p{
-                margin-top:0.5em;
-                margin-bottom:0.5em;
+                margin-top:0.4rem;
+                margin-bottom:0.4rem;
             }
             .inline-logo{
                 float:left;
-                margin:-8px 8px 0 -18%;
-                width:128px;
+                margin:-0.4rem 0.4rem 0 -3.2rem;
+                width:6.4rem;
             }
             #synopsis > .page-contents{
                 font-family: 'MedievalSharp', cursive;
                 color:#933;
-            }
-            #overview{
-                font-family: 'MedievalSharp', cursive
             }
             .ability{
                 width:60%;
@@ -229,7 +224,7 @@ namespace BloodstarClockticaLib
                 font-style:italic;
                 color:#704c29;
                 text-align:center;
-                font-size:16px;
+                font-size:0.8rem;
             }
             .overview, .example, .how-to-run {
                 width:80%;
@@ -245,25 +240,32 @@ namespace BloodstarClockticaLib
             }
 
             /* big letter */
+            #synopsis > .page-contents > p:nth-child(1)::first-letter {
+                font-size:2rem;
+            }
             .overview > p:nth-child(1)::first-letter {
                 font-family: 'MedievalSharp', cursive;
                 font-size: 5rem;
                 float:left;
-                margin:-4px 4px 0 -8px;
+                line-height:0.7;
+                margin: 0 0.3rem 0 -0.4rem;
+            }
+            .overview > p:nth-child(1) {
+                min-height: 3.5rem;
             }
 
             /* bullets */
             .overview > p + p {
                 position:relative;
-                margin-left:26px;
+                margin-left:1.3rem;
             }
             .overview > p + p::before {
                 content:'♦';
-                font-size:28px;
+                font-size:1.4rem;
                 position:absolute;
                 line-height:0.9;
                 top:0;
-                left:-24px;
+                left:-1.4rem;
             }
 
             @media only screen and (max-width:799px){
@@ -275,17 +277,18 @@ namespace BloodstarClockticaLib
                 .spacer{
                     height:26vw;
                 }
-                body{font-size:16px;}
-                .flavor p{font-size:14px;}
+                html{font-size:16px;}
+                ol.nav {font-size:1rem;}
+                .flavor p{font-size:0.875rem;}
 
                 /* big letter and bullets*/
                 .overview > p::first-letter {font-size: 4rem;}
 
-                h1, h2{font-size:36px}
-                h3, h4, h5, h6, h7 {font-size:18px}
+                h1, h2{font-size:2.25rem}
+                h3, h4, h5, h6, h7 {font-size:1.125rem}
                 .team{
-                    font-size:20px;
-                    letter-spacing:-4px;
+                    font-size:1.25rem;
+                    letter-spacing:-0.25rem;
                     left:8vw;
                     top:8vw;
                 }
@@ -317,7 +320,8 @@ namespace BloodstarClockticaLib
                     height:100%;
                     flex:0 1 auto;
                 }
-                #synopsis > .page-contents > p, #synopsis > .page-contents > p {width:100%}
+                #synopsis > .page-contents > p,
+                #overview > .page-contents > p {width:100%}
                 .team{
                     font-size:3vw;
                     letter-spacing:0;
@@ -359,7 +363,7 @@ namespace BloodstarClockticaLib
                 .{name} h7,
                 .{name} .ability,
                 .{name} .team,
-                .{name} .overview > p::first-letter,
+                .{name} .overview > p:nth-child(1)::first-letter,
                 .{name} .overview > p + p::before {{
                     color:#{colorHex};
                 }}
