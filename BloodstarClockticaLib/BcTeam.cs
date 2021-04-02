@@ -75,7 +75,7 @@ namespace BloodstarClockticaLib
                 case TeamValue.Demon:
                     return "Demon";
                 case TeamValue.Traveler:
-                    return "Traveller";
+                    return "Traveler";
                 default:
                     throw new ArgumentException($"Unhandled Team Enum \"{t}\"");
             }
