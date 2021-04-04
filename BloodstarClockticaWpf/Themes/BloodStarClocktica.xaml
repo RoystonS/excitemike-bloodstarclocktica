@@ -11,14 +11,12 @@
     <SolidColorBrush x:Key="DimBorderBrush" Color="#555" />
     <SolidColorBrush x:Key="DimForegroundBrush" Color="#AAA" />
     <SolidColorBrush x:Key="GutterBrush" Color="#555" />
-    <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#FF333333" />
-    <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#FF333333" />
+    <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#FF303030" />
+    <SolidColorBrush x:Key="DisabledBackgroundBrush" Color="#FF303030" />
     <SolidColorBrush x:Key="DisabledBorderBrush" Color="#FF888888" />
-    <LinearGradientBrush x:Key="ButtonBackgroundBrush" StartPoint="0.5,0" EndPoint="0.5,1">
-        <GradientStop Color="#FF555555" Offset="0.0"/>
-        <GradientStop Color="#FF333333" Offset="0.35"/>
-        <GradientStop Color="#FF3a3a3a" Offset="0.65"/>
-        <GradientStop Color="#FF474747" Offset="1.0"/>
+    <LinearGradientBrush x:Key="ButtonBackgroundBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#FF666666" Offset="0.0"/>
+        <GradientStop Color="#FF444444" Offset="0.35"/>
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="ProgressBarFill" StartPoint="0.5,0" EndPoint="0.5,1">
         <GradientStop Color="#FF3977FF" Offset="0.0"/>
@@ -44,6 +42,8 @@
     <SolidColorBrush x:Key="ToolTipBorderBrush" Color="#ff3977ff"/>
     <SolidColorBrush x:Key="ImageBgBrush" Color="#333333"/>
     <SolidColorBrush x:Key="ImageBorderBrush" Color="#666"/>
+    <SolidColorBrush x:Key="ScrollThumbCold" Color="#555"/>
+    <SolidColorBrush x:Key="ScrollTrackBrush" Color="#333"/>
 
     <Style x:Key="LabelBase" TargetType="{x:Type Label}">
         <Setter Property="SnapsToDevicePixels" Value="true" />
@@ -304,7 +304,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type MenuItem}">
-                    <Border x:Name="Border" Background="Transparent" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="0,0,0,0" Margin="3,2,3,2">
+                    <Border x:Name="Border" Background="Transparent" BorderThickness="{TemplateBinding BorderThickness}" Margin="3,2,3,2">
                         <Grid Margin="0,0,0,0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition MinWidth="6" Width="Auto" SharedSizeGroup="MenuItemIconColumnGroup" />
@@ -417,7 +417,7 @@
         <Setter Property="BorderThickness" Value="1" />
     </Style>
     <ControlTemplate x:Key="BcComboBoxTemplate" TargetType="{x:Type ComboBox}">
-        <Border x:Name="Border" BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="1" CornerRadius="0,0,0,0">
+        <Border x:Name="Border" BorderBrush="{DynamicResource SolidBorderBrush}" BorderThickness="1">
             <Grid x:Name="grid">
                 <ToggleButton x:Name="ToggleButton" Focusable="false" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press" />
                 <ContentPresenter HorizontalAlignment="Left" Margin="2,0,0,0" x:Name="ContentSite" VerticalAlignment="Center" Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" IsHitTestVisible="False" />
@@ -502,7 +502,7 @@
     </Style>
 
     <ControlTemplate x:Key="BcButtonTemplate" TargetType="{x:Type Button}">
-        <Border x:Name="Background" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="3">
+        <Border x:Name="Background" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
             <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" RecognizesAccessKey="True" />
         </Border>
         <ControlTemplate.Triggers>
@@ -539,7 +539,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
                     <Grid x:Name="grid">
-                        <Border x:Name="Background" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" BorderBrush="{DynamicResource BorderBrush}" CornerRadius="3,3,3,3" />
+                        <Border x:Name="Background" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}" BorderBrush="{DynamicResource BorderBrush}"/>
                         <ContentPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" RecognizesAccessKey="True" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4,4,4,4" />
                     </Grid>
 
@@ -738,29 +738,23 @@
             </Setter.Value>
         </Setter>
         <Style.Triggers>
-            <Trigger Property="Role"
-             Value="Floating">
-                <Setter Property="Opacity"
-              Value="0.7" />
+            <Trigger Property="Role" Value="Floating">
+                <Setter Property="Opacity" Value="0.7" />
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="GridViewColumnHeader">
                             <Canvas Name="PART_FloatingHeaderCanvas">
-                                <Rectangle Fill="#60000000"
-                         Width="{TemplateBinding ActualWidth}"
-                         Height="{TemplateBinding ActualHeight}" />
+                                <Rectangle Fill="#60000000" Width="{TemplateBinding ActualWidth}" Height="{TemplateBinding ActualHeight}" />
                             </Canvas>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
             </Trigger>
-            <Trigger Property="Role"
-             Value="Padding">
+            <Trigger Property="Role" Value="Padding">
                 <Setter Property="Template">
                     <Setter.Value>
                         <ControlTemplate TargetType="GridViewColumnHeader">
-                            <Border Name="HeaderBorder"
-                    BorderThickness="0,1,0,1">
+                            <Border Name="HeaderBorder" BorderThickness="0,1,0,1">
                                 <Border.Background>
                                     <SolidColorBrush Color="{DynamicResource ControlLightColor}" />
                                 </Border.Background>
@@ -769,10 +763,8 @@
                                      EndPoint="0,1">
                                         <LinearGradientBrush.GradientStops>
                                             <GradientStopCollection>
-                                                <GradientStop Color="{DynamicResource BorderLightColor}"
-                                    Offset="0.0" />
-                                                <GradientStop Color="{DynamicResource BorderDarkColor}"
-                                    Offset="1.0" />
+                                                <GradientStop Color="{DynamicResource BorderLightColor}" Offset="0.0" />
+                                                <GradientStop Color="{DynamicResource BorderDarkColor}" Offset="1.0" />
                                             </GradientStopCollection>
                                         </LinearGradientBrush.GradientStops>
                                     </LinearGradientBrush>
@@ -851,22 +843,21 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ProgressBar}">
-                    <Border x:Name="PART_Track" 
-                                CornerRadius="2"
-                                Background="{TemplateBinding Background}"
-                                BorderThickness="{TemplateBinding BorderThickness}" 
-                                BorderBrush="{TemplateBinding BorderBrush}">
-                        <Border x:Name="PART_Indicator" CornerRadius="2"
-                                BorderThickness="0"
-                                HorizontalAlignment="Left"
-                                Background="{DynamicResource ProgressBarFill}"
-                                Margin="1,1,1,1">
+                    <Border x:Name="PART_Track"
+                            Background="{TemplateBinding Background}"
+                            BorderThickness="{TemplateBinding BorderThickness}" 
+                            BorderBrush="{TemplateBinding BorderBrush}">
+                        <Border x:Name="PART_Indicator"
+                            BorderThickness="0"
+                            HorizontalAlignment="Left"
+                            Background="{DynamicResource ProgressBarFill}"
+                            Margin="1,1,1,1">
                             <Grid ClipToBounds="True">
                                 <Rectangle x:Name="PART_GlowRect"
-                                       Width="100" HorizontalAlignment="Left"
-                                       Fill="{DynamicResource ProgressBarIndicatorAnimatedFill}"
-                                       Margin="-100,0,0,0"
-                                       ClipToBounds="True" />
+                                    Width="100" HorizontalAlignment="Left"
+                                    Fill="{DynamicResource ProgressBarIndicatorAnimatedFill}"
+                                    Margin="-100,0,0,0"
+                                    ClipToBounds="True" />
                             </Grid>
                         </Border>
                     </Border>
@@ -929,9 +920,9 @@
 
     <!-- repeat button -->
     <Style d:IsControlPart="True" TargetType="{x:Type RepeatButton}" BasedOn="{x:Null}">
-        <Setter Property="Background" Value="{DynamicResource GutterBrush}" />
-        <Setter Property="BorderBrush" Value="{x:Null}" />
-        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="Background" Value="{DynamicResource ButtonBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SolidBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
@@ -960,7 +951,16 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Rectangle HorizontalAlignment="Stretch" x:Name="Background" VerticalAlignment="Stretch" Width="Auto" Height="Auto" RadiusX="3" RadiusY="4" Stroke="{x:Null}" Margin="4,-2,4,-2" MinHeight="12" Fill="{DynamicResource DimForegroundBrush}"/>
+                    <Rectangle
+                        HorizontalAlignment="Stretch"
+                        x:Name="Background"
+                        VerticalAlignment="Stretch"
+                        Width="Auto"
+                        Height="Auto"
+                        Stroke="{x:Null}"
+                        Margin="0 0 0 0"
+                        MinHeight="12"
+                        Fill="{DynamicResource ScrollThumbCold}"/>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsFocused" Value="True">
                             <Setter TargetName="Background" Property="Fill" Value="{DynamicResource HoverBrush}"/>
@@ -980,8 +980,8 @@
         </Setter>
     </Style>
 
-    <!-- scroll button -->
-    <Style x:Key="BcScrollRepeatButtonStyle" d:IsControlPart="True" TargetType="{x:Type RepeatButton}">
+    <!-- scroll track -->
+    <Style x:Key="BcScrollTrackRepeatButtonStyle" d:IsControlPart="True" TargetType="{x:Type RepeatButton}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="IsTabStop" Value="false" />
@@ -997,37 +997,57 @@
         </Setter>
     </Style>
 
+    <!-- scrollbar arrows -->
+    <Style x:Key="BcScrollArrowRepeatButtonStyle" d:IsControlPart="True" TargetType="{x:Type RepeatButton}" BasedOn="{StaticResource {x:Type RepeatButton}}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Style.Triggers>
+            <Trigger Property="IsFocused" Value="True">
+                <Setter Property="Background" Value="{DynamicResource Transparent}"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="{DynamicResource Transparent}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <!-- scroll bar -->
     <Style TargetType="{x:Type ScrollBar}">
+        <Setter Property="BorderThickness" Value="1 0 0 0"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource SolidBorderBrush}"/>
+        <Setter Property="Background" Value="{DynamicResource ScrollTrackBrush}"/>
         <Setter Property="Stylus.IsFlicksEnabled" Value="false" />
         <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ScrollBar}">
-                    <Grid x:Name="GridRoot" Width="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" Background="{DynamicResource GutterBrush}">
-                        <Grid.RowDefinitions>
-                            <RowDefinition MaxHeight="18" />
-                            <RowDefinition Height="0.00001*" />
-                            <RowDefinition MaxHeight="18" />
-                        </Grid.RowDefinitions>
-                        <RepeatButton x:Name="DecreaseRepeat" Command="ScrollBar.LineUpCommand">
-                            <Path Margin="2,2,2,2" VerticalAlignment="Stretch" Height="Auto" Fill="{DynamicResource DimForegroundBrush}" Stretch="Fill" Stroke="{x:Null}" Data="M 0,10 10,10 5.5,0 4.5,0" x:Name="DecreaseArrow" />
-                        </RepeatButton>
-                        <Track Grid.Row="1" x:Name="PART_Track" Orientation="Vertical" IsDirectionReversed="true">
-                            <Track.Thumb>
-                                <Thumb Style="{DynamicResource BcThumbStyle}" Background="{x:Null}" Foreground="{x:Null}" />
-                            </Track.Thumb>
-                            <Track.IncreaseRepeatButton>
-                                <RepeatButton x:Name="PageUp" Style="{DynamicResource BcScrollRepeatButtonStyle}" Command="ScrollBar.PageDownCommand" />
-                            </Track.IncreaseRepeatButton>
-                            <Track.DecreaseRepeatButton>
-                                <RepeatButton x:Name="PageDown" Style="{DynamicResource BcScrollRepeatButtonStyle}" Command="ScrollBar.PageUpCommand" />
-                            </Track.DecreaseRepeatButton>
-                        </Track>
-                        <RepeatButton Grid.Row="2" x:Name="IncreaseRepeat" Command="ScrollBar.LineDownCommand">
-                            <Path Margin="2,2,2,2" x:Name="IncreaseArrow" VerticalAlignment="Stretch" Height="Auto" Fill="{DynamicResource DimForegroundBrush}" Stretch="Fill" Stroke="{x:Null}" Data="M 0,0 10,0 5.5,10 4.5,10"/>
-                        </RepeatButton>
-                    </Grid>
+                    <Border x:Name="Border" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}">
+                        <Grid x:Name="GridRoot" Width="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" Background="{TemplateBinding Background}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition MaxHeight="18" />
+                                <RowDefinition Height="0.00001*" />
+                                <RowDefinition MaxHeight="18" />
+                            </Grid.RowDefinitions>
+                            <RepeatButton x:Name="DecreaseRepeat" Command="ScrollBar.LineUpCommand" Style="{DynamicResource BcScrollArrowRepeatButtonStyle}">
+                                <Path Margin="3 4 4 4" VerticalAlignment="Stretch" Height="Auto" Fill="{DynamicResource TextBrush}" Stretch="Fill" Stroke="{x:Null}" Data="M 0,6 0,12 7,6 14,12 14,6 7,0" x:Name="DecreaseArrow" />
+                            </RepeatButton>
+                            <Track Grid.Row="1" x:Name="PART_Track" Orientation="Vertical" IsDirectionReversed="true">
+                                <Track.Thumb>
+                                    <Thumb Style="{DynamicResource BcThumbStyle}" Background="{x:Null}" Foreground="{x:Null}" />
+                                </Track.Thumb>
+                                <Track.IncreaseRepeatButton>
+                                    <RepeatButton x:Name="PageUp" Style="{DynamicResource BcScrollTrackRepeatButtonStyle}" Command="ScrollBar.PageDownCommand" />
+                                </Track.IncreaseRepeatButton>
+                                <Track.DecreaseRepeatButton>
+                                    <RepeatButton x:Name="PageDown" Style="{DynamicResource BcScrollTrackRepeatButtonStyle}" Command="ScrollBar.PageUpCommand" />
+                                </Track.DecreaseRepeatButton>
+                            </Track>
+                            <RepeatButton Grid.Row="2" x:Name="IncreaseRepeat" Command="ScrollBar.LineDownCommand" Style="{DynamicResource BcScrollArrowRepeatButtonStyle}">
+                                <Path Margin="3 4 4 4" x:Name="IncreaseArrow" VerticalAlignment="Stretch" Height="Auto" Fill="{DynamicResource TextBrush}" Stretch="Fill" Stroke="{x:Null}" Data="M 0,6 0,0 7,6 14,0 14,6 7,12"/>
+                            </RepeatButton>
+                        </Grid>
+                    </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="Orientation" Value="Horizontal">
                             <Setter Property="LayoutTransform" TargetName="GridRoot">
@@ -1040,6 +1060,7 @@
                             <Setter Property="Command" Value="ScrollBar.LineRightCommand" TargetName="IncreaseRepeat" />
                             <Setter Property="Command" Value="ScrollBar.PageLeftCommand" TargetName="PageDown" />
                             <Setter Property="Command" Value="ScrollBar.PageRightCommand" TargetName="PageUp" />
+                            <Setter TargetName="Border" Property="BorderThickness" Value="0 1 0 0"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -1101,7 +1122,6 @@
         <Setter Property="Background" Value="{DynamicResource ImageBgBrush}"/>
         <Setter Property="BorderBrush" Value="{DynamicResource ImageBorderBrush}"/>
         <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="CornerRadius" Value="4"/>
     </Style>
 
 </ResourceDictionary>
