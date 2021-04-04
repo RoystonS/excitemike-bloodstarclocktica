@@ -138,8 +138,8 @@ namespace BloodstarClockticaWpf
         {
             OkButton.IsDefault = true;
             Title = "Upload Complete!";
-            LinkTextBox.Text = $"{DocumentWrapper.RolesUrl}";
-            AlmanacLinkTextBox.Text = $"{DocumentWrapper.AlmanacUrl}";
+            LinkTextBox.Text = $"{DocumentWrapper.RolesUrl}?{DateTime.Now:MMddHHmmss}";
+            AlmanacLinkTextBox.Text = DocumentWrapper.AlmanacUrl;
             CloseButton.Visibility = Visibility.Visible;
             ProgressBar.Visibility = Visibility.Collapsed;
             ResultsView.Visibility = Visibility.Visible;
