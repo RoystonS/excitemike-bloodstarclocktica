@@ -27,13 +27,6 @@ namespace BloodstarClockticaLib
             writer = null;
         }
         private void Write(string s) => writer.Write(s);
-        private void Write(IEnumerable<string> ss)
-        {
-            foreach (var s in ss)
-            {
-                Write(s);
-            }
-        }
         private void Html()
         {
             Write($@"<!DOCTYPE html><html lang=""en-US"">");
@@ -260,7 +253,7 @@ namespace BloodstarClockticaLib
                 margin-left:1.3rem;
             }
             .overview > p + p::before {
-                content:'♦';
+                content:'•';
                 font-size:1.4rem;
                 position:absolute;
                 line-height:0.9;
@@ -282,7 +275,7 @@ namespace BloodstarClockticaLib
                 .flavor p{font-size:0.875rem;}
 
                 /* big letter and bullets*/
-                .overview > p::first-letter {font-size: 4rem;}
+                .overview > p:nth-child(1)::first-letter {font-size: 4rem;}
 
                 h1, h2{font-size:2.25rem}
                 h3, h4, h5, h6, h7 {font-size:1.125rem}
@@ -421,34 +414,6 @@ namespace BloodstarClockticaLib
             Characters();
             Write(GeneratedBy);
             Write(@"</ol>");
-        }
-        private IEnumerable<string> SplitLines(string s)
-        {
-            return Regex.Split(s, @"[\r\n]+")
-                .Select(x => x.Trim())
-                .Where(x => !string.IsNullOrEmpty(x));
-        }
-        private void WriteParagraphs(string original, string cssClass)
-        {
-            WriteParagraphs(original, cssClass, cssClass);
-        }
-        private void WriteParagraphs(string original, string cssClassFirst, string cssClassOther)
-        {
-            var beforeFirst = string.IsNullOrWhiteSpace(cssClassFirst) ? "<p>" : $@"<p class=""{cssClassFirst}"">";
-            var beforeOther = string.IsNullOrWhiteSpace(cssClassOther) ? "<p>" : $@"<p class=""{cssClassOther}"">";
-            var i = SplitLines(original).GetEnumerator();
-            if (i.MoveNext())
-            {
-                Write(beforeFirst);
-                Write(i.Current);
-                Write("</p>");
-            }
-            while (i.MoveNext())
-            {
-                Write(beforeOther);
-                Write(i.Current);
-                Write("</p>");
-            }
         }
         private void Synopsis()
         {
