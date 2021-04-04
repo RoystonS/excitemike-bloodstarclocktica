@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace BloodstarClockticaWpf
@@ -82,7 +80,7 @@ namespace BloodstarClockticaWpf
         /// <param name="e"></param>
         private void UpButton_Click(object sender, RoutedEventArgs e)
         {
-            RepeatWhileHeld(sender as Button, MoveUp);
+            MoveUp();
         }
 
         /// <summary>
@@ -92,7 +90,7 @@ namespace BloodstarClockticaWpf
         /// <param name="e"></param>
         private void DownButton_Click(object sender, RoutedEventArgs e)
         {
-            RepeatWhileHeld(sender as Button, MoveDown);
+            MoveDown();
         }
 
         private bool MoveUp()
@@ -114,26 +112,6 @@ namespace BloodstarClockticaWpf
                 return true;
             }
             return false;
-        }
-        private static void RepeatWhileHeld(Button button, Func<bool> func)
-        {
-            if (func())
-            {
-                Task.Delay(400).ContinueWith(t =>
-                {
-                    Application.Current.Dispatcher.BeginInvoke(new Action(() => RepeatWhileHeld_2(button, func)));
-                });
-            }
-        }
-        private static void RepeatWhileHeld_2(Button button, Func<bool> func)
-        {
-            if (button.IsPressed && func())
-            {
-                Task.Delay(200).ContinueWith(t =>
-                {
-                    Application.Current.Dispatcher.BeginInvoke(new Action(() => RepeatWhileHeld_2(button, func)));
-                });
-            }
         }
     }
 }

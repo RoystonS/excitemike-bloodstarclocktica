@@ -334,10 +334,6 @@ namespace BloodstarClockticaWpf
             return null;
         }
 
-        private void UpButton_Click(object sender, RoutedEventArgs e)
-        {
-            RepeatWhileHeld(sender as Button, MoveUp);
-        }
         private bool MoveUp()
         {
             var docWrapper = (DataContext as DocumentWrapper);
@@ -350,10 +346,6 @@ namespace BloodstarClockticaWpf
                 return true;
             }
             return false;
-        }
-        private void DownButton_Click(object sender, RoutedEventArgs e)
-        {
-            RepeatWhileHeld(sender as Button, MoveDown);
         }
         private bool MoveDown()
         {
@@ -368,26 +360,7 @@ namespace BloodstarClockticaWpf
             }
             return false;
         }
-        private static void RepeatWhileHeld(Button button, Func<bool> func)
-        {
-            if (func())
-            {
-                Task.Delay(400).ContinueWith(t =>
-                {
-                    Application.Current.Dispatcher.BeginInvoke(new Action(() => RepeatWhileHeld_2(button, func)));
-                });
-            }
-        }
-        private static void RepeatWhileHeld_2(Button button, Func<bool> func)
-        {
-            if (button.IsPressed && func())
-            {
-                Task.Delay(200).ContinueWith(t =>
-                {
-                    Application.Current.Dispatcher.BeginInvoke(new Action(() => RepeatWhileHeld_2(button, func)));
-                });
-            }
-        }
+
         private void AddButton_Click(object sender, RoutedEventArgs e)
         {
             var docWrapper = (DataContext as DocumentWrapper);
@@ -776,7 +749,9 @@ namespace BloodstarClockticaWpf
             charWrapper.SourceImage = null;
             using (var temp = System.Drawing.Image.FromFile(path))
             {
-                charWrapper.ProcessedImage = new Bitmap(temp);
+                charWrapper.ProcessedImage =
+                    new Bitmap(BcImage.ProcessImageSettings.OutputWidth, BcImage.ProcessImageSettings.OutputHeight)
+                    .PasteZoomed(new Bitmap(temp).Trim(), BcImage.ProcessImageSettings.Position);
             }
             docWrapper.Dirty = true;
         }
@@ -852,6 +827,15 @@ namespace BloodstarClockticaWpf
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Reopen();
+        }
+
+        private void RepeatUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            MoveUp();
+        }
+        private void RepeatDownButton_Click(object sender, RoutedEventArgs e)
+        {
+            MoveDown();
         }
     }
 }

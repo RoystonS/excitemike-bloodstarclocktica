@@ -65,7 +65,24 @@
                 </Style>
             </ListView.ItemContainerStyle>
         </ListView>
-        <Button Grid.Row="0" Grid.Column="1" Content="▲" PreviewMouseDown="UpButton_Click" Margin="0,0,0,6"/>
+        <RepeatButton
+            Grid.Row="0"
+            Grid.Column="1"
+            Margin="0,0,0,6"
+            Delay="500"
+            Interval="100"
+            Click="UpButton_Click" >
+            <Path Margin="10 6 10 6" VerticalAlignment="Stretch" Height="Auto" Fill="{DynamicResource TextBrush}" Stretch="Fill" Stroke="{x:Null}" Data="M 0,10 5,0 10,10" />
+        </RepeatButton>
         <Button Grid.Row="1" Grid.Column="1" Content="▼" PreviewMouseDown="DownButton_Click" Margin="0,0,0,6"/>
+        <RepeatButton
+            Grid.Row="1"
+            Grid.Column="1"
+            Margin="0,0,0,6"
+            Delay="500"
+            Interval="100"
+            Click="DownButton_Click">
+            <Path Margin="10 6 10 6" VerticalAlignment="Stretch" Height="Auto" Fill="{DynamicResource TextBrush}" Stretch="Fill" Stroke="{x:Null}" Data="M 0,0 10,0 5,10" />
+        </RepeatButton>
     </Grid>
 </UserControl>

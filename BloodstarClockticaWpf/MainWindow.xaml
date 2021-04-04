@@ -151,21 +151,31 @@
                                     <GridViewColumn Header="Note" DisplayMemberBinding="{Binding Note.Value}" Width="93"/>
                                 </GridView>
                             </ListView.View>
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListViewItem}" BasedOn="{StaticResource {x:Type ListViewItem}}">
+                                    <Setter Property="ToolTip" Value="{Binding AbilityProperty.Value}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding AbilityProperty.Value}" Value="{x:Null}">
+                                            <Setter Property="ToolTip" Value="{x:Null}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ListView.ItemContainerStyle>
                         </ListView>
-                    <Button
-                        Grid.Row="0"
-                        Grid.Column="1"
-                        Content="▲"
-                        PreviewMouseDown="UpButton_Click"
-                        Margin="0,0,0,6"/>
-                    <Button
-                        Grid.Row="1"
-                        Grid.Column="1"
-                        Content="▼"
-                        PreviewMouseDown="DownButton_Click"
-                        Margin="0,0,0,6"/>
-                    <Button Grid.Row="2" Grid.Column="1" Content="Add" Click="AddButton_Click" Margin="0,0,0,6"/>
-                    <Button Grid.Row="3" Grid.Column="1" Content="Del" Click="DelButton_Click" Margin="0,0,0,6"/>
+                        <RepeatButton Grid.Row="0" Grid.Column="1" Margin="0,0,0,6" Delay="500" Interval="100" Click="RepeatUpButton_Click">
+                            <Path Margin="10 6 10 6" VerticalAlignment="Stretch" Height="Auto" Fill="{DynamicResource TextBrush}" Stretch="Fill" Stroke="{x:Null}" Data="M 0,10 5,0 10,10" />
+                        </RepeatButton>
+                        <RepeatButton
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="0,0,0,6"
+                            Delay="500"
+                            Interval="100"
+                            Click="RepeatDownButton_Click">
+                            <Path Margin="10 6 10 6" VerticalAlignment="Stretch" Height="Auto" Fill="{DynamicResource TextBrush}" Stretch="Fill" Stroke="{x:Null}" Data="M 0,0 10,0 5,10" />
+                        </RepeatButton>
+                        <Button Grid.Row="2" Grid.Column="1" Content="Add" Click="AddButton_Click" Margin="0,0,0,6"/>
+                        <Button Grid.Row="3" Grid.Column="1" Content="Del" Click="DelButton_Click" Margin="0,0,0,6"/>
                     </Grid>
                 </DockPanel>
 
@@ -306,7 +316,7 @@
                                                             Click="ClearImage_Click"
                                                             Padding="8 4 8 4"/>
                                                     </Grid>
-                                                    
+
                                                     <!-- Processed Image -->
                                                     <Border
                                                         Grid.Row="1"
@@ -383,7 +393,7 @@
                                         </DataTemplate>
                                     </ContentControl.ContentTemplate>
                                 </ContentControl>
-                                
+
                                 <!-- shown if no character selected -->
                                 <ContentControl Margin="6,0,6,0"
                                                 Content="{Binding ElementName=CharacterList, Path=SelectedIndex}"
