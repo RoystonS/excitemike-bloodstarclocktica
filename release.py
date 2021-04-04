@@ -84,3 +84,4 @@ with create_sftp() as sftp:
     sftp.put('Installer/bin/Release/BloodstarClockticaInstaller.msi', 'BloodstarClockticaInstaller.msi')
 
 
+print(f'DONE')
