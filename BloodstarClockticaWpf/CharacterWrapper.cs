@@ -141,7 +141,11 @@ namespace BloodstarClockticaWpf
                 if (cachedImageOnTokenPreview != null) { return cachedImageOnTokenPreview; }
                 using (var ms = new MemoryStream())
                 {
-                    BcOfficial.TokenImage.AlphaComposite(character.ProcessedImage).Save(ms, ImageFormat.Png);
+                    var destination = new Rectangle(0, 0, BcOfficial.TokenImage.Width, BcOfficial.TokenImage.Height);
+                    BcOfficial.TokenImage
+                        .PasteZoomed(character.ProcessedImage, destination)
+                        .Save(ms, ImageFormat.Png);
+
                     ms.Position = 0;
                     var bi = new BitmapImage();
                     bi.BeginInit();
