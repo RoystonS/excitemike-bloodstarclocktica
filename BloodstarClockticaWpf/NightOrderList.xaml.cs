@@ -13,7 +13,8 @@ namespace BloodstarClockticaWpf
             InitializeComponent();
         }
 
-        public string ReminderColumnLabel {
+        public string ReminderColumnLabel
+        {
             get
             {
                 if (DataContext is NightOrderWrapper now)
@@ -106,7 +107,7 @@ namespace BloodstarClockticaWpf
         private bool MoveDown()
         {
             var index = CharacterList.SelectedIndex;
-            if (index+1 < CharacterList.Items.Count)
+            if (index + 1 < CharacterList.Items.Count)
             {
                 SwapOrder(index, index + 1);
                 return true;

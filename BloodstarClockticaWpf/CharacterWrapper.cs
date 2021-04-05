@@ -492,7 +492,7 @@ namespace BloodstarClockticaWpf
                 },
                 true
             );
-            
+
             AlmanacOverviewProperty = new StringBindingHelper(
                 "Overview",
                 "Markdown supported!\nTypically begins with a short, high-level description of what the character does followed by detailed clarifications of the ability.",

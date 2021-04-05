@@ -289,7 +289,7 @@ namespace BloodstarClockticaLib
                                     }
                                 }
                                 SetPixel(x, y, false);
-                            NextPixel:
+                                NextPixel:
                                 continue;
                             }
                         });
@@ -592,8 +592,8 @@ namespace BloodstarClockticaLib
         /// <returns>image modified in-place</returns>
         internal static Bitmap AddBorder(this Bitmap im, double blurSize, double alphaThreshMin, double alphaThreshMax)
         {
-            byte max = (byte) (255 * alphaThreshMax);
-            byte min = (byte) (255 * alphaThreshMin);
+            byte max = (byte)(255 * alphaThreshMax);
+            byte min = (byte)(255 * alphaThreshMin);
             var overlay = im
                 .EdgeDetect()
                 .GaussianBlurChannel(3, blurSize)
