@@ -12,8 +12,12 @@ namespace BloodstarClockticaLib
         private readonly BcDocument document;
         private readonly string imageUrlPrefix;
         private StreamWriter writer;
+        private MarkdownPipeline markdownPipeline;
         internal AlmanacExporter(BcDocument document, string imageUrlPrefix)
         {
+            // enable Markdown extensions
+            markdownPipeline = new MarkdownPipelineBuilder().UseAdvancedExtensions().Build();
+
             this.document = document;
             this.imageUrlPrefix = imageUrlPrefix;
         }
@@ -66,6 +70,15 @@ namespace BloodstarClockticaLib
                 scrollbar-color:#999 #666;
                 scrollbar-width:thin;
             }
+            table{
+                border:1px solid rgba(51,51,51,0.35);
+                margin:0 auto;
+                background-color:rgba(255,255,255,0.15);
+            }
+            a{text-decoration:none;color:#339}
+            a:hover{text-decoration:underline;color:#66c}
+            tbody tr:nth-child(even), th{background-color:rgba(255,255,255,0.65);}
+            td,th{padding:4px;}
             *::-webkit-scrollbar {
                 width:10px;
                 height:10px;
@@ -419,7 +432,7 @@ namespace BloodstarClockticaLib
             if (!string.IsNullOrWhiteSpace(document.Meta.Synopsis))
             {
                 Write(@"<li class=""page"" id=""synopsis""><div class=""page-contents"">");
-                Write(Markdown.ToHtml(document.Meta.Synopsis));
+                Write(Markdown.ToHtml(document.Meta.Synopsis, markdownPipeline));
                 Write($@"<img src=""{BcExport.UrlCombine(imageUrlPrefix, "logo.png")}"" alt=""{document.Meta.Name}"">");
                 Write($@"</div></li>");
             }
@@ -430,7 +443,7 @@ namespace BloodstarClockticaLib
             {
                 Write(@"<li class=""page"" id=""overview""><div class=""page-contents"">");
                 string inlineLogo = ($@"<img src=""{BcExport.UrlCombine(imageUrlPrefix, "logo.png")}"" alt=""{document.Meta.Name}"" class=""inline-logo"">");
-                Write(Markdown.ToHtml(inlineLogo + document.Meta.Overview));
+                Write(Markdown.ToHtml(inlineLogo + document.Meta.Overview, markdownPipeline));
                 Write($@"</div></li>");
             }
         }
@@ -439,7 +452,7 @@ namespace BloodstarClockticaLib
             if (!string.IsNullOrWhiteSpace(contents))
             {
                 Write($@"<div class=""{cssClass}"">");
-                Write(Markdown.ToHtml(contents));
+                Write(Markdown.ToHtml(contents, markdownPipeline));
                 Write("</div>");
             }
         }
