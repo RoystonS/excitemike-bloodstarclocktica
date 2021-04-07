@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="./favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="manifest" href="./manifest.json" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap" rel="stylesheet"/>
+    <title>Bloodstar Clocktica</title>
+    <script type="text/javascript" src="./blood-document.js"></script>
+    <script type="text/javascript" src="./bloodstar-drag.js"></script>
+    <script type="text/javascript" src="./bloodstar.js"></script>
+    <link rel="stylesheet" type="text/css" href="./bloodstar.css"/>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="app">
+      <ol id="menu">
+        <li><a href="#" onclick="newClicked()">New</a> <span class="dim">(ctrl+N)</span></li>
+        <li><a>Open</a> <span class="dim">(ctrl+O)</span></li>
+        <li><a>Save</a> <span class="dim">(ctrl+S)</span></li>
+        <li><a>Save As</a> <span class="dim">(ctrl+A)</span></li>
+        <li><a>Publish</a> <span class="dim">(ctrl+P)</span></li>
+      </ol>
+      <div id="undermenu">
+        <ol id="characterlist">
+        </ol>
+        <div id="metatab" class="tab"></div>
+        <div id="charactertab" class="tab"></div>
+        <div id="firstnightordertab" class="tab"></div>
+        <div id="othernightordertab" class="tab"></div>
+      </div>
+    </div>
+  </body>
+</html>
+

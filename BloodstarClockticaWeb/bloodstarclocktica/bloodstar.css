@@ -1,0 +1,87 @@
+body {
+    background-color: #333;
+    color:#eee;
+    font-family:Roboto Condensed,sans-serif;
+    font-size:16px;
+    margin:0;
+    padding:0;
+}
+a {
+    color:#ccf;
+    text-decoration: none;
+}
+a:hover {
+    color:#eef;
+}
+#app {
+    display:flex;
+    flex-flow:column;
+    height: 99vh;
+    margin: 0;
+    padding: 0;
+}
+ol#menu {
+    flex: none;
+    display:flex;
+    flex-flow:row;
+    padding:0;
+    margin:6px;
+    list-style: none;
+}
+ol#menu > li > a {
+    margin:0 3px 0 0;
+}
+ol#menu > li {
+    display:flex;
+    flex-flow:row;
+    padding:0;
+    margin:0 12px 0 0;
+}
+.dim {
+    color:#999;
+}
+#undermenu {
+    position: relative;
+    flex: 1 1 0;
+    display: flex;
+    flex-flow:row nowrap;
+    align-items: stretch;
+    margin:6px;
+}
+#characterlistbuttons {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+}
+#tabs {
+    flex: 4;
+}
+ol#characterlist {
+    list-style: none;
+    margin: 0;
+    padding: 1vh 2rem 1vh 0.2rem;
+    overflow: auto;
+    display:flex;
+    flex-flow: column;
+    align-items: stretch;
+
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.character-list-item{
+    display: flex;
+    flex-flow: row nowrap;
+    margin:3px;
+}
+.character-list-name{
+    flex: 1 1 auto;
+    margin-right:1rem;
+}
+.character-list-button{
+    flex: 0 0 auto;
+    font-size:0.875rem;
+}
