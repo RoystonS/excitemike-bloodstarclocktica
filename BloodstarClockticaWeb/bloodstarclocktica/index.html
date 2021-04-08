@@ -6,31 +6,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <link rel="manifest" href="./manifest.json" />
-    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap" rel="stylesheet"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet"> 
     <title>Bloodstar Clocktica</title>
-    <script type="text/javascript" src="./blood-document.js"></script>
-    <script type="text/javascript" src="./bloodstar-drag.js"></script>
-    <script type="text/javascript" src="./bloodstar.js"></script>
+    <script type="module" src="./bloodstar.js"></script>
     <link rel="stylesheet" type="text/css" href="./bloodstar.css"/>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="app">
-      <ol id="menu">
-        <li><a href="#" onclick="newClicked()">New</a> <span class="dim">(ctrl+N)</span></li>
-        <li><a>Open</a> <span class="dim">(ctrl+O)</span></li>
-        <li><a>Save</a> <span class="dim">(ctrl+S)</span></li>
-        <li><a>Save As</a> <span class="dim">(ctrl+A)</span></li>
-        <li><a>Publish</a> <span class="dim">(ctrl+P)</span></li>
-      </ol>
-      <div id="undermenu">
-        <ol id="characterlist">
-        </ol>
-        <div id="metatab" class="tab"></div>
-        <div id="charactertab" class="tab"></div>
-        <div id="firstnightordertab" class="tab"></div>
-        <div id="othernightordertab" class="tab"></div>
+      <div id="menu">
+        <div class="dropdown">
+          File
+          <div class="dropdown-content">
+            <a id="newfilebutton">New</a>
+            <a id="openfilebutton">Open</a>
+            <a id="savefilebutton">Save <span class="dim">ctrl+S</span></a>
+            <a id="savefileasbutton">Save As</a>
+            <a id="helpbutton">Help</a>
+          </div>
+        </div>
+        <div class="dropdown">
+          Import
+          <div class="dropdown-content">
+            <a>Upload JSON</a>
+            <a>Official Character</a>
+          </div>
+        </div>
+        <div class="dropdown">
+          Publish
+          <div class="dropdown-content">
+            <a>Publish</a>
+          </div>
+        </div>
+        <div id="title"></div>
       </div>
+      <div id="main-row">
+        <div id="character-pane">
+          <div id="character-pane-top">
+            <h4>Characters</h4>
+            <a id="addcharacterbutton">Add Character</a>
+          </div>
+          <div id="characterlist-container">
+            <ol id="characterlist">
+            </ol>
+          </div>
+        </div>
+        <div id="tabs">
+          <div id="metatab" class="tab"></div>
+          <div id="charactertab" class="tab"></div>
+          <div id="firstnightordertab" class="tab"></div>
+          <div id="othernightordertab" class="tab"></div>
+        </div>
+      </div>
+      <ul id="status">
+        <li id="characters-status">X/Y Characters</li>
+        <li id="townsfolk-status">X/Y Townsfolk</li>
+        <li id="outsiders-status">X/Y Outsiders</li>
+        <li id="minions-status">X/Y Minions</li>
+        <li id="demons-status">X/Y Demons</li>
+        <li id="travelers-status">X/Y Travelers</li>
+        <li></li>
+      </ul>
     </div>
   </body>
 </html>

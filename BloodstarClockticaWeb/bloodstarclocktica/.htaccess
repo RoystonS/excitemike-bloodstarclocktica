@@ -1,0 +1,4 @@
+AuthUserFile ./.htpasswd
+AuthType Basic
+AuthName "Bloodstar Clocktica"
+Require valid-user
