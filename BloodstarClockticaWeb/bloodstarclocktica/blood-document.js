@@ -1,7 +1,7 @@
 import BloodBind from './blood-bind.js';
 
-let uuid_counter = 0;
-function gen_uuid()
+let bloodIdCounter = -1;
+function genBloodId()
 {
     const now = new Date();
     let random = '';
@@ -9,8 +9,19 @@ function gen_uuid()
     {
         random += (Math.random()*16|0).toString(16);
     }
-    ++uuid_counter;
-    return `${now.getFullYear()}.${now.getMonth()}.${now.getDate()}.${now.getHours()}.${now.getMinutes()}.${now.getSeconds()}.${now.getMilliseconds()}.${random}.${uuid_counter}`;
+    ++bloodIdCounter;
+    return `${now.getFullYear()}.${now.getMonth()}.${now.getDate()}.${now.getHours()}.${now.getMinutes()}.${now.getSeconds()}.${now.getMilliseconds()}.${random}.${bloodIdCounter}`;
+}
+
+function hashFunc(input) {
+    let hash = 0;
+    input += '; So say we all.';
+    for (var i=0; i<input.length; ++i) {
+        const char = input.charCodeAt(i);
+        hash = ((hash<<5)-hash) + char;
+        hash = hash|0;
+    }
+    return hash;
 }
 
   export class BloodTeam {
@@ -70,31 +81,42 @@ function gen_uuid()
 }
 export class BloodDocumentMeta {
     constructor() {
-        this.name = 'New Edition';
-        this.author = '';
-        this.logo = null;
+        this.name = new BloodBind.Property('New Edition');
+        this.author = new BloodBind.Property('');
+        this.logo = new BloodBind.Property(null);
         this.almanac = new BloodDocumentMetaAlmanac();
     }
     /// DESTRUCTIVE
     reset() {
-        this.name = 'New Edition';
-        this.author = '';
-        this.logo = null;
+        this.name = new BloodBind.Property('New Edition');
+        this.author = new BloodBind.Property('');
+        this.logo = new BloodBind.Property(null);
         this.almanac.reset();
     }
-    getJson() {
-        return '{"TODO":"one step at a time"}';
+    getSaveData() {
+        return {
+            name: this.name.get(),
+            author: this.author.get(),
+            logo: this.logo.get(),
+            almanac: this.almanac.getSaveData(),
+        };
     }
 }
 export class BloodDocumentMetaAlmanac {
     constructor() {
-        this.synopsis = '';
-        this.overview = '';
+        this.synopsis = new BloodBind.Property('');
+        this.overview = new BloodBind.Property('');
     }
     /// DESTRUCTIVE
     reset() {
-        this.synopsis = '';
-        this.overview = '';
+        this.synopsis = new BloodBind.Property('');
+        this.overview = new BloodBind.Property('');
+    }
+    getSaveData() {
+        return {
+            synopsis: this.synopsis.get(),
+            overview: this.overview.get(),
+        };
     }
 }
 export class BloodCharacter {
@@ -109,7 +131,7 @@ export class BloodCharacter {
 }
 export class BloodDocument {
     constructor() {
-        this.uuid = new BloodBind.Property(gen_uuid());
+        this.bloodId = genBloodId();
         this.previewOnToken = new BloodBind.Property(true);
         this.dirty = new BloodBind.Property(false);
         this.meta = new BloodDocumentMeta();
@@ -124,7 +146,7 @@ export class BloodDocument {
     }
     /// DESTRUCTIVE
     reset() {
-        this.uuid = new BloodBind.Property(gen_uuid());
+        this.bloodId = genBloodId();
         this.previewOnToken.set(true);
         this.meta.reset();
         this.windowTitle.set('Bloodstar Clocktica');
@@ -143,16 +165,25 @@ export class BloodDocument {
         this.dirty.set(true);
     }
     save() {
-        const metaJson = this.meta.getJson();
-        const formData = new FormData();
-        formData.append('meta.json', metaJson);
-        return fetch('https://www.meyermike.com/botc/bloodstarclocktica/test.php', {
+        const saveData = {};
+        saveData['bloodId'] = this.bloodId;
+        saveData['check'] = hashFunc(this.bloodId);
+        saveData['meta.json'] = JSON.stringify(this.meta.getSaveData());
+        // logo.jpg
+        // src_images
+        //  (pngs)
+        // roles
+        //  (id.json)
+        // processed_images
+        //  id.png*N
+        return fetch('https://www.meyermike.com/bloodstar/test.php', {
                 method: 'POST',
-                body: formData
+                headers:{'Content-Type': 'application/json'},
+                body: JSON.stringify(saveData)
             })
-            .then(response => response.json())
+            .then(response => response.text())
+            .then(text => JSON.parse(text))
             .then(response => {
-                console.log(response);
                 const {error,success} = response;
                 if (error) {
                     throw new Error(error);
