@@ -186,7 +186,7 @@ namespace BloodstarClockticaLib
               list-style:none;
               padding:0 0 1rem 0;
               text-align:center;
-              font-size:0.6rem;
+              font-size:0.8rem;
               flex:none;
               font-family:'Roboto Condensed',sans-serif;
             }
@@ -299,6 +299,9 @@ namespace BloodstarClockticaLib
                 }
             }
             @media only screen and (max-width:650px){
+                .page {
+                    margin-right:0;
+                }
                 .page-contents{
                     background-size:57vw;
                 }
