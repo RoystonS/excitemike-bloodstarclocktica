@@ -19,17 +19,6 @@
         }
         return $hash;
     }
-    function getOrigin() {
-        if (array_key_exists('HTTP_ORIGIN', $_SERVER)) {
-            return $_SERVER['HTTP_ORIGIN'];
-        }
-        else if (array_key_exists('HTTP_REFERER', $_SERVER)) {
-            return $_SERVER['HTTP_REFERER'];
-        } else {
-            return $_SERVER['REMOTE_ADDR'];
-        }
-        return "https://www.meyermike.com";
-    }
     function checkKey($key) {
         switch ($key) {
             case 'bloodId': return true;
@@ -95,7 +84,8 @@
     }
 
     // ensure directory exists
-    $output_directory = join_paths('.', $bloodId);
+    $saveDir = './save';
+    $output_directory = join_paths($saveDir, $bloodId);
     if (!file_exists($output_directory)) {
         mkdir($output_directory, 0777, true);
     }
@@ -120,61 +110,5 @@
             fclose($file);
         }
     }
-/*
-    // verify all files before moving any
-    foreach($_FILES as $filename => $data)
-    {
-        if (!preg_match('/^[0-9a-z_\-\.]*$/', $filename)) {
-            echo json_encode(array('error' => ('invalid filename "' . $filename . '"')));
-            exit();
-        }
-        if (!preg_match('/(\.png|\.html|\.json)$/', $filename)) {
-            echo '{"error":"invalid file extension"}';
-            exit();
-        }
-        switch ($_FILES[$filename]['error']) {
-            case UPLOAD_ERR_OK:
-                break;
-            case UPLOAD_ERR_NO_FILE:
-                echo '{"error":"no file sent"}';
-                exit();
-            case UPLOAD_ERR_INI_SIZE:
-            case UPLOAD_ERR_FORM_SIZE:
-                echo '{"error":"Exceeded filesize limit."}';
-                exit();
-            default:
-                echo '{"error":"Unknown error."}';
-                exit();
-        }
-        if ($_FILES[$filename]['size'] > 524288) {
-            echo '{"error":"Exceeded filesize limit."}';
-            exit();
-        }
-        $finfo = new finfo(FILEINFO_MIME_TYPE);
-        $mimetype = $finfo->file($_FILES[$filename]['tmp_name']);
-        switch ($mimetype) {
-            case 'image/png':
-            case 'application/json':
-            case 'text/html':
-                break;
-            default:
-                echo json_encode(array('error' => "invalid mimetype \"$mimetype\""));
-                exit();
-        }
-    }
-    
-    // seems valid! move them!
-    $output_directory = join_paths('..', $uniqid);
-    if (!file_exists($output_directory)) {
-        mkdir($output_directory, 0777, true);
-    }
-
-    foreach($_FILES as $filename => $data) {
-        $output_path = join_paths($output_directory, basename($filename));
-        if (!move_uploaded_file($_FILES[$filename]['tmp_name'], $output_path)) {
-            echo json_encode(array('error' => "error moving file \"$output_path\""));
-            exit();
-        }
-    }*/
     echo json_encode(array('success' => true));
 ?>
