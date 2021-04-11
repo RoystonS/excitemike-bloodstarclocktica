@@ -12,7 +12,7 @@ namespace BloodstarClockticaLib
         private readonly BcDocument document;
         private readonly string imageUrlPrefix;
         private StreamWriter writer;
-        private MarkdownPipeline markdownPipeline;
+        private readonly MarkdownPipeline markdownPipeline;
         internal AlmanacExporter(BcDocument document, string imageUrlPrefix)
         {
             // enable Markdown extensions
@@ -488,7 +488,7 @@ namespace BloodstarClockticaLib
                 Write(@"<p class=""ability"">");
                 if (!string.IsNullOrWhiteSpace(character.Ability))
                 {
-                    Write(character.Ability);
+                    Write(BcExport.DoSubstitutions(character, character.Ability));
                 }
                 Write("</p>");
 
@@ -502,26 +502,26 @@ namespace BloodstarClockticaLib
                 }
 
                 // overview
-                WriteSection(character.AlmanacEntry.Overview, "overview");
+                WriteSection(BcExport.DoSubstitutions(character, character.AlmanacEntry.Overview), "overview");
 
                 // Examples
                 if (!string.IsNullOrWhiteSpace(character.AlmanacEntry.Examples))
                 {
                     Write(@"<h3>Examples</h3>");
-                    WriteSection(character.AlmanacEntry.Examples, "example");
+                    WriteSection(BcExport.DoSubstitutions(character, character.AlmanacEntry.Examples), "example");
                 }
 
                 // How to run
                 if (!string.IsNullOrWhiteSpace(character.AlmanacEntry.HowToRun))
                 {
                     Write(@"<h3>How to Run</h3>");
-                    WriteSection(character.AlmanacEntry.HowToRun, "how-to-run");
+                    WriteSection(BcExport.DoSubstitutions(character, character.AlmanacEntry.HowToRun), "how-to-run");
                 }
 
                 // Tips
                 if (!string.IsNullOrWhiteSpace(character.AlmanacEntry.Tip))
                 {
-                    WriteSection(character.AlmanacEntry.Tip, "tip");
+                    WriteSection(BcExport.DoSubstitutions(character, character.AlmanacEntry.Tip), "tip");
                 }
 
                 // team

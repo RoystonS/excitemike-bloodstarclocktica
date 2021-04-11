@@ -258,6 +258,15 @@ namespace BloodstarClockticaLib
         }
 
         /// <summary>
+        /// Replace certain special words ('$name', $'capname') in the string
+        /// </summary>
+        public static string DoSubstitutions(BcCharacter character, string original)
+        {
+            return original.Replace("$name", character.Name)
+                .Replace("$capname", character.Name.ToUpper());
+        }
+
+        /// <summary>
         /// write out the object for one character
         /// </summary>
         static void ExportCharacter(BcCharacter character, Utf8JsonWriter json, string imageUrlPrefix)
@@ -270,9 +279,9 @@ namespace BloodstarClockticaLib
             }
             json.WriteString("edition", "custom");
             json.WriteNumber("firstNight", string.IsNullOrWhiteSpace(character.FirstNightReminder) ? 0 : character.FirstNightOrder);
-            json.WriteString("firstNightReminder", character.FirstNightReminder);
+            json.WriteString("firstNightReminder", DoSubstitutions(character, character.FirstNightReminder));
             json.WriteNumber("otherNight", string.IsNullOrWhiteSpace(character.OtherNightReminder) ? 0 : character.OtherNightOrder);
-            json.WriteString("otherNightReminder", character.OtherNightReminder);
+            json.WriteString("otherNightReminder", DoSubstitutions(character, character.OtherNightReminder));
             json.WriteStartArray("reminders");
             foreach (var reminder in character.ReminderTokens)
             {
@@ -297,7 +306,7 @@ namespace BloodstarClockticaLib
             json.WriteBoolean("setup", character.Setup);
             json.WriteString("name", character.Name);
             json.WriteString("team", BcTeam.ToExportString(character.Team));
-            json.WriteString("ability", character.Ability);
+            json.WriteString("ability", DoSubstitutions(character, character.Ability));
             if (!string.IsNullOrWhiteSpace(character.Attribution))
             {
                 json.WriteString("attribution", character.Attribution);
