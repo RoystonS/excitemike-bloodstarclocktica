@@ -87,10 +87,10 @@ export class BloodDocumentMeta {
         this.almanac = new BloodDocumentMetaAlmanac();
     }
     /// DESTRUCTIVE
-    reset() {
-        this.name = new BloodBind.Property('New Edition');
-        this.author = new BloodBind.Property('');
-        this.logo = new BloodBind.Property(null);
+    reset(name) {
+        this.name.set(name);
+        this.author.set('');
+        this.logo.set(null);
         this.almanac.reset();
     }
     getSaveData() {
@@ -109,8 +109,8 @@ export class BloodDocumentMetaAlmanac {
     }
     /// DESTRUCTIVE
     reset() {
-        this.synopsis = new BloodBind.Property('');
-        this.overview = new BloodBind.Property('');
+        this.synopsis.set('');
+        this.overview.set('');
     }
     getSaveData() {
         return {
@@ -145,10 +145,10 @@ export class BloodDocument {
         // TODO: hook up automatic title change on dirty
     }
     /// DESTRUCTIVE
-    reset() {
+    reset(name) {
         this.bloodId = genBloodId();
         this.previewOnToken.set(true);
-        this.meta.reset();
+        this.meta.reset(name);
         this.windowTitle.set('Bloodstar Clocktica');
 
         this.characterList.length = 0;
@@ -164,7 +164,7 @@ export class BloodDocument {
         this.characterList.push(new BloodCharacter());
         this.dirty.set(true);
     }
-    save() {
+    async save() {
         const saveData = {};
         saveData['bloodId'] = this.bloodId;
         saveData['check'] = hashFunc(this.bloodId);
@@ -176,24 +176,29 @@ export class BloodDocument {
         //  (id.json)
         // processed_images
         //  id.png*N
-        return fetch('https://www.meyermike.com/bloodstar/test.php', {
+        const response = fetch('https://www.meyermike.com/bloodstar/save.php', {
                 method: 'POST',
                 headers:{'Content-Type': 'application/json'},
                 body: JSON.stringify(saveData)
-            })
-            .then(response => response.text())
-            .then(text => JSON.parse(text))
-            .then(response => {
-                const {error,success} = response;
-                if (error) {
-                    throw new Error(error);
-                }
-            })
-            .then(x => {
-                this.dirty.set(false);
-            })
-            .catch(error => {
-                console.error(error);
             });
+        const responseText = await response.text();
+        const responseJson = JSON.parse(text);
+        const {error,success} = response;
+        if (error) {
+            throw new Error(error);
+        }
+        this.dirty.set(false);
+    }
+    async open(name) {
+        const openData = {};
+        openData['bloodId'] = this.bloodId;
+        saveDaopenDatata['check'] = hashFunc(this.bloodId);
+        saveDaopenDatata['name'] = name;
+        const response = await fetch('https://www.meyermike.com/bloodstar/open.php', {
+                method: 'POST',
+                headers:{'Content-Type': 'application/json'},
+                body: JSON.stringify(openData)
+            });
+        throw new Error('not yet implemented');
     }
 }

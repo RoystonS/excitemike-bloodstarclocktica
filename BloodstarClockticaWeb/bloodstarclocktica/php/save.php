@@ -83,6 +83,20 @@
         $found[$key] = $value;
     }
 
+    // can't overwrite unless clobber flag was set
+    if (isset($data["clobber"]))
+    {
+        $clobber = $data["clobber"];
+    }
+    else
+    {
+        $clobber = false;
+    }
+    if (file_exists($output_directory) && !$clobber) {
+        echo json_encode(array('error' => "already exists"));
+        exit();
+    }
+
     // ensure directory exists
     $saveDir = './save';
     $output_directory = join_paths($saveDir, $bloodId);

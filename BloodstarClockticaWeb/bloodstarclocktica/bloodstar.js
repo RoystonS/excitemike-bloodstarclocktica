@@ -1,9 +1,11 @@
 import { BloodDocument } from './blood-document.js';
 import { BloodDrag } from './blood-drag.js';
 import BloodBind from './blood-bind.js';
-import * as BloodIO from './blood-io.js';
+import * as BloodNewOpen from './dlg/blood-new-open-dlg.js';
+import * as BloodSdc from './dlg/blood-save-discard-cancel.js';
 
 let bloodDocument = new BloodDocument();
+let characterListElement = null;
 
 const makeCharacterListItem = (bloodCharacter) => {
   const row = document.createElement('div');
@@ -71,7 +73,10 @@ const hookupClickEvents = (data) => {
     element.addEventListener('click', cb);
   }
 }
-const init = () => {
+async function newFile(){
+  BloodSdc.savePromptIfDirty();
+}
+async function init() {
   document.onkeydown = e => {
       if (e.ctrlKey) {
           if (e.code === 'KeyS') {
@@ -82,15 +87,28 @@ const init = () => {
   }
   hookupClickEvents([
     ['addcharacterbutton', addCharacterClicked],
-    ['newfilebutton', BloodIO.newFile],
+    ['newfilebutton', newFile],
     ['openfilebutton', BloodIO.openFile],
     ['savefilebutton', BloodIO.saveFile],
     ['savefileasbutton', BloodIO.saveFileAs],
     ['helpbutton', showHelp],
   ]);
 
-  const characterListElement = document.getElementById('characterlist');
-  
+  characterListElement = document.getElementById('characterlist');
+  try {
+    const result = BloodNewOpen.show();
+    const {openName,newName} = result;
+    if (openName) {
+      await bloodDocument.open(openName);
+    } else if (newName) {
+      bloodDocument.reset(newName);
+    } else {
+      throw new Error('Bad result from new-open-dlg');
+    }
+  } catch (e) {
+    console.error(e);
+    bloodDocument.reset('sandbox');
+  }
   BloodDrag.renderItems(characterListElement, bloodDocument.getCharacterList(), makeCharacterListItem, cleanupListItem);
 };
 

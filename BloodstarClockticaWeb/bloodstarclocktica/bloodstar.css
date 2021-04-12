@@ -180,7 +180,7 @@ ul#status {
     list-style: none;
 }
 #status > li {
-    margin-right:6px;
+    margin-right:12px;
 }
 .dropdown{
     cursor:pointer;
@@ -196,7 +196,7 @@ ul#status {
     top:26px;
     left:0;
     display:none;
-    z-index:1000;
+    z-index:1;
     min-width:150px;
     box-shadow: 0px 2px 4px 0px #3977FF;
 }
@@ -216,7 +216,9 @@ ul#status {
 }
 #save-discard-cancel {
     display:none;
-    z-index:2000;
+}
+.dialog-scrim {
+    z-index:2;
     position:fixed;
     left:0;
     top:0;
@@ -227,7 +229,7 @@ ul#status {
     justify-content: space-around;
     align-items: center;
 }
-#sdc-box {
+.dialog-box {
     flex: 0 1 auto;
     background: #222;
     padding: 1rem;
@@ -235,13 +237,24 @@ ul#status {
     box-shadow: 0px 2px 4px 0px #3977FF;
     display:flex;
     flex-flow:column;
-    align-items:center;
 }
-#sdc-btn-group {
+.dialog-btn-group {
     display:flex;
     flex-flow: row;
     align-self: stretch;
+    margin-top:1em;
 }
-#sdc-btn-group > button {
+.dialog-btn-group > button {
     flex:1;
+}
+#new-open-dlg {z-index:2;}
+#open-dlg {z-index:3;}
+#sdc-dlg {z-index:4;}
+.open-dlg-list{
+    display: flex;
+    flex-flow: column;
+    max-height: 50vh;
+    max-width: 90vw;
+    overflow:auto;
+    margin:0.5rem 0 0 0;
 }
