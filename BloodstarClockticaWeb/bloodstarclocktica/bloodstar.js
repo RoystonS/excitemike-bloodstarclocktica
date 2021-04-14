@@ -2,6 +2,7 @@ import { BloodDocument } from './blood-document.js';
 import { BloodDrag } from './blood-drag.js';
 import BloodBind from './blood-bind.js';
 import * as BloodNewOpen from './dlg/blood-new-open-dlg.js';
+import * as BloodOpenDlg from './dlg/blood-open-dlg.js';
 import * as BloodSdc from './dlg/blood-save-discard-cancel.js';
 
 let bloodDocument = new BloodDocument();
@@ -73,9 +74,32 @@ const hookupClickEvents = (data) => {
     element.addEventListener('click', cb);
   }
 }
+
+/// file > new clicked
 async function newFile(){
-  BloodSdc.savePromptIfDirty();
+  if (await BloodSdc.savePromptIfDirty()) {
+    bloodDocument.reset('New Edition');
+  }
 }
+
+/// file > open clicked
+async function openFile(){
+  if (await BloodSdc.savePromptIfDirty()) {
+    const name = await BloodOpenDlg.show();
+    if (name) {
+      await bloodDocument.open(openName);
+    }
+  }
+}
+/// file > save clicked
+async function saveFile(){
+  await bloodDocument.save();
+}
+/// file > save as clicked
+async function saveFileAs(){
+  throw new Error('not yet implemented');
+}
+
 async function init() {
   document.onkeydown = e => {
       if (e.ctrlKey) {
@@ -88,15 +112,15 @@ async function init() {
   hookupClickEvents([
     ['addcharacterbutton', addCharacterClicked],
     ['newfilebutton', newFile],
-    ['openfilebutton', BloodIO.openFile],
-    ['savefilebutton', BloodIO.saveFile],
-    ['savefileasbutton', BloodIO.saveFileAs],
+    ['openfilebutton', openFile],
+    ['savefilebutton', saveFile],
+    ['savefileasbutton', saveFileAs],
     ['helpbutton', showHelp],
   ]);
 
   characterListElement = document.getElementById('characterlist');
   try {
-    const result = BloodNewOpen.show();
+    const result = await BloodNewOpen.show();
     const {openName,newName} = result;
     if (openName) {
       await bloodDocument.open(openName);

@@ -26,21 +26,21 @@ function init() {
     if (initted) { return; }
     initted = true;
 
-    const message = document.createElement('span');
-    message.innerText = 'To get started, open an existing edition or create a new one.';
+    const spinner = document.createElement('div');
+    spinner.className = 'spinner';
     
-    const buttons = [
-        ['Open Existing', openExisting],
-        ['Create New', createNew]
-    ];
-    [showFn, closeFn] = BloodDlg.init('new-open-dlg', [message], buttons);
+    [showFn, closeFn] = BloodDlg.init('new-open-dlg', [spinner], []);
 }
 
-/// bring up dialog for picking whether to open an existing file or start a new one
-/// returns a promise that resolves to an object like one of these:
-///   {'open': <name>}
-///   {'new': <name>}
-export async function show() {
+/// show the spinner until the promise resolves
+export async function show(somePromise) {
     if (!initted) { init(); }
-    return await showFn();
+
+    // ignore result promise
+    showFn();
+    try {
+        await somePromise;
+    } finally {
+        closeFn();
+    }
 }

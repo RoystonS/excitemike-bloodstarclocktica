@@ -1,4 +1,5 @@
 import BloodBind from './blood-bind.js';
+import * as LoadDlg from './dlg/blood-loading-dlg.js';
 
 let bloodIdCounter = -1;
 function genBloodId()
@@ -165,6 +166,9 @@ export class BloodDocument {
         this.dirty.set(true);
     }
     async save() {
+        return await LoadDlg.show(this._save());
+    }
+    async _save() {
         const saveData = {};
         saveData['bloodId'] = this.bloodId;
         saveData['check'] = hashFunc(this.bloodId);
@@ -176,14 +180,14 @@ export class BloodDocument {
         //  (id.json)
         // processed_images
         //  id.png*N
-        const response = fetch('https://www.meyermike.com/bloodstar/save.php', {
+        const response = await fetch('https://www.meyermike.com/bloodstar/save.php', {
                 method: 'POST',
                 headers:{'Content-Type': 'application/json'},
                 body: JSON.stringify(saveData)
             });
         const responseText = await response.text();
-        const responseJson = JSON.parse(text);
-        const {error,success} = response;
+        const responseJson = JSON.parse(responseText);
+        const {error,success} = responseJson;
         if (error) {
             throw new Error(error);
         }

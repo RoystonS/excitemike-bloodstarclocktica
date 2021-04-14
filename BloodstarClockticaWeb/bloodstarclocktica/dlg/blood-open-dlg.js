@@ -4,6 +4,7 @@ import * as Util from '../blood-util.js'
 
 let initted = false;
 let showFn = null;
+let closeFn = null;
 let fileListDiv = null;
 
 /// user chose to cancel
@@ -22,12 +23,12 @@ function init() {
     fileListDiv.className = 'open-dlg-list';
     
     const buttons = [['Cancel', cancelClicked]];
-    showFn = BloodDlg.init('open-dlg', [message, fileListDiv], buttons);
+    [showFn, closeFn] = BloodDlg.init('open-dlg', [message, fileListDiv], buttons);
 }
 
 /// update list of files
 function repopulateFileList(fileList) {
-    Util.removeAllChildNodes(fileList);
+    Util.removeAllChildNodes(fileListDiv);
 
     if (fileList.length === 0) {
         const span = document.createElement('span');

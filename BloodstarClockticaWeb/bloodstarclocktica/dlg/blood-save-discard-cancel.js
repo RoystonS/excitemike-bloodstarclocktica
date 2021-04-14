@@ -3,6 +3,7 @@ import * as BloodDlg from './blood-dlg.js';
 
 let initted = false;
 let showFn = null;
+let closeFn = null;
 
 function addToRecentDocuments() {
     
@@ -60,7 +61,7 @@ export function init() {
         ['Discard', sdcDiscardClicked],
         ['Cancel', sdcCancelClicked],
     ];
-    showFn = BloodDlg.init('sdc-dlg', [message], buttons);
+    [showFn, closeFn] = BloodDlg.init('sdc-dlg', [message], buttons);
 }
 
 /// if document is dirty, prompt for a save. Call the callback if the user saves or discards changes
