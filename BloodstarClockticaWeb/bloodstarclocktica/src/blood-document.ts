@@ -1,5 +1,14 @@
-import BloodBind from './blood-bind.js';
-import * as LoadDlg from './dlg/blood-loading-dlg.js';
+import * as BloodBind from './blood-bind';
+import * as LoadDlg from './dlg/blood-loading-dlg';
+
+type SaveData = {
+    bloodId:string,
+    check:number,
+    'meta.json':string,
+    src_images:{[key:string]:string},
+    roles:{[key:string]:string},
+    processed_images:{[key:string]:string},
+};
 
 let bloodIdCounter = -1;
 function genBloodId()
@@ -14,7 +23,7 @@ function genBloodId()
     return `${now.getFullYear()}.${now.getMonth()}.${now.getDate()}.${now.getHours()}.${now.getMinutes()}.${now.getSeconds()}.${now.getMilliseconds()}.${random}.${bloodIdCounter}`;
 }
 
-function hashFunc(input) {
+function hashFunc(input:string) {
     let hash = 0;
     input += '; So say we all.';
     for (var i=0; i<input.length; ++i) {
@@ -36,7 +45,7 @@ function hashFunc(input) {
     static MINION_DISPLAY = 'Minion';
     static DEMON_DISPLAY = 'Demon';
     static TRAVELER_DISPLAY = 'Traveler';
-    static toIdString(displayString) {
+    static toIdString(displayString:string) {
         switch (displayString.toLowerCase())
         {
             case "townsfolk":
@@ -50,9 +59,11 @@ function hashFunc(input) {
             case "traveller":
             case "traveler":
                 return BloodTeam.TRAVELER;
+            default:
+                return BloodTeam.TOWNSFOLK;
         }
     }
-    static toDisplayString(teamString) {
+    static toDisplayString(teamString:string) {
         switch (teamString.toLowerCase())
         {
             case "townsfolk":
@@ -66,6 +77,8 @@ function hashFunc(input) {
             case "traveller":
             case "traveler":
                 return BloodTeam.TRAVELER_DISPLAY;
+            default:
+                return BloodTeam.TOWNSFOLK_DISPLAY;
         }
     }
 
@@ -81,14 +94,18 @@ function hashFunc(input) {
     }
 }
 export class BloodDocumentMeta {
+    private name: BloodBind.Property<string>;
+    private author: BloodBind.Property<string>;
+    private logo: BloodBind.Property<string|null>;
+    private almanac: BloodDocumentMetaAlmanac;
     constructor() {
         this.name = new BloodBind.Property('New Edition');
         this.author = new BloodBind.Property('');
-        this.logo = new BloodBind.Property(null);
+        this.logo = new BloodBind.Property<string|null>(null);
         this.almanac = new BloodDocumentMetaAlmanac();
     }
     /// DESTRUCTIVE
-    reset(name) {
+    reset(name:string) {
         this.name.set(name);
         this.author.set('');
         this.logo.set(null);
@@ -102,8 +119,11 @@ export class BloodDocumentMeta {
             almanac: this.almanac.getSaveData(),
         };
     }
+    getName():string { return this.name.get(); }
 }
 export class BloodDocumentMetaAlmanac {
+    private synopsis: BloodBind.Property<string>;
+    private overview: BloodBind.Property<string>;
     constructor() {
         this.synopsis = new BloodBind.Property('');
         this.overview = new BloodBind.Property('');
@@ -121,20 +141,41 @@ export class BloodDocumentMetaAlmanac {
     }
 }
 export class BloodCharacter {
+    private id: BloodBind.Property<string>;
+    private name: BloodBind.Property<string>;
+    private unStyledImage: BloodBind.Property<string|null>;
+    private styledImage: BloodBind.Property<string|null>;
+    private team: BloodBind.Property<string>;
+    private export: BloodBind.Property<boolean>;
     constructor() {
         this.id = new BloodBind.Property('newcharacter');
         this.name = new BloodBind.Property('New Character');
-        this.unStyledImage = new BloodBind.Property(null);
-        this.styledImage = new BloodBind.Property(null);
+        this.unStyledImage = new BloodBind.Property<string|null>(null);
+        this.styledImage = new BloodBind.Property<string|null>(null);
         this.team = new BloodBind.EnumProperty(BloodTeam.TOWNSFOLK, BloodTeam.options());
-        this.export = new BloodBind.Property(true);
+        this.export = new BloodBind.Property<boolean>(true);
     }
+    getIdProperty():BloodBind.Property<string>{return this.id;}
+    getNameProperty():BloodBind.Property<string>{return this.name;}
+    getName():string{return this.name.get();}
+    getUnStyledImageProperty():BloodBind.Property<string|null>{return this.unStyledImage;}
+    getStyledImageProperty():BloodBind.Property<string|null>{return this.styledImage;}
+    getTeamPropertyProperty():BloodBind.Property<string>{return this.team;}
+    getExportProperty():BloodBind.Property<boolean>{return this.export;}
 }
 export class BloodDocument {
+    private bloodId: string;
+    private previewOnToken: BloodBind.Property<boolean>;
+    private dirty: BloodBind.Property<boolean>;
+    private meta: BloodDocumentMeta;
+    private windowTitle: BloodBind.Property<string>;
+    private characterList: BloodCharacter[];
+    private firstNightOrder: bigint[];
+    private otherNightOrder: bigint[];
     constructor() {
         this.bloodId = genBloodId();
-        this.previewOnToken = new BloodBind.Property(true);
-        this.dirty = new BloodBind.Property(false);
+        this.previewOnToken = new BloodBind.Property<boolean>(true);
+        this.dirty = new BloodBind.Property<boolean>(false);
         this.meta = new BloodDocumentMeta();
         this.windowTitle = new BloodBind.Property('Bloodstar Clocktica');
         // TODO: list properties
@@ -146,7 +187,7 @@ export class BloodDocument {
         // TODO: hook up automatic title change on dirty
     }
     /// DESTRUCTIVE
-    reset(name) {
+    reset(name:string) {
         this.bloodId = genBloodId();
         this.previewOnToken.set(true);
         this.meta.reset(name);
@@ -165,21 +206,21 @@ export class BloodDocument {
         this.characterList.push(new BloodCharacter());
         this.dirty.set(true);
     }
-    async save() {
+    async saveAs(_name:string):Promise<boolean> {
+        throw new Error("not yet implemented");
+    }
+    async save():Promise<boolean> {
         return await LoadDlg.show(this._save());
     }
-    async _save() {
-        const saveData = {};
-        saveData['bloodId'] = this.bloodId;
-        saveData['check'] = hashFunc(this.bloodId);
-        saveData['meta.json'] = JSON.stringify(this.meta.getSaveData());
-        // logo.jpg
-        // src_images
-        //  (pngs)
-        // roles
-        //  (id.json)
-        // processed_images
-        //  id.png*N
+    async _save():Promise<boolean> {
+        const saveData:SaveData = {
+            bloodId: this.bloodId,
+            check: hashFunc(this.bloodId),
+            'meta.json': JSON.stringify(this.meta.getSaveData()),
+            src_images:{},
+            roles:{},
+            processed_images:{}
+        };
         const response = await fetch('https://www.meyermike.com/bloodstar/save.php', {
                 method: 'POST',
                 headers:{'Content-Type': 'application/json'},
@@ -187,22 +228,32 @@ export class BloodDocument {
             });
         const responseText = await response.text();
         const responseJson = JSON.parse(responseText);
-        const {error,success} = responseJson;
+        const {error} = responseJson;
         if (error) {
             throw new Error(error);
         }
         this.dirty.set(false);
+        return true;
     }
-    async open(name) {
-        const openData = {};
-        openData['bloodId'] = this.bloodId;
-        saveDaopenDatata['check'] = hashFunc(this.bloodId);
-        saveDaopenDatata['name'] = name;
+    async open(name:string) {
+        const openData = {
+            bloodId: this.bloodId,
+            check: hashFunc(this.bloodId),
+            name: name
+        };
         const response = await fetch('https://www.meyermike.com/bloodstar/open.php', {
                 method: 'POST',
                 headers:{'Content-Type': 'application/json'},
                 body: JSON.stringify(openData)
             });
         throw new Error('not yet implemented');
+    }
+    getDirty():boolean { return this.dirty.get(); }
+    getName():string { return this.meta.getName(); }
+    getFirstNightOrder():bigint[] {
+        return this.firstNightOrder;
+    }
+    getOtherNightOrder():bigint[] {
+        return this.otherNightOrder;
     }
 }

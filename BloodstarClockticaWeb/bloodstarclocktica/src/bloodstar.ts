@@ -1,14 +1,14 @@
-import { BloodDocument } from './blood-document.js';
-import { BloodDrag } from './blood-drag.js';
-import BloodBind from './blood-bind.js';
-import * as BloodNewOpen from './dlg/blood-new-open-dlg.js';
-import * as BloodOpenDlg from './dlg/blood-open-dlg.js';
-import * as BloodSdc from './dlg/blood-save-discard-cancel.js';
+import * as BloodDocument from './blood-document';
+import { BloodDrag } from './blood-drag';
+import BloodBind from './blood-bind';
+import * as BloodNewOpen from './dlg/blood-new-open-dlg';
+import * as BloodOpenDlg from './dlg/blood-open-dlg';
+import * as BloodSdc from './dlg/blood-save-discard-cancel';
 
-let bloodDocument = new BloodDocument();
+let bloodDocument = new BloodDocument.BloodDocument();
 let characterListElement = null;
 
-const makeCharacterListItem = (bloodCharacter) => {
+const makeCharacterListItem = (bloodCharacter:BloodDocument.BloodCharacter) => {
   const row = document.createElement('div');
   row.className = 'character-list-item';
 
@@ -16,15 +16,15 @@ const makeCharacterListItem = (bloodCharacter) => {
     const checkbox = document.createElement('input');
     checkbox.type = 'checkbox';
     checkbox.className = 'checkbox';
-    BloodBind.bindCheckbox(checkbox, bloodCharacter.export);
+    BloodBind.bindCheckbox(checkbox, bloodCharacter.getExportProperty());
     row.appendChild(checkbox);
   }
   
   {
       const nameElement = document.createElement('a');
       nameElement.className = 'character-list-name';
-      nameElement.onclick = ()=>console.log(bloodCharacter.name.get());
-      BloodBind.bindLabel(nameElement, bloodCharacter.name);
+      nameElement.onclick = ()=>console.log(bloodCharacter.getName());
+      BloodBind.bindLabel(nameElement, bloodCharacter.getNameProperty());
       row.appendChild(nameElement);
   }
 
@@ -54,24 +54,28 @@ const makeCharacterListItem = (bloodCharacter) => {
 
   return row;
 };
-const cleanupListItem = element => {
-  element.childNodes.forEach(node => {
+function cleanupListItem(node:Node):void {
+  node.childNodes.forEach(node => {
     BloodBind.unbindElement(node);
     node.childNodes.forEach(cleanupListItem);
   });
 };
-const addCharacterClicked = (e) => {
+function addCharacterClicked(_:Event):void {
   bloodDocument.addNewCharacter();
   const characterListElement = document.getElementById('characterlist');
-  BloodDrag.renderItems(characterListElement, bloodDocument.getCharacterList(), makeCharacterListItem, cleanupListItem);
+  if (characterListElement) {
+    BloodDrag.renderItems(characterListElement, bloodDocument.getCharacterList(), makeCharacterListItem, cleanupListItem);
+  }
 }
 function showHelp() {
 
 }
-const hookupClickEvents = (data) => {
+function hookupClickEvents(data:[string,(e:Event)=>void][]) {
   for (const [id, cb] of data) {
     const element = document.getElementById(id);
-    element.addEventListener('click', cb);
+    if (element) {
+      element.addEventListener('click', cb);
+    }
   }
 }
 
@@ -87,7 +91,7 @@ async function openFile(){
   if (await BloodSdc.savePromptIfDirty()) {
     const name = await BloodOpenDlg.show();
     if (name) {
-      await bloodDocument.open(openName);
+      await bloodDocument.open(name);
     }
   }
 }
@@ -105,7 +109,7 @@ async function init() {
       if (e.ctrlKey) {
           if (e.code === 'KeyS') {
               e.preventDefault();
-              BloodIO.saveFile();
+              saveFile();
           }
       }
   }
@@ -118,7 +122,6 @@ async function init() {
     ['helpbutton', showHelp],
   ]);
 
-  characterListElement = document.getElementById('characterlist');
   try {
     const result = await BloodNewOpen.show();
     const {openName,newName} = result;
@@ -133,7 +136,10 @@ async function init() {
     console.error(e);
     bloodDocument.reset('sandbox');
   }
-  BloodDrag.renderItems(characterListElement, bloodDocument.getCharacterList(), makeCharacterListItem, cleanupListItem);
+  characterListElement = document.getElementById('characterlist');
+  if (characterListElement) {
+    BloodDrag.renderItems(characterListElement, bloodDocument.getCharacterList(), makeCharacterListItem, cleanupListItem);
+  }
 };
 
 // wait for dom to load

@@ -1,10 +1,10 @@
 // newfile/openfile dialog for bloodstar clocktica
-import * as BloodDlg from './blood-dlg.js';
-import * as BloodOpenDlg from './blood-open-dlg.js';
+import * as BloodDlg from './blood-dlg';
+import * as BloodOpenDlg from './blood-open-dlg';
 
-let initted = false;
-let showFn = null;
-let closeFn = null;
+let initted:boolean = false;
+let showFn:BloodDlg.OpenFn|null = null;
+let closeFn:BloodDlg.CloseFn|null = null;
 
 /// user chose to open an existing file
 async function openExisting() {
@@ -17,8 +17,8 @@ async function openExisting() {
 }
 
 /// user chose to create a new file
-function createNew() {
-    return {newName:'New Edition'};
+function createNew():Promise<any> {
+    return Promise.resolve({newName:'New Edition'});
 }
 
 /// prepare the dialog for use
@@ -29,9 +29,9 @@ function init() {
     const message = document.createElement('span');
     message.innerText = 'To get started, open an existing edition or create a new one.';
     
-    const buttons = [
-        ['Open Existing', openExisting],
-        ['Create New', createNew]
+    const buttons:BloodDlg.ButtonCfg[] = [
+        {label:'Open Existing', callback:openExisting},
+        {label:'Create New', callback:createNew}
     ];
     [showFn, closeFn] = BloodDlg.init('new-open-dlg', [message], buttons);
 }
@@ -42,5 +42,12 @@ function init() {
 ///   {'new': <name>}
 export async function show() {
     if (!initted) { init(); }
+    if (!showFn) { return; }
     return await showFn();
+}
+
+/// take down the popup
+export function close(result:any) {
+    if (!closeFn) { return; }
+    closeFn(result);
 }
