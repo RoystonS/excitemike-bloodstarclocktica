@@ -3,6 +3,7 @@ import { BloodDrag } from './blood-drag';
 import BloodBind from './blood-bind';
 import * as BloodNewOpen from './dlg/blood-new-open-dlg';
 import * as BloodOpenDlg from './dlg/blood-open-dlg';
+import * as BloodStringDlg from './dlg/blood-string-dlg';
 import * as BloodSdc from './dlg/blood-save-discard-cancel';
 
 let bloodDocument = new BloodDocument.BloodDocument();
@@ -23,7 +24,7 @@ const makeCharacterListItem = (bloodCharacter:BloodDocument.BloodCharacter) => {
   {
       const nameElement = document.createElement('a');
       nameElement.className = 'character-list-name';
-      nameElement.onclick = ()=>console.log(bloodCharacter.getName());
+      nameElement.onclick = ()=>console.log("clicked on " + bloodCharacter.getName());
       BloodBind.bindLabel(nameElement, bloodCharacter.getNameProperty());
       row.appendChild(nameElement);
   }
@@ -96,14 +97,24 @@ async function openFile(){
   }
 }
 /// file > save clicked
-async function saveFile(){
-  await bloodDocument.save();
+async function saveFile():Promise<boolean> {
+  return await bloodDocument.save();
 }
 /// file > save as clicked
-async function saveFileAs(){
-  throw new Error('not yet implemented');
+async function saveFileAs():Promise<boolean> {
+  const name = await promptForName(bloodDocument.getName());
+  if (name) {
+    return await bloodDocument.saveAs(name);
+  }
+  return Promise.resolve(false);
 }
 
+/// prompt the user to enter a name to save as
+async function promptForName(defaultName:string):Promise<string|null> {
+  return await BloodStringDlg.show('Enter name to save as', defaultName);
+}
+
+/// prepare app
 async function init() {
   document.onkeydown = e => {
       if (e.ctrlKey) {

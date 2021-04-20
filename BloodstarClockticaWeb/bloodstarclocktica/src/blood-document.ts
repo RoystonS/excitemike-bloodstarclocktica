@@ -235,17 +235,17 @@ export class BloodDocument {
         this.dirty.set(false);
         return true;
     }
-    async open(name:string) {
-        const openData = {
-            bloodId: this.bloodId,
-            check: hashFunc(this.bloodId),
-            name: name
-        };
-        const response = await fetch('https://www.meyermike.com/bloodstar/open.php', {
-                method: 'POST',
-                headers:{'Content-Type': 'application/json'},
-                body: JSON.stringify(openData)
-            });
+    async open(_name:string) {
+        //const openData = {
+        //    bloodId: this.bloodId,
+        //    check: hashFunc(this.bloodId),
+        //    name: name
+        //};
+        //const response = await fetch('https://www.meyermike.com/bloodstar/open.php', {
+        //        method: 'POST',
+        //        headers:{'Content-Type': 'application/json'},
+        //        body: JSON.stringify(openData)
+        //    });
         throw new Error('not yet implemented');
     }
     getDirty():boolean { return this.dirty.get(); }
