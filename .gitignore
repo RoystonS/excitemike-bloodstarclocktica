@@ -11,3 +11,5 @@ Installer/bin/
 Installer/obj/
 obj/
 packages/
+.htpasswd
+.htaccess
