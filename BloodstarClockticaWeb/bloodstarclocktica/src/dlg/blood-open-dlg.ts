@@ -45,8 +45,10 @@ function repopulateFileList(fileList:string[]) {
     }
 }
 
-/// bring up dialog for picking whether to open an existing file or start a new one
-/// returns a promise that resolves to a name, or null if the dialog was cancelled
+/**
+ * bring up dialog for picking whether to open an existing file or start a new one
+ * returns a promise that resolves to a name, or null if the dialog was cancelled
+ */
 export async function show() {
     if (!initted) { init(); }
     if (!showFn) { return; }

@@ -1,40 +1,18 @@
 import * as BloodBind from './blood-bind';
-import * as LoadDlg from './dlg/blood-loading-dlg';
+import * as BloodIO from './blood-io';
 
-type SaveData = {
-    bloodId:string,
+export type SaveData = {
+    saveName:string,
     check:number,
-    'meta.json':string,
+    meta:string,
     src_images:{[key:string]:string},
     roles:{[key:string]:string},
     processed_images:{[key:string]:string},
+    firstNightOrder:string[],
+    otherNightOrder:string[],
 };
 
-let bloodIdCounter = -1;
-function genBloodId()
-{
-    const now = new Date();
-    let random = '';
-    for (let i=0; i<4; ++i)
-    {
-        random += (Math.random()*16|0).toString(16);
-    }
-    ++bloodIdCounter;
-    return `${now.getFullYear()}.${now.getMonth()}.${now.getDate()}.${now.getHours()}.${now.getMinutes()}.${now.getSeconds()}.${now.getMilliseconds()}.${random}.${bloodIdCounter}`;
-}
-
-function hashFunc(input:string) {
-    let hash = 0;
-    input += '; So say we all.';
-    for (var i=0; i<input.length; ++i) {
-        const char = input.charCodeAt(i);
-        hash = ((hash<<5)-hash) + char;
-        hash = hash|0;
-    }
-    return hash;
-}
-
-  export class BloodTeam {
+export class BloodTeam {
     static TOWNSFOLK = 'townsfolk';
     static OUTSIDER = 'outsider';
     static MINION = 'minion';
@@ -164,7 +142,7 @@ export class BloodCharacter {
     getExportProperty():BloodBind.Property<boolean>{return this.export;}
 }
 export class BloodDocument {
-    private bloodId: string;
+    private saveName: string;
     private previewOnToken: BloodBind.Property<boolean>;
     private dirty: BloodBind.Property<boolean>;
     private meta: BloodDocumentMeta;
@@ -173,7 +151,7 @@ export class BloodDocument {
     private firstNightOrder: bigint[];
     private otherNightOrder: bigint[];
     constructor() {
-        this.bloodId = genBloodId();
+        this.saveName = '';
         this.previewOnToken = new BloodBind.Property<boolean>(true);
         this.dirty = new BloodBind.Property<boolean>(false);
         this.meta = new BloodDocumentMeta();
@@ -188,7 +166,7 @@ export class BloodDocument {
     }
     /// DESTRUCTIVE
     reset(name:string) {
-        this.bloodId = genBloodId();
+        this.saveName = '';
         this.previewOnToken.set(true);
         this.meta.reset(name);
         this.windowTitle.set('Bloodstar Clocktica');
@@ -206,54 +184,53 @@ export class BloodDocument {
         this.characterList.push(new BloodCharacter());
         this.dirty.set(true);
     }
-    async saveAs(_name:string):Promise<boolean> {
-        throw new Error("not yet implemented");
-    }
-    async save():Promise<boolean> {
-        return await LoadDlg.show(this._save());
-    }
-    async _save():Promise<boolean> {
-        const saveData:SaveData = {
-            bloodId: this.bloodId,
-            check: hashFunc(this.bloodId),
-            'meta.json': JSON.stringify(this.meta.getSaveData()),
-            src_images:{},
-            roles:{},
-            processed_images:{}
-        };
-        const response = await fetch('https://www.meyermike.com/bloodstar/save.php', {
-                method: 'POST',
-                headers:{'Content-Type': 'application/json'},
-                body: JSON.stringify(saveData)
-            });
-        const responseText = await response.text();
-        const responseJson = JSON.parse(responseText);
-        const {error} = responseJson;
-        if (error) {
-            throw new Error(error);
-        }
-        this.dirty.set(false);
-        return true;
-    }
-    async open(_name:string) {
-        //const openData = {
-        //    bloodId: this.bloodId,
-        //    check: hashFunc(this.bloodId),
-        //    name: name
-        //};
-        //const response = await fetch('https://www.meyermike.com/bloodstar/open.php', {
-        //        method: 'POST',
-        //        headers:{'Content-Type': 'application/json'},
-        //        body: JSON.stringify(openData)
-        //    });
-        throw new Error('not yet implemented');
-    }
+
     getDirty():boolean { return this.dirty.get(); }
+    setDirty(value:boolean):void { this.dirty.set(value); }
+
     getName():string { return this.meta.getName(); }
     getFirstNightOrder():bigint[] {
         return this.firstNightOrder;
     }
     getOtherNightOrder():bigint[] {
         return this.otherNightOrder;
+    }
+
+    /**
+     * set name to save as
+     */
+    getSaveName():string { return this.saveName; }
+
+    /**
+     * set name to save as
+     */
+    setSaveName(value:string):void { this.saveName = value; }
+
+    /**
+     * object to serialize as save file
+     */ 
+    getSaveData():SaveData {
+        // TODO
+        const firstNightOrderSaveData:string[] = [];
+        const otherNightOrderSaveData:string[] = [];
+        return {
+            saveName: this.getSaveName(),
+            check: BloodIO.hashFunc(this.getSaveName()),
+            meta: JSON.stringify(this.getSaveData()),
+            src_images:{},
+            roles:{},
+            processed_images:{},
+            firstNightOrder:firstNightOrderSaveData,
+            otherNightOrder:otherNightOrderSaveData
+        }
+    };
+
+    /**
+     * set to opened file
+     * @param data 
+     */
+     open(data:SaveData):boolean {
+        throw new Error("Not yet implemented");
+        return true;
     }
 }

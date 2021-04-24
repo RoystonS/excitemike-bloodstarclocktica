@@ -1,3 +1,8 @@
+/**
+ * Prepares a dialog. Use to build custom dialogs. FSee other moduels in this folder for examples
+ * @module
+ */
+
 type ResolveFn = (value:any)=>void;
 type RejectFn = (error:any)=>void;
 type ButtonCb = ()=>Promise<any>;
@@ -8,7 +13,9 @@ type DialogData = {
 };
 const dialogData = new Map<Element, DialogData>();
 
-/// show the dialog, store promise callbacks
+/**
+ * used internally to build the show function
+ */
 function openDialog(dialog:HTMLElement, resolve:ResolveFn, reject:RejectFn) {
     const data = dialogData.get(dialog);
     if (data) {
@@ -18,7 +25,10 @@ function openDialog(dialog:HTMLElement, resolve:ResolveFn, reject:RejectFn) {
     dialogData.set(dialog, {resolve, reject});
 }
 
-/// resolve promise and hide the dialog
+/**
+ * call callback, close dialog and resolve the show function's 
+ * promise with the callback's return value
+ */
 async function closeDialog_cb(dialog:HTMLElement, callback:ButtonCb) {
     let value:any = null;
     try {
@@ -28,7 +38,10 @@ async function closeDialog_cb(dialog:HTMLElement, callback:ButtonCb) {
     }
 }
 
-/// resolve promise and hide the dialog
+/**
+ * close dialog and resolve the show function's 
+ * promise with the provided value
+ */
 function closeDialog(dialog:HTMLElement, result:any) {
     const data = dialogData.get(dialog);
     if (!data) { return; }
@@ -37,7 +50,10 @@ function closeDialog(dialog:HTMLElement, result:any) {
     data.resolve(result);
 }
 
-/// resolve the current dialog
+/**
+ * given an htmlelement in the dialog, close the dialog and 
+ * resolve the show function's promise with the provided value
+ */
 export function resolveDialog(element:HTMLElement, valueOrPromise:any) {
     const dialog = element.closest('.dialog-scrim');
     if (!dialog) { return; }
@@ -53,15 +69,17 @@ export function resolveDialog(element:HTMLElement, valueOrPromise:any) {
 export type OpenFn = ()=>Promise<any>;
 export type CloseFn = (result:any)=>void;
 
-/// prepare a dialog
-/// 
-/// id - css id for the dialog
-/// body - Array of elements to be added inside the dialog
-/// buttons - Array of Objects that look like {label:'someLabel', callback:someCallback}. used to create buttons
-///           The callback should return a promise, whose result will be used as the result of the dialog
-/// return - an array containing:
-///            0: a function that you can call to open the popup `function openFn():Promise{...}`
-///            1: a function you can call to close the popup early `function closeFn(result):void{...}`
+/**
+ * prepare a dialog
+ *
+ * @param id css id for the dialog
+ * @param body Array of elements to be added inside the dialog
+ * @param buttons Array of Objects that look like {label:'someLabel', callback:someCallback}. used to create buttons
+ *                The callback should return a promise, whose result will be used as the result of the dialog
+ * @return an array containing:
+ *            0: a function that you can call to open the popup `function openFn():Promise{...}`
+ *            1: a function you can call to close the popup early `function closeFn(result):void{...}`
+ */
 export function init(id:string, body:HTMLElement[], buttons:ButtonCfg[]):[OpenFn, CloseFn] {
     // TODO: track whether this id was used before. early exit if it has been
     const dialog = document.createElement('div');

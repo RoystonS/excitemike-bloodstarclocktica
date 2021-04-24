@@ -21,14 +21,17 @@
     }
     function checkKey($key) {
         switch ($key) {
-            case 'bloodId': return true;
-            case 'check': return true;
-            case 'meta.json': return true;
-            case 'logo.jpg': return true;
+            case 'saveName':
+            case 'check':
+            case 'meta':
+            case 'src_images':
+            case 'roles':
+            case 'processed_images':
+            case 'firstNightOrder':
+            case 'otherNightOrder':
+                return true;
             default:
-                return preg_match('/^processed_images\/\w+[.]png$/', $key) ||
-                preg_match('/^roles\/\w+[.]json$/', $key) ||
-                preg_match('/^src_images\/\w+[.]png$/', $key);
+                return false;
         }
         return false;
     }
@@ -43,18 +46,18 @@
 
     $data = json_decode(file_get_contents('php://input'), true);
 
-    if (isset($data["bloodId"]))
+    if (isset($data["saveName"]))
     {
-        $bloodId = $data["bloodId"];
+        $saveName = $data["saveName"];
     }
     else
     {
-        echo '{"error":"no id provided"}';
+        echo '{"error":"no saveName provided"}';
         exit();
     }
 
-    if (!preg_match("/^[0-9a-fA-F.]+$/", $bloodId)) {
-        echo '{"error":"invalid id"}';
+    if (!preg_match("/^[0-9a-fA-F.]+$/", $saveName)) {
+        echo '{"error":"invalid saveName"}';
         exit();
     }
 
@@ -69,7 +72,7 @@
         exit();
     }
 
-    $hashResult = hashFunc($bloodId);
+    $hashResult = hashFunc($saveName);
     if ($hashResult != $check) {
         echo json_encode(array('error' =>"failed hash check: '$check' vs '$hashResult'"));
         exit();
@@ -99,14 +102,14 @@
 
     // ensure directory exists
     $saveDir = './save';
-    $output_directory = join_paths($saveDir, $bloodId);
+    $output_directory = join_paths($saveDir, $saveName);
     if (!file_exists($output_directory)) {
         mkdir($output_directory, 0777, true);
     }
 
     // write files
     foreach ( $data as $key => $value ) {
-        if (($key == 'bloodId') || ($key == 'check')) {
+        if (($key == 'saveName') || ($key == 'check')) {
             continue;
         }
 
