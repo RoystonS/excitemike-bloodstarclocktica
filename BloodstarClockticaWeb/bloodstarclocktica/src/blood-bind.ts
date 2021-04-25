@@ -1,5 +1,6 @@
 type PropertyChangeListener<T> = (value:T)=>void;
 
+/** generic observable property */
 export class Property<T> {
     value:T;
     listeners:PropertyChangeListener<T>[];
@@ -11,7 +12,7 @@ export class Property<T> {
     set(value:T) {
         if (this.value !== value) {
             this.value = value;
-            this._notifyListeners();
+            this.notifyListeners();
         }
     }
     get() {
@@ -26,7 +27,7 @@ export class Property<T> {
     removeAllListeners() {
         this.listeners = [];
     }
-    _notifyListeners() {
+    private notifyListeners() {
         const backup = this.listeners.concat();
         backup.forEach(cb=>cb(this.value));
     }
@@ -35,6 +36,7 @@ export class Property<T> {
 type DisplayValuePair<ValueType> = {display:string,value:ValueType};
 type DisplayValuePairs<ValueType> = DisplayValuePair<ValueType>[];
 
+/** observable property for an enum/select element */
 export class EnumProperty<ValueType> extends Property<ValueType> {
     options:DisplayValuePairs<ValueType>;
 
@@ -44,29 +46,40 @@ export class EnumProperty<ValueType> extends Property<ValueType> {
     }
 }
 
-/// central authority on bindings
+/** central authority on bindings */
 const bindings = new Map<Node, Binding>();
-type AnyProperty<ValueType> = Property<ValueType> | EnumProperty<ValueType>;
-type Binding = CheckboxBinding | LabelBinding | ComboBoxBinding;
 
-/// bindings for a checkbox
-class CheckboxBinding {
-    element:HTMLInputElement|null;
-    property:Property<boolean>|null;
-    syncFromElementToProperty:((_:Event)=>void) | null;
-    syncFromPropertyToElement:((v:boolean)=>void) | null;
-    constructor(element:HTMLInputElement, property:AnyProperty<boolean>) {
+type AnyProperty<ValueType> = Property<ValueType> | EnumProperty<ValueType>;
+type Binding = CheckboxBinding | TextBinding | ComboBoxBinding;
+type SyncFromElementToPropertyFn = ((_:Event)=>void)|null;
+type SyncFromPropertyToElementFn<ValueType> = ((v:ValueType)=>void) | null;
+
+/** shared code between binding classes */
+class BaseBinding<ValueType> {
+    element:HTMLElement|null;
+    property:Property<ValueType>|null;
+    syncFromElementToProperty:SyncFromElementToPropertyFn;
+    syncFromPropertyToElement:SyncFromPropertyToElementFn<ValueType>;
+
+    /** set up the binding and bookkeeping for cleanup */
+    constructor(element:HTMLElement, property:Property<ValueType>, syncFromElementToProperty:SyncFromElementToPropertyFn, syncFromPropertyToElement:SyncFromPropertyToElementFn<ValueType>) {
         this.element = element;
         this.property = property;
-        
-        this.syncFromElementToProperty = _=>property.set(element.checked);
-        this.syncFromPropertyToElement = v=>element.checked=v;
 
-        element.checked = property.get();
+        this.syncFromElementToProperty = syncFromElementToProperty;
+        this.syncFromPropertyToElement = syncFromPropertyToElement;
 
-        element.addEventListener('change', this.syncFromElementToProperty);
-        property.addListener(this.syncFromPropertyToElement);
+        if (syncFromPropertyToElement) { syncFromPropertyToElement(property.get()); }
+
+        if (syncFromElementToProperty) {
+            element.addEventListener('change', syncFromElementToProperty);
+        }
+        if (syncFromPropertyToElement) {
+            property.addListener(syncFromPropertyToElement);
+        }
     }
+
+    /** clean up */
     destroy() {
         if (this.syncFromElementToProperty !== null) {
             this.element?.removeEventListener('change', this.syncFromElementToProperty);
@@ -81,32 +94,25 @@ class CheckboxBinding {
     }
 }
 
-/// ONE WAY binding for displaying something in innerText
-class LabelBinding {
-    element:HTMLElement | null;
-    property:Property<string>|null;
-    syncFromPropertyToElement:((v:string)=>void) | null;
-    constructor(element:HTMLElement, property:Property<string>) {
-        this.element = element;
-        this.property = property;
-        
-        this.syncFromPropertyToElement = v=>element.innerText=v;
-
-        element.innerText = property.get();
-
-        property.addListener(this.syncFromPropertyToElement);
-    }
-    destroy() {
-        if (this.syncFromPropertyToElement !== null) {
-            this.property?.removeListener(this.syncFromPropertyToElement);
-        }
-        this.element = null;
-        this.property = null;
-        this.syncFromPropertyToElement = null;
+/** bindings for a checkbox */
+class CheckboxBinding extends BaseBinding<boolean> {
+    constructor(element:HTMLInputElement, property:AnyProperty<boolean>) {
+        super(element, property, _=>property.set(element.checked), v=>element.checked=v);
     }
 }
 
-/// bindings for a ComboBox and EnumProperty
+/** binding between a label, input text, ot text area element and a string property */
+class TextBinding extends BaseBinding<string> {
+    constructor(element:HTMLElement, property:Property<string>) {
+        if ((element instanceof HTMLTextAreaElement) || (element instanceof HTMLInputElement)) {
+            super(element, property, _=>property.set(element.value), v=>element.value=v);
+        } else {
+            super(element, property, null, v=>element.innerText=v);
+        }
+    }
+}
+
+/** bindings for a ComboBox and EnumProperty */
 class ComboBoxBinding{
     element:HTMLSelectElement | null;
     property:EnumProperty<string>|null;
@@ -147,39 +153,36 @@ class ComboBoxBinding{
     }
 }
 
-/// bind checkbox to some data
+/** bind checkbox to some data */
 export function bindCheckbox(checkboxElement:HTMLInputElement, boolProperty:Property<boolean>) {
     unbindElement(checkboxElement);
     bindings.set(checkboxElement, new CheckboxBinding(checkboxElement, boolProperty));
 }
 
-/// bind ComboBox to EnumProperty
+/** bind ComboBox to EnumProperty */
 export function bindComboBox(selectElement:HTMLSelectElement, enumProperty:EnumProperty<string>) {
     unbindElement(selectElement);
     bindings.set(selectElement, new ComboBoxBinding(selectElement, enumProperty));
 }
 
-/// ONE WAY! binding of an element's .innerText to a Property
-export function bindLabel(element:HTMLElement, property:Property<string>) {
+/** bind a string property to a label, input text, or text area element */
+export function bindText(element:HTMLElement, property:Property<string>):void {
     unbindElement(element);
-    bindings.set(element, new LabelBinding(element, property));
+    bindings.set(element, new TextBinding(element, property));
 }
 
-/// clear element's current binding, if any
+/** bind a string property to a label, input text, or text area element */
+export function bindTextById(id:string, property:Property<string>):void {
+    const element = document.getElementById(id);
+    if (element instanceof HTMLElement) {
+        bindText(element, property);
+    }
+}
+
+/** clear element's current binding, if any */
 export function unbindElement(element:Node) {
     if (bindings.has(element)) {
         bindings.get(element)?.destroy();
     }
     bindings.delete(element);
 }
-
-const BloodBind = {
-    Property,
-    EnumProperty,
-    bindCheckbox,
-    bindComboBox,
-    bindLabel,
-    unbindElement
-};
-
-export default BloodBind;

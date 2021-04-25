@@ -89,6 +89,9 @@ export class BloodDocumentMeta {
         this.logo.set(null);
         this.almanac.reset();
     }
+
+    getAuthorProperty():BloodBind.Property<string> { return this.author; }
+
     getSaveData() {
         return {
             name: this.name.get(),
@@ -98,6 +101,17 @@ export class BloodDocumentMeta {
         };
     }
     getName():string { return this.name.get(); }
+    getNameProperty():BloodBind.Property<string> { return this.name; }
+
+    /** get overview for binding */
+    getOverviewProperty():BloodBind.Property<string> {
+        return this.almanac.getOverviewProperty();
+    }
+
+    /** get synopsis for binding */
+    getSynopsisProperty():BloodBind.Property<string> {
+        return this.almanac.getSynopsisProperty();
+    }
 }
 export class BloodDocumentMetaAlmanac {
     private synopsis: BloodBind.Property<string>;
@@ -116,6 +130,16 @@ export class BloodDocumentMetaAlmanac {
             synopsis: this.synopsis.get(),
             overview: this.overview.get(),
         };
+    }
+
+    /** get overview for binding */
+    getOverviewProperty():BloodBind.Property<string> {
+        return this.overview;
+    }
+
+    /** get synopsis for binding */
+    getSynopsisProperty():BloodBind.Property<string> {
+        return this.synopsis;
     }
 }
 export class BloodCharacter {
@@ -188,7 +212,10 @@ export class BloodDocument {
     getDirty():boolean { return this.dirty.get(); }
     setDirty(value:boolean):void { this.dirty.set(value); }
 
+    getAuthorProperty():BloodBind.Property<string> { return this.meta.getAuthorProperty(); }
+
     getName():string { return this.meta.getName(); }
+    getNameProperty():BloodBind.Property<string> { return this.meta.getNameProperty(); }
     getFirstNightOrder():bigint[] {
         return this.firstNightOrder;
     }
@@ -225,11 +252,21 @@ export class BloodDocument {
         }
     };
 
+    /** get overview for binding */
+    getOverviewProperty():BloodBind.Property<string> {
+        return this.meta.getOverviewProperty();
+    }
+
+    /** get synopsis for binding */
+    getSynopsisProperty():BloodBind.Property<string> {
+        return this.meta.getSynopsisProperty();
+    }
+
     /**
      * set to opened file
      * @param data 
      */
-     open(data:SaveData):boolean {
+     open(_data:SaveData):boolean {
         throw new Error("Not yet implemented");
         return true;
     }

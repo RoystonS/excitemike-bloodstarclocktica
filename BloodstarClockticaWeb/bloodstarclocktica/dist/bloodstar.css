@@ -2,7 +2,7 @@ body {
     background-color: #222;
     color:#eee;
     font-family: 'Open Sans', sans-serif;
-    font-size:14px;
+    font-size:13px;
     margin:0;
     padding:0;
     scrollbar-color:#666 #333;
@@ -10,19 +10,30 @@ body {
 h1, h2, h3, h4, h5, h6 {
     margin:3px 0;
 }
-a {
+a, button {
     color:#eee;
     text-decoration: none;
     padding:2px;
     border:1px solid #666;
     background:#333;
     cursor: pointer;
+    font-family: 'Open Sans', sans-serif;
+    font-size:13px;
+    font-weight:bold;
 }
-a:hover {
+a:hover, button:hover {
     border: 1px solid #3977FF;
     background:#3977FF;
 }
-.checkbox {
+input[type=text], textarea {
+    background: #222;
+    color:#eee;
+    border: 1px solid #666;
+}
+input[type=text]:hover, input[type=text]:focus-visible, textarea:hover, textarea:focus-visible {
+    border: 1px solid #3977FF;
+}
+input[type=checkbox] {
     appearance: none;
     width: 16px;
     height: 16px;
@@ -34,12 +45,15 @@ a:hover {
     align-items: center;
     cursor: pointer;
 }
-.checkbox:hover {
+input[type=checkbox]:hover {
     border: 1px solid #3977FF;
     background:#3977FF;
 }
-.checkbox:checked::before {
+input[type=checkbox]:checked::before {
     content:'\2713';
+}
+textarea {
+    resize: both;
 }
 #app {
     display:flex;
@@ -53,8 +67,8 @@ a:hover {
     flex: none;
     display:flex;
     flex-flow:row;
-    padding:6px;
-    margin:0;
+    padding:0 6px;
+    margin:0 0 6px 0;
     list-style: none;
     align-items: center;
 }
@@ -92,10 +106,6 @@ ol#menu > li {
     flex-flow:column;
     margin: 0;
     padding: 0;
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
     width:300px;
 }
 #character-pane-top {
@@ -163,14 +173,6 @@ li[draggable="true"]{
     font-size:0.875rem;
 }
 
-#tabs{
-    position: absolute;
-    left: 300px;
-    top: 0;
-    bottom: 0;
-    right:0;
-}
-
 ul#status {
     flex: none;
     display:flex;
@@ -193,7 +195,7 @@ ul#status {
 .dropdown-content{
     flex:auto;
     position: absolute;
-    top:26px;
+    top:24px;
     left:0;
     display:none;
     z-index:1;
@@ -289,4 +291,53 @@ ul#status {
 #string-dlg > div > input {
     margin-top:1em;
     width: 400px;
+}
+
+#tabs {
+    display: flex;
+    flex-flow: column nowrap;
+}
+#tabBar {
+    flex: 0 0 auto;
+    display: flex;
+    flex-flow: row nowrap;
+    margin-bottom:3px;
+}
+.tabButton {
+    margin: 0;
+    padding: 3px 6px 6px 6px;
+    background:none;
+    border:none;
+    border-bottom: 2px solid #666;
+}
+.tabButton:hover {
+    background:none;
+    border:none;
+    border-bottom: 2px solid #3977FF;
+}
+.selectedTabBtn, .selectedTabBtn:hover {
+    padding-top: 0px;
+    border-bottom: 4px solid #3977FF;
+}
+.separator {
+    margin:6px;
+    padding:1px;
+    background:#666;
+}
+.tab {
+    display:none;
+}
+.activeTab {
+    display:block;
+}
+.twoColumnGrid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap:6px;
+}
+.fieldgroup {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    border-left: 4px solid #666;
+    padding-left: 6px;
 }

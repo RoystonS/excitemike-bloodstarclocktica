@@ -29,14 +29,14 @@
         <div class="dropdown">
           Import
           <div class="dropdown-content">
-            <a>Upload JSON</a>
-            <a>Official Character</a>
+            <a title="Import characters from a json file.">Upload JSON</a>
+            <a title="Import official character.">Official Character</a>
           </div>
         </div>
         <div class="dropdown">
           Publish
           <div class="dropdown-content">
-            <a>Publish</a>
+            <a title="Save changes, then create json and almanac links.">Save and Publish</a>
           </div>
         </div>
         <div id="title"></div>
@@ -52,11 +52,38 @@
             </ol>
           </div>
         </div>
+        <div class="separator"></div>
         <div id="tabs">
-          <div id="metatab" class="tab"></div>
-          <div id="charactertab" class="tab"></div>
-          <div id="firstnightordertab" class="tab"></div>
-          <div id="othernightordertab" class="tab"></div>
+          <div id="tabBar">
+            <button class="tabButton" id="metaTabBtn" title="Set information about this edition.">Meta</a>
+            <button class="tabButton" id="charTabBtn" title="Set information about the selected character.">Edit Character</a>
+            <button class="tabButton" id="firstNightTabBtn" title="Set the night order for the first night.">First Night Order</a>
+            <button class="tabButton" id="otherNightTabBtn" title="Set the night order for other nights.">Other Night Order</a>
+          </div>
+          <div id="tabHolder">
+            <div id="metatab" class="tab">
+                <div class="twoColumnGrid">
+                    <label for="metaName" title="What this edition is called.">Name</label>
+                    <input type="text" name="metaName" id="metaName" title="What this edition is called.">
+                    <label for="metaAuthor" title="This edition's author.">Author</label>
+                    <input type="text" name="metaAuthor" id="metaAuthor" title="This edition's author.">
+                    <label>Logo</label>
+                    <div></div>
+                    <h4>Almanac</h4>
+                    <div class="fieldgroup">
+                        <div class="twoColumnGrid">
+                            <label for="metaSynopsis" title="Intro text for set's almanac. Markdown supported!">Synopsis</label>
+                            <textarea name="metaSynopsis" id="metaSynopsis" title="Intro text for set's almanac." spellcheck="true" rows="8"></textarea>
+                            <label for="metaOverview" title="Describe what it's like to play this edition.">Overview</label>
+                            <textarea name="metaOverview" id="metaOverview" title="Describe what it's like to play this edition." spellcheck="true" rows="8"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="charactertab" class="tab"></div>
+            <div id="firstnightordertab" class="tab"></div>
+            <div id="othernightordertab" class="tab"></div>
+          </div>
         </div>
       </div>
       <ul id="status">
@@ -71,4 +98,3 @@
     </div>
   </body>
 </html>
-
