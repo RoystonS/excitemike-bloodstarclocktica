@@ -1,4 +1,4 @@
-import { BloodDocument } from '../blood-document';
+import { CustomEdition } from '../custom-edition';
 import * as Bloodstar from '../bloodstar';
 import * as BloodDlg from './blood-dlg';
 
@@ -22,10 +22,10 @@ export function init() {
     ;({open:showFn, close:closeFn} = BloodDlg.init('sdc-dlg', [message], buttons));
 }
 
-/// if document is dirty, prompt for a save. Call the callback if the user saves or discards changes
-export async function savePromptIfDirty(bloodDocument:BloodDocument) {
+/// if dirty, prompt for a save. Call the callback if the user saves or discards changes
+export async function savePromptIfDirty(customEdition:CustomEdition) {
     if (!initted) { init(); }
-    if (bloodDocument.getDirty()) {
+    if (customEdition.getDirty()) {
         return await showFn();
     }
     return true;

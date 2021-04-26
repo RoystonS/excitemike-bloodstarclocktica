@@ -71,16 +71,16 @@ export class BloodTeam {
         ];
     }
 }
-export class BloodDocumentMeta {
+export class CustomEditionMeta {
     private name: BloodBind.Property<string>;
     private author: BloodBind.Property<string>;
     private logo: BloodBind.Property<string|null>;
-    private almanac: BloodDocumentMetaAlmanac;
+    private almanac: CustomEditionMetaAlmanac;
     constructor() {
         this.name = new BloodBind.Property('New Edition');
         this.author = new BloodBind.Property('');
         this.logo = new BloodBind.Property<string|null>(null);
-        this.almanac = new BloodDocumentMetaAlmanac();
+        this.almanac = new CustomEditionMetaAlmanac();
     }
     /// DESTRUCTIVE
     reset(name:string) {
@@ -113,7 +113,7 @@ export class BloodDocumentMeta {
         return this.almanac.getSynopsisProperty();
     }
 }
-export class BloodDocumentMetaAlmanac {
+export class CustomEditionMetaAlmanac {
     private synopsis: BloodBind.Property<string>;
     private overview: BloodBind.Property<string>;
     constructor() {
@@ -142,7 +142,7 @@ export class BloodDocumentMetaAlmanac {
         return this.synopsis;
     }
 }
-export class BloodCharacter {
+export class Character {
     private id: BloodBind.Property<string>;
     private name: BloodBind.Property<string>;
     private unStyledImage: BloodBind.Property<string|null>;
@@ -165,23 +165,23 @@ export class BloodCharacter {
     getTeamPropertyProperty():BloodBind.Property<string>{return this.team;}
     getExportProperty():BloodBind.Property<boolean>{return this.export;}
 }
-export class BloodDocument {
+export class CustomEdition {
     private saveName: string;
     private previewOnToken: BloodBind.Property<boolean>;
     private dirty: BloodBind.Property<boolean>;
-    private meta: BloodDocumentMeta;
+    private meta: CustomEditionMeta;
     private windowTitle: BloodBind.Property<string>;
-    private characterList: BloodCharacter[];
+    private characterList: Character[];
     private firstNightOrder: bigint[];
     private otherNightOrder: bigint[];
     constructor() {
         this.saveName = '';
         this.previewOnToken = new BloodBind.Property<boolean>(true);
         this.dirty = new BloodBind.Property<boolean>(false);
-        this.meta = new BloodDocumentMeta();
+        this.meta = new CustomEditionMeta();
         this.windowTitle = new BloodBind.Property('Bloodstar Clocktica');
         // TODO: list properties
-        this.characterList = [new BloodCharacter()];
+        this.characterList = [new Character()];
         this.firstNightOrder = [];
         this.otherNightOrder = [];
 
@@ -205,7 +205,7 @@ export class BloodDocument {
         return this.characterList;
     }
     addNewCharacter() {
-        this.characterList.push(new BloodCharacter());
+        this.characterList.push(new Character());
         this.dirty.set(true);
     }
 

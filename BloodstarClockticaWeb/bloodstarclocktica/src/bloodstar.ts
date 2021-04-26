@@ -1,4 +1,4 @@
-import * as BloodDocument from "./blood-document";
+import {Character, CustomEdition} from "./custom-edition";
 import { BloodDrag } from "./blood-drag";
 import * as BloodBind from "./blood-bind";
 import * as BloodNewOpen from "./dlg/blood-new-open-dlg";
@@ -6,25 +6,24 @@ import * as LoadDlg from './dlg/blood-loading-dlg';
 import * as LoginDlg from "./dlg/blood-login-dlg";
 import * as BloodIO from "./blood-io";
 
-// TODO: stop using "document" everywhere. it has another meaning in JS
-let bloodDocument = new BloodDocument.BloodDocument();
+let customEdition = new CustomEdition();
 let characterListElement = null;
 let username = '';
 let password = '';
 
 /**
  * create the HTMLElement for an item in the character list
- * @param bloodCharacter character for which we are making a list item
+ * @param character character for which we are making a list item
  * @returns HTMLElement to represent that character
  */
-function makeCharacterListItem(bloodCharacter: BloodDocument.BloodCharacter):HTMLElement {
+function makeCharacterListItem(character: Character):HTMLElement {
     const row = document.createElement("div");
     row.className = "character-list-item";
 
     {
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
-        BloodBind.bindCheckbox(checkbox, bloodCharacter.getExportProperty());
+        BloodBind.bindCheckbox(checkbox, character.getExportProperty());
         row.appendChild(checkbox);
     }
 
@@ -32,8 +31,8 @@ function makeCharacterListItem(bloodCharacter: BloodDocument.BloodCharacter):HTM
         const nameElement = document.createElement("a");
         nameElement.className = "character-list-name";
         nameElement.onclick = () =>
-        console.log("clicked on " + bloodCharacter.getName());
-        BloodBind.bindText(nameElement, bloodCharacter.getNameProperty());
+        console.log("clicked on " + character.getName());
+        BloodBind.bindText(nameElement, character.getNameProperty());
         row.appendChild(nameElement);
     }
 
@@ -65,22 +64,22 @@ function makeCharacterListItem(bloodCharacter: BloodDocument.BloodCharacter):HTM
 };
 
 function cleanupListItem(node: Node): void {
-  node.childNodes.forEach((node) => {
-    BloodBind.unbindElement(node);
-    node.childNodes.forEach(cleanupListItem);
-  });
+    node.childNodes.forEach((node) => {
+        BloodBind.unbindElement(node);
+        node.childNodes.forEach(cleanupListItem);
+    });
 }
 function addCharacterClicked(_: Event): void {
-  bloodDocument.addNewCharacter();
-  const characterListElement = document.getElementById("characterlist");
-  if (characterListElement) {
-    BloodDrag.renderItems(
-      characterListElement,
-      bloodDocument.getCharacterList(),
-      makeCharacterListItem,
-      cleanupListItem
-    );
-  }
+    customEdition.addNewCharacter();
+    const characterListElement = document.getElementById("characterlist");
+    if (characterListElement) {
+        BloodDrag.renderItems(
+        characterListElement,
+        customEdition.getCharacterList(),
+        makeCharacterListItem,
+        cleanupListItem
+        );
+    }
 }
 function showHelp() {}
 function hookupClickEvents(data: [string, (e: Event) => void][]) {
@@ -96,9 +95,9 @@ function hookupClickEvents(data: [string, (e: Event) => void][]) {
  * maintain a list of recent files - both in the menu and in local storage
  * @param name file name
  */
-function addToRecentDocuments(_name:string):void {
+function addToRecentFiles(_name:string):void {
     // TODO
-    updateRecentDocumentsMenu();
+    updateRecentFilesMenu();
 }
 
 /**
@@ -106,14 +105,14 @@ function addToRecentDocuments(_name:string):void {
  * name from the list
  * @param name file name to remove
  */
-//function removeFromRecentDocuments(_name:string):void {
+//function removeFromRecentFiles(_name:string):void {
     // TODO
 //}
 
 /**
- * update the recent documents menu based on the recent documents in local storage
+ * update the recent files menu based on the recent files in local storage
  */
-function updateRecentDocumentsMenu():void {
+function updateRecentFilesMenu():void {
     // TODO
 }
 
@@ -121,15 +120,15 @@ function updateRecentDocumentsMenu():void {
  * user chose to open a new file
  */
 async function newFileClicked():Promise<void> {
-    await BloodIO.newDocument(bloodDocument);
+    await BloodIO.newCustomEdition(customEdition);
 }
 
 /**
  * user chose to open a file
  */
  export async function openFileClicked():Promise<void> {
-    if (await BloodIO.open(username, password, bloodDocument)) {
-        addToRecentDocuments(bloodDocument.getSaveName());
+    if (await BloodIO.open(username, password, customEdition)) {
+        addToRecentFiles(customEdition.getSaveName());
     }
 }
 
@@ -137,8 +136,8 @@ async function newFileClicked():Promise<void> {
  * user chose to save the current file
  */
 export async function saveFileClicked():Promise<void> {
-    if (await BloodIO.save(username, password, bloodDocument)) {
-        addToRecentDocuments(bloodDocument.getSaveName());
+    if (await BloodIO.save(username, password, customEdition)) {
+        addToRecentFiles(customEdition.getSaveName());
     }
 }
 
@@ -146,8 +145,8 @@ export async function saveFileClicked():Promise<void> {
  * user chose to save the current file under a new name
  */
 export async function saveFileAsClicked():Promise<void> {
-    if (await BloodIO.saveAs(username, password, bloodDocument)) {
-        addToRecentDocuments(bloodDocument.getSaveName());
+    if (await BloodIO.saveAs(username, password, customEdition)) {
+        addToRecentFiles(customEdition.getSaveName());
     }
 }
 
@@ -212,7 +211,7 @@ function initBindings():void {
         if (e.ctrlKey) {
             if (e.code === "KeyS") {
                 e.preventDefault();
-                BloodIO.save(username, password, bloodDocument);
+                BloodIO.save(username, password, customEdition);
             }
         }
     };
@@ -229,14 +228,14 @@ function initBindings():void {
         ['otherNightTabBtn', ()=>tabClicked('otherNightTabBtn','othernightordertab')],
     ]);
 
-    BloodBind.bindTextById('metaName', bloodDocument.getNameProperty());
-    BloodBind.bindTextById('metaAuthor', bloodDocument.getAuthorProperty());
-    BloodBind.bindTextById('metaSynopsis', bloodDocument.getSynopsisProperty());
-    BloodBind.bindTextById('metaOverview', bloodDocument.getOverviewProperty());
+    BloodBind.bindTextById('metaName', customEdition.getNameProperty());
+    BloodBind.bindTextById('metaAuthor', customEdition.getAuthorProperty());
+    BloodBind.bindTextById('metaSynopsis', customEdition.getSynopsisProperty());
+    BloodBind.bindTextById('metaOverview', customEdition.getOverviewProperty());
 }
 
-/** initialize document to bind to */
-async function initDocument():Promise<void> {
+/** initialize CustomEdition object to bind to */
+async function initCustomEdition():Promise<void> {
     try {
         let opened = false;
         while (!opened) {
@@ -244,9 +243,9 @@ async function initDocument():Promise<void> {
             if (result) {
                 const { openName, newName } = result;
                 if (openName) {
-                    opened = await BloodIO.save(username, password, bloodDocument);
+                    opened = await BloodIO.save(username, password, customEdition);
                 } else if (newName) {
-                    bloodDocument.reset(newName);
+                    customEdition.reset(newName);
                     opened = true;
                 } else {
                     throw new Error("Bad result from new-open-dlg");
@@ -255,7 +254,7 @@ async function initDocument():Promise<void> {
         }
     } catch (e) {
         console.error(e);
-        bloodDocument.reset("sandbox");
+        customEdition.reset("sandbox");
     }
 }
 
@@ -265,7 +264,7 @@ function initCharacterList():void {
     if (characterListElement) {
         BloodDrag.renderItems(
             characterListElement,
-            bloodDocument.getCharacterList(),
+            customEdition.getCharacterList(),
             makeCharacterListItem,
             cleanupListItem
         );
@@ -277,7 +276,7 @@ async function init() {
     // need to get login info before we can do much of anything
     await login();
 
-    await initDocument();
+    await initCustomEdition();
     initCharacterList();
     initBindings();
 

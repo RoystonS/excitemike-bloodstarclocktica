@@ -1,4 +1,4 @@
-import * as BloodDocument from './blood-document';
+import {CustomEdition, SaveData} from './custom-edition';
 import * as LoadDlg from './dlg/blood-loading-dlg';
 import * as OpenDlg from './dlg/blood-open-dlg';
 import * as SdcDlg from './dlg/blood-save-discard-cancel';
@@ -16,10 +16,10 @@ export function hashFunc(input:string):number {
     return hash;
 }
 
-/// prompt for save if needed, then reset to new document
-export async function newDocument(bloodDocument:BloodDocument.BloodDocument):Promise<boolean> {
-    if (await SdcDlg.savePromptIfDirty(bloodDocument)) {
-      bloodDocument.reset('New Edition');
+/// prompt for save if needed, then reset to new custom edition
+export async function newCustomEdition(customEdition:CustomEdition):Promise<boolean> {
+    if (await SdcDlg.savePromptIfDirty(customEdition)) {
+        customEdition.reset('New Edition');
       return Promise.resolve(true);
     }
     return Promise.resolve(false);
@@ -30,21 +30,21 @@ export async function newDocument(bloodDocument:BloodDocument.BloodDocument):Pro
  * Brings up the loading spinner during the operation
  * @param username login credentials
  * @param password login credentials
- * @param bloodDocument file to save
+ * @param customEdition file to save
  * @returns promise resolving to whether the save was successful
  */
-export async function saveAs(username:string, password:string, bloodDocument:BloodDocument.BloodDocument):Promise<boolean> {
-    const name = await promptForName(bloodDocument.getSaveName());
+export async function saveAs(username:string, password:string, customEdition:CustomEdition):Promise<boolean> {
+    const name = await promptForName(customEdition.getSaveName());
     if (!name) {
         return Promise.resolve(false);
     }
-    const backupName = bloodDocument.getSaveName();
+    const backupName = customEdition.getSaveName();
     try {
-        bloodDocument.setSaveName(name);
-        return await LoadDlg.show(_save(username, password, bloodDocument));
+        customEdition.setSaveName(name);
+        return await LoadDlg.show(_save(username, password, customEdition));
     } catch (e) {
         console.error(e);
-        bloodDocument.setSaveName(backupName);
+        customEdition.setSaveName(backupName);
     }
     return Promise.resolve(false);
 }
@@ -53,15 +53,15 @@ export async function saveAs(username:string, password:string, bloodDocument:Blo
  *  show loading dialog while saving
  * @param username login credentials
  * @param password login credentials
- * @param bloodDocument file to save
+ * @param customEdition file to save
  * @returns promise resolving to whether the save was successful
  */
-export async function save(username:string, password:string, bloodDocument:BloodDocument.BloodDocument):Promise<boolean> {
-    switch (bloodDocument.getSaveName()) {
+export async function save(username:string, password:string, customEdition:CustomEdition):Promise<boolean> {
+    switch (customEdition.getSaveName()) {
         case '':
-            return await saveAs(username, password, bloodDocument);
+            return await saveAs(username, password, customEdition);
         default:
-            return await LoadDlg.show(_save(username, password, bloodDocument));
+            return await LoadDlg.show(_save(username, password, customEdition));
     }
 }
 
@@ -70,17 +70,17 @@ export async function save(username:string, password:string, bloodDocument:Blood
  * Brings up the loading spinner during the operation
  * @param username login credentials
  * @param password login credentials
- * @param bloodDocument file to save
+ * @param customEdition file to save
  * @returns promise resolving to whether the save was successful
  */
-async function _save(username:string, password:string, bloodDocument:BloodDocument.BloodDocument):Promise<boolean> {
-    const saveData:BloodDocument.SaveData = bloodDocument.getSaveData();
+async function _save(username:string, password:string, customEdition:CustomEdition):Promise<boolean> {
+    const saveData = customEdition.getSaveData();
     const payload = JSON.stringify(saveData);
     const {error} = await cmd(username, password, 'save', payload);
     if (error) {
         throw new Error(error);
     }
-    bloodDocument.setDirty(false);
+    customEdition.setDirty(false);
     return true;
 }
 
@@ -88,12 +88,12 @@ async function _save(username:string, password:string, bloodDocument:BloodDocume
  * Open a file
  * @param username login credentials
  * @param password login credentials
- * @param bloodDocument BloodDocument instance with which to open a file
+ * @param customEdition CustomEdition instance with which to open a file
  * @returns whether a file was successfully opened
  */
-export async function open(username:string, password:string, bloodDocument:BloodDocument.BloodDocument):Promise<boolean> {
-    if (await SdcDlg.savePromptIfDirty(bloodDocument)) {
-        return await openNoSavePrompt(username, password, bloodDocument);
+export async function open(username:string, password:string, customEdition:CustomEdition):Promise<boolean> {
+    if (await SdcDlg.savePromptIfDirty(customEdition)) {
+        return await openNoSavePrompt(username, password, customEdition);
     }
     return Promise.resolve(false);
 }
@@ -102,13 +102,13 @@ export async function open(username:string, password:string, bloodDocument:Blood
  * Prompt for the file to open and open it, skipping the save prompt
  * @param username login credentials
  * @param password login credentials
- * @param bloodDocument BloodDocument instance with which to open a file
+ * @param customEdition CustomEdition instance with which to open a file
  * @returns whether a file was successfully opened
  */
-async function openNoSavePrompt(username:string, password:string, bloodDocument:BloodDocument.BloodDocument):Promise<boolean> {
+async function openNoSavePrompt(username:string, password:string, customEdition:CustomEdition):Promise<boolean> {
     const name = await OpenDlg.show(username, password);
     if (name) {
-        return await openNoPrompts(username, password, bloodDocument, name);
+        return await openNoPrompts(username, password, customEdition, name);
     }
     return Promise.resolve(false);
 }
@@ -118,11 +118,11 @@ async function openNoSavePrompt(username:string, password:string, bloodDocument:
  * Brings up the loading spinner during the operation
  * @param username login credentials
  * @param password login credentials
- * @param bloodDocument BloodDocument instance with which to open a file
+ * @param customEdition CustomEdition instance with which to open a file
  * @param name name of the file to open
  * @returns promise that resolves to whether a file was successfully opened
  */
-async function openNoPrompts(username:string, password:string, bloodDocument:BloodDocument.BloodDocument, name:string):Promise<boolean> {
+async function openNoPrompts(username:string, password:string, customEdition:CustomEdition, name:string):Promise<boolean> {
     const openData = {
         saveName: name,
         check: hashFunc(name)
@@ -132,7 +132,7 @@ async function openNoPrompts(username:string, password:string, bloodDocument:Blo
     if (error) {
         throw new Error(error);
     }
-    const result = bloodDocument.open(data as BloodDocument.SaveData);
+    const result = customEdition.open(data as SaveData);
     return Promise.resolve(result);
 }
 
