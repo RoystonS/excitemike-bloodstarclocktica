@@ -4,12 +4,14 @@ import * as BloodIO from './blood-io';
 export type SaveData = {
     saveName:string,
     check:number,
-    meta:string,
-    src_images:{[key:string]:string},
-    roles:{[key:string]:string},
-    processed_images:{[key:string]:string},
-    firstNightOrder:string[],
-    otherNightOrder:string[],
+    customEdition:{
+        meta:string,
+        src_images:{[key:string]:string},
+        roles:{[key:string]:string},
+        processed_images:{[key:string]:string},
+        firstNightOrder:string[],
+        otherNightOrder:string[],
+    }
 };
 
 export class BloodTeam {
@@ -189,10 +191,10 @@ export class CustomEdition {
         // TODO: hook up automatic title change on dirty
     }
     /// DESTRUCTIVE
-    reset(name:string) {
+    reset() {
         this.saveName = '';
         this.previewOnToken.set(true);
-        this.meta.reset(name);
+        this.meta.reset('New Edition');
         this.windowTitle.set('Bloodstar Clocktica');
 
         this.characterList.length = 0;
@@ -243,12 +245,14 @@ export class CustomEdition {
         return {
             saveName: this.getSaveName(),
             check: BloodIO.hashFunc(this.getSaveName()),
-            meta: JSON.stringify(this.getSaveData()),
-            src_images:{},
-            roles:{},
-            processed_images:{},
-            firstNightOrder:firstNightOrderSaveData,
-            otherNightOrder:otherNightOrderSaveData
+            customEdition: {
+                meta: JSON.stringify(this.getSaveData()),
+                src_images:{},
+                roles:{},
+                processed_images:{},
+                firstNightOrder:firstNightOrderSaveData,
+                otherNightOrder:otherNightOrderSaveData
+            }
         }
     };
 

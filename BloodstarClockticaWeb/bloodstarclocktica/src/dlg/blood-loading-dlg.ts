@@ -1,4 +1,5 @@
 // newfile/openfile dialog for bloodstar clocktica
+// TODO: rename to spinner-dlg
 import * as BloodDlg from './blood-dlg';
 
 let initted = false;
@@ -14,7 +15,7 @@ function init() {
     const spinner = document.createElement('div');
     spinner.className = 'spinner';
     
-    ;({open:showFn, close:closeFn} = BloodDlg.init('loading-dlg', [spinner], []));
+    ;({open:showFn, close:closeFn} = BloodDlg.init('spinner-dlg', [spinner], []));
 }
 
 /// show the spinner until the promise resolves
@@ -24,9 +25,9 @@ export async function show<T>(somePromise:Promise<T>):Promise<T> {
     if (!showFn) {throw new Error("no showFn");}
     if (!closeFn) {throw new Error("no closeFn");}
 
-    // ignore result promise
     ++count;
     if (1 === count) {
+        // ignore result promise
         showFn();
     }
     try {

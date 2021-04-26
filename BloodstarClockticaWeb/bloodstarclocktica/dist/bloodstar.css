@@ -255,6 +255,7 @@ ul#status {
 #new-open-dlg {z-index:2;}
 #open-dlg {z-index:3;}
 #sdc-dlg {z-index:4;}
+#spinner-dlg {z-index:1000;}
 .open-dlg-list{
     display: flex;
     flex-flow: column;

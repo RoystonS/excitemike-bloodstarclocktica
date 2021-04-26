@@ -21,12 +21,9 @@
     foreach ($items as $key => $value) {
         if ($value == '.') {continue;}
         if ($value == '..') {continue;}
-        $subdir = join_paths($saveDir, $value);
-        if (is_dir($subdir)) {
-            $metaPath = join_paths($subdir, 'meta.json');
-            if (is_file($metaPath)) {
-                array_push($list, $value);
-            }
+        $filepath = join_paths($saveDir, $value);
+        if (is_file($filepath)) {
+            array_push($list, $value);
         }
     }
 

@@ -19,7 +19,7 @@ export function hashFunc(input:string):number {
 /// prompt for save if needed, then reset to new custom edition
 export async function newCustomEdition(customEdition:CustomEdition):Promise<boolean> {
     if (await SdcDlg.savePromptIfDirty(customEdition)) {
-        customEdition.reset('New Edition');
+        customEdition.reset();
       return Promise.resolve(true);
     }
     return Promise.resolve(false);
@@ -128,7 +128,8 @@ async function openNoPrompts(username:string, password:string, customEdition:Cus
         check: hashFunc(name)
     };
     const payload = JSON.stringify(openData);
-    const {error,data} = await cmd(username, password, 'open', payload);
+    const cmdResult = await cmd(username, password, 'open', payload);
+    const {error,data} = cmdResult;
     if (error) {
         throw new Error(error);
     }
@@ -180,7 +181,7 @@ async function _cmd(username:string, password:string, cmdName:string, body?:Body
     let response:Response;
     const base64 = btoa(`${username}:${password}`);
     try {
-        response = await fetch(`https://www.bloodstar.xyz/bloodstar/cmd/${cmdName}.php`, {
+        response = await fetch(`https://www.bloodstar.xyz/cmd/${cmdName}.php`, {
                 method: 'POST',
                 headers:{
                     'Accept':'application/json',

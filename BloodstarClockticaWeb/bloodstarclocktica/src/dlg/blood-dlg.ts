@@ -31,11 +31,22 @@ function openDialog(dialog:HTMLElement, resolve:ResolveFn, reject:RejectFn) {
  * promise with the callback's return value
  */
 async function closeDialog_cb(dialog:HTMLElement, callback:ButtonCb) {
-    let value:any = null;
+        closeDialogAsync(dialog, callback);
+}
+
+/**
+ * close dialog and resolve the show function's
+ * promise with the result of an async function
+ */
+async function closeDialogAsync(dialog:HTMLElement, callback:ButtonCb) {
     try {
-        value = await callback();
+        dialog.style.display = 'none';
+        const data = dialogData.get(dialog);
+        if (!data) { return; }
+        data.resolve(await callback());
+        dialogData.delete(dialog);
     } finally {
-        closeDialog(dialog, value);
+        closeDialogSync(dialog, null);
     }
 }
 
@@ -43,12 +54,12 @@ async function closeDialog_cb(dialog:HTMLElement, callback:ButtonCb) {
  * close dialog and resolve the show function's 
  * promise with the provided value
  */
-function closeDialog(dialog:HTMLElement, result:any) {
+function closeDialogSync(dialog:HTMLElement, result:any) {
+    dialog.style.display = 'none';
     const data = dialogData.get(dialog);
     if (!data) { return; }
-    dialogData.delete(dialog);
-    dialog.style.display = 'none';
     data.resolve(result);
+    dialogData.delete(dialog);
 }
 
 /**
@@ -117,7 +128,7 @@ export function init(id:string, body:HTMLElement[], buttons:ButtonCfg[]):DialogF
 
     const funcs:DialogFuncs = {
         open: () => new Promise((resolve, reject)=>openDialog(dialog, resolve, reject)),
-        close: (result: any) => closeDialog(dialog, result)
+        close: (result: any) => closeDialogSync(dialog, result)
     };
 
     dialogIds.add(id);

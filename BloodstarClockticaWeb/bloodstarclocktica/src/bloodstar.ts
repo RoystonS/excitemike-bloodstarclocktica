@@ -119,35 +119,42 @@ function updateRecentFilesMenu():void {
 /**
  * user chose to open a new file
  */
-async function newFileClicked():Promise<void> {
+export async function newFileClicked():Promise<boolean> {
     await BloodIO.newCustomEdition(customEdition);
+    return true;
 }
 
 /**
  * user chose to open a file
  */
- export async function openFileClicked():Promise<void> {
+ export async function openFileClicked():Promise<boolean> {
     if (await BloodIO.open(username, password, customEdition)) {
         addToRecentFiles(customEdition.getSaveName());
+        return true;
     }
+    return false;
 }
 
 /**
  * user chose to save the current file
  */
-export async function saveFileClicked():Promise<void> {
+export async function saveFileClicked():Promise<boolean> {
     if (await BloodIO.save(username, password, customEdition)) {
         addToRecentFiles(customEdition.getSaveName());
+        return true;
     }
+    return false;
 }
 
 /**
  * user chose to save the current file under a new name
  */
-export async function saveFileAsClicked():Promise<void> {
+export async function saveFileAsClicked():Promise<boolean> {
     if (await BloodIO.saveAs(username, password, customEdition)) {
         addToRecentFiles(customEdition.getSaveName());
+        return true;
     }
+    return false;
 }
 
 /**
@@ -237,24 +244,14 @@ function initBindings():void {
 /** initialize CustomEdition object to bind to */
 async function initCustomEdition():Promise<void> {
     try {
-        let opened = false;
-        while (!opened) {
-            const result = await BloodNewOpen.show();
-            if (result) {
-                const { openName, newName } = result;
-                if (openName) {
-                    opened = await BloodIO.save(username, password, customEdition);
-                } else if (newName) {
-                    customEdition.reset(newName);
-                    opened = true;
-                } else {
-                    throw new Error("Bad result from new-open-dlg");
-                }
+        while (true) {
+            if (await BloodNewOpen.show()) {
+                break;
             }
         }
     } catch (e) {
         console.error(e);
-        customEdition.reset("sandbox");
+        customEdition.reset();
     }
 }
 
