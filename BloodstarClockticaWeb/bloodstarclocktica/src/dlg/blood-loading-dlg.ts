@@ -13,7 +13,7 @@ function init() {
     const spinner = document.createElement('div');
     spinner.className = 'spinner';
     
-    [showFn, closeFn] = BloodDlg.init('new-open-dlg', [spinner], []);
+    [showFn, closeFn] = BloodDlg.init('loading-dlg', [spinner], []);
 }
 
 /// show the spinner until the promise resolves

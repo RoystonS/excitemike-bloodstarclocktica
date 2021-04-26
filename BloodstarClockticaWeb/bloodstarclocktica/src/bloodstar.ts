@@ -2,10 +2,14 @@ import * as BloodDocument from "./blood-document";
 import { BloodDrag } from "./blood-drag";
 import * as BloodBind from "./blood-bind";
 import * as BloodNewOpen from "./dlg/blood-new-open-dlg";
+import * as LoadDlg from './dlg/blood-loading-dlg';
+import * as LoginDlg from "./dlg/blood-login-dlg";
 import * as BloodIO from "./blood-io";
 
 let bloodDocument = new BloodDocument.BloodDocument();
 let characterListElement = null;
+let username = '';
+let password = '';
 
 /**
  * create the HTMLElement for an item in the character list
@@ -123,7 +127,7 @@ async function newFileClicked():Promise<void> {
  * user chose to open a file
  */
  export async function openFileClicked():Promise<void> {
-    if (await BloodIO.open(bloodDocument)) {
+    if (await BloodIO.open(bloodDocument, username, password)) {
         addToRecentDocuments(bloodDocument.getSaveName());
     }
 }
@@ -178,18 +182,37 @@ function tabClicked(btnId:string, tabId:string):void {
     }
 }
 
-/** prepare app */
-async function init() {
+/** prompt for login information */
+async function login():Promise<void> {
+    while (true) {
+        try {
+            const loginInfo = await LoginDlg.show("Enter username and password");
+            if (loginInfo) {
+                let {username:newUsername, password:newPassword} = loginInfo;
+                username = newUsername;
+                password = newPassword;
+                if (await LoadDlg.show(BloodIO.login(username, password))) {
+                    break;
+                }
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+}
+
+/** initialize listeners and data bindings */
+function initBindings():void {
     window.onbeforeunload = function () {
         return "Are you sure you want to leave? Unsaved changes will be lost.";
     };
 
     document.onkeydown = (e) => {
         if (e.ctrlKey) {
-        if (e.code === "KeyS") {
-            e.preventDefault();
-            BloodIO.save(bloodDocument);
-        }
+            if (e.code === "KeyS") {
+                e.preventDefault();
+                BloodIO.save(bloodDocument);
+            }
         }
     };
     hookupClickEvents([
@@ -205,42 +228,60 @@ async function init() {
         ['otherNightTabBtn', ()=>tabClicked('otherNightTabBtn','othernightordertab')],
     ]);
 
+    BloodBind.bindTextById('metaName', bloodDocument.getNameProperty());
+    BloodBind.bindTextById('metaAuthor', bloodDocument.getAuthorProperty());
+    BloodBind.bindTextById('metaSynopsis', bloodDocument.getSynopsisProperty());
+    BloodBind.bindTextById('metaOverview', bloodDocument.getOverviewProperty());
+}
+
+/** initialize document to bind to */
+async function initDocument():Promise<void> {
     try {
         let opened = false;
         while (!opened) {
-        const result = await BloodNewOpen.show();
-        const { openName, newName } = result;
-        if (openName) {
-            opened = await BloodIO.save(bloodDocument);
-        } else if (newName) {
-            bloodDocument.reset(newName);
-            opened = true;
-        } else {
-            throw new Error("Bad result from new-open-dlg");
-        }
+            const result = await BloodNewOpen.show();
+            if (result) {
+                const { openName, newName } = result;
+                if (openName) {
+                    opened = await BloodIO.save(bloodDocument);
+                } else if (newName) {
+                    bloodDocument.reset(newName);
+                    opened = true;
+                } else {
+                    throw new Error("Bad result from new-open-dlg");
+                }
+            }
         }
     } catch (e) {
         console.error(e);
         bloodDocument.reset("sandbox");
     }
+}
+
+/** prepare character list */
+function initCharacterList():void {
     characterListElement = document.getElementById("characterlist");
     if (characterListElement) {
         BloodDrag.renderItems(
-        characterListElement,
-        bloodDocument.getCharacterList(),
-        makeCharacterListItem,
-        cleanupListItem
+            characterListElement,
+            bloodDocument.getCharacterList(),
+            makeCharacterListItem,
+            cleanupListItem
         );
     }
+}
+
+/** prepare app */
+async function init() {
+    // need to get login info before we can do much of anything
+    await login();
+
+    await initDocument();
+    initCharacterList();
+    initBindings();
 
     // start on meta tab
     tabClicked('metaTabBtn','metatab');
-
-    // bind!
-    BloodBind.bindTextById('metaName', bloodDocument.getNameProperty());
-    BloodBind.bindTextById('metaAuthor', bloodDocument.getAuthorProperty());
-    BloodBind.bindTextById('metaSynopsis', bloodDocument.getSynopsisProperty());
-    BloodBind.bindTextById('metaOverview', bloodDocument.getOverviewProperty());
 }
 
 // wait for dom to load

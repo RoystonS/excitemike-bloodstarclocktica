@@ -1,4 +1,6 @@
 <?php
+    $saveDir = '../save';
+    
     function join_paths($a, $b) {
         return join('/', array(trim($a, '/'), trim($b, '/')));
     }

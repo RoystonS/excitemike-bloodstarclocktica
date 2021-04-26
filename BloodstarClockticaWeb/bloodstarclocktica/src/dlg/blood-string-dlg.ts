@@ -41,9 +41,9 @@ function inputBoxChanged(_e:Event):void {
 /// string or null if the user cancelled
 export async function show(prompt:string, defaultName:string, validation?:{pattern:string,hint?:string,sanitizeFn?:(inStr:string)=>string}):Promise<string|null> {
     if (!initted) { init(); }
-    if (!showFn) { return Promise.resolve(null); }
-    if (!messageArea) { return Promise.resolve(null); }
-    if (!inputBox) { return Promise.resolve(null); }
+    if (!showFn) { return null; }
+    if (!messageArea) { return null; }
+    if (!inputBox) { return null; }
 
     messageArea.innerText = prompt;
     inputBox.value = defaultName;

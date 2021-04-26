@@ -59,6 +59,7 @@ export async function save(bloodDocument:BloodDocument.BloodDocument):Promise<bo
  */
 async function _save(bloodDocument:BloodDocument.BloodDocument):Promise<boolean> {
     const saveData:BloodDocument.SaveData = bloodDocument.getSaveData();
+    // TODO: use cmd
     const response = await fetch('https://www.meyermike.com/bloodstar/save.php', {
             method: 'POST',
             headers:{'Content-Type': 'application/json'},
@@ -79,9 +80,9 @@ async function _save(bloodDocument:BloodDocument.BloodDocument):Promise<boolean>
  * @param bloodDocument BloodDocument instance with which to open a file
  * @returns whether a file was successfully opened
  */
-export async function open(bloodDocument:BloodDocument.BloodDocument):Promise<boolean> {
+export async function open(bloodDocument:BloodDocument.BloodDocument, username:string, password:string):Promise<boolean> {
     if (await SdcDlg.savePromptIfDirty(bloodDocument)) {
-        return await openNoSavePrompt(bloodDocument);
+        return await openNoSavePrompt(bloodDocument, username, password);
     }
     return Promise.resolve(false);
 }
@@ -91,8 +92,8 @@ export async function open(bloodDocument:BloodDocument.BloodDocument):Promise<bo
  * @param bloodDocument BloodDocument instance with which to open a file
  * @returns whether a file was successfully opened
  */
-async function openNoSavePrompt(bloodDocument:BloodDocument.BloodDocument):Promise<boolean> {
-    const name = await OpenDlg.show();
+async function openNoSavePrompt(bloodDocument:BloodDocument.BloodDocument, username:string, password:string):Promise<boolean> {
+    const name = await OpenDlg.show(username, password);
     if (name) {
         return await openNoPrompts(bloodDocument, name);
     }
@@ -110,6 +111,7 @@ async function openNoPrompts(bloodDocument:BloodDocument.BloodDocument, name:str
         saveName: name,
         check: hashFunc(name)
     };
+    // TODO: use cmd
     const response = await fetch('https://www.meyermike.com/bloodstar/open.php', {
             method: 'POST',
             headers:{'Content-Type': 'application/json'},
@@ -154,4 +156,39 @@ function sanitizeSaveName(original:string):string {
         }
     }
     return corrected;
+}
+
+/** send a command to the server, await response */
+export async function cmd(username:string, password:string, cmdName:string):Promise<any> {
+    let response:Response;
+    const base64 = btoa(`${username}:${password}`);
+    try {
+        response = await fetch(`https://www.meyermike.com/bloodstar/cmd/${cmdName}.php`, {
+                method: 'POST',
+                headers:{
+                    'Accept':'application/json',
+                    'Content-Type':'application/json',
+                    'Authorization': `Basic ${base64}`
+                },
+                mode: 'cors',
+                credentials: 'include'
+            });
+    } catch (e) {
+        console.error(e);
+        throw e;
+    }
+    const responseText = await response.text();
+    const responseJson = JSON.parse(responseText);
+    return responseJson;
+}
+
+/** attempt to log in */
+export async function login(username:string, password:string):Promise<boolean> {
+    try {
+        const {success} = await cmd(username, password, 'login');
+        return success;
+    } catch (_) {
+        alert('login failed');
+        return false;
+    }
 }

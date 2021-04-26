@@ -1,7 +1,7 @@
 <?php
     header('Content-Type: application/json;');
     
-    $saveDir = './save';
+    $saveDir = '../save';
     
     if (!file_exists($saveDir)) {
         mkdir($saveDir, 0777, true);

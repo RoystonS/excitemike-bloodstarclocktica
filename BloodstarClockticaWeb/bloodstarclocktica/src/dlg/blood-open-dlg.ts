@@ -49,14 +49,26 @@ function repopulateFileList(fileList:string[]) {
  * bring up dialog for picking whether to open an existing file or start a new one
  * returns a promise that resolves to a name, or null if the dialog was cancelled
  */
-export async function show() {
+export async function show(username:string, password:string) {
     if (!initted) { init(); }
     if (!showFn) { return; }
 
-    const response = await fetch('https://www.meyermike.com/bloodstar/list.php', {
-            method: 'POST',
-            headers:{'Content-Type': 'application/json'}
-        });
+    let response:Response;
+    const headers = new Headers();
+    headers.append('Content-Type', 'application/json');
+    headers.append('Authorization', 'Basic '+btoa(username+':'+password));
+    try {
+        // TODO: use BloodIO.cmd
+        response = await fetch('https://www.meyermike.com/bloodstar/cmd/list.php', {
+                method: 'POST',
+                headers:{'Content-Type': 'application/json'},
+                mode:'cors',
+                credentials:'include'
+            });
+    } catch (e) {
+        console.error(e);
+        throw e;
+    }
     const responseText = await response.text();
     const responseJson = JSON.parse(responseText);
     const {error,files} = responseJson;
