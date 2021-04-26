@@ -180,7 +180,7 @@ async function _cmd(username:string, password:string, cmdName:string, body?:Body
     let response:Response;
     const base64 = btoa(`${username}:${password}`);
     try {
-        response = await fetch(`https://www.meyermike.com/bloodstar/cmd/${cmdName}.php`, {
+        response = await fetch(`https://www.bloodstar.xyz/bloodstar/cmd/${cmdName}.php`, {
                 method: 'POST',
                 headers:{
                     'Accept':'application/json',
@@ -221,10 +221,7 @@ export async function login(username:string, password:string):Promise<boolean> {
  */
 async function _listFiles(username:string, password:string):Promise<string[]> {
     try {
-        let response = await cmd(username, password, 'list');
-        const responseText = await response.text();
-        const responseJson = JSON.parse(responseText);
-        const {error,files} = responseJson;
+        const {error,files} = await cmd(username, password, 'list');
         if (error) {
             throw new Error(error);
         }
