@@ -237,7 +237,7 @@ export class BloodDocument {
      * object to serialize as save file
      */ 
     getSaveData():SaveData {
-        // TODO
+        // TODO: nightorder in save data
         const firstNightOrderSaveData:string[] = [];
         const otherNightOrderSaveData:string[] = [];
         return {

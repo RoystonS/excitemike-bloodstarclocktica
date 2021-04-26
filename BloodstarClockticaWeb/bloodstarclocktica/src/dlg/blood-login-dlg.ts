@@ -66,7 +66,7 @@ function init() {
     const buttons:BloodDlg.ButtonCfg[] = [
         {label:'Ok', callback:getResult}
     ];
-    [showFn, closeFn] = BloodDlg.init('login-dlg', [messageArea, grid], buttons);
+    ;({open:showFn, close:closeFn} = BloodDlg.init('login-dlg', [messageArea, grid], buttons));
 }
 
 /** bring up the popup to ask for username and password */
@@ -82,4 +82,10 @@ export async function show(prompt:string):Promise<UserPass|null> {
     passwordBox.value = '';
 
     return await showFn();
+}
+
+/** close the popup early */
+export function close(result:any):void {
+    if (!closeFn) { return; }
+    closeFn(result);
 }

@@ -6,6 +6,7 @@ import * as LoadDlg from './dlg/blood-loading-dlg';
 import * as LoginDlg from "./dlg/blood-login-dlg";
 import * as BloodIO from "./blood-io";
 
+// TODO: stop using "document" everywhere. it has another meaning in JS
 let bloodDocument = new BloodDocument.BloodDocument();
 let characterListElement = null;
 let username = '';
@@ -127,7 +128,7 @@ async function newFileClicked():Promise<void> {
  * user chose to open a file
  */
  export async function openFileClicked():Promise<void> {
-    if (await BloodIO.open(bloodDocument, username, password)) {
+    if (await BloodIO.open(username, password, bloodDocument)) {
         addToRecentDocuments(bloodDocument.getSaveName());
     }
 }
@@ -136,7 +137,7 @@ async function newFileClicked():Promise<void> {
  * user chose to save the current file
  */
 export async function saveFileClicked():Promise<void> {
-    if (await BloodIO.save(bloodDocument)) {
+    if (await BloodIO.save(username, password, bloodDocument)) {
         addToRecentDocuments(bloodDocument.getSaveName());
     }
 }
@@ -145,7 +146,7 @@ export async function saveFileClicked():Promise<void> {
  * user chose to save the current file under a new name
  */
 export async function saveFileAsClicked():Promise<void> {
-    if (await BloodIO.saveAs(bloodDocument)) {
+    if (await BloodIO.saveAs(username, password, bloodDocument)) {
         addToRecentDocuments(bloodDocument.getSaveName());
     }
 }
@@ -211,7 +212,7 @@ function initBindings():void {
         if (e.ctrlKey) {
             if (e.code === "KeyS") {
                 e.preventDefault();
-                BloodIO.save(bloodDocument);
+                BloodIO.save(username, password, bloodDocument);
             }
         }
     };
@@ -243,7 +244,7 @@ async function initDocument():Promise<void> {
             if (result) {
                 const { openName, newName } = result;
                 if (openName) {
-                    opened = await BloodIO.save(bloodDocument);
+                    opened = await BloodIO.save(username, password, bloodDocument);
                 } else if (newName) {
                     bloodDocument.reset(newName);
                     opened = true;
@@ -282,6 +283,22 @@ async function init() {
 
     // start on meta tab
     tabClicked('metaTabBtn','metatab');
+}
+
+/**
+ * get the username that the user logged in with
+ * @returns username the user logged in with
+ */
+export function getUsername():string {
+    return username;
+}
+
+/**
+ * get the password that the user logged in with
+ * @returns password the user logged in with
+ */
+export function getPassword():string {
+    return password;
 }
 
 // wait for dom to load

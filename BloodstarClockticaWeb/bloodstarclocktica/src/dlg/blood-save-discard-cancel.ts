@@ -19,7 +19,7 @@ export function init() {
         {label:'Discard', callback:async ()=>Promise.resolve(true)},
         {label:'Cancel', callback:async ()=>Promise.resolve(false)},
     ];
-    [showFn, closeFn] = BloodDlg.init('sdc-dlg', [message], buttons);
+    ;({open:showFn, close:closeFn} = BloodDlg.init('sdc-dlg', [message], buttons));
 }
 
 /// if document is dirty, prompt for a save. Call the callback if the user saves or discards changes

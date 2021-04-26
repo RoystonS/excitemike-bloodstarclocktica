@@ -25,8 +25,15 @@ export async function newDocument(bloodDocument:BloodDocument.BloodDocument):Pro
     return Promise.resolve(false);
 }
 
-/// prompt for a name, then save with that name
-export async function saveAs(bloodDocument:BloodDocument.BloodDocument):Promise<boolean> {
+/**
+ * prompt for a name, then save with that name
+ * Brings up the loading spinner during the operation
+ * @param username login credentials
+ * @param password login credentials
+ * @param bloodDocument file to save
+ * @returns promise resolving to whether the save was successful
+ */
+export async function saveAs(username:string, password:string, bloodDocument:BloodDocument.BloodDocument):Promise<boolean> {
     const name = await promptForName(bloodDocument.getSaveName());
     if (!name) {
         return Promise.resolve(false);
@@ -34,7 +41,7 @@ export async function saveAs(bloodDocument:BloodDocument.BloodDocument):Promise<
     const backupName = bloodDocument.getSaveName();
     try {
         bloodDocument.setSaveName(name);
-        return await LoadDlg.show(_save(bloodDocument));
+        return await LoadDlg.show(_save(username, password, bloodDocument));
     } catch (e) {
         console.error(e);
         bloodDocument.setSaveName(backupName);
@@ -42,32 +49,34 @@ export async function saveAs(bloodDocument:BloodDocument.BloodDocument):Promise<
     return Promise.resolve(false);
 }
 
-/// show loading dialog while saving
-export async function save(bloodDocument:BloodDocument.BloodDocument):Promise<boolean> {
+/**
+ *  show loading dialog while saving
+ * @param username login credentials
+ * @param password login credentials
+ * @param bloodDocument file to save
+ * @returns promise resolving to whether the save was successful
+ */
+export async function save(username:string, password:string, bloodDocument:BloodDocument.BloodDocument):Promise<boolean> {
     switch (bloodDocument.getSaveName()) {
         case '':
-            return await saveAs(bloodDocument);
+            return await saveAs(username, password, bloodDocument);
         default:
-            return await LoadDlg.show(_save(bloodDocument));
+            return await LoadDlg.show(_save(username, password, bloodDocument));
     }
 }
 
 /**
  * Save the file under the name saved in it
+ * Brings up the loading spinner during the operation
+ * @param username login credentials
+ * @param password login credentials
  * @param bloodDocument file to save
  * @returns promise resolving to whether the save was successful
  */
-async function _save(bloodDocument:BloodDocument.BloodDocument):Promise<boolean> {
+async function _save(username:string, password:string, bloodDocument:BloodDocument.BloodDocument):Promise<boolean> {
     const saveData:BloodDocument.SaveData = bloodDocument.getSaveData();
-    // TODO: use cmd
-    const response = await fetch('https://www.meyermike.com/bloodstar/save.php', {
-            method: 'POST',
-            headers:{'Content-Type': 'application/json'},
-            body: JSON.stringify(saveData)
-        });
-    const responseText = await response.text();
-    const responseJson = JSON.parse(responseText);
-    const {error} = responseJson;
+    const payload = JSON.stringify(saveData);
+    const {error} = await cmd(username, password, 'save', payload);
     if (error) {
         throw new Error(error);
     }
@@ -77,49 +86,49 @@ async function _save(bloodDocument:BloodDocument.BloodDocument):Promise<boolean>
 
 /**
  * Open a file
+ * @param username login credentials
+ * @param password login credentials
  * @param bloodDocument BloodDocument instance with which to open a file
  * @returns whether a file was successfully opened
  */
-export async function open(bloodDocument:BloodDocument.BloodDocument, username:string, password:string):Promise<boolean> {
+export async function open(username:string, password:string, bloodDocument:BloodDocument.BloodDocument):Promise<boolean> {
     if (await SdcDlg.savePromptIfDirty(bloodDocument)) {
-        return await openNoSavePrompt(bloodDocument, username, password);
+        return await openNoSavePrompt(username, password, bloodDocument);
     }
     return Promise.resolve(false);
 }
 
 /**
  * Prompt for the file to open and open it, skipping the save prompt
+ * @param username login credentials
+ * @param password login credentials
  * @param bloodDocument BloodDocument instance with which to open a file
  * @returns whether a file was successfully opened
  */
-async function openNoSavePrompt(bloodDocument:BloodDocument.BloodDocument, username:string, password:string):Promise<boolean> {
+async function openNoSavePrompt(username:string, password:string, bloodDocument:BloodDocument.BloodDocument):Promise<boolean> {
     const name = await OpenDlg.show(username, password);
     if (name) {
-        return await openNoPrompts(bloodDocument, name);
+        return await openNoPrompts(username, password, bloodDocument, name);
     }
     return Promise.resolve(false);
 }
 
 /**
  * Open a file by name (no save prompts!)
+ * Brings up the loading spinner during the operation
+ * @param username login credentials
+ * @param password login credentials
  * @param bloodDocument BloodDocument instance with which to open a file
  * @param name name of the file to open
- * @returns whether a file was successfully opened
+ * @returns promise that resolves to whether a file was successfully opened
  */
-async function openNoPrompts(bloodDocument:BloodDocument.BloodDocument, name:string):Promise<boolean> {
+async function openNoPrompts(username:string, password:string, bloodDocument:BloodDocument.BloodDocument, name:string):Promise<boolean> {
     const openData = {
         saveName: name,
         check: hashFunc(name)
     };
-    // TODO: use cmd
-    const response = await fetch('https://www.meyermike.com/bloodstar/open.php', {
-            method: 'POST',
-            headers:{'Content-Type': 'application/json'},
-            body: JSON.stringify(openData)
-        });
-    const responseText = await response.text();
-    const responseJson = JSON.parse(responseText);
-    const {error,data} = responseJson;
+    const payload = JSON.stringify(openData);
+    const {error,data} = await cmd(username, password, 'open', payload);
     if (error) {
         throw new Error(error);
     }
@@ -158,8 +167,16 @@ function sanitizeSaveName(original:string):string {
     return corrected;
 }
 
+/**
+ * send a command to the server, await response
+ * Brings up the loading spinner during the operation
+ */
+export async function cmd(username:string, password:string, cmdName:string, body?:BodyInit|null|undefined):Promise<any> {
+    return await LoadDlg.show(_cmd(username, password, cmdName, body));
+}
+
 /** send a command to the server, await response */
-export async function cmd(username:string, password:string, cmdName:string):Promise<any> {
+async function _cmd(username:string, password:string, cmdName:string, body?:BodyInit|null):Promise<any> {
     let response:Response;
     const base64 = btoa(`${username}:${password}`);
     try {
@@ -171,7 +188,8 @@ export async function cmd(username:string, password:string, cmdName:string):Prom
                     'Authorization': `Basic ${base64}`
                 },
                 mode: 'cors',
-                credentials: 'include'
+                credentials: 'include',
+                body
             });
     } catch (e) {
         console.error(e);
@@ -182,7 +200,10 @@ export async function cmd(username:string, password:string, cmdName:string):Prom
     return responseJson;
 }
 
-/** attempt to log in */
+/**
+ * attempt to log in
+ * Brings up the loading spinner during the operation
+ */
 export async function login(username:string, password:string):Promise<boolean> {
     try {
         const {success} = await cmd(username, password, 'login');
@@ -191,4 +212,35 @@ export async function login(username:string, password:string):Promise<boolean> {
         alert('login failed');
         return false;
     }
+}
+
+/**
+ * Get a list of openable files
+ * @param username username
+ * @param password password
+ */
+async function _listFiles(username:string, password:string):Promise<string[]> {
+    try {
+        let response = await cmd(username, password, 'list');
+        const responseText = await response.text();
+        const responseJson = JSON.parse(responseText);
+        const {error,files} = responseJson;
+        if (error) {
+            throw new Error(error);
+        }
+        return files;
+    } catch (e) {
+        console.error(e);
+        throw e;
+    }
+}
+
+/**
+ * Get a list of openable files
+ * Brings up the loading spinner during the operation
+ * @param username username
+ * @param password password
+ */
+export async function listFiles(username:string, password:string):Promise<string[]> {
+    return await LoadDlg.show(_listFiles(username, password));
 }

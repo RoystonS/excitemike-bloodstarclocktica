@@ -1,5 +1,7 @@
 // open dialog for bloodstar clocktica
 import * as BloodDlg from './blood-dlg';
+import * as BloodIO from '../blood-io';
+import * as LoadDlg from './blood-loading-dlg';
 import * as Util from '../blood-util';
 
 let initted:boolean = false;
@@ -20,10 +22,10 @@ function init() {
     const message = document.createElement('span');
     message.innerText = 'Choose an existing file to open:';
     fileListDiv = document.createElement('div');
-    fileListDiv.className = 'open-dlg-list';
+    fileListDiv.className = 'open-dlg-list';LoadDlg
     
     const buttons:BloodDlg.ButtonCfg[] = [{label:'Cancel', callback:cancelClicked}];
-    [showFn, closeFn] = BloodDlg.init('open-dlg', [message, fileListDiv], buttons);
+    ;({open:showFn, close:closeFn} = BloodDlg.init('open-dlg', [message, fileListDiv], buttons));
 }
 
 /// update list of files
@@ -53,28 +55,7 @@ export async function show(username:string, password:string) {
     if (!initted) { init(); }
     if (!showFn) { return; }
 
-    let response:Response;
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    headers.append('Authorization', 'Basic '+btoa(username+':'+password));
-    try {
-        // TODO: use BloodIO.cmd
-        response = await fetch('https://www.meyermike.com/bloodstar/cmd/list.php', {
-                method: 'POST',
-                headers:{'Content-Type': 'application/json'},
-                mode:'cors',
-                credentials:'include'
-            });
-    } catch (e) {
-        console.error(e);
-        throw e;
-    }
-    const responseText = await response.text();
-    const responseJson = JSON.parse(responseText);
-    const {error,files} = responseJson;
-    if (error) {
-        throw new Error(error);
-    }
+    const files = await LoadDlg.show(BloodIO.listFiles(username, password));
     repopulateFileList(files);
     return await showFn();
 }

@@ -12,6 +12,7 @@ type DialogData = {
     reject: RejectFn
 };
 const dialogData = new Map<Element, DialogData>();
+const dialogIds = new Set<string>();
 
 /**
  * used internally to build the show function
@@ -68,6 +69,7 @@ export function resolveDialog(element:HTMLElement, valueOrPromise:any) {
 
 export type OpenFn = ()=>Promise<any>;
 export type CloseFn = (result:any)=>void;
+export type DialogFuncs = {open:OpenFn, close:CloseFn};
 
 /**
  * prepare a dialog
@@ -80,8 +82,8 @@ export type CloseFn = (result:any)=>void;
  *            0: a function that you can call to open the popup `function openFn():Promise{...}`
  *            1: a function you can call to close the popup early `function closeFn(result):void{...}`
  */
-export function init(id:string, body:HTMLElement[], buttons:ButtonCfg[]):[OpenFn, CloseFn] {
-    // TODO: track whether this id was used before. early exit if it has been
+export function init(id:string, body:HTMLElement[], buttons:ButtonCfg[]):DialogFuncs {
+    if (dialogIds.has(id)) { throw new Error(`already made dialog with id "${id}"`); }
     const dialog = document.createElement('div');
     dialog.className = 'dialog-scrim';
     dialog.id = id;
@@ -113,10 +115,12 @@ export function init(id:string, body:HTMLElement[], buttons:ButtonCfg[]):[OpenFn
     dialog.appendChild(box);
     document.body.appendChild(dialog);
 
-    // TODO: should be an object
-    const funcs:[OpenFn, CloseFn] = [
-        () => new Promise((resolve, reject)=>openDialog(dialog, resolve, reject)),
-        (result: any) => closeDialog(dialog, result)
-    ];
+    const funcs:DialogFuncs = {
+        open: () => new Promise((resolve, reject)=>openDialog(dialog, resolve, reject)),
+        close: (result: any) => closeDialog(dialog, result)
+    };
+
+    dialogIds.add(id);
+
     return funcs;
 }
