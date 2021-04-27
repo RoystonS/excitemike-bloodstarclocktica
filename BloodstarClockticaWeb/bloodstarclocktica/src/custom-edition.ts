@@ -164,9 +164,11 @@ export class _Character {
         this.export = new BloodBind.Property<boolean>(true);
     }
     getId():string { return this.id.get(); }
+    setId(value:string):void { this.id.set(value); }
     getIdProperty():BloodBind.Property<string>{return this.id;}
     getNameProperty():BloodBind.Property<string>{return this.name;}
     getName():string{return this.name.get();}
+    setName(value:string):void{this.name.set(value);}
     getUnStyledImageProperty():BloodBind.Property<string|null>{return this.unStyledImage;}
     getStyledImageProperty():BloodBind.Property<string|null>{return this.styledImage;}
     getTeamPropertyProperty():BloodBind.Property<string>{return this.team;}
@@ -243,9 +245,30 @@ class _CustomEdition {
     /** add a new character to the set */
     addNewCharacter() {
         const character = new Character();
+        this.makeNameAndIdUnique(character);
         this.characterList.add(character);
         this.firstNightOrder.add(character);
         this.otherNightOrder.add(character);
+    }
+
+    /** make sure the name and id of a newly added character aren't taken */
+    makeNameAndIdUnique(character:CharacterType):void {
+        let i = 1;
+        const originalId = character.getId();
+        const originalName = character.getName();
+        let matchFound;
+        do {
+            matchFound = false;
+            for (const existingCharacter of this.characterList) {
+                if ((existingCharacter.getId() === character.getId()) || (existingCharacter.getName() === character.getName())) {
+                    matchFound = true;
+                    character.setId(originalId + i);
+                    character.setName(originalName + i);
+                    i++;
+                    break;
+                }
+            }
+        } while (matchFound);
     }
 
     getDirty():boolean { return this.dirty.get(); }
@@ -274,7 +297,7 @@ class _CustomEdition {
         const otherNightOrderSaveData:string[] = this.otherNightOrder.map(c=>c.getId());
         return {
             firstNightOrder:firstNightOrderSaveData,
-            meta: JSON.stringify(this.getSaveData()),
+            meta: JSON.stringify(this.meta.getSaveData()),
             otherNightOrder:otherNightOrderSaveData,
             previewOnToken:this.previewOnToken.get(),
             processed_images:{},
