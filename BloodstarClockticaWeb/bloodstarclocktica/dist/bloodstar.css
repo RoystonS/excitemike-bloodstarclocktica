@@ -333,3 +333,14 @@ ul#status {
     border-left: 4px solid #666;
     padding-left: 6px;
 }
+
+.dropBefore {
+    border-top: 3px solid #3977FF;
+    padding-top: 6px;
+    margin-top: 6px;
+}
+.dropAfter {
+    border-bottom: 3px solid #3977FF;
+    padding-bottom: 6px;
+    margin-bottom: 6px;
+}

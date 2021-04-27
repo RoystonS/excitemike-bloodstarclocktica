@@ -1,3 +1,7 @@
+import {ObservableCollection} from './bind/observable-collection';
+import {ObservableObject} from './bind/observable-object';
+import {CollectionBinding, RenderFn, CleanupFn} from './bind/collection-binding'
+
 type PropertyChangeListener<T> = (value:T)=>void;
 
 /** generic observable property */
@@ -50,7 +54,7 @@ export class EnumProperty<ValueType> extends Property<ValueType> {
 const bindings = new Map<Node, Binding>();
 
 type AnyProperty<ValueType> = Property<ValueType> | EnumProperty<ValueType>;
-type Binding = CheckboxBinding | TextBinding | ComboBoxBinding;
+type Binding = CheckboxBinding | TextBinding | ComboBoxBinding | CollectionBinding<any>;
 type SyncFromElementToPropertyFn = ((_:Event)=>void)|null;
 type SyncFromPropertyToElementFn<ValueType> = ((v:ValueType)=>void) | null;
 
@@ -176,6 +180,20 @@ export function bindTextById(id:string, property:Property<string>):void {
     const element = document.getElementById(id);
     if (element instanceof HTMLElement) {
         bindText(element, property);
+    }
+}
+
+/** bind a collection of items, and callbacks to create/destroy/update items to a parent element */
+export function bindCollection<T extends ObservableObject>(element:HTMLOListElement, collection:ObservableCollection<T>, renderFn:RenderFn<T>, cleanupFn:CleanupFn):void {
+    unbindElement(element);
+    bindings.set(element, new CollectionBinding(element, collection, renderFn, cleanupFn));
+}
+
+/** bind a collection of items, and callbacks to create/destroy/update items to a parent element */
+export function bindCollectionById<T extends ObservableObject>(id:string, collection:ObservableCollection<T>, renderFn:RenderFn<T>, cleanupFn:CleanupFn):void {
+    const element = document.getElementById(id);
+    if (element instanceof HTMLOListElement) {
+        bindCollection(element, collection, renderFn, cleanupFn);
     }
 }
 

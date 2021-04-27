@@ -1,4 +1,4 @@
-import {CustomEdition, SaveData} from './custom-edition';
+import {CustomEditionType, CustomEditionSaveData} from './custom-edition';
 import * as LoadDlg from './dlg/blood-loading-dlg';
 import * as OpenDlg from './dlg/blood-open-dlg';
 import * as SdcDlg from './dlg/blood-save-discard-cancel';
@@ -17,7 +17,7 @@ export function hashFunc(input:string):number {
 }
 
 /// prompt for save if needed, then reset to new custom edition
-export async function newCustomEdition(customEdition:CustomEdition):Promise<boolean> {
+export async function newCustomEdition(customEdition:CustomEditionType):Promise<boolean> {
     if (await SdcDlg.savePromptIfDirty(customEdition)) {
         customEdition.reset();
       return Promise.resolve(true);
@@ -33,7 +33,7 @@ export async function newCustomEdition(customEdition:CustomEdition):Promise<bool
  * @param customEdition file to save
  * @returns promise resolving to whether the save was successful
  */
-export async function saveAs(username:string, password:string, customEdition:CustomEdition):Promise<boolean> {
+export async function saveAs(username:string, password:string, customEdition:CustomEditionType):Promise<boolean> {
     const name = await promptForName(customEdition.getSaveName());
     if (!name) {
         return Promise.resolve(false);
@@ -56,7 +56,7 @@ export async function saveAs(username:string, password:string, customEdition:Cus
  * @param customEdition file to save
  * @returns promise resolving to whether the save was successful
  */
-export async function save(username:string, password:string, customEdition:CustomEdition):Promise<boolean> {
+export async function save(username:string, password:string, customEdition:CustomEditionType):Promise<boolean> {
     switch (customEdition.getSaveName()) {
         case '':
             return await saveAs(username, password, customEdition);
@@ -73,8 +73,19 @@ export async function save(username:string, password:string, customEdition:Custo
  * @param customEdition file to save
  * @returns promise resolving to whether the save was successful
  */
-async function _save(username:string, password:string, customEdition:CustomEdition):Promise<boolean> {
-    const saveData = customEdition.getSaveData();
+async function _save(username:string, password:string, customEdition:CustomEditionType):Promise<boolean> {
+    type SaveData = {
+        saveName:string,
+        check:number,
+        customEdition:CustomEditionSaveData
+    };
+    
+    const saveName = customEdition.getSaveName();
+    const saveData:SaveData = {
+        saveName: saveName,
+        check: hashFunc(saveName),
+        customEdition: customEdition.getSaveData()
+    };
     const payload = JSON.stringify(saveData);
     const {error} = await cmd(username, password, 'save', payload);
     if (error) {
@@ -91,7 +102,7 @@ async function _save(username:string, password:string, customEdition:CustomEditi
  * @param customEdition CustomEdition instance with which to open a file
  * @returns whether a file was successfully opened
  */
-export async function open(username:string, password:string, customEdition:CustomEdition):Promise<boolean> {
+export async function open(username:string, password:string, customEdition:CustomEditionType):Promise<boolean> {
     if (await SdcDlg.savePromptIfDirty(customEdition)) {
         return await openNoSavePrompt(username, password, customEdition);
     }
@@ -105,7 +116,7 @@ export async function open(username:string, password:string, customEdition:Custo
  * @param customEdition CustomEdition instance with which to open a file
  * @returns whether a file was successfully opened
  */
-async function openNoSavePrompt(username:string, password:string, customEdition:CustomEdition):Promise<boolean> {
+async function openNoSavePrompt(username:string, password:string, customEdition:CustomEditionType):Promise<boolean> {
     const name = await OpenDlg.show(username, password);
     if (name) {
         return await openNoPrompts(username, password, customEdition, name);
@@ -122,7 +133,7 @@ async function openNoSavePrompt(username:string, password:string, customEdition:
  * @param name name of the file to open
  * @returns promise that resolves to whether a file was successfully opened
  */
-async function openNoPrompts(username:string, password:string, customEdition:CustomEdition, name:string):Promise<boolean> {
+async function openNoPrompts(username:string, password:string, customEdition:CustomEditionType, name:string):Promise<boolean> {
     const openData = {
         saveName: name,
         check: hashFunc(name)
@@ -133,7 +144,7 @@ async function openNoPrompts(username:string, password:string, customEdition:Cus
     if (error) {
         throw new Error(error);
     }
-    const result = customEdition.open(data as SaveData);
+    const result = customEdition.open(name, data as CustomEditionSaveData);
     return Promise.resolve(result);
 }
 

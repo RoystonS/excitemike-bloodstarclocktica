@@ -1,17 +1,15 @@
 import * as BloodBind from './blood-bind';
-import * as BloodIO from './blood-io';
+import {ObservableCollection} from './bind/observable-collection';
+import {ObservableObjectMixin} from './bind/observable-object';
 
-export type SaveData = {
-    saveName:string,
-    check:number,
-    customEdition:{
-        meta:string,
-        src_images:{[key:string]:string},
-        roles:{[key:string]:string},
-        processed_images:{[key:string]:string},
-        firstNightOrder:string[],
-        otherNightOrder:string[],
-    }
+export type CustomEditionSaveData = {
+    firstNightOrder:string[],
+    meta:string,
+    otherNightOrder:string[],
+    previewOnToken:boolean,
+    processed_images:{[key:string]:string},
+    roles:{[key:string]:string},
+    src_images:{[key:string]:string},
 };
 
 export class BloodTeam {
@@ -73,7 +71,7 @@ export class BloodTeam {
         ];
     }
 }
-export class CustomEditionMeta {
+export class _CustomEditionMeta {
     private name: BloodBind.Property<string>;
     private author: BloodBind.Property<string>;
     private logo: BloodBind.Property<string|null>;
@@ -115,6 +113,12 @@ export class CustomEditionMeta {
         return this.almanac.getSynopsisProperty();
     }
 }
+/** observable properties about the edition */
+export const CustomEditionMeta = ObservableObjectMixin(_CustomEditionMeta);
+/** observable properties about the edition */
+export type CustomEditionMetaType = InstanceType<ReturnType<typeof ObservableObjectMixin>> & _CustomEditionMeta;
+
+
 export class CustomEditionMetaAlmanac {
     private synopsis: BloodBind.Property<string>;
     private overview: BloodBind.Property<string>;
@@ -144,7 +148,7 @@ export class CustomEditionMetaAlmanac {
         return this.synopsis;
     }
 }
-export class Character {
+export class _Character {
     private id: BloodBind.Property<string>;
     private name: BloodBind.Property<string>;
     private unStyledImage: BloodBind.Property<string|null>;
@@ -159,6 +163,7 @@ export class Character {
         this.team = new BloodBind.EnumProperty(BloodTeam.TOWNSFOLK, BloodTeam.options());
         this.export = new BloodBind.Property<boolean>(true);
     }
+    getId():string { return this.id.get(); }
     getIdProperty():BloodBind.Property<string>{return this.id;}
     getNameProperty():BloodBind.Property<string>{return this.name;}
     getName():string{return this.name.get();}
@@ -167,93 +172,113 @@ export class Character {
     getTeamPropertyProperty():BloodBind.Property<string>{return this.team;}
     getExportProperty():BloodBind.Property<boolean>{return this.export;}
 }
-export class CustomEdition {
-    private saveName: string;
+/** observable properties about the character */
+export const Character = ObservableObjectMixin(_Character);
+/** observable properties about the edition */
+export type CharacterType = InstanceType<ReturnType<typeof ObservableObjectMixin>> & _Character;
+
+
+/** observable properties for a custom edition */
+class _CustomEdition {
+    private saveName: BloodBind.Property<string>;
     private previewOnToken: BloodBind.Property<boolean>;
     private dirty: BloodBind.Property<boolean>;
-    private meta: CustomEditionMeta;
+    private meta: CustomEditionMetaType;
     private windowTitle: BloodBind.Property<string>;
-    private characterList: Character[];
-    private firstNightOrder: bigint[];
-    private otherNightOrder: bigint[];
+    /** characters in the edition */
+    private characterList: ObservableCollection<CharacterType>;
+    /** contains the same Character objects as characterList, but ordered for night order */
+    private firstNightOrder: ObservableCollection<CharacterType>;
+    /** contains the same Character objects as characterList, but ordered for night order */
+    private otherNightOrder: ObservableCollection<CharacterType>;
+
+    /** create new edition */
     constructor() {
-        this.saveName = '';
+        this.saveName = new BloodBind.Property<string>('');
         this.previewOnToken = new BloodBind.Property<boolean>(true);
         this.dirty = new BloodBind.Property<boolean>(false);
         this.meta = new CustomEditionMeta();
         this.windowTitle = new BloodBind.Property('Bloodstar Clocktica');
-        // TODO: list properties
-        this.characterList = [new Character()];
-        this.firstNightOrder = [];
-        this.otherNightOrder = [];
+        this.characterList = new ObservableCollection<CharacterType>();
+        this.firstNightOrder = new ObservableCollection<CharacterType>();
+        this.otherNightOrder = new ObservableCollection<CharacterType>();
+        this.addNewCharacter();
 
-        // TODO: hook up auto-dirty
-        // TODO: hook up automatic title change on dirty
+        // hook up auto-dirty
+        this.saveName.addListener(_=>this.dirty.set(true));
+        this.previewOnToken.addListener(_=>this.dirty.set(true));
+        this.meta.addPropertyChangedEventListener(_=>this.dirty.set(true));
+        this.characterList.addCollectionChangedListener(_=>this.dirty.set(true));
+        this.firstNightOrder.addCollectionChangedListener(_=>this.dirty.set(true));
+        this.otherNightOrder.addCollectionChangedListener(_=>this.dirty.set(true));
+
+        // automatic title change on dirty
+        const updateWindowTitle = ()=>this.windowTitle.set(`${(this.dirty.get() ? '[unsaved changes] ' : '')}${this.saveName.get()}`);
+        this.dirty.addListener(_=>updateWindowTitle());
+        this.saveName.addListener(_=>updateWindowTitle());
     }
-    /// DESTRUCTIVE
+
+    /** reset to a blank edition */
     reset() {
-        this.saveName = '';
+        this.saveName.set('');
         this.previewOnToken.set(true);
         this.meta.reset('New Edition');
         this.windowTitle.set('Bloodstar Clocktica');
 
-        this.characterList.length = 0;
+        this.characterList.clear();
+        this.firstNightOrder.clear();
+        this.otherNightOrder.clear();
         this.addNewCharacter();
-        this.firstNightOrder = [];
-        this.otherNightOrder = [];
+
         this.dirty.set(false);
     }
+
     getCharacterList() {
         return this.characterList;
     }
+
+    /** add a new character to the set */
     addNewCharacter() {
-        this.characterList.push(new Character());
+        const character = new Character();
+        this.characterList.add(character);
+        this.characterList.add(character);
+        this.characterList.add(character);
         this.dirty.set(true);
     }
 
     getDirty():boolean { return this.dirty.get(); }
-    setDirty(value:boolean):void { this.dirty.set(value); }
+    setDirty(value:boolean):void {this.dirty.set(value); }
 
     getAuthorProperty():BloodBind.Property<string> { return this.meta.getAuthorProperty(); }
 
     getName():string { return this.meta.getName(); }
     getNameProperty():BloodBind.Property<string> { return this.meta.getNameProperty(); }
-    getFirstNightOrder():bigint[] {
-        return this.firstNightOrder;
-    }
-    getOtherNightOrder():bigint[] {
-        return this.otherNightOrder;
-    }
+
+    /**
+     * get name to save as
+     */
+    getSaveName():string { return this.saveName.get(); }
 
     /**
      * set name to save as
      */
-    getSaveName():string { return this.saveName; }
-
-    /**
-     * set name to save as
-     */
-    setSaveName(value:string):void { this.saveName = value; }
+    setSaveName(value:string):void { this.saveName.set(value); }
 
     /**
      * object to serialize as save file
      */ 
-    getSaveData():SaveData {
-        // TODO: nightorder in save data
-        const firstNightOrderSaveData:string[] = [];
-        const otherNightOrderSaveData:string[] = [];
+    getSaveData():CustomEditionSaveData {
+        const firstNightOrderSaveData:string[] = this.firstNightOrder.map(c=>c.getId());
+        const otherNightOrderSaveData:string[] = this.otherNightOrder.map(c=>c.getId());
         return {
-            saveName: this.getSaveName(),
-            check: BloodIO.hashFunc(this.getSaveName()),
-            customEdition: {
-                meta: JSON.stringify(this.getSaveData()),
-                src_images:{},
-                roles:{},
-                processed_images:{},
-                firstNightOrder:firstNightOrderSaveData,
-                otherNightOrder:otherNightOrderSaveData
-            }
-        }
+            firstNightOrder:firstNightOrderSaveData,
+            meta: JSON.stringify(this.getSaveData()),
+            otherNightOrder:otherNightOrderSaveData,
+            previewOnToken:this.previewOnToken.get(),
+            processed_images:{},
+            roles:{},
+            src_images:{}
+        };
     };
 
     /** get overview for binding */
@@ -270,8 +295,12 @@ export class CustomEdition {
      * set to opened file
      * @param data 
      */
-     open(_data:SaveData):boolean {
+     open(_saveName:string, _data:CustomEditionSaveData):boolean {
         throw new Error("Not yet implemented");
         return true;
     }
 }
+
+/** observable properties for a custom edition */
+export const CustomEdition = ObservableObjectMixin(_CustomEdition);
+export type CustomEditionType = InstanceType<ReturnType<typeof ObservableObjectMixin>> & _CustomEdition;

@@ -1,4 +1,3 @@
-
 type RenderFn = (itemData:any)=>Element;
 type CleanupFn = (listElement:HTMLElement)=>void;
 type ItemDragData = {
@@ -24,7 +23,7 @@ function clearItems(listElement:HTMLElement):void {
     listElement.innerText = '';
 }
 
-function renderItems(list:HTMLElement, data:any[], renderItemFn:RenderFn, cleanupItemFn:CleanupFn):void {
+export function renderItems(list:HTMLElement, data:any[], renderItemFn:RenderFn, cleanupItemFn:CleanupFn):void {
     clearItems(list);
     data.forEach((itemData, index) => {
         var li = document.createElement('li');
@@ -102,8 +101,4 @@ const dragEnd = () => {
         gDragged = null;
         gDraggedOver = null;
     }
-}
-
-export const BloodDrag = {
-    renderItems
 }

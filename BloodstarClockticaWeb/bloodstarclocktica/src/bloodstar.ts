@@ -1,5 +1,4 @@
-import {Character, CustomEdition} from "./custom-edition";
-import { BloodDrag } from "./blood-drag";
+import {CharacterType, CustomEdition} from "./custom-edition";
 import * as BloodBind from "./blood-bind";
 import * as BloodNewOpen from "./dlg/blood-new-open-dlg";
 import * as LoadDlg from './dlg/blood-loading-dlg';
@@ -7,7 +6,6 @@ import * as LoginDlg from "./dlg/blood-login-dlg";
 import * as BloodIO from "./blood-io";
 
 let customEdition = new CustomEdition();
-let characterListElement = null;
 let username = '';
 let password = '';
 
@@ -16,7 +14,7 @@ let password = '';
  * @param character character for which we are making a list item
  * @returns HTMLElement to represent that character
  */
-function makeCharacterListItem(character: Character):HTMLElement {
+function makeCharacterListItem(character: CharacterType):HTMLElement {
     const row = document.createElement("div");
     row.className = "character-list-item";
 
@@ -71,15 +69,6 @@ function cleanupListItem(node: Node): void {
 }
 function addCharacterClicked(_: Event): void {
     customEdition.addNewCharacter();
-    const characterListElement = document.getElementById("characterlist");
-    if (characterListElement) {
-        BloodDrag.renderItems(
-        characterListElement,
-        customEdition.getCharacterList(),
-        makeCharacterListItem,
-        cleanupListItem
-        );
-    }
 }
 function showHelp() {}
 function hookupClickEvents(data: [string, (e: Event) => void][]) {
@@ -239,6 +228,14 @@ function initBindings():void {
     BloodBind.bindTextById('metaAuthor', customEdition.getAuthorProperty());
     BloodBind.bindTextById('metaSynopsis', customEdition.getSynopsisProperty());
     BloodBind.bindTextById('metaOverview', customEdition.getOverviewProperty());
+
+    BloodBind.bindCollectionById(
+        'characterlist',
+        customEdition.getCharacterList(),
+        makeCharacterListItem,
+        cleanupListItem
+    );
+    
 }
 
 /** initialize CustomEdition object to bind to */
@@ -255,26 +252,12 @@ async function initCustomEdition():Promise<void> {
     }
 }
 
-/** prepare character list */
-function initCharacterList():void {
-    characterListElement = document.getElementById("characterlist");
-    if (characterListElement) {
-        BloodDrag.renderItems(
-            characterListElement,
-            customEdition.getCharacterList(),
-            makeCharacterListItem,
-            cleanupListItem
-        );
-    }
-}
-
 /** prepare app */
 async function init() {
     // need to get login info before we can do much of anything
     await login();
 
     await initCustomEdition();
-    initCharacterList();
     initBindings();
 
     // start on meta tab
