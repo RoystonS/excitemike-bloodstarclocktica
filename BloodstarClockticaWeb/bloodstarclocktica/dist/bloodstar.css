@@ -142,8 +142,9 @@ ol#characterlist {
     user-select: none;
 }
 li[draggable="true"]{
-    transition: all 0.2s;
     cursor: grab;
+    border: 0px solid #222;
+    transition: border 0.1s ease-out;
 }
 .character-list-item{
     display: flex;
@@ -198,6 +199,7 @@ ul#status {
     top:24px;
     left:0;
     display:none;
+    flex-flow: column;
     z-index:1;
     min-width:150px;
     box-shadow: 0px 2px 4px 0px #3977FF;
@@ -210,14 +212,12 @@ ul#status {
     border-color: #3977FF;
 }
 .dropdown:hover .dropdown-content{
+    scale:1;
     display: flex;
     flex-flow: column;
 }
 .dropdown-content a {
     padding: 3px 6px;
-}
-#save-discard-cancel {
-    display:none;
 }
 .dialog-scrim {
     z-index:2;
@@ -335,12 +335,8 @@ ul#status {
 }
 
 .dropBefore {
-    border-top: 3px solid #3977FF;
-    padding-top: 6px;
-    margin-top: 6px;
+    border-top: 40px solid #3977FF !important;
 }
 .dropAfter {
-    border-bottom: 3px solid #3977FF;
-    padding-bottom: 6px;
-    margin-bottom: 6px;
+    border-bottom: 40px solid #3977FF !important;
 }

@@ -28,7 +28,11 @@ export class CollectionBinding<T extends ObservableObject> {
         this.cleanupFn = cleanupFn;
         this.dragged = null;
 
-        collection.addCollectionChangedListener(()=>this.collectionChanged);
+        collection.addCollectionChangedListener((e)=>this.collectionChanged(e));
+
+        // sync DOM to current value
+        this._clear();
+        this.insert(0, collection.getItems());
     }
 
     /** keep DOM in sync with collection changes */
@@ -54,15 +58,17 @@ export class CollectionBinding<T extends ObservableObject> {
         if (!this.dragged) { return; }
         const target = e.target;
         if (!(target instanceof Element)) { return; }
-        if (target === this.dragged) { return; }
+        const listItemElement = target.closest('li');
+        if (!listItemElement) { return; }
+        if (listItemElement === this.dragged) { return; }
         e.preventDefault();
         const insertAfter = (e.offsetY > 0.5 * target.getBoundingClientRect().height);
         if (insertAfter) {
-            target.classList.remove('dropBefore');
-            target.classList.add('dropAfter');
+            listItemElement.classList.remove('dropBefore');
+            listItemElement.classList.add('dropAfter');
         } else {
-            target.classList.remove('dropAfter');
-            target.classList.add('dropBefore');
+            listItemElement.classList.remove('dropAfter');
+            listItemElement.classList.add('dropBefore');
         }
     }
     
@@ -71,18 +77,23 @@ export class CollectionBinding<T extends ObservableObject> {
         if (!this.dragged) { return; }
         const target = e.target;
         if (!(target instanceof Element)) { return; }
-        if (target === this.dragged) { return; }
-        target.classList.remove('dropBefore');
-        target.classList.remove('dropAfter');
+        const listItemElement = target.closest('li');
+        if (!listItemElement) { return; }
+        if (listItemElement === this.dragged) { return; }
+        listItemElement.classList.remove('dropBefore');
+        listItemElement.classList.remove('dropAfter');
     }
 
     /** react to the end of a drag */
     drop(e:DragEvent):void {
         try {
+            if (!this.dragged) { return; }
             const target = e.target;
             if (!(target instanceof HTMLLIElement)) { return; }
-            if (!this.dragged) { return; }
-            if (target === this.dragged) { return; }
+            const listItemElement = target.closest('li');
+            if (!listItemElement) { return; }
+            if (listItemElement === this.dragged) { return; }
+            
             e.preventDefault();
 
             const insertAfter = (e.offsetY > 0.5 * target.getBoundingClientRect().height);
@@ -90,14 +101,14 @@ export class CollectionBinding<T extends ObservableObject> {
 
             // must be in the same list
             const sourceList = this.dragged.closest('ol');
-            const destinationList = target.closest('ol');
+            const destinationList = listItemElement.closest('ol');
             if (sourceList !== destinationList) { return; }
 
             if (!this.dragged.dataset.index ) { return; }
             const fromIndex = parseInt(this.dragged.dataset.index, 10);
             
-            if (!target.dataset.index ) { return; }
-            const toIndex = parseInt(target.dataset.index, 10) + indexOffset;
+            if (!listItemElement.dataset.index ) { return; }
+            const toIndex = parseInt(listItemElement.dataset.index, 10) + indexOffset;
 
             // no change
             if (fromIndex === toIndex) { return; }
@@ -107,12 +118,21 @@ export class CollectionBinding<T extends ObservableObject> {
             this.collection.move(fromIndex, toIndex);
 
         } finally {
+            if (e.target instanceof Element) {
+                const listItemElement = e.target.closest('li');
+                if (listItemElement)
+                {
+                    listItemElement.classList.remove('dropBefore');
+                    listItemElement.classList.remove('dropAfter');
+                }
+            }
+
             this.dragged = null;
         }
     }
 
     /** create and insert DOM elements at the specified index */
-    insert(i:number, items:T[]):void {
+    insert(i:number, items:ReadonlyArray<T>):void {
         for (const item of items) {
             const newChild = this.renderListItem(i, item);
             if (i === this.listElement.childNodes.length) {
@@ -141,7 +161,12 @@ export class CollectionBinding<T extends ObservableObject> {
     /** cleanup */
     destroy() {
         this.collection.removeAllCollectionChangedListeners();
+        this._clear();
+        this.dragged = null;
+    }
 
+    /** remove any added elements */
+    _clear():void {
         if (this.cleanupFn) {
             for (let i=0; i<this.listElement.childNodes.length; ++i) {
                 const child = this.listElement.childNodes[i];
@@ -156,7 +181,5 @@ export class CollectionBinding<T extends ObservableObject> {
             }
         }
         this.listElement.innerText = '';
-
-        this.dragged = null;
     }
 }

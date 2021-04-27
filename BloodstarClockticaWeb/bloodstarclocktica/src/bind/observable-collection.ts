@@ -39,12 +39,26 @@ export type ObservableCollectionChangedEvent<T extends ObservableObject> = {
 };
 
 /** observe a collection of things */
-export class ObservableCollection<ItemType extends ObservableObject> {
-    items:ItemType[];
-    listeners:ObservableCollectionListener<ItemType>[];
+export class ObservableCollection<ItemType extends ObservableObject> implements Iterable<ItemType> {
+    private items:ItemType[];
+    private listeners:ObservableCollectionListener<ItemType>[];
     constructor() {
         this.items = [];
         this.listeners = [];
+    }
+
+    /** iterate */
+    [Symbol.iterator]():Iterator<ItemType> {
+        let index = 0;
+        return {
+            next:(..._):IteratorResult<ItemType> => {
+                if (index < this.items.length) {
+                    return {value:this.items[index++], done:false};
+                } else {
+                    return { value:undefined, done: true };
+                }
+            }
+        };
     }
 
     /** add an item to the end of the collection */
@@ -78,6 +92,9 @@ export class ObservableCollection<ItemType extends ObservableObject> {
     get(i:number):ItemType {
         return this.items[i];
     }
+
+    /** items in the collection */
+    getItems(): ReadonlyArray<ItemType> { return this.items; }
 
     /** find how many items are in the collection */
     getLength():number {
