@@ -205,12 +205,15 @@ class _CustomEdition {
         this.addNewCharacter();
 
         // hook up auto-dirty
-        this.saveName.addListener(_=>this.dirty.set(true));
-        this.previewOnToken.addListener(_=>this.dirty.set(true));
-        this.meta.addPropertyChangedEventListener(_=>this.dirty.set(true));
-        this.characterList.addCollectionChangedListener(_=>this.dirty.set(true));
-        this.firstNightOrder.addCollectionChangedListener(_=>this.dirty.set(true));
-        this.otherNightOrder.addCollectionChangedListener(_=>this.dirty.set(true));
+        const makeDirty = (_:any) => {
+            this.dirty.set(true);
+        };
+        this.saveName.addListener(makeDirty);
+        this.previewOnToken.addListener(makeDirty);
+        this.meta.addPropertyChangedEventListener(makeDirty);
+        this.characterList.addCollectionChangedListener(makeDirty);
+        this.firstNightOrder.addCollectionChangedListener(makeDirty);
+        this.otherNightOrder.addCollectionChangedListener(makeDirty);
 
         // automatic title change on dirty
         const updateWindowTitle = ()=>this.windowTitle.set(`${(this.dirty.get() ? '[unsaved changes] ' : '')}${this.saveName.get()}`);
@@ -241,9 +244,8 @@ class _CustomEdition {
     addNewCharacter() {
         const character = new Character();
         this.characterList.add(character);
-        this.characterList.add(character);
-        this.characterList.add(character);
-        this.dirty.set(true);
+        this.firstNightOrder.add(character);
+        this.otherNightOrder.add(character);
     }
 
     getDirty():boolean { return this.dirty.get(); }
