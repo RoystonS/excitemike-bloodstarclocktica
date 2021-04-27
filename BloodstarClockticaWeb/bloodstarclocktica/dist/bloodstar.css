@@ -141,11 +141,6 @@ ol#characterlist {
 ol#characterlist {
     user-select: none;
 }
-li[draggable="true"]{
-    cursor: grab;
-    border: 0px solid #222;
-    transition: border 0.1s ease-out;
-}
 .character-list-item{
     display: flex;
     flex-flow: row nowrap;
@@ -334,9 +329,45 @@ ul#status {
     padding-left: 6px;
 }
 
+/* dragging */
+li[draggable="true"]{
+    cursor: grab;
+    border: 0px solid #222;
+    /*transition: all 0.1s ease-out;*/
+    position:relative;
+}
+li[draggable="true"]::before{
+    content: '';
+    background: #3977FF;
+    position: absolute;
+    left:0;
+    right:0;
+    top:3px;
+    height:0px;
+    /*transition: height 0.1s ease-out;*/
+}
+li[draggable="true"]::after{
+    content: '';
+    background: #3977FF;
+    position: absolute;
+    left:0;
+    right:0;
+    bottom:3px;
+    height:0px;
+    /*transition: height 0.1s ease-out;*/
+}
+.dragging {
+    opacity: 0.35;
+}
 .dropBefore {
-    border-top: 40px solid #3977FF !important;
+    padding-top: 12px;
 }
 .dropAfter {
-    border-bottom: 40px solid #3977FF !important;
+    padding-bottom: 12px;
+}
+.dropBefore::before {
+    height:6px !important;
+}
+.dropAfter::after {
+    height:6px !important;
 }

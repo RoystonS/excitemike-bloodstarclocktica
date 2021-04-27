@@ -4,21 +4,36 @@ import {ObservableObject} from '../bind/observable-object';
 export type RenderFn<T> = (itemData:T)=>Element;
 export type CleanupFn = (renderedElement:Element)=>void;
 
+/** get a y coordinate for the mouse relative to some element */
+function getRelativeY(event:MouseEvent, refElement:Element|null):number {
+    let refY = 0;
+    while (refElement instanceof HTMLElement) {
+        refY += refElement.offsetTop;
+        refElement = refElement.offsetParent;
+    }
+    return event.pageY - refY;
+}
+
+/** check whether the mouse position indicates to position the dropped item after the hovered item instead of before */
+function checkInsertAfter(event:MouseEvent, refElement:Element):boolean {
+    return getRelativeY(event, refElement) > 0.5 * refElement.getBoundingClientRect().height;
+}
+
 export class CollectionBinding<T extends ObservableObject> {
     /** ol element this will keep in sync with the data */
-    listElement:HTMLOListElement;
+    private listElement:HTMLOListElement;
 
     /** collection we keep the DOM in sync with */
-    collection:ObservableCollection<T>;
+    private collection:ObservableCollection<T>;
     
     /** how to create a DOM element for an item in the list */
-    renderFn:RenderFn<T>;
+    private renderFn:RenderFn<T>;
 
     /** how to destroy a DOM element for an item in the list */
-    cleanupFn:CleanupFn;
+    private cleanupFn:CleanupFn;
 
     /** what is being dragged */
-    dragged:HTMLLIElement|null;
+    private dragged:HTMLLIElement|null;
 
     /** constructor */
     constructor(listElement:HTMLOListElement, collection:ObservableCollection<T>, renderFn:RenderFn<T>, cleanupFn:CleanupFn) {
@@ -31,18 +46,18 @@ export class CollectionBinding<T extends ObservableObject> {
         collection.addCollectionChangedListener((e)=>this.collectionChanged(e));
 
         // sync DOM to current value
-        this._clear();
+        this.clear();
         this.insert(0, collection.getItems());
     }
 
     /** keep DOM in sync with collection changes */
-    collectionChanged(value:ObservableCollectionChangedEvent<T>):void {
+    private collectionChanged(value:ObservableCollectionChangedEvent<T>):void {
         switch (value.action) {
             case ObservableCollectionChangeAction.Add:
                 this.insert(value.newStartingIndex, value.newItems);
                 break;
             case ObservableCollectionChangeAction.Move:
-                throw new Error("Not yet implemented");
+                this.move(value.oldStartingIndex, value.newStartingIndex);
                 break;
             case ObservableCollectionChangeAction.Replace:
                 throw new Error("Not yet implemented");
@@ -53,17 +68,52 @@ export class CollectionBinding<T extends ObservableObject> {
         }
     }
 
-    /** event handler for dragover */
-    dragover(e:DragEvent) {
-        if (!this.dragged) { return; }
+    /** check whether we are over a valid drop target */
+    private dragVerify(e:DragEvent):boolean {
+        // must be dragging something
+        if (!this.dragged) { return false; }
+
+        // must be over/dropping onto an element
         const target = e.target;
-        if (!(target instanceof Element)) { return; }
+        if (!(target instanceof Element)) { return false; }
+
+        // must be in a listitem
         const listItemElement = target.closest('li');
+        if (!listItemElement) { return false; }
+
+        // dragged must be in a list
+        const draggedList = this.dragged.closest('ol');
+        if (draggedList !== this.listElement) { return false; }
+
+        // hovered/dropped-onto item must be in the same list
+        const overList = listItemElement.closest('ol');
+        if (overList !== this.listElement) { return false; }
+
+        // dragged item must have an index
+        if (!this.dragged.dataset.index ) { return false; }
+        const fromIndex = parseInt(this.dragged.dataset.index, 10);
+
+        // hovered/dropped-onto item must have an index
+        if (!listItemElement.dataset.index ) { return false; }
+        const overIndex = parseInt(listItemElement.dataset.index, 10);
+
+        // ignore if this location means no change
+        if (listItemElement === this.dragged) { return false; }
+        const insertAfter = checkInsertAfter(e, listItemElement);
+        if (insertAfter && (fromIndex === overIndex+1)) { return false; }
+        if (!insertAfter && (fromIndex === overIndex-1)) { return false; }
+
+        return true;
+    }
+
+    /** event handler for dragover */
+    private dragover(e:DragEvent) {
+        if (!this.dragVerify(e)) { return; }
+        const listItemElement = (e.target instanceof Element) && e.target.closest('li');
         if (!listItemElement) { return; }
-        if (listItemElement === this.dragged) { return; }
+
         e.preventDefault();
-        const insertAfter = (e.offsetY > 0.5 * target.getBoundingClientRect().height);
-        if (insertAfter) {
+        if (checkInsertAfter(e, listItemElement)) {
             listItemElement.classList.remove('dropBefore');
             listItemElement.classList.add('dropAfter');
         } else {
@@ -73,45 +123,32 @@ export class CollectionBinding<T extends ObservableObject> {
     }
     
     /** event handler for dragleave */
-    dragleave(e:DragEvent) {
-        if (!this.dragged) { return; }
-        const target = e.target;
-        if (!(target instanceof Element)) { return; }
-        const listItemElement = target.closest('li');
+    private dragleave(e:DragEvent) {
+        const listItemElement = (e.target instanceof Element) && e.target.closest('li');
         if (!listItemElement) { return; }
-        if (listItemElement === this.dragged) { return; }
         listItemElement.classList.remove('dropBefore');
         listItemElement.classList.remove('dropAfter');
     }
 
-    /** react to the end of a drag */
-    drop(e:DragEvent):void {
+    /** react to dropping a dragged item */
+    private drop(e:DragEvent):void {
         try {
-            if (!this.dragged) { return; }
-            const target = e.target;
-            if (!(target instanceof HTMLLIElement)) { return; }
-            const listItemElement = target.closest('li');
-            if (!listItemElement) { return; }
-            if (listItemElement === this.dragged) { return; }
-            
+            if (!this.dragVerify(e)) { return; }
             e.preventDefault();
-
-            const insertAfter = (e.offsetY > 0.5 * target.getBoundingClientRect().height);
-            const indexOffset = insertAfter ? 1 : 0;
-
-            // must be in the same list
-            const sourceList = this.dragged.closest('ol');
-            const destinationList = listItemElement.closest('ol');
-            if (sourceList !== destinationList) { return; }
-
-            if (!this.dragged.dataset.index ) { return; }
-            const fromIndex = parseInt(this.dragged.dataset.index, 10);
             
-            if (!listItemElement.dataset.index ) { return; }
-            const toIndex = parseInt(listItemElement.dataset.index, 10) + indexOffset;
+            const listItemElement = e.target instanceof Element && e.target.closest('li');
+            if (!listItemElement) { return; }
+            if (!listItemElement.dataset.index) { return; }
+            if (!this.dragged) { return; }
+            if (!this.dragged.dataset.index) { return; }
 
-            // no change
-            if (fromIndex === toIndex) { return; }
+            const fromIndex = parseInt(this.dragged.dataset.index, 10);
+            const dropIndex = parseInt(listItemElement.dataset.index, 10);
+            const insertAfter = checkInsertAfter(e, listItemElement);
+
+            const toIndex = (dropIndex > fromIndex)
+                ? (insertAfter ? dropIndex : dropIndex-1)
+                : (insertAfter ? dropIndex+1 : dropIndex);
 
             // change the collection, our collection change listener will 
             // update the DOM to reflect the change
@@ -131,8 +168,24 @@ export class CollectionBinding<T extends ObservableObject> {
         }
     }
 
+    /** dragging of an item began */
+    private dragstart(e:DragEvent):void {
+        if (e.target instanceof Element) {
+            const listItemElement = e.target.closest('li');
+            listItemElement?.classList.add('dragging');
+        }
+    }
+
+    /** dragging ended on an item */
+    private dragend(e:DragEvent):void {
+        if (e.target instanceof Element) {
+            const listItemElement = e.target.closest('li');
+            listItemElement?.classList.remove('dragging');
+        }
+    }
+
     /** create and insert DOM elements at the specified index */
-    insert(i:number, items:ReadonlyArray<T>):void {
+    private insert(i:number, items:ReadonlyArray<T>):void {
         for (const item of items) {
             const newChild = this.renderListItem(i, item);
             if (i === this.listElement.childNodes.length) {
@@ -142,14 +195,31 @@ export class CollectionBinding<T extends ObservableObject> {
             }
             i++;
         }
+        this.updateIndices();
+    }
+
+    /** change the order of items */
+    private move(oldIndex:number, newIndex:number):void {
+        if (oldIndex === newIndex) { return; }
+        const node = this.listElement.childNodes[oldIndex];
+        const refIndex = (newIndex > oldIndex) ? newIndex+1 : newIndex;
+        if (refIndex >= this.listElement.childNodes.length) {
+            this.listElement.appendChild(node);
+        } else {
+            const insertBeforeNode = this.listElement.childNodes[refIndex];
+            this.listElement.insertBefore(node, insertBeforeNode);
+        }
+        this.updateIndices();
     }
 
     /** create DOM list item for a data item */
-    renderListItem(i:number, itemData:T):Element {
+    private renderListItem(i:number, itemData:T):Element {
         var li = document.createElement('li');
         li.draggable = true;
         li.dataset.index = String(i);
         li.addEventListener('drag', _ => this.dragged = li);
+        li.addEventListener('dragstart', e=>this.dragstart(e));
+        li.addEventListener('dragend', e=>this.dragend(e));
         li.addEventListener('dragover', e=>this.dragover(e));
         li.addEventListener('dragleave', e=>this.dragleave(e));
         li.addEventListener('drop', e => this.drop(e));
@@ -158,15 +228,25 @@ export class CollectionBinding<T extends ObservableObject> {
         return li;
     }
 
+    /** keep dataset index in sync */
+    private updateIndices():void {
+        for (let i=0; i<this.listElement.childNodes.length; ++i) {
+            const child = this.listElement.childNodes[i];
+            if (child instanceof HTMLElement) {
+                child.dataset.index = String(i);
+            }
+        }
+    }
+
     /** cleanup */
     destroy() {
         this.collection.removeAllCollectionChangedListeners();
-        this._clear();
+        this.clear();
         this.dragged = null;
     }
 
     /** remove any added elements */
-    _clear():void {
+    private clear():void {
         if (this.cleanupFn) {
             for (let i=0; i<this.listElement.childNodes.length; ++i) {
                 const child = this.listElement.childNodes[i];
