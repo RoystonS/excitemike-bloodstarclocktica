@@ -5,23 +5,23 @@
 			"type": "npm",
 			"script": "builddev",
 			"group": "build",
-			"label": "npm: build in development mode",
-			"detail": "webpack",
+			"label": "build development",
+			"detail": "webpack for development mode",
 			"problemMatcher": []
 		},
 		{
 			"type": "npm",
 			"script": "buildprod",
 			"group": "build",
-			"label": "npm: build in production mode",
-			"detail": "webpack",
+			"label": "build production",
+			"detail": "webpack for production",
 			"problemMatcher": []
 		},
 		{
 			"type": "npm",
 			"script": "watch",
 			"group": "build",
-			"label": "npm: watch",
+			"label": "autobuild when files change",
 			"isBackground": true,
 			"detail": "webpack --watch"
 		},
@@ -29,7 +29,7 @@
 			"type": "npm",
 			"script": "serve",
 			"group": "build",
-			"label": "npm: serve",
+			"label": "serve & auto-reload",
 			"isBackground": true,
 			"problemMatcher": []
 		}
