@@ -1,5 +1,5 @@
-import {CharacterType, CustomEdition} from "./custom-edition";
-import * as BloodBind from "./blood-bind";
+import {Character, CustomEdition} from "./custom-edition";
+import * as BloodBind from './bind/bindings';
 import * as BloodNewOpen from "./dlg/blood-new-open-dlg";
 import * as LoadDlg from './dlg/blood-loading-dlg';
 import * as LoginDlg from "./dlg/blood-login-dlg";
@@ -14,7 +14,7 @@ let password = '';
  * @param character character for which we are making a list item
  * @returns HTMLElement to represent that character
  */
-function makeCharacterListItem(character: CharacterType):HTMLElement {
+function makeCharacterListItem(character: Character):HTMLElement {
     const row = document.createElement("div");
     row.className = "character-list-item";
 

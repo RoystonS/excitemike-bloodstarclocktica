@@ -38,7 +38,7 @@ export class Property<T> {
 }
 
 type DisplayValuePair<ValueType> = {display:string,value:ValueType};
-type DisplayValuePairs<ValueType> = DisplayValuePair<ValueType>[];
+type DisplayValuePairs<ValueType> = ReadonlyArray<DisplayValuePair<ValueType>>;
 
 /** observable property for an enum/select element */
 export class EnumProperty<ValueType> extends Property<ValueType> {
