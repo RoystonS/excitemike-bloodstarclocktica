@@ -1,21 +1,37 @@
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
+const config = {
+    entry: './src/bloodstar.ts',
+    module: {
+        rules:[{
+            test: /\.tsx?$/,
+            use: 'ts-loader',
+            exclude: /node_modules/
+        }, {
+            test: /\.css$/,
+            use: [
+                MiniCssExtractPlugin.loader,
+                'css-loader'
+            ],
+            exclude: /node_modules/
+        }]
+    },
+    plugins: [
+        new MiniCssExtractPlugin({filename:'bloodstar.css'})
+    ],
+    resolve: {
+        extensions: ['.ts', '.tsx', '.js']
+    },
+    output: {
+        filename: 'bloodstar.js',
+        path: path.resolve(__dirname, 'dist')
+    }
+};
 
-module.exports = {
-entry: './src/bloodstar.ts',
-devtool: 'inline-source-map',
-module: {
-    rules:[{
-        test: /\.tsx?$/,
-        use: 'ts-loader',
-        exclude: /node_modules/
-    }]
-},
-resolve: {
-    extensions: ['.ts', '.tsx', '.js']
-},
-output: {
-    filename: 'app.js',
-    path: path.resolve(__dirname, 'dist')
-},
-mode: 'development'
+module.exports = (env, argv) => {
+    if (argv.mode === 'development') {
+        config.devtool = 'eval-source-map';
+    }
+
+    return config;
 };

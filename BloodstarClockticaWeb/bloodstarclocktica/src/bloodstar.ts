@@ -4,10 +4,14 @@ import * as BloodNewOpen from "./dlg/blood-new-open-dlg";
 import * as LoadDlg from './dlg/blood-loading-dlg';
 import * as LoginDlg from "./dlg/blood-login-dlg";
 import * as BloodIO from "./blood-io";
+import './styles/main.css';
+import './styles/dragdrop.css';
 
 let customEdition = new CustomEdition();
 let username = '';
 let password = '';
+
+// TODO: exceptions in promises need to surface somewhere (test without internet connection!)
 
 /**
  * create the HTMLElement for an item in the character list

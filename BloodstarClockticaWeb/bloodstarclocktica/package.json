@@ -4,20 +4,24 @@
   "description": "",
   "main": "./src/bloodstar.ts",
   "scripts": {
-    "build": "webpack",
-    "watch": "webpack --watch",
+    "builddev": "webpack --mode development",
+    "buildprod": "webpack --mode production",
+    "watch": "webpack --mode development --watch",
     "serve": "live-server --cors --port=8085 ./dist"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "css-loader": "^5.2.4",
     "live-server": "^1.2.1",
+    "mini-css-extract-plugin": "^1.5.1",
     "npm-run-all": "^4.1.5",
     "rot-js": "^2.1.5",
-    "ts-loader": "^8.1.0",
+    "style-loader": "^2.0.0",
+    "ts-loader": "^8.2.0",
     "typescript": "^4.2.4",
-    "webpack": "^5.31.2",
+    "webpack": "^5.36.0",
     "webpack-cli": "^4.6.0"
   }
 }

@@ -2,7 +2,6 @@
 node_modules/
 ftpinfo.json
 *.d.ts
-BloodstarClockticaWeb/bloodstarclocktica/dist/app.js
 BloodstarClockticaLib/bin/
 BloodstarClockticaLib/obj/
 BloodstarClockticaWpf/bin/
@@ -13,3 +12,5 @@ obj/
 packages/
 .htpasswd
 .htaccess
+BloodstarClockticaWeb/bloodstarclocktica/dist/bloodstar.css
+BloodstarClockticaWeb/bloodstarclocktica/dist/bloodstar.js

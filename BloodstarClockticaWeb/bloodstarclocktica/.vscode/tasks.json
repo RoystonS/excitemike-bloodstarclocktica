@@ -3,9 +3,17 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "build",
+			"script": "builddev",
 			"group": "build",
-			"label": "npm: build",
+			"label": "npm: build in development mode",
+			"detail": "webpack",
+			"problemMatcher": []
+		},
+		{
+			"type": "npm",
+			"script": "buildprod",
+			"group": "build",
+			"label": "npm: build in production mode",
 			"detail": "webpack",
 			"problemMatcher": []
 		},

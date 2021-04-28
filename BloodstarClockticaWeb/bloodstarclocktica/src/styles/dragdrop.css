@@ -1,0 +1,42 @@
+
+li[draggable="true"]{
+    cursor: grab;
+    border: 0px solid #222;
+    /*transition: all 0.1s ease-out;*/
+    position:relative;
+}
+li[draggable="true"]::before{
+    content: '';
+    background: #3977FF;
+    position: absolute;
+    left:0;
+    right:0;
+    top:3px;
+    height:0px;
+    /*transition: height 0.1s ease-out;*/
+}
+li[draggable="true"]::after{
+    content: '';
+    background: #3977FF;
+    position: absolute;
+    left:0;
+    right:0;
+    bottom:3px;
+    height:0px;
+    /*transition: height 0.1s ease-out;*/
+}
+.dragging {
+    opacity: 0.35;
+}
+.dropBefore {
+    padding-top: 12px;
+}
+.dropAfter {
+    padding-bottom: 12px;
+}
+.dropBefore::before {
+    height:6px !important;
+}
+.dropAfter::after {
+    height:6px !important;
+}
