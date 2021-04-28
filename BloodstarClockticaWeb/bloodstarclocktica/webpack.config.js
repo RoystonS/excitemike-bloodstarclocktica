@@ -1,4 +1,5 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const path = require('path');
 const config = {
     entry: './src/bloodstar.ts',
@@ -17,7 +18,7 @@ const config = {
         }]
     },
     plugins: [
-        new MiniCssExtractPlugin({filename:'bloodstar.css'})
+        new MiniCssExtractPlugin({filename:'bloodstar.css',chunkFilename:'[id].css'})
     ],
     resolve: {
         extensions: ['.ts', '.tsx', '.js']
@@ -25,6 +26,9 @@ const config = {
     output: {
         filename: 'bloodstar.js',
         path: path.resolve(__dirname, 'dist')
+    },
+    optimization:{
+        minimizer: ['...', new CssMinimizerPlugin()]
     }
 };
 
