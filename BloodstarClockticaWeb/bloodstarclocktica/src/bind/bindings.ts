@@ -1,6 +1,6 @@
-import {ObservableCollection} from './bind/observable-collection';
-import {ObservableObject} from './bind/observable-object';
-import {CollectionBinding, RenderFn, CleanupFn} from './bind/collection-binding'
+import {ObservableCollection} from './observable-collection';
+import {ObservableObject} from './observable-object';
+import {CollectionBinding, RenderFn, CleanupFn} from './collection-binding'
 
 type PropertyChangeListener<T> = (value:T)=>void;
 
