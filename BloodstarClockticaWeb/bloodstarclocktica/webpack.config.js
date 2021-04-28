@@ -1,3 +1,5 @@
+const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
+const CopyPlugin = require("copy-webpack-plugin");
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const path = require('path');
@@ -15,10 +17,20 @@ const config = {
                 'css-loader'
             ],
             exclude: /node_modules/
+        },
+        {
+            test: /\.html$/i,
+            type: "asset/resource",
         }]
     },
     plugins: [
-        new MiniCssExtractPlugin({filename:'bloodstar.css',chunkFilename:'[id].css'})
+        new MiniCssExtractPlugin({filename:'bloodstar.css',chunkFilename:'[id].css'}),
+        new CopyPlugin({
+            patterns: [{
+                from: './src/index.html',
+                to: path.resolve(__dirname, 'dist')
+            }]
+        })
     ],
     resolve: {
         extensions: ['.ts', '.tsx', '.js']
@@ -28,7 +40,11 @@ const config = {
         path: path.resolve(__dirname, 'dist')
     },
     optimization:{
-        minimizer: ['...', new CssMinimizerPlugin()]
+        minimizer: [
+            '...',
+            new CssMinimizerPlugin(),
+            new HtmlMinimizerPlugin()
+        ]
     }
 };
 
