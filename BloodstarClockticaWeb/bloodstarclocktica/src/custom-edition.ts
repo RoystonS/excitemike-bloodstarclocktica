@@ -277,8 +277,10 @@ class _CharacterAlmanac {
     getHowToRun():string{return this.howToRun.get();}
     getTip():string{return this.tip.get();}
 }
+
 /** observable properties about the character's almanac entry */
 export const CharacterAlmanac = ObservableObjectMixin(_CharacterAlmanac);
+
 /** observable properties about the character's almanac entry */
 export type CharacterAlmanac = InstanceType<ReturnType<typeof ObservableObjectMixin>> & _CharacterAlmanac;
 
@@ -316,8 +318,11 @@ class _CustomEdition {
         this.previewOnToken.addListener(makeDirty);
         this.meta.addPropertyChangedEventListener(makeDirty);
         this.characterList.addCollectionChangedListener(makeDirty);
+        this.characterList.addItemChangedListener(makeDirty);
         this.firstNightOrder.addCollectionChangedListener(makeDirty);
+        this.firstNightOrder.addItemChangedListener(makeDirty);
         this.otherNightOrder.addCollectionChangedListener(makeDirty);
+        this.otherNightOrder.addItemChangedListener(makeDirty);
 
         // automatic title change on dirty
         const updateWindowTitle = ()=>this.windowTitle.set(`${(this.dirty.get() ? '[unsaved changes] ' : '')}${this.saveName.get()}`);
