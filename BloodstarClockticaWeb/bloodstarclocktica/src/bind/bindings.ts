@@ -2,7 +2,7 @@ import {ObservableCollection} from './observable-collection';
 import {ObservableObject} from './observable-object';
 import {CollectionBinding, RenderFn, CleanupFn} from './collection-binding'
 
-type PropertyChangeListener<T> = (value:T)=>void;
+export type PropertyChangeListener<T> = (value:T)=>void;
 
 /** generic observable property */
 export class Property<T> {
@@ -184,13 +184,13 @@ export function bindTextById(id:string, property:Property<string>):void {
 }
 
 /** bind a collection of items, and callbacks to create/destroy/update items to a parent element */
-export function bindCollection<T extends ObservableObject>(element:HTMLOListElement, collection:ObservableCollection<T>, renderFn:RenderFn<T>, cleanupFn:CleanupFn):void {
+export function bindCollection<T extends ObservableObject>(element:HTMLOListElement, collection:ObservableCollection<T>, renderFn:RenderFn<T>, cleanupFn:CleanupFn<T>):void {
     unbindElement(element);
     bindings.set(element, new CollectionBinding(element, collection, renderFn, cleanupFn));
 }
 
 /** bind a collection of items, and callbacks to create/destroy/update items to a parent element */
-export function bindCollectionById<T extends ObservableObject>(id:string, collection:ObservableCollection<T>, renderFn:RenderFn<T>, cleanupFn:CleanupFn):void {
+export function bindCollectionById<T extends ObservableObject>(id:string, collection:ObservableCollection<T>, renderFn:RenderFn<T>, cleanupFn:CleanupFn<T>):void {
     const element = document.getElementById(id);
     if (element instanceof HTMLOListElement) {
         bindCollection(element, collection, renderFn, cleanupFn);

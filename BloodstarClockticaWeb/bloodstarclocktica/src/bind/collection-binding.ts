@@ -2,7 +2,7 @@ import {ObservableCollection, ObservableCollectionChangeAction, ObservableCollec
 import {ObservableObject} from '../bind/observable-object';
 
 export type RenderFn<T> = (itemData:T)=>Element;
-export type CleanupFn = (renderedElement:Element)=>void;
+export type CleanupFn<T> = (renderedElement:Element, itemData:T)=>void;
 
 /** get a y coordinate for the mouse relative to some element */
 function getRelativeY(event:MouseEvent, refElement:Element|null):number {
@@ -30,13 +30,13 @@ export class CollectionBinding<T extends ObservableObject> {
     private renderFn:RenderFn<T>;
 
     /** how to destroy a DOM element for an item in the list */
-    private cleanupFn:CleanupFn;
+    private cleanupFn:CleanupFn<T>;
 
     /** what is being dragged */
     private dragged:HTMLLIElement|null;
 
     /** constructor */
-    constructor(listElement:HTMLOListElement, collection:ObservableCollection<T>, renderFn:RenderFn<T>, cleanupFn:CleanupFn) {
+    constructor(listElement:HTMLOListElement, collection:ObservableCollection<T>, renderFn:RenderFn<T>, cleanupFn:CleanupFn<T>) {
         this.listElement = listElement;
         this.collection = collection;
         this.renderFn = renderFn;
@@ -254,7 +254,7 @@ export class CollectionBinding<T extends ObservableObject> {
                     for (let j=0; j<child.childNodes.length; ++j) {
                         const renderedElement = child.childNodes[i];
                         if (renderedElement instanceof HTMLElement) {
-                            this.cleanupFn(renderedElement);
+                            this.cleanupFn(renderedElement, this.collection.get(i));
                         }
                     }
                 }

@@ -5,11 +5,14 @@ import * as LoadDlg from './dlg/blood-loading-dlg';
 import * as LoginDlg from "./dlg/blood-login-dlg";
 import * as BloodIO from "./blood-io";
 import './styles/main.css';
+import './styles/characterlist.css';
 import './styles/dragdrop.css';
 
 let customEdition = new CustomEdition();
 let username = '';
 let password = '';
+const selectedCharacter = new BloodBind.Property<Character|null>(null);
+const characterListCleanupSideTable = new Map<HTMLElement, BloodBind.PropertyChangeListener<Character|null>>();
 
 // TODO: exceptions in promises need to surface somewhere (test without internet connection!)
 
@@ -32,8 +35,7 @@ function makeCharacterListItem(character: Character):HTMLElement {
     {
         const nameElement = document.createElement("a");
         nameElement.className = "character-list-name";
-        nameElement.onclick = () =>
-        console.log("clicked on " + character.getName());
+        nameElement.onclick = () => selectedCharacter.set(character);
         BloodBind.bindText(nameElement, character.getNameProperty());
         row.appendChild(nameElement);
     }
@@ -62,18 +64,53 @@ function makeCharacterListItem(character: Character):HTMLElement {
         row.appendChild(del);
     }
 
+    const cb = (selectedCharacter:Character|null):void => {
+        if (selectedCharacter === character) {
+            row.classList.add('characterListItemSelected');
+        } else {
+            row.classList.remove('characterListItemSelected');
+        }
+    };
+    selectedCharacter.addListener(cb);
+    characterListCleanupSideTable.set(row, cb);
+
     return row;
 };
 
-function cleanupListItem(node: Node): void {
-    node.childNodes.forEach((node) => {
-        BloodBind.unbindElement(node);
-        node.childNodes.forEach(cleanupListItem);
-    });
+/** recurses though children of element cleaning up click events and bindings */
+function cleanupListItem(element: Node, character: Character): void {
+    if (!(element instanceof HTMLElement)) {return;}
+    const stack:HTMLElement[] = [element];
+    while (stack.length) {
+        const htmlElement = stack.pop();
+        if (htmlElement) {
+            htmlElement.onclick = null;
+            BloodBind.unbindElement(htmlElement);
+            for (let i=0; i<htmlElement.children.length;i++) {
+                const child = htmlElement.children[i];
+                if (child instanceof HTMLElement) {
+                    stack.push(child);
+                }
+            }
+        }
+    }
+    if (selectedCharacter.get() === character) {
+        selectedCharacter.set(null);
+    }
+
+    // cleanup listener from makeCharacterListItem
+    {
+        const cb = characterListCleanupSideTable.get(element);
+        if (cb) {
+            selectedCharacter.removeListener(cb);
+        }
+        characterListCleanupSideTable.delete(element);
+    }
 }
 function addCharacterClicked(_: Event): void {
     customEdition.addNewCharacter();
 }
+
 function showHelp() {}
 function hookupClickEvents(data: [string, (e: Event) => void][]) {
   for (const [id, cb] of data) {
@@ -240,6 +277,20 @@ function initBindings():void {
         cleanupListItem
     );
     
+    // tie selected character to character tab
+    selectedCharacter.addListener(selectedCharacterChanged);
+    selectedCharacter.set(customEdition.getCharacterList().get(0) || null);
+}
+
+/** update character tab to show this character */
+function selectedCharacterChanged(value:Character|null):void {
+    // TODO: unbind elements in tab
+    if (value) {
+        tabClicked('charTabBtn','charactertab');
+        // TODO: bind tab elements
+    } else {
+        // TODO: disable entire tab
+    }
 }
 
 /** initialize CustomEdition object to bind to */
@@ -262,10 +313,8 @@ async function init() {
     await login();
 
     await initCustomEdition();
-    initBindings();
 
-    // start on meta tab
-    tabClicked('metaTabBtn','metatab');
+    initBindings();
 }
 
 /**
