@@ -1,4 +1,3 @@
-import * as MessageDlg from "../dlg/blood-message-dlg";
 import {ObservableCollection, ObservableCollectionChangeAction, ObservableCollectionChangedEvent} from '../bind/observable-collection';
 import {ObservableObject} from '../bind/observable-object';
 
@@ -61,12 +60,10 @@ export class CollectionBinding<T extends ObservableObject> {
                 this.move(value.oldStartingIndex, value.newStartingIndex);
                 break;
             case ObservableCollectionChangeAction.Replace:
-                // TODO: implement Replace case
-                MessageDlg.showError("Replace case of `collectionChanged` Not yet implemented");
+                this.replace(value.newStartingIndex, value.newItems);
                 break;
             case ObservableCollectionChangeAction.Remove:
-                // TODO: implement Remove case
-                MessageDlg.showError("Remove case of `collectionChanged` Not yet implemented");
+                this.remove(value.oldStartingIndex, value.oldItems.length);
                 break;
         }
     }
@@ -198,7 +195,7 @@ export class CollectionBinding<T extends ObservableObject> {
             }
             i++;
         }
-        this.updateIndices();
+        this.updateIndices(i);
     }
 
     /** change the order of items */
@@ -212,7 +209,37 @@ export class CollectionBinding<T extends ObservableObject> {
             const insertBeforeNode = this.listElement.childNodes[refIndex];
             this.listElement.insertBefore(node, insertBeforeNode);
         }
-        this.updateIndices();
+        this.updateIndices(Math.min(oldIndex, newIndex), Math.max(oldIndex, newIndex));
+    }
+
+    /** update DOM elements to new data */
+    private replace(start:number, data:ReadonlyArray<T>):void {
+        if (!data.length) {return;}
+        if (start < 0) {return;}
+        if (start >= this.listElement.childNodes.length) {return;}
+        const n = data.length;
+
+        for (let i=0; i<n; i++) {
+            const oldChild = this.listElement.childNodes[start+i];
+            this.cleanupListItem(oldChild);
+            const newChild = this.renderListItem(i, data[i]);
+            this.listElement.replaceChild(newChild, oldChild);
+        }
+    }
+
+    /** remove DOM elements in the specified index range */
+    private remove(start:number, numRemoved:number):void {
+        if (numRemoved <= 0) {return;}
+        if (start < 0) {return;}
+        if (start >= this.listElement.childNodes.length) {return;}
+
+        for (let i=start+numRemoved-1; i>=start; i--) {
+            const child = this.listElement.childNodes[i];
+            this.listElement.removeChild(child);
+            this.cleanupListItem(child);
+        }
+
+        this.updateIndices(start);
     }
 
     /** create DOM list item for a data item */
@@ -232,8 +259,9 @@ export class CollectionBinding<T extends ObservableObject> {
     }
 
     /** keep dataset index in sync */
-    private updateIndices():void {
-        for (let i=0; i<this.listElement.childNodes.length; ++i) {
+    private updateIndices(startPosition:number = 0, endPosition?:number):void {
+        endPosition = (endPosition === undefined) ? this.listElement.childNodes.length : endPosition;
+        for (let i=startPosition; i<endPosition; ++i) {
             const child = this.listElement.childNodes[i];
             if (child instanceof HTMLElement) {
                 child.dataset.index = String(i);
@@ -248,20 +276,26 @@ export class CollectionBinding<T extends ObservableObject> {
         this.dragged = null;
     }
 
+    /** cleanup whatever was done by renderListItem */
+    private cleanupListItem(listItem:Node):void {
+        if (!this.cleanupFn) { return; }
+        if (!(listItem instanceof HTMLElement)) { return; }
+        if (!listItem.dataset.index ) { return; }
+
+        const index = parseInt(listItem.dataset.index, 10);
+        const itemData = this.collection.get(index);
+
+        const renderedElement = listItem.firstChild;
+        if (renderedElement instanceof HTMLElement) {
+            this.cleanupFn(renderedElement, itemData);
+        }
+    }
+
     /** remove any added elements */
     private clear():void {
-        if (this.cleanupFn) {
-            for (let i=0; i<this.listElement.childNodes.length; ++i) {
-                const child = this.listElement.childNodes[i];
-                if (child instanceof HTMLElement) {
-                    for (let j=0; j<child.childNodes.length; ++j) {
-                        const renderedElement = child.childNodes[i];
-                        if (renderedElement instanceof HTMLElement) {
-                            this.cleanupFn(renderedElement, this.collection.get(i));
-                        }
-                    }
-                }
-            }
+        for (let i=0; i<this.listElement.childNodes.length; ++i) {
+            const child = this.listElement.childNodes[i];
+            this.cleanupListItem(child);
         }
         this.listElement.innerText = '';
     }

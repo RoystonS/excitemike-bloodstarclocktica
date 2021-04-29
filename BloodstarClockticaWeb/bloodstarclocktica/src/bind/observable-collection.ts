@@ -219,7 +219,7 @@ export class ObservableCollection<ItemType extends ObservableObject> implements 
             this.cleanupItemPlus(itemPlus);
         }
         const newItemsPlus = items.map((item,i)=>this.makeItemPlus(i+start, item));
-        this.items.splice(start, end-start-1, ...newItemsPlus);
+        this.items.splice(start, end-start, ...newItemsPlus);
         this.updateIndices(start + newItemsPlus.length);
 
         const numReplaces = Math.min(end - start, items.length);
