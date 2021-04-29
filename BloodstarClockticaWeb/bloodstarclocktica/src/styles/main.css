@@ -22,16 +22,21 @@ a, button {
     font-size:13px;
     font-weight:bold;
 }
-a:hover, button:hover {
+a:hover, a:focus-visible, button:hover, button:focus-visible {
     border: 1px solid #3977FF;
     background:#3977FF;
 }
-input[type=text], input[type=password], textarea {
+input[type=text], input[type=password], textarea, select {
     background: #222;
     color:#eee;
     border: 1px solid #666;
 }
-input[type=text]:hover, input[type=text]:focus-visible, input[type=password]:hover, input[type=tepasswordxt]:focus-visible, textarea:hover, textarea:focus-visible {
+input[type=text]:hover,
+input[type=text]:focus-visible,
+input[type=password]:hover,
+input[type=tepasswordxt]:focus-visible,
+textarea:hover, textarea:focus-visible,
+select:hover, select:focus-visible {
     border: 1px solid #3977FF;
 }
 input[type=checkbox] {
@@ -40,7 +45,7 @@ input[type=checkbox] {
     height: 16px;
     border:1px solid #666;
     background:#333;
-    margin-right:6px;
+    margin:0 6px 0 0;
     display:flex;
     justify-content: center;
     align-items: center;
@@ -63,28 +68,6 @@ textarea {
     margin: 0;
     padding: 0;
 }
-#menu {
-    background: #333;
-    flex: none;
-    display:flex;
-    flex-flow:row;
-    padding:0 6px;
-    margin:0 0 6px 0;
-    list-style: none;
-    align-items: center;
-}
-#menu > div {
-    margin:0 12px 0 0;
-}
-ol#menu > li {
-    display:flex;
-    flex-flow:column;
-    padding:0 3px;
-    margin:0 12px 0 0;
-}
-.dim {
-    color:#999;
-}
 #main-row {
     position: relative;
     flex: 1 1 0;
@@ -92,9 +75,7 @@ ol#menu > li {
     flex-flow:row nowrap;
     align-items: stretch;
     margin: 3px 6px;
-}
-#tabs {
-    flex: 4;
+    overflow: hidden;
 }
 #character-pane {
     display:flex;
@@ -127,143 +108,7 @@ ul#status {
 #status > li {
     margin-right:12px;
 }
-.dropdown{
-    cursor:pointer;
-    display: flex;
-    flex-flow: column;
-    border: 1px solid transparent;
-    padding: 3px 6px;
-    position:relative;
-}
-.dropdown-content{
-    flex:auto;
-    position: absolute;
-    top:24px;
-    left:0;
-    display:none;
-    flex-flow: column;
-    z-index:1;
-    min-width:150px;
-    box-shadow: 0px 2px 4px 0px #3977FF;
-}
-.dropdown-content a {
-    display:flex;
-    justify-content: space-between;
-}
-.dropdown:hover {
-    border-color: #3977FF;
-}
-.dropdown:hover .dropdown-content{
-    scale:1;
-    display: flex;
-    flex-flow: column;
-}
-.dropdown-content a {
-    padding: 3px 6px;
-}
-.dialog-scrim {
-    z-index:2;
-    position:fixed;
-    left:0;
-    top:0;
-    width:100vw;
-    height:100vh;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
-    justify-content: space-around;
-    align-items: center;
-}
-.dialog-box {
-    flex: 0 1 auto;
-    background: #222;
-    padding: 1rem;
-    border: 1px solid #3977FF;
-    box-shadow: 0px 2px 4px 0px #3977FF;
-    display:flex;
-    flex-flow:column;
-}
-.dialog-box > p {
-    margin-block-start: 0;
-}
-.dialog-btn-group {
-    display:flex;
-    flex-flow: row;
-    align-self: stretch;
-    margin-top:1em;
-}
-.dialog-btn-group > button {
-    flex:1;
-}
-#new-open-dlg {z-index:2;}
-#open-dlg {z-index:3;}
-#sdc-dlg {z-index:4;}
-#spinner-dlg {z-index:1000;}
-.open-dlg-list{
-    display: flex;
-    flex-flow: column;
-    max-height: 50vh;
-    max-width: 90vw;
-    overflow:auto;
-    margin:0.5rem 0 0 0;
-}
-.spinner {
-    display: inline-block;
-    width: 50px;
-    height: 50px;
-    border: 3px solid #666;
-    border-radius: 50%;
-    border-top-color: #fff;
-    animation: spin 2.618s linear infinite;
-    -webkit-animation: spin 2.618s linear infinite;
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-@-webkit-keyframes spin {
-  to { -webkit-transform: rotate(360deg); }
-}
-#string-dlg > div > input {
-    margin-top:1em;
-    width: 400px;
-}
 
-#tabs {
-    display: flex;
-    flex-flow: column nowrap;
-}
-#tabBar {
-    flex: 0 0 auto;
-    display: flex;
-    flex-flow: row nowrap;
-    margin-bottom:3px;
-}
-.tabButton {
-    margin: 0;
-    padding: 3px 6px 6px 6px;
-    background:none;
-    border:none;
-    border-bottom: 2px solid #666;
-}
-.tabButton:hover {
-    background:none;
-    border:none;
-    border-bottom: 2px solid #3977FF;
-}
-.selectedTabBtn, .selectedTabBtn:hover {
-    padding-top: 0px;
-    border-bottom: 4px solid #3977FF;
-}
-.separator {
-    margin:6px;
-    padding:1px;
-    background:#666;
-}
-.tab {
-    display:none;
-}
-.activeTab {
-    display:block;
-}
 .twoColumnGrid {
     display: grid;
     grid-template-columns: auto 1fr;

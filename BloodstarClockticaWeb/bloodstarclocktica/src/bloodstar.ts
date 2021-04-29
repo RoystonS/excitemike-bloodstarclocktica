@@ -5,8 +5,12 @@ import * as LoadDlg from './dlg/blood-loading-dlg';
 import * as LoginDlg from "./dlg/blood-login-dlg";
 import * as BloodIO from "./blood-io";
 import './styles/main.css';
+import './styles/autogrowtextarea.css';
 import './styles/characterlist.css';
+import './styles/dialog.css';
 import './styles/dragdrop.css';
+import './styles/menu.css';
+import './styles/tabs.css';
 
 let customEdition = new CustomEdition();
 let username = '';

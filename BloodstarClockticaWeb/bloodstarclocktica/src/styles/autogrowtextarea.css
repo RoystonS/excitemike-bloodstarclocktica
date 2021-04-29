@@ -1,0 +1,23 @@
+/* keeps the textarea and ::after the same height */
+.autogrowWrap {display:grid;}
+/* replicates the content, preserving line breaks, to force the grid up to desired height */
+.autogrowWrap::after {
+    content: attr(data-replicated-value) " ";
+    white-space: pre-wrap;
+    visibility: hidden;
+}
+/* prevent manual resize and scrolling so that the rest works */
+.autogrowWrap > textarea {
+    resize: none;
+    overflow: hidden;
+}
+/* stack the two, and make sure border, padding, etc. match */
+.autogrowWrap > textarea,
+.autogrowWrap::after {
+    font-family: 'Open Sans', sans-serif;
+    font-size:13px;
+    margin:1px;
+    border: 1px solid #666;
+    padding:2px;
+    grid-area: 1 / 1 / 2 / 2;
+}

@@ -1,0 +1,41 @@
+#tabs {
+    flex: 4;
+    display: flex;
+    flex-flow: column nowrap;
+}
+#tabHolder {
+    overflow:auto;
+}
+#tabBar {
+    flex: 0 0 auto;
+    display: flex;
+    flex-flow: row nowrap;
+    margin-bottom:3px;
+}
+.tabButton {
+    margin: 0;
+    padding: 3px 6px 6px 6px;
+    background:none;
+    border:none;
+    border-bottom: 2px solid #666;
+}
+.tabButton:hover {
+    background:none;
+    border:none;
+    border-bottom: 2px solid #3977FF;
+}
+.selectedTabBtn, .selectedTabBtn:hover {
+    padding-top: 0px;
+    border-bottom: 4px solid #3977FF;
+}
+.separator {
+    margin:6px;
+    padding:1px;
+    background:#666;
+}
+.tab {
+    display:none;
+}
+.activeTab {
+    display:block;
+}

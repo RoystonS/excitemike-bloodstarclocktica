@@ -1,4 +1,3 @@
-
 #characterlistbuttons {
     position: absolute;
     left: 0;
@@ -33,7 +32,6 @@ ol#characterlist {
     padding: 6px;
     border:1px solid #666;
     align-items: center;
-    transition: background-color 0.2s ease-out;
     position:relative;
 }
 .character-list-item:hover {
@@ -49,7 +47,6 @@ ol#characterlist {
     background-image: linear-gradient(to right, #3977FF 2%, #3978ff40 2%);
     background-color: #3978ff80;
     z-index:-1;
-    transition: width 0.2s ease-out;
 }
 .character-list-item::after{
     content: '∙';
@@ -62,10 +59,12 @@ ol#characterlist {
 }
 .character-list-name{
     flex: 1 1 0;
-    margin-right:1rem;
+    pointer-events: none;
 }
 .character-list-button {
     display: none;
+    background:none;
+    border:none;
 }
 .character-list-item:hover > .character-list-button, .characterListItemSelected > .character-list-button {
     display: block;
