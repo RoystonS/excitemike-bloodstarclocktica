@@ -62,11 +62,11 @@ export class CollectionBinding<T extends ObservableObject> {
                 break;
             case ObservableCollectionChangeAction.Replace:
                 // TODO: implement Replace case
-                MessageDlg.showError("Not yet implemented");
+                MessageDlg.showError("Replace case of `collectionChanged` Not yet implemented");
                 break;
             case ObservableCollectionChangeAction.Remove:
                 // TODO: implement Remove case
-                MessageDlg.showError("Not yet implemented");
+                MessageDlg.showError("Remove case of `collectionChanged` Not yet implemented");
                 break;
         }
     }
