@@ -27,13 +27,13 @@ export type ObservableCollectionChangedEvent<T extends ObservableObject> = {
     action:ObservableCollectionChangeAction,
 
     /** list of new items after the change */
-    newItems:T[],
+    newItems:ReadonlyArray<T>,
 
     /** index at which the change occurred */
     newStartingIndex:number,
 
     /** items affected by a Replace, Remove, or Move action */
-    oldItems:T[],
+    oldItems:ReadonlyArray<T>,
 
     /** index at which a Move, Remove, or Replace action occurred */
     oldStartingIndex:number;
@@ -79,6 +79,20 @@ export class ObservableCollection<ItemType extends ObservableObject> implements 
             list: this,
             action: ObservableCollectionChangeAction.Add,
             newItems: [item],
+            newStartingIndex: this.items.length-1,
+            oldItems: [],
+            oldStartingIndex: -1
+        });
+    }
+
+    /** add multiple items to the end of the collection */
+    addMany(items:ReadonlyArray<ItemType>):void {
+        const itemsPlus:ReadonlyArray<ItemPlus<ItemType>> = items.map(item=>this.makeItemPlus(this.items.length, item));
+        this.items.push(...itemsPlus);
+        this.notifyCollectionChangedListeners({
+            list: this,
+            action: ObservableCollectionChangeAction.Add,
+            newItems: items,
             newStartingIndex: this.items.length-1,
             oldItems: [],
             oldStartingIndex: -1
@@ -186,23 +200,87 @@ export class ObservableCollection<ItemType extends ObservableObject> implements 
         }
     }
 
+    /** 
+     * add/replace/remove to replace the specified range with the passed-in array
+     * After calling this, the collection will consist of
+     *      items before `start`
+     *      the passed-in items
+     *      items that were at `end` or later
+     * @param start zero based index at which to start replacing
+     * @param end zero based index before which to stop
+     * @param items items to insert where start was.
+     */
+    replaceRange(start:number, end:number, items:ReadonlyArray<ItemType>):void {
+        if (end <= start) {return;}
+
+        const removedItemsPlus = this.items.slice(start, end);
+        const removedItems = removedItemsPlus.map(itemPlus=>itemPlus.item);
+        for (const itemPlus of removedItemsPlus){
+            this.cleanupItemPlus(itemPlus);
+        }
+        const newItemsPlus = items.map((item,i)=>this.makeItemPlus(i+start, item));
+        this.items.splice(start, end-start-1, ...newItemsPlus);
+        this.updateIndices(start + newItemsPlus.length);
+
+        const numReplaces = Math.min(end - start, items.length);
+        if (numReplaces) {
+            this.notifyCollectionChangedListeners({
+                list: this,
+                action: ObservableCollectionChangeAction.Replace,
+                newItems: items.slice(0, numReplaces),
+                newStartingIndex: start,
+                oldItems: removedItems.slice(0, numReplaces),
+                oldStartingIndex: start
+            });
+        }
+
+        const numRemoves = (end - start) - numReplaces;
+        if (numRemoves) {
+            this.notifyCollectionChangedListeners({
+                list: this,
+                action: ObservableCollectionChangeAction.Replace,
+                newItems: [],
+                newStartingIndex: start + numReplaces,
+                oldItems: removedItems.slice(numReplaces),
+                oldStartingIndex: start + numReplaces
+            });
+        }
+
+        const numAdds = items.length - numReplaces;
+        if (numAdds) {
+            this.notifyCollectionChangedListeners({
+                list: this,
+                action: ObservableCollectionChangeAction.Add,
+                newItems: items.slice(numReplaces),
+                newStartingIndex: start + numReplaces,
+                oldItems: [],
+                oldStartingIndex: -1
+            });
+        }
+    }
+
+    /** add/replace/remove to match the passed-in array */
+    set(items:ReadonlyArray<ItemType>):void {
+        this.replaceRange(0, this.items.length, items);
+    }
+
     /** listen to changes */
-    addCollectionChangedListener(cb:ObservableCollectionListener<ItemType>) {
+    addCollectionChangedListener(cb:ObservableCollectionListener<ItemType>):void {
         this.collectionChangedListeners.push(cb);
     }
 
     /** stop listening to changes */
-    removeCollectionChangedListener(cb:ObservableCollectionListener<ItemType>) {
+    removeCollectionChangedListener(cb:ObservableCollectionListener<ItemType>):void {
         this.collectionChangedListeners = this.collectionChangedListeners.filter(i=>i!==cb);
     }
 
     /** clear all listeners */
-    removeAllCollectionChangedListeners() {
+    removeAllCollectionChangedListeners():void {
         this.collectionChangedListeners = [];
     }
 
     /** notify listeners of a change */
-    private notifyCollectionChangedListeners(event:ObservableCollectionChangedEvent<ItemType>) {
+    private notifyCollectionChangedListeners(event:ObservableCollectionChangedEvent<ItemType>):void {
         const backup = this.collectionChangedListeners.concat();
         backup.forEach(cb=>cb(event));
     }
@@ -221,17 +299,17 @@ export class ObservableCollection<ItemType extends ObservableObject> implements 
     }
 
     /** listen to changes */
-    addItemChangedListener(cb:ItemPropertyChangedListener<ItemType>) {
+    addItemChangedListener(cb:ItemPropertyChangedListener<ItemType>):void {
         this.itemChangedListeners.push(cb);
     }
 
     /** stop listening to changes */
-    removeItemChangedListener(cb:ItemPropertyChangedListener<ItemType>) {
+    removeItemChangedListener(cb:ItemPropertyChangedListener<ItemType>):void {
         this.itemChangedListeners = this.itemChangedListeners.filter(i=>i!==cb);
     }
 
     /** clear all listeners */
-    removeAllItemChangedListeners() {
+    removeAllItemChangedListeners():void {
         this.itemChangedListeners = [];
     }
 

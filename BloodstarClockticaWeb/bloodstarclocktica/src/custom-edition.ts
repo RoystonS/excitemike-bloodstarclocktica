@@ -1,5 +1,4 @@
 import * as BloodBind from './bind/bindings';
-import * as MessageDlg from "./dlg/blood-message-dlg";
 import {ObservableCollection} from './bind/observable-collection';
 import {ObservableObjectMixin} from './bind/observable-object';
 
@@ -11,9 +10,7 @@ export type CustomEditionSaveData = {
     meta:CustomEditionMetaSaveData,
     otherNightOrder:ReadonlyArray<string>,
     previewOnToken:boolean,
-    processed_images:{[key:string]:string},
-    characters:ReadonlyArray<CharacterSaveData>,
-    src_images:{[key:string]:string},
+    characters:ReadonlyArray<CharacterSaveData>
 };
 
 /** data to persist on the server for the meta portion of custom edition */
@@ -160,6 +157,14 @@ class _CustomEditionMeta {
     getSynopsisProperty():BloodBind.Property<string> {
         return this.almanac.getSynopsisProperty();
     }
+
+    /** set based on save data */
+    open(data:CustomEditionMetaSaveData):void {
+        this.name.set(data.name);
+        this.author.set(data.author);
+        this.logo.set(data.logo);
+        this.almanac.open(data.almanac);
+    }
 }
 /** observable properties about the edition */
 export const CustomEditionMeta = ObservableObjectMixin(_CustomEditionMeta);
@@ -178,7 +183,7 @@ class _CustomEditionMetaAlmanac {
         this.synopsis.set('');
         this.overview.set('');
     }
-    getSaveData() {
+    getSaveData():CustomEditionMetaAlmanacSaveData {
         return {
             synopsis: this.synopsis.get(),
             overview: this.overview.get(),
@@ -193,6 +198,12 @@ class _CustomEditionMetaAlmanac {
     /** get synopsis for binding */
     getSynopsisProperty():BloodBind.Property<string> {
         return this.synopsis;
+    }
+
+    /** set based on save data */
+    open(data:CustomEditionMetaAlmanacSaveData):void {
+        this.synopsis.set(data.synopsis);
+        this.overview.set(data.overview);
     }
 }
 
@@ -232,6 +243,14 @@ class _Character {
         this.team = new BloodBind.EnumProperty<string>(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS);
         this.unStyledImage = new BloodBind.Property<string|null>(null);
     }
+
+    /** create from save data */
+    static from(data:CharacterSaveData):Character {
+        const character = new Character();
+        character.open(data);
+        return character;
+    }
+
     getAbility():string{return this.ability.get();}
     getAbilityProperty():BloodBind.Property<string>{return this.ability;}
     getAttribution():string{return this.attribution.get();}
@@ -282,6 +301,23 @@ class _Character {
     getUnStyledImage():string|null{return this.unStyledImage.get();}
     getUnStyledImageProperty():BloodBind.Property<string|null>{return this.unStyledImage;}
 
+    /** load in save data */
+    open(data:CharacterSaveData):void {
+        this.ability.set(data.ability);
+        this.attribution.set(data.attribution);
+        this.almanac.open(data.almanac);
+        this.characterReminderTokens.set(data.characterReminderTokens.join('\n'));
+        this.export.set(data.export);
+        this.firstNightReminderProperty.set(data.firstNightReminder);
+        this.globalReminderTokens.set(data.globalReminderTokens.join('\n'));
+        this.id.set(data.id);
+        this.name.set(data.name);
+        this.otherNightReminderProperty.set(data.otherNightReminder);
+        this.setup.set(data.setup);
+        this.styledImage.set(data.styledImage);
+        this.team.set(data.team);
+        this.unStyledImage.set(data.unStyledImage);
+    }
 
     setId(value:string):void { this.id.set(value); }
     setName(value:string):void{this.name.set(value);}
@@ -327,6 +363,16 @@ class _CharacterAlmanac {
     getHowToRunProperty():BloodBind.Property<string> {return this.howToRun;}
     getTip():string{return this.tip.get();}
     getTipProperty():BloodBind.Property<string> {return this.tip;}
+    
+
+    /** load in save data */
+    open(data:CharacterAlmanacSaveData):void {
+        this.flavor.set(data.flavor);
+        this.overview.set(data.overview);
+        this.examples.set(data.examples);
+        this.howToRun.set(data.howToRun);
+        this.tip.set(data.tip);
+    }
 }
 
 /** observable properties about the character's almanac entry */
@@ -459,9 +505,7 @@ class _CustomEdition {
             meta: this.meta.getSaveData(),
             otherNightOrder:otherNightOrderSaveData,
             previewOnToken:this.previewOnToken.get(),
-            processed_images:{},
-            characters:charactersSaveData,
-            src_images:{}
+            characters:charactersSaveData
         };
     };
 
@@ -479,8 +523,25 @@ class _CustomEdition {
      * set to opened file
      * @param data 
      */
-     open(_saveName:string, _data:CustomEditionSaveData):boolean {
-        MessageDlg.showError("Not yet implemented");
+     open(saveName:string, data:CustomEditionSaveData):boolean {
+        this.saveName.set(saveName);
+        
+        this.meta.open(data.meta);
+        
+        this.characterList.set(data.characters.map(characterSaveData=>Character.from(characterSaveData)));
+
+        const charactersById = new Map<string, Character>();
+        {
+            for (const character of this.characterList) {
+                charactersById.set(character.getId(), character);
+            }
+        }
+
+        this.firstNightOrder.set(data.firstNightOrder.map(id=>charactersById.get(id) || new Character()));
+        this.otherNightOrder.set(data.otherNightOrder.map(id=>charactersById.get(id) || new Character()));
+
+        this.dirty.set(false);
+
         return true;
     }
 }
