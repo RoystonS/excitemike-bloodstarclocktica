@@ -2,6 +2,8 @@ import * as BloodBind from './bind/bindings';
 import {ObservableCollection} from './bind/observable-collection';
 import {ObservableObjectMixin} from './bind/observable-object';
 
+const splitLines = (str:string) => str.split(/\r?\n/);
+
 /** data to persist on the server for the custom edition */
 export type CustomEditionSaveData = {
     firstNightOrder:ReadonlyArray<string>,
@@ -29,13 +31,20 @@ export type CustomEditionMetaAlmanacSaveData = {
 
 /** data to persist on the server for a character */
 export type CharacterSaveData = {
+    ability:string,
+    almanac: CharacterAlmanacSaveData
+    attribution:string,
+    characterReminderTokens:ReadonlyArray<string>,
+    export:boolean,
+    firstNightReminder:string,
+    globalReminderTokens:ReadonlyArray<string>,
     id:string,
     name:string,
-    unStyledImage:string|null,
+    otherNightReminder:string,
+    setup:boolean,
     styledImage:string|null,
     team:string,
-    export:boolean,
-    almanac: CharacterAlmanacSaveData
+    unStyledImage:string|null,
 };
 
 /** datato persist on the server for a character's almanac entry */
@@ -192,47 +201,83 @@ export const CustomEditionMetaAlmanac = ObservableObjectMixin(_CustomEditionMeta
 export type CustomEditionMetaAlmanac = InstanceType<ReturnType<typeof ObservableObjectMixin>> & _CustomEditionMetaAlmanac;
 
 class _Character {
+    private ability: BloodBind.Property<string>;
+    private attribution: BloodBind.Property<string>;
     private almanac: CharacterAlmanac;
+    private characterReminderTokens: BloodBind.Property<string>;
+    private export: BloodBind.Property<boolean>;
+    private firstNightReminderProperty: BloodBind.Property<string>;
+    private globalReminderTokens: BloodBind.Property<string>;
     private id: BloodBind.Property<string>;
     private name: BloodBind.Property<string>;
-    private unStyledImage: BloodBind.Property<string|null>;
+    private otherNightReminderProperty: BloodBind.Property<string>;
+    private setup: BloodBind.Property<boolean>;
     private styledImage: BloodBind.Property<string|null>;
-    private team: BloodBind.Property<BloodTeam>;
-    private export: BloodBind.Property<boolean>;
+    private team: BloodBind.EnumProperty<string>;
+    private unStyledImage: BloodBind.Property<string|null>;
     constructor() {
+        this.ability = new BloodBind.Property('');
+        this.attribution = new BloodBind.Property('');
         this.almanac = new CharacterAlmanac();
+        this.characterReminderTokens = new BloodBind.Property<string>('');
+        this.export = new BloodBind.Property<boolean>(true);
+        this.firstNightReminderProperty = new BloodBind.Property('');
+        this.globalReminderTokens = new BloodBind.Property<string>('');
         this.id = new BloodBind.Property('newcharacter');
         this.name = new BloodBind.Property('New Character');
-        this.unStyledImage = new BloodBind.Property<string|null>(null);
+        this.otherNightReminderProperty = new BloodBind.Property('');
+        this.setup = new BloodBind.Property<boolean>(false);
         this.styledImage = new BloodBind.Property<string|null>(null);
-        this.team = new BloodBind.EnumProperty(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS);
-        this.export = new BloodBind.Property<boolean>(true);
+        this.team = new BloodBind.EnumProperty<string>(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS);
+        this.unStyledImage = new BloodBind.Property<string|null>(null);
     }
+    getAbility():string{return this.ability.get();}
+    getAbilityProperty():BloodBind.Property<string>{return this.ability;}
+    getAttribution():string{return this.attribution.get();}
+    getAttributionProperty():BloodBind.Property<string>{return this.attribution;}
+    getAlmanac():CharacterAlmanac { return this.almanac; }
     getAlmanacSaveData():CharacterAlmanacSaveData { return this.almanac.getSaveData(); }
+    getCharacterReminderTokens():ReadonlyArray<string> { return splitLines(this.characterReminderTokens.get()); }
+    getCharacterReminderTokensProperty():BloodBind.Property<string> { return this.characterReminderTokens; }
     getExport():boolean{return this.export.get();}
     getExportProperty():BloodBind.Property<boolean>{return this.export;}
+    getFirstNightReminder():string{return this.firstNightReminderProperty.get();}
+    getFirstNightReminderProperty():BloodBind.Property<string>{return this.firstNightReminderProperty;}
+    getGlobalReminderTokens():ReadonlyArray<string> { return splitLines(this.globalReminderTokens.get()); }
+    getGlobalReminderTokensProperty():BloodBind.Property<string> { return this.globalReminderTokens; }
     getId():string { return this.id.get(); }
     getIdProperty():BloodBind.Property<string>{return this.id;}
     getName():string{return this.name.get();}
     getNameProperty():BloodBind.Property<string>{return this.name;}
+    getOtherNightReminder():string{return this.otherNightReminderProperty.get();}
+    getOtherNightReminderProperty():BloodBind.Property<string>{return this.otherNightReminderProperty;}
 
     /** get data to persist for the character */
     getSaveData():CharacterSaveData {
         return {
+            ability:this.getAbility(),
+            almanac: this.getAlmanacSaveData(),
+            attribution:this.getAttribution(),
+            characterReminderTokens:this.getCharacterReminderTokens(),
+            firstNightReminder:this.getFirstNightReminder(),
+            globalReminderTokens:this.getGlobalReminderTokens(),
             id:this.getId(),
             name:this.getName(),
+            otherNightReminder:this.getOtherNightReminder(),
             unStyledImage:this.getUnStyledImage(),
+            setup:this.getSetup(),
             styledImage:this.getStyledImage(),
             team:this.getTeam(),
-            export:this.getExport(),
-            almanac: this.getAlmanacSaveData()
+            export:this.getExport()
         };
     }
 
+    getSetup():boolean{return this.setup.get();}
+    getSetupProperty():BloodBind.Property<boolean>{return this.setup;}
     getStyledImage():string|null{return this.styledImage.get();}
     getStyledImageProperty():BloodBind.Property<string|null>{return this.styledImage;}
-    getTeam():BloodTeam{return this.team.get();}
-    getTeamProperty():BloodBind.Property<BloodTeam>{return this.team;}
+    getTeam():BloodTeam{return parseBloodTeam(this.team.get());}
+    getTeamProperty():BloodBind.EnumProperty<string>{return this.team;}
     getUnStyledImage():string|null{return this.unStyledImage.get();}
     getUnStyledImageProperty():BloodBind.Property<string|null>{return this.unStyledImage;}
 
@@ -272,10 +317,15 @@ class _CharacterAlmanac {
     }
 
     getFlavor():string{return this.flavor.get();}
+    getFlavorProperty():BloodBind.Property<string> {return this.flavor;}
     getOverview():string{return this.overview.get();}
+    getOverviewProperty():BloodBind.Property<string> {return this.overview;}
     getExamples():string{return this.examples.get();}
+    getExamplesProperty():BloodBind.Property<string> {return this.examples;}
     getHowToRun():string{return this.howToRun.get();}
+    getHowToRunProperty():BloodBind.Property<string> {return this.howToRun;}
     getTip():string{return this.tip.get();}
+    getTipProperty():BloodBind.Property<string> {return this.tip;}
 }
 
 /** observable properties about the character's almanac entry */

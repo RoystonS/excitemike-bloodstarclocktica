@@ -163,10 +163,26 @@ export function bindCheckbox(checkboxElement:HTMLInputElement, boolProperty:Prop
     bindings.set(checkboxElement, new CheckboxBinding(checkboxElement, boolProperty));
 }
 
+/** bind checkbox to some data */
+export function bindCheckboxById(id:string, boolProperty:Property<boolean>) {
+    const element = document.getElementById(id);
+    if (element instanceof HTMLInputElement) {
+        bindCheckbox(element, boolProperty);
+    }
+}
+
 /** bind ComboBox to EnumProperty */
 export function bindComboBox(selectElement:HTMLSelectElement, enumProperty:EnumProperty<string>) {
     unbindElement(selectElement);
     bindings.set(selectElement, new ComboBoxBinding(selectElement, enumProperty));
+}
+
+/** bind ComboBox to EnumProperty */
+export function bindComboBoxById(id:string, enumProperty:EnumProperty<string>) {
+    const element = document.getElementById(id);
+    if (element instanceof HTMLSelectElement) {
+        bindComboBox(element, enumProperty);
+    }
 }
 
 /** bind a string property to a label, input text, or text area element */
@@ -203,4 +219,11 @@ export function unbindElement(element:Node) {
         bindings.get(element)?.destroy();
     }
     bindings.delete(element);
+}
+
+/** clear element's current binding, if any */
+export function unbindElementById(id:string) {
+    const element = document.getElementById(id);
+    if (!element) {return;}
+    unbindElement(element);
 }

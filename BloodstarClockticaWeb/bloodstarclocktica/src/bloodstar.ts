@@ -16,7 +16,17 @@ let customEdition = new CustomEdition();
 let username = '';
 let password = '';
 const selectedCharacter = new BloodBind.Property<Character|null>(null);
+
+/** need to track the listeners we add so that we can remove them */
 const characterListCleanupSideTable = new Map<HTMLElement, BloodBind.PropertyChangeListener<Character|null>>();
+
+/** list of ids of all controls on character tab that might need to be disabled */
+const characterTabIds:ReadonlyArray<string> =
+    'characterId characterName characterTeam characterAbility characterFirstNightReminder characterOtherNightReminder characterSetup characterReminderTokens globalReminderTokens characterExport characterAttribution characterAlmanacFlavor characterAlmanacOverview characterAlmanacExamples characterAlmanacHowToRun characterAlmanacTip'
+    .split(' ');
+
+/** helper type for disableCharacterTab */
+type TagsThatCanBeDisabled = "button" | "fieldset" | "input" | "optgroup" | "option" | "select" | "textarea";
 
 // TODO: exceptions in promises need to surface somewhere (test without internet connection!)
 
@@ -290,14 +300,59 @@ function initBindings():void {
     selectedCharacter.set(customEdition.getCharacterList().get(0) || null);
 }
 
+/** set up character tab bindings */
+function bindCharacterTabControls():void {
+    const character = selectedCharacter.get();
+    if (!character) {return;}
+    BloodBind.bindTextById('characterId', character.getIdProperty());
+    BloodBind.bindTextById('characterName', character.getNameProperty());
+    BloodBind.bindComboBoxById('characterTeam', character.getTeamProperty());
+    BloodBind.bindTextById('characterAbility', character.getAbilityProperty());
+    BloodBind.bindTextById('characterFirstNightReminder', character.getFirstNightReminderProperty());
+    BloodBind.bindTextById('characterOtherNightReminder', character.getOtherNightReminderProperty());
+    BloodBind.bindCheckboxById('characterSetup', character.getSetupProperty());
+    BloodBind.bindTextById('characterReminderTokens', character.getCharacterReminderTokensProperty());
+    BloodBind.bindTextById('globalReminderTokens', character.getGlobalReminderTokensProperty());
+    BloodBind.bindCheckboxById('characterExport', character.getExportProperty());
+    BloodBind.bindTextById('characterAttribution', character.getAttributionProperty());
+    BloodBind.bindTextById('characterAlmanacFlavor', character.getAlmanac().getFlavorProperty());
+    BloodBind.bindTextById('characterAlmanacOverview', character.getAlmanac().getOverviewProperty());
+    BloodBind.bindTextById('characterAlmanacExamples', character.getAlmanac().getExamplesProperty());
+    BloodBind.bindTextById('characterAlmanacHowToRun', character.getAlmanac().getHowToRunProperty());
+    BloodBind.bindTextById('characterAlmanacTip', character.getAlmanac().getTipProperty());
+}
+
+/** clean up character tab bindings */
+function unbindCharacterTabControls():void {
+    for (const id of characterTabIds) {
+        BloodBind.unbindElementById(id);
+    }
+}
+
+/** make the entire character tab disabled */
+function disableCharacterTab():void {
+    const tabDiv = document.getElementById('charactertab');
+    if (!tabDiv) { return; }
+    const tags:ReadonlyArray<TagsThatCanBeDisabled> = ['button', 'fieldset', 'optgroup', 'option', 'select', 'textarea', 'input'];
+    for (const tag of tags) {
+        const elements = tabDiv.getElementsByTagName(tag);
+        for (let i=0;i<elements.length;i++){
+            const item = elements.item(i);
+            if (item) {
+                item.disabled = true;
+            }
+        }
+    }
+}
+
 /** update character tab to show this character */
 function selectedCharacterChanged(value:Character|null):void {
-    // TODO: unbind elements in tab
+    unbindCharacterTabControls();
     if (value) {
         tabClicked('charTabBtn','charactertab');
-        // TODO: bind tab elements
+        bindCharacterTabControls();
     } else {
-        // TODO: disable entire tab
+        disableCharacterTab();
     }
 }
 
