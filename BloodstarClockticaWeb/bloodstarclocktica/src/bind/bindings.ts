@@ -60,15 +60,17 @@ type SyncFromPropertyToElementFn<ValueType> = ((v:ValueType)=>void) | null;
 
 /** shared code between binding classes */
 class BaseBinding<ValueType> {
-    element:HTMLElement|null;
-    property:Property<ValueType>|null;
-    syncFromElementToProperty:SyncFromElementToPropertyFn;
-    syncFromPropertyToElement:SyncFromPropertyToElementFn<ValueType>;
+    private element:HTMLElement|null;
+    private property:Property<ValueType>|null;
+    private eventName:string;
+    private syncFromElementToProperty:SyncFromElementToPropertyFn;
+    private syncFromPropertyToElement:SyncFromPropertyToElementFn<ValueType>;
 
     /** set up the binding and bookkeeping for cleanup */
-    constructor(element:HTMLElement, property:Property<ValueType>, syncFromElementToProperty:SyncFromElementToPropertyFn, syncFromPropertyToElement:SyncFromPropertyToElementFn<ValueType>) {
+    constructor(element:HTMLElement, property:Property<ValueType>, eventName:string, syncFromElementToProperty:SyncFromElementToPropertyFn, syncFromPropertyToElement:SyncFromPropertyToElementFn<ValueType>) {
         this.element = element;
         this.property = property;
+        this.eventName = eventName;
 
         this.syncFromElementToProperty = syncFromElementToProperty;
         this.syncFromPropertyToElement = syncFromPropertyToElement;
@@ -76,7 +78,7 @@ class BaseBinding<ValueType> {
         if (syncFromPropertyToElement) { syncFromPropertyToElement(property.get()); }
 
         if (syncFromElementToProperty) {
-            element.addEventListener('change', syncFromElementToProperty);
+            element.addEventListener(eventName, syncFromElementToProperty);
         }
         if (syncFromPropertyToElement) {
             property.addListener(syncFromPropertyToElement);
@@ -86,7 +88,7 @@ class BaseBinding<ValueType> {
     /** clean up */
     destroy() {
         if (this.syncFromElementToProperty !== null) {
-            this.element?.removeEventListener('change', this.syncFromElementToProperty);
+            this.element?.removeEventListener(this.eventName, this.syncFromElementToProperty);
             this.syncFromElementToProperty = null;
         }
         if (this.syncFromPropertyToElement !== null) {
@@ -101,7 +103,7 @@ class BaseBinding<ValueType> {
 /** bindings for a checkbox */
 class CheckboxBinding extends BaseBinding<boolean> {
     constructor(element:HTMLInputElement, property:AnyProperty<boolean>) {
-        super(element, property, _=>property.set(element.checked), v=>element.checked=v);
+        super(element, property, 'change', _=>property.set(element.checked), v=>element.checked=v);
     }
 }
 
@@ -109,26 +111,16 @@ class CheckboxBinding extends BaseBinding<boolean> {
 class TextBinding extends BaseBinding<string> {
     constructor(element:HTMLElement, property:Property<string>) {
         if ((element instanceof HTMLTextAreaElement) || (element instanceof HTMLInputElement)) {
-            super(element, property, _=>property.set(element.value), v=>element.value=v);
+            super(element, property, 'input', _=>property.set(element.value), v=>element.value=v);
         } else {
-            super(element, property, null, v=>element.innerText=v);
+            super(element, property, '', null, v=>element.innerText=v);
         }
     }
 }
 
 /** bindings for a ComboBox and EnumProperty */
-class ComboBoxBinding{
-    element:HTMLSelectElement | null;
-    property:EnumProperty<string>|null;
-    syncFromElementToProperty:((_:Event)=>void) | null;
-    syncFromPropertyToElement:((v:string)=>void) | null;
+class ComboBoxBinding extends BaseBinding<string> {
     constructor(element:HTMLSelectElement, property:EnumProperty<string>) {
-        this.element = element;
-        this.property = property;
-        
-        this.syncFromElementToProperty = _=>property.set(element.value);
-        this.syncFromPropertyToElement = v=>element.value=v;
-
         element.innerText = '';
         property.options.forEach(data => {
             const {display, value} = data;
@@ -138,22 +130,9 @@ class ComboBoxBinding{
             element.appendChild(optionElement);
         });
 
-        element.value = property.get();
+        super(element, property, 'change', _=>property.set(element.value), v=>element.value=v);
 
-        element.addEventListener('change', this.syncFromElementToProperty);
-        property.addListener(this.syncFromPropertyToElement);
-    }
-    destroy() {
-        if (null !== this.syncFromElementToProperty) {
-            this.element?.removeEventListener('change', this.syncFromElementToProperty);
-        }
-        if (null !== this.syncFromPropertyToElement) {
-            this.property?.removeListener(this.syncFromPropertyToElement);
-        }
-        this.element = null;
-        this.property = null;
-        this.syncFromElementToProperty = null;
-        this.syncFromPropertyToElement = null;
+        element.value = property.get();
     }
 }
 
