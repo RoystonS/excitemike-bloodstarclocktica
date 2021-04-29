@@ -61,9 +61,11 @@ export class CollectionBinding<T extends ObservableObject> {
                 this.move(value.oldStartingIndex, value.newStartingIndex);
                 break;
             case ObservableCollectionChangeAction.Replace:
+                // TODO: implement Replace case
                 MessageDlg.showError("Not yet implemented");
                 break;
             case ObservableCollectionChangeAction.Remove:
+                // TODO: implement Remove case
                 MessageDlg.showError("Not yet implemented");
                 break;
         }

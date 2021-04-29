@@ -132,6 +132,7 @@ function addCharacterClicked(_: Event): void {
 
 /** clicked the help menu button */
 function showHelp() {
+    // TODO: implement showHelp
     MessageDlg.show('Not yet implemented');
 }
 
@@ -212,12 +213,14 @@ export async function saveFileAsClicked():Promise<boolean> {
 
 /** user chose to import character(s) from a json file */
 async function importJsonClicked():Promise<boolean> {
+    // TODO: implement importJsonClicked
     MessageDlg.show('Not yet implemented');
     return false;
 }
 
 /** user chose to import official character(s) */
 async function importOfficialClicked():Promise<boolean> {
+    // TODO: implement importOfficialClicked
     MessageDlg.show('Not yet implemented');
     return false;
 }
