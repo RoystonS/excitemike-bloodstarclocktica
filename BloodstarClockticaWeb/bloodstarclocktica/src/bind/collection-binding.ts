@@ -8,7 +8,7 @@ export type CleanupFn<T> = (renderedElement:Element, itemData:T)=>void;
 function getRelativeY(event:MouseEvent, refElement:Element|null):number {
     let refY = 0;
     while (refElement instanceof HTMLElement) {
-        refY += refElement.offsetTop;
+        refY += refElement.offsetTop - refElement.scrollTop;
         refElement = refElement.offsetParent;
     }
     return event.pageY - refY;

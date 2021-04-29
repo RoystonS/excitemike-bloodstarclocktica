@@ -28,6 +28,11 @@ const characterListCleanupSideTable = new Map<HTMLElement, BloodBind.PropertyCha
 function makeCharacterListItem(character: Character):HTMLElement {
     const row = document.createElement("div");
     row.className = "character-list-item";
+    row.onclick = e => { 
+        if (e.target === row) {
+            selectedCharacter.set(character); tabClicked('charTabBtn','charactertab');
+        }
+    }
 
     {
         const checkbox = document.createElement("input");
@@ -37,15 +42,14 @@ function makeCharacterListItem(character: Character):HTMLElement {
     }
 
     {
-        const nameElement = document.createElement("a");
+        const nameElement = document.createElement("span");
         nameElement.className = "character-list-name";
-        nameElement.onclick = () => selectedCharacter.set(character);
         BloodBind.bindText(nameElement, character.getNameProperty());
         row.appendChild(nameElement);
     }
 
     {
-        const up = document.createElement("a");
+        const up = document.createElement("button");
         up.className = "character-list-button";
         up.innerText = "▲";
         up.onclick = () => console.log("up button clicked");
@@ -53,7 +57,7 @@ function makeCharacterListItem(character: Character):HTMLElement {
     }
 
     {
-        const down = document.createElement("a");
+        const down = document.createElement("button");
         down.className = "character-list-button";
         down.innerText = "▼";
         down.onclick = () => console.log("down button clicked");
@@ -61,7 +65,7 @@ function makeCharacterListItem(character: Character):HTMLElement {
     }
 
     {
-        const del = document.createElement("a");
+        const del = document.createElement("button");
         del.className = "character-list-button";
         del.innerText = "Delete";
         del.onclick = () => console.log("delete button clicked");
