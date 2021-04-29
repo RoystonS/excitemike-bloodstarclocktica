@@ -1,11 +1,11 @@
-// newfile/openfile dialog for bloodstar clocktica
-// TODO: rename to spinner-dlg
+// 'please wait' style spinner popup for bloodstar clocktica
 import * as BloodDlg from './blood-dlg';
 
 let initted = false;
 let showFn:BloodDlg.OpenFn|null = null;
 let closeFn:BloodDlg.CloseFn|null = null;
 let count = 0;
+let messageArea:HTMLElement|null = null;
 
 /// prepare the dialog for use
 function init() {
@@ -15,15 +15,17 @@ function init() {
     const spinner = document.createElement('div');
     spinner.className = 'spinner';
     
-    ;({open:showFn, close:closeFn} = BloodDlg.init('spinner-dlg', [spinner], []));
+    messageArea = document.createElement('span');
+    
+    ;({open:showFn, close:closeFn} = BloodDlg.init('spinner-dlg', [spinner, messageArea], []));
 }
 
 /// show the spinner until the promise resolves
-export async function show<T>(somePromise:Promise<T>):Promise<T> {
+export async function show<T>(message:string, somePromise:Promise<T>):Promise<T> {
     if (!initted) { init(); }
+    if (!(showFn && closeFn && messageArea)) {throw new Error("no showFn");}
 
-    if (!showFn) {throw new Error("no showFn");}
-    if (!closeFn) {throw new Error("no closeFn");}
+    messageArea.innerText = message;
 
     ++count;
     if (1 === count) {

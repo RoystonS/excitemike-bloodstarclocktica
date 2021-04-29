@@ -1,7 +1,7 @@
 // open dialog for bloodstar clocktica
 import * as BloodDlg from './blood-dlg';
 import * as BloodIO from '../blood-io';
-import * as LoadDlg from './blood-loading-dlg';
+import * as Spinner from './spinner-dlg';
 import * as Util from '../blood-util';
 
 let initted:boolean = false;
@@ -22,7 +22,7 @@ function init() {
     const message = document.createElement('span');
     message.innerText = 'Choose an existing file to open:';
     fileListDiv = document.createElement('div');
-    fileListDiv.className = 'open-dlg-list';LoadDlg
+    fileListDiv.className = 'open-dlg-list';
     
     const buttons:BloodDlg.ButtonCfg[] = [{label:'Cancel', callback:cancelClicked}];
     ;({open:showFn, close:closeFn} = BloodDlg.init('open-dlg', [message, fileListDiv], buttons));
@@ -55,7 +55,7 @@ export async function show(username:string, password:string) {
     if (!initted) { init(); }
     if (!showFn) { return; }
 
-    const files = await LoadDlg.show(BloodIO.listFiles(username, password));
+    const files = await Spinner.show('Retrieving file list', BloodIO.listFiles(username, password));
     repopulateFileList(files);
     return await showFn();
 }

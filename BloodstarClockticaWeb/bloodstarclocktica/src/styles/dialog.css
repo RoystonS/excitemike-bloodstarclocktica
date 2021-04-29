@@ -31,10 +31,18 @@
 .dialog-btn-group > button {
     flex:1;
 }
+.dialog-btn-group:empty {
+    display: none;
+}
 #new-open-dlg {z-index:2;}
 #open-dlg {z-index:3;}
 #sdc-dlg {z-index:4;}
-#spinner-dlg {z-index:1000;}
+#spinner-dlg {
+    z-index:1000;
+}
+#spinner-dlg > .dialog-box {
+    align-items:center;
+}
 .open-dlg-list{
     display: flex;
     flex-flow: column;
@@ -52,6 +60,7 @@
     border-top-color: #fff;
     animation: spin 2.618s linear infinite;
     -webkit-animation: spin 2.618s linear infinite;
+    margin-bottom: 1em;
 }
 @keyframes spin {
   to { transform: rotate(360deg); }

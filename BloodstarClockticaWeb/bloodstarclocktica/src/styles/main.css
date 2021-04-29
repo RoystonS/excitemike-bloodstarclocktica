@@ -28,7 +28,7 @@ a:hover, a:focus-visible, button:hover, button:focus-visible, summary:hover, sum
     background:#3977FF;
 }
 input[type=text], input[type=password], textarea, select {
-    background: #222;
+    background-color: #222;
     color:#eee;
     border: 1px solid #666;
 }
@@ -59,6 +59,10 @@ input[type=checkbox]:hover {
 }
 input[type=checkbox]:checked::before {
     content:'\2713';
+}
+input:autofill {
+    filter: none;
+    opacity: 0.7;
 }
 textarea {
     resize: both;

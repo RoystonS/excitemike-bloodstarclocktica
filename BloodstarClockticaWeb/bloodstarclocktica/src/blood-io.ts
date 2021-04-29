@@ -1,5 +1,5 @@
 import {CustomEdition, CustomEditionSaveData} from './custom-edition';
-import * as LoadDlg from './dlg/blood-loading-dlg';
+import * as Spinner from './dlg/spinner-dlg';
 import * as MessageDlg from "./dlg/blood-message-dlg";
 import * as OpenDlg from './dlg/blood-open-dlg';
 import * as SdcDlg from './dlg/blood-save-discard-cancel';
@@ -42,7 +42,7 @@ export async function saveAs(username:string, password:string, customEdition:Cus
     const backupName = customEdition.getSaveName();
     try {
         customEdition.setSaveName(name);
-        return await LoadDlg.show(_save(username, password, customEdition));
+        return await Spinner.show(`Saving as ${name}`, _save(username, password, customEdition));
     } catch (error) {
         customEdition.setSaveName(backupName);
         // TODO: Handle the error more gracefully. Explain to the user what went wrong.
@@ -59,11 +59,12 @@ export async function saveAs(username:string, password:string, customEdition:Cus
  * @returns promise resolving to whether the save was successful
  */
 export async function save(username:string, password:string, customEdition:CustomEdition):Promise<boolean> {
-    switch (customEdition.getSaveName()) {
+    const saveName = customEdition.getSaveName();
+    switch (saveName) {
         case '':
             return await saveAs(username, password, customEdition);
         default:
-            return await LoadDlg.show(_save(username, password, customEdition));
+            return await Spinner.show(`Saving as ${saveName}`, _save(username, password, customEdition));
     }
 }
 
@@ -89,7 +90,7 @@ async function _save(username:string, password:string, customEdition:CustomEditi
         customEdition: customEdition.getSaveData()
     };
     const payload = JSON.stringify(saveData);
-    const {error} = await cmd(username, password, 'save', payload);
+    const {error} = await cmd(username, password, 'save', `Saving as ${saveName}`, payload);
     if (error) {
         // TODO: Handle the error more gracefully. Explain to the user what went wrong.
         MessageDlg.showError(error);
@@ -143,7 +144,7 @@ async function openNoPrompts(username:string, password:string, customEdition:Cus
         check: hashFunc(name)
     };
     const payload = JSON.stringify(openData);
-    const cmdResult = await cmd(username, password, 'open', payload);
+    const cmdResult = await cmd(username, password, 'open', `Opening ${name}`, payload);
     const {error,data} = cmdResult;
     if (error) {
         // TODO: Handle the error more gracefully. Explain to the user what went wrong.
@@ -189,8 +190,8 @@ function sanitizeSaveName(original:string):string {
  * send a command to the server, await response
  * Brings up the loading spinner during the operation
  */
-export async function cmd(username:string, password:string, cmdName:string, body?:BodyInit|null|undefined):Promise<any> {
-    return await LoadDlg.show(_cmd(username, password, cmdName, body));
+async function cmd(username:string, password:string, cmdName:string, spinnerMessage:string, body?:BodyInit|null|undefined):Promise<any> {
+    return await Spinner.show(spinnerMessage, _cmd(username, password, cmdName, body));
 }
 
 /** send a command to the server, await response */
@@ -220,7 +221,7 @@ async function _cmd(username:string, password:string, cmdName:string, body?:Body
  */
 export async function login(username:string, password:string):Promise<boolean> {
     try {
-        const {success} = await cmd(username, password, 'login');
+        const {success} = await cmd(username, password, 'login', `Logging in as ${username}`);
         return success;
     } catch (error) {
         // TODO: Handle the error more gracefully. Explain to the user what went wrong.
@@ -235,7 +236,7 @@ export async function login(username:string, password:string):Promise<boolean> {
  * @param password password
  */
 async function _listFiles(username:string, password:string):Promise<string[]> {
-    const {error,files} = await cmd(username, password, 'list');
+    const {error,files} = await cmd(username, password, 'list', 'Retrieving file list');
     if (error) {
         // TODO: Handle the error more gracefully. Explain to the user what went wrong.
         MessageDlg.showError(error);
@@ -250,5 +251,5 @@ async function _listFiles(username:string, password:string):Promise<string[]> {
  * @param password password
  */
 export async function listFiles(username:string, password:string):Promise<string[]> {
-    return await LoadDlg.show(_listFiles(username, password));
+    return await Spinner.show('Retrieving file list', _listFiles(username, password));
 }
