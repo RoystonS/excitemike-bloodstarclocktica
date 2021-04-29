@@ -1,3 +1,4 @@
+import * as MessageDlg from "../dlg/blood-message-dlg";
 import {ObservableCollection, ObservableCollectionChangeAction, ObservableCollectionChangedEvent} from '../bind/observable-collection';
 import {ObservableObject} from '../bind/observable-object';
 
@@ -60,10 +61,10 @@ export class CollectionBinding<T extends ObservableObject> {
                 this.move(value.oldStartingIndex, value.newStartingIndex);
                 break;
             case ObservableCollectionChangeAction.Replace:
-                throw new Error("Not yet implemented");
+                MessageDlg.showError("Not yet implemented");
                 break;
             case ObservableCollectionChangeAction.Remove:
-                throw new Error("Not yet implemented");
+                MessageDlg.showError("Not yet implemented");
                 break;
         }
     }

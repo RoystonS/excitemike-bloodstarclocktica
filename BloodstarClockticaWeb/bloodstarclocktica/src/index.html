@@ -15,263 +15,263 @@
 <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="app">
-    <div id="menu">
-        <div class="dropdown">
-        File
-        <div class="dropdown-content">
-            <button id="newfilebutton">New</button>
-            <button id="openfilebutton">Open</button>
-            <button id="savefilebutton">Save <span class="dim">ctrl+S</span></button>
-            <button id="savefileasbutton">Save As</button>
-            <button id="helpbutton">Help</button>
+        <div id="menu">
+            <div class="dropdown">
+            File
+            <div class="dropdown-content">
+                <button id="newfilebutton" title="begin making a new custom edition">New</button>
+                <button id="openfilebutton" title="load an existing custom edition">Open</button>
+                <button id="savefilebutton" title="save this custom edition">Save <span class="dim">ctrl+S</span></button>
+                <button id="savefileasbutton" title="save this custom edition under a new name">Save As</button>
+                <button id="helpbutton" title="how to use this website">Help</button>
+            </div>
+            </div>
+            <div class="dropdown">
+            Import
+            <div class="dropdown-content">
+                <button id="importJsonButton" title="Import characters from a json file.">Upload JSON</button>
+                <button id="importOfficialButton" title="Import official character.">Official Character</button>
+            </div>
+            </div>
+            <div class="dropdown">
+            Publish
+            <div class="dropdown-content">
+                <button title="Save changes, then create json and almanac links.">Save and Publish</button>
+            </div>
+            </div>
+            <div id="title"></div>
         </div>
-        </div>
-        <div class="dropdown">
-        Import
-        <div class="dropdown-content">
-            <button title="Import characters from a json file.">Upload JSON</button>
-            <button title="Import official character.">Official Character</button>
-        </div>
-        </div>
-        <div class="dropdown">
-        Publish
-        <div class="dropdown-content">
-            <button title="Save changes, then create json and almanac links.">Save and Publish</button>
-        </div>
-        </div>
-        <div id="title"></div>
-    </div>
-    <div id="main-row">
-        <div id="character-pane">
-            <details open>
-                <summary>Characters</summary>
-                <div id="characterlist-container">
-                    <button id="addcharacterbutton">Add Character</button>
-                    <ol id="characterlist">
-                    </ol>
+        <div id="main-row">
+            <div id="character-pane">
+                <details open>
+                    <summary>Characters</summary>
+                    <div id="characterlist-container">
+                        <button id="addcharacterbutton">Add Character</button>
+                        <ol id="characterlist">
+                        </ol>
+                    </div>
+                </details>
+            </div>
+            <div class="separator"></div>
+            <div id="tabs">
+            <div id="tabBar">
+                <button class="tabButton" id="metaTabBtn" title="Set information about this edition.">Meta</a>
+                <button class="tabButton" id="charTabBtn" title="Set information about the selected character.">Edit Character</a>
+                <button class="tabButton" id="firstNightTabBtn" title="Set the night order for the first night.">First Night Order</a>
+                <button class="tabButton" id="otherNightTabBtn" title="Set the night order for other nights.">Other Night Order</a>
+            </div>
+            <div id="tabHolder">
+                <div id="metatab" class="tab">
+                    <details open>
+                        <summary>Edition</summary>
+                        <div class="fieldgroup">
+                            <div class="twoColumnGrid">
+                                <label for="metaName" title="What this edition is called.">Name</label>
+                                <input type="text" name="metaName" id="metaName" title="What this edition is called.">
+                                <label for="metaAuthor" title="This edition's author.">Author</label>
+                                <input type="text" name="metaAuthor" id="metaAuthor" title="This edition's author.">
+                                <label>Logo</label>
+                                <div></div>
+                            </div>
+                        </div>
+                    </details>
+                    <details open>
+                        <summary>Almanac</summary>
+                        <div class="fieldgroup">
+                            <div class="twoColumnGrid">
+                                <label for="metaSynopsis" title="Intro text for set's almanac. Markdown supported!">Synopsis</label>
+                                <div class="autogrowWrap">
+                                    <textarea 
+                                        name="metaSynopsis"
+                                        id="metaSynopsis"
+                                        title="Intro text for set's almanac."
+                                        spellcheck="true"
+                                        rows="1" 
+                                        oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+                                </div>
+                                <label for="metaOverview" title="Describe what it's like to play this edition.">Overview</label>
+                                <div class="autogrowWrap">
+                                    <textarea
+                                        name="metaOverview"
+                                        id="metaOverview"
+                                        title="Describe what it's like to play this edition."
+                                        spellcheck="true"
+                                        rows="1"
+                                        oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
                 </div>
-            </details>
-        </div>
-        <div class="separator"></div>
-        <div id="tabs">
-        <div id="tabBar">
-            <button class="tabButton" id="metaTabBtn" title="Set information about this edition.">Meta</a>
-            <button class="tabButton" id="charTabBtn" title="Set information about the selected character.">Edit Character</a>
-            <button class="tabButton" id="firstNightTabBtn" title="Set the night order for the first night.">First Night Order</a>
-            <button class="tabButton" id="otherNightTabBtn" title="Set the night order for other nights.">Other Night Order</a>
-        </div>
-        <div id="tabHolder">
-            <div id="metatab" class="tab">
-                <details open>
-                    <summary>Edition</summary>
-                    <div class="fieldgroup">
-                        <div class="twoColumnGrid">
-                            <label for="metaName" title="What this edition is called.">Name</label>
-                            <input type="text" name="metaName" id="metaName" title="What this edition is called.">
-                            <label for="metaAuthor" title="This edition's author.">Author</label>
-                            <input type="text" name="metaAuthor" id="metaAuthor" title="This edition's author.">
-                            <label>Logo</label>
-                            <div></div>
-                        </div>
-                    </div>
-                </details>
-                <details open>
-                    <summary>Almanac</summary>
-                    <div class="fieldgroup">
-                        <div class="twoColumnGrid">
-                            <label for="metaSynopsis" title="Intro text for set's almanac. Markdown supported!">Synopsis</label>
-                            <div class="autogrowWrap">
-                                <textarea 
-                                    name="metaSynopsis"
-                                    id="metaSynopsis"
-                                    title="Intro text for set's almanac."
-                                    spellcheck="true"
-                                    rows="1" 
-                                    oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
-                            </div>
-                            <label for="metaOverview" title="Describe what it's like to play this edition.">Overview</label>
-                            <div class="autogrowWrap">
-                                <textarea
-                                    name="metaOverview"
-                                    id="metaOverview"
-                                    title="Describe what it's like to play this edition."
-                                    spellcheck="true"
-                                    rows="1"
-                                    oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+                <div id="charactertab" class="tab">
+                    <details open>
+                        <summary>Character</summary>
+                        <div class="fieldgroup">
+                            <div class="twoColumnGrid">
+                                <label for="characterId" title="Unique internal ID for this character without spaces or special characters.">ID</label>
+                                <input type="text" name="characterId" id="characterId" title="Unique internal ID for this character without spaces or special characters.">
+        
+                                <label for="characterName" title="The displayed name of this character.">Name</label>
+                                <input type="text" name="characterName" id="characterName" title="The displayed name of this character.">
+        
+                                <label for="characterTeam" title="The team of the character.">Team</label>
+                                <select name="characterTeam" id="characterTeam" title="The team of the character.">
+                                    <option value="townsfolk">Townsfolk</option>
+                                    <option value="outsider">Outsider</option>
+                                    <option value="minion">Minion</option>
+                                    <option value="demon">Demon</option>
+                                    <option value="traveler">Traveler</option>
+                                </select>
+        
+                                <label for="characterAbility" title="The displayed ability text of the character.">Ability</label>
+                                <input type="text" name="characterAbility" id="characterAbility" title="The displayed ability text of the character.">
                             </div>
                         </div>
-                    </div>
-                </details>
-            </div>
-            <div id="charactertab" class="tab">
-                <details open>
-                    <summary>Character</summary>
-                    <div class="fieldgroup">
-                        <div class="twoColumnGrid">
-                            <label for="characterId" title="Unique internal ID for this character without spaces or special characters.">ID</label>
-                            <input type="text" name="characterId" id="characterId" title="Unique internal ID for this character without spaces or special characters.">
-    
-                            <label for="characterName" title="The displayed name of this character.">Name</label>
-                            <input type="text" name="characterName" id="characterName" title="The displayed name of this character.">
-    
-                            <label for="characterTeam" title="The team of the character.">Team</label>
-                            <select name="characterTeam" id="characterTeam" title="The team of the character.">
-                                <option value="townsfolk">Townsfolk</option>
-                                <option value="outsider">Outsider</option>
-                                <option value="minion">Minion</option>
-                                <option value="demon">Demon</option>
-                                <option value="traveler">Traveler</option>
-                            </select>
-    
-                            <label for="characterAbility" title="The displayed ability text of the character.">Ability</label>
-                            <input type="text" name="characterAbility" id="characterAbility" title="The displayed ability text of the character.">
-                        </div>
-                    </div>
-                </details>
-                <details open>
-                    <summary>Reminders</summary>
-                    <div class="fieldgroup">
-                        <div class="twoColumnGrid">
-                            <label for="characterFirstNightReminder" title="Reminder text for first night.">First Night Reminder</label>
-                            <input type="text" name="characterFirstNightReminder" id="characterFirstNightReminder" title="Reminder text for first night.">
+                    </details>
+                    <details open>
+                        <summary>Reminders</summary>
+                        <div class="fieldgroup">
+                            <div class="twoColumnGrid">
+                                <label for="characterFirstNightReminder" title="Reminder text for first night.">First Night Reminder</label>
+                                <input type="text" name="characterFirstNightReminder" id="characterFirstNightReminder" title="Reminder text for first night.">
 
-                            <label for="characterOtherNightReminder" title="Reminder text for other nights.">Other Night Reminder</label>
-                            <input type="text" name="characterOtherNightReminder" id="characterOtherNightReminder" title="Reminder text for other nights.">
+                                <label for="characterOtherNightReminder" title="Reminder text for other nights.">Other Night Reminder</label>
+                                <input type="text" name="characterOtherNightReminder" id="characterOtherNightReminder" title="Reminder text for other nights.">
 
-                            <label for="characterSetup" title="Whether this character affects setup (orange leaf), like the Drunk or Baron.">Setup</label>
-                            <input type="checkbox" name="characterSetup" id="characterSetup" title="Whether this character affects setup (orange leaf), like the Drunk or Baron.">
-                        </div>
-                    </div>
-                </details>
-                <details open>
-                    <summary>Reminder Tokens</summary>
-                    <div class="fieldgroup">
-                        <div class="twoColumnGrid">
-                            <label for="characterReminderTokens" title="Reminder tokens for this character, one per line.">Character</label>
-                            <div class="autogrowWrap">
-                                <textarea
-                                    name="characterReminderTokens"
-                                    id="characterReminderTokens"
-                                    title="Reminder tokens for this character, one per line."
-                                    rows="1"
-                                    oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
-                            </div>
-                            <label for="globalReminderTokens" title="Reminder tokens that are always available, one per line.">Global</label>
-                            <div class="autogrowWrap">
-                                <textarea
-                                    name="globalReminderTokens"
-                                    id="globalReminderTokens"
-                                    title="Reminder tokens that are always available, one per line."
-                                    rows="1"
-                                    oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+                                <label for="characterSetup" title="Whether this character affects setup (orange leaf), like the Drunk or Baron.">Setup</label>
+                                <input type="checkbox" name="characterSetup" id="characterSetup" title="Whether this character affects setup (orange leaf), like the Drunk or Baron.">
                             </div>
                         </div>
-                    </div>
-                </details>
-                <details open>
-                    <summary>Meta</summary>
-                    <div class="fieldgroup">
-                        <div class="twoColumnGrid">
-                            <label for="characterExport" title="Whether this character should be included when exporting.">Include in Export</label>
-                            <input type="checkbox" name="characterExport" id="characterExport" title="Whether this character should be included when exporting.">
-                            <label for="characterAttribution" title="Unused by clocktower.online, but included in exported JSON. Good place to give credit to image creator, for example.">Attribution</label>
-                            <div class="autogrowWrap">
-                                <textarea
-                                    name="characterAttribution"
-                                    id="characterAttribution"
-                                    title="Unused by clocktower.online, but included in exported JSON. Good place to give credit to image creator, for example."
-                                    rows="1"
-                                    oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+                    </details>
+                    <details open>
+                        <summary>Reminder Tokens</summary>
+                        <div class="fieldgroup">
+                            <div class="twoColumnGrid">
+                                <label for="characterReminderTokens" title="Reminder tokens for this character, one per line.">Character</label>
+                                <div class="autogrowWrap">
+                                    <textarea
+                                        name="characterReminderTokens"
+                                        id="characterReminderTokens"
+                                        title="Reminder tokens for this character, one per line."
+                                        rows="1"
+                                        oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+                                </div>
+                                <label for="globalReminderTokens" title="Reminder tokens that are always available, one per line.">Global</label>
+                                <div class="autogrowWrap">
+                                    <textarea
+                                        name="globalReminderTokens"
+                                        id="globalReminderTokens"
+                                        title="Reminder tokens that are always available, one per line."
+                                        rows="1"
+                                        oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </details>
-                <details open>
-                    <summary>Almanac</summary>
-                    <div class="fieldgroup">
-                        <div class="twoColumnGrid">
-                            <label
-                                for="characterAlmanacFlavor"
-                                title="Markdown supported!\nFlavor text for the character. For official sets, these are written as though spoken by from the character."
-                                >Flavor</label>
-                            <div class="autogrowWrap">
-                                <textarea
-                                    name="characterAlmanacFlavor"
-                                    id="characterAlmanacFlavor"
+                    </details>
+                    <details open>
+                        <summary>Meta</summary>
+                        <div class="fieldgroup">
+                            <div class="twoColumnGrid">
+                                <label for="characterExport" title="Whether this character should be included when exporting.">Include in Export</label>
+                                <input type="checkbox" name="characterExport" id="characterExport" title="Whether this character should be included when exporting.">
+                                <label for="characterAttribution" title="Unused by clocktower.online, but included in exported JSON. Good place to give credit to image creator, for example.">Attribution</label>
+                                <div class="autogrowWrap">
+                                    <textarea
+                                        name="characterAttribution"
+                                        id="characterAttribution"
+                                        title="Unused by clocktower.online, but included in exported JSON. Good place to give credit to image creator, for example."
+                                        rows="1"
+                                        oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                    <details open>
+                        <summary>Almanac</summary>
+                        <div class="fieldgroup">
+                            <div class="twoColumnGrid">
+                                <label
+                                    for="characterAlmanacFlavor"
                                     title="Markdown supported!\nFlavor text for the character. For official sets, these are written as though spoken by from the character."
-                                    rows="1"
-                                    oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
-                            </div>
+                                    >Flavor</label>
+                                <div class="autogrowWrap">
+                                    <textarea
+                                        name="characterAlmanacFlavor"
+                                        id="characterAlmanacFlavor"
+                                        title="Markdown supported!\nFlavor text for the character. For official sets, these are written as though spoken by from the character."
+                                        rows="1"
+                                        oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+                                </div>
 
-                            <label
-                                for="characterAlmanacOverview"
-                                title="Markdown supported!\nTypically begins with a short, high-level description of what the character does followed by detailed clarifications of the ability."
-                                >Overview</label>
-                            <div class="autogrowWrap">
-                                <textarea
-                                    name="characterAlmanacOverview"
-                                    id="characterAlmanacOverview"
+                                <label
+                                    for="characterAlmanacOverview"
                                     title="Markdown supported!\nTypically begins with a short, high-level description of what the character does followed by detailed clarifications of the ability."
-                                    rows="1"
-                                    oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
-                            </div>
+                                    >Overview</label>
+                                <div class="autogrowWrap">
+                                    <textarea
+                                        name="characterAlmanacOverview"
+                                        id="characterAlmanacOverview"
+                                        title="Markdown supported!\nTypically begins with a short, high-level description of what the character does followed by detailed clarifications of the ability."
+                                        rows="1"
+                                        oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+                                </div>
 
-                            <label
-                                for="characterAlmanacExamples"
-                                title="Markdown supported!\nDescribe a few newline-separated game situations to help illustrate how the ability works and interacts with other characters."
-                                >Examples</label>
-                            <div class="autogrowWrap">
-                                <textarea
-                                    name="characterAlmanacExamples"
-                                    id="characterAlmanacExamples"
+                                <label
+                                    for="characterAlmanacExamples"
                                     title="Markdown supported!\nDescribe a few newline-separated game situations to help illustrate how the ability works and interacts with other characters."
-                                    rows="1"
-                                    oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
-                            </div>
+                                    >Examples</label>
+                                <div class="autogrowWrap">
+                                    <textarea
+                                        name="characterAlmanacExamples"
+                                        id="characterAlmanacExamples"
+                                        title="Markdown supported!\nDescribe a few newline-separated game situations to help illustrate how the ability works and interacts with other characters."
+                                        rows="1"
+                                        oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+                                </div>
 
-                            <label
-                                for="characterAlmanacHowToRun"
-                                title="Markdown supported!\nDescribe what the storyteller needs to do for this character. Include anything like any additional setup (like the Washewoman's reminder tokens), or the process for waking the player at night, if they apply."
-                                >HowToRun</label>
-                            <div class="autogrowWrap">
-                                <textarea
-                                    name="characterAlmanacHowToRun"
-                                    id="characterAlmanacHowToRun"
+                                <label
+                                    for="characterAlmanacHowToRun"
                                     title="Markdown supported!\nDescribe what the storyteller needs to do for this character. Include anything like any additional setup (like the Washewoman's reminder tokens), or the process for waking the player at night, if they apply."
-                                    rows="1"
-                                    oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
-                            </div>
+                                    >HowToRun</label>
+                                <div class="autogrowWrap">
+                                    <textarea
+                                        name="characterAlmanacHowToRun"
+                                        id="characterAlmanacHowToRun"
+                                        title="Markdown supported!\nDescribe what the storyteller needs to do for this character. Include anything like any additional setup (like the Washewoman's reminder tokens), or the process for waking the player at night, if they apply."
+                                        rows="1"
+                                        oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+                                </div>
 
-                            <label
-                                for="characterAlmanacTip"
-                                title="Markdown supported!\nNewline-separated tips for how to run the character well. Not all characters need this!\nFor example, the Ravenkeeper's reads: “We advise you to discourage or even ban players from talking about what they are doing at night as they are doing it.”"
-                                >Tip</label>
-                            <div class="autogrowWrap">
-                                <textarea
-                                    name="characterAlmanacTip"
-                                    id="characterAlmanacTip"
+                                <label
+                                    for="characterAlmanacTip"
                                     title="Markdown supported!\nNewline-separated tips for how to run the character well. Not all characters need this!\nFor example, the Ravenkeeper's reads: “We advise you to discourage or even ban players from talking about what they are doing at night as they are doing it.”"
-                                    rows="1"
-                                    oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+                                    >Tip</label>
+                                <div class="autogrowWrap">
+                                    <textarea
+                                        name="characterAlmanacTip"
+                                        id="characterAlmanacTip"
+                                        title="Markdown supported!\nNewline-separated tips for how to run the character well. Not all characters need this!\nFor example, the Ravenkeeper's reads: “We advise you to discourage or even ban players from talking about what they are doing at night as they are doing it.”"
+                                        rows="1"
+                                        oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </details>
+                    </details>
+                </div>
+                <div id="firstnightordertab" class="tab"></div>
+                <div id="othernightordertab" class="tab"></div>
             </div>
-            <div id="firstnightordertab" class="tab"></div>
-            <div id="othernightordertab" class="tab"></div>
+            </div>
         </div>
-        </div>
-    </div>
-    <ul id="status">
-        <li id="characters-status">X/Y Characters</li>
-        <li id="townsfolk-status">X/Y Townsfolk</li>
-        <li id="outsiders-status">X/Y Outsiders</li>
-        <li id="minions-status">X/Y Minions</li>
-        <li id="demons-status">X/Y Demons</li>
-        <li id="travelers-status">X/Y Travelers</li>
-        <li></li>
-    </ul>
+        <ul id="status">
+            <li id="characters-status">X/Y Characters</li>
+            <li id="townsfolk-status">X/Y Townsfolk</li>
+            <li id="outsiders-status">X/Y Outsiders</li>
+            <li id="minions-status">X/Y Minions</li>
+            <li id="demons-status">X/Y Demons</li>
+            <li id="travelers-status">X/Y Travelers</li>
+            <li></li>
+        </ul>
     </div>
 </body>
 </html>

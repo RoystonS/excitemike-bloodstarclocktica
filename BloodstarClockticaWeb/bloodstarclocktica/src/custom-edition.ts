@@ -1,4 +1,5 @@
 import * as BloodBind from './bind/bindings';
+import * as MessageDlg from "./dlg/blood-message-dlg";
 import {ObservableCollection} from './bind/observable-collection';
 import {ObservableObjectMixin} from './bind/observable-object';
 
@@ -479,7 +480,7 @@ class _CustomEdition {
      * @param data 
      */
      open(_saveName:string, _data:CustomEditionSaveData):boolean {
-        throw new Error("Not yet implemented");
+        MessageDlg.showError("Not yet implemented");
         return true;
     }
 }

@@ -1,5 +1,6 @@
 import {CustomEdition, CustomEditionSaveData} from './custom-edition';
 import * as LoadDlg from './dlg/blood-loading-dlg';
+import * as MessageDlg from "./dlg/blood-message-dlg";
 import * as OpenDlg from './dlg/blood-open-dlg';
 import * as SdcDlg from './dlg/blood-save-discard-cancel';
 import * as StringDlg from './dlg/blood-string-dlg';
@@ -42,9 +43,10 @@ export async function saveAs(username:string, password:string, customEdition:Cus
     try {
         customEdition.setSaveName(name);
         return await LoadDlg.show(_save(username, password, customEdition));
-    } catch (e) {
-        console.error(e);
+    } catch (error) {
         customEdition.setSaveName(backupName);
+        // TODO: Handle the error more gracefully. Explain to the user what went wrong.
+        MessageDlg.showError(error);
     }
     return Promise.resolve(false);
 }
@@ -89,7 +91,9 @@ async function _save(username:string, password:string, customEdition:CustomEditi
     const payload = JSON.stringify(saveData);
     const {error} = await cmd(username, password, 'save', payload);
     if (error) {
-        throw new Error(error);
+        // TODO: Handle the error more gracefully. Explain to the user what went wrong.
+        MessageDlg.showError(error);
+        return false;
     }
     customEdition.setDirty(false);
     return true;
@@ -142,7 +146,9 @@ async function openNoPrompts(username:string, password:string, customEdition:Cus
     const cmdResult = await cmd(username, password, 'open', payload);
     const {error,data} = cmdResult;
     if (error) {
-        throw new Error(error);
+        // TODO: Handle the error more gracefully. Explain to the user what went wrong.
+        MessageDlg.showError(error);
+        return false;
     }
     const result = customEdition.open(name, data as CustomEditionSaveData);
     return Promise.resolve(result);
@@ -191,22 +197,18 @@ export async function cmd(username:string, password:string, cmdName:string, body
 async function _cmd(username:string, password:string, cmdName:string, body?:BodyInit|null):Promise<any> {
     let response:Response;
     const base64 = btoa(`${username}:${password}`);
-    try {
-        response = await fetch(`https://www.bloodstar.xyz/cmd/${cmdName}.php`, {
-                method: 'POST',
-                headers:{
-                    'Accept':'application/json',
-                    'Content-Type':'application/json',
-                    'Authorization': `Basic ${base64}`
-                },
-                mode: 'cors',
-                credentials: 'include',
-                body
-            });
-    } catch (e) {
-        console.error(e);
-        throw e;
-    }
+    response = await fetch(`https://www.bloodstar.xyz/cmd/${cmdName}.php`, {
+            method: 'POST',
+            headers:{
+                'Accept':'application/json',
+                'Content-Type':'application/json',
+                'Authorization': `Basic ${base64}`
+            },
+            mode: 'cors',
+            credentials: 'include',
+            body
+        });
+
     const responseText = await response.text();
     const responseJson = JSON.parse(responseText);
     return responseJson;
@@ -220,8 +222,9 @@ export async function login(username:string, password:string):Promise<boolean> {
     try {
         const {success} = await cmd(username, password, 'login');
         return success;
-    } catch (_) {
-        alert('login failed');
+    } catch (error) {
+        // TODO: Handle the error more gracefully. Explain to the user what went wrong.
+        MessageDlg.showError(error);
         return false;
     }
 }
@@ -232,16 +235,12 @@ export async function login(username:string, password:string):Promise<boolean> {
  * @param password password
  */
 async function _listFiles(username:string, password:string):Promise<string[]> {
-    try {
-        const {error,files} = await cmd(username, password, 'list');
-        if (error) {
-            throw new Error(error);
-        }
-        return files;
-    } catch (e) {
-        console.error(e);
-        throw e;
+    const {error,files} = await cmd(username, password, 'list');
+    if (error) {
+        // TODO: Handle the error more gracefully. Explain to the user what went wrong.
+        MessageDlg.showError(error);
     }
+    return files || [];
 }
 
 /**

@@ -3,6 +3,7 @@ import * as BloodBind from './bind/bindings';
 import * as BloodNewOpen from "./dlg/blood-new-open-dlg";
 import * as LoadDlg from './dlg/blood-loading-dlg';
 import * as LoginDlg from "./dlg/blood-login-dlg";
+import * as MessageDlg from "./dlg/blood-message-dlg";
 import * as BloodIO from "./blood-io";
 import './styles/main.css';
 import './styles/autogrowtextarea.css';
@@ -129,7 +130,11 @@ function addCharacterClicked(_: Event): void {
     customEdition.addNewCharacter();
 }
 
-function showHelp() {}
+/** clicked the help menu button */
+function showHelp() {
+    MessageDlg.show('Not yet implemented');
+}
+
 function hookupClickEvents(data: [string, (e: Event) => void][]) {
   for (const [id, cb] of data) {
     const element = document.getElementById(id);
@@ -205,6 +210,18 @@ export async function saveFileAsClicked():Promise<boolean> {
     return false;
 }
 
+/** user chose to import character(s) from a json file */
+async function importJsonClicked():Promise<boolean> {
+    MessageDlg.show('Not yet implemented');
+    return false;
+}
+
+/** user chose to import official character(s) */
+async function importOfficialClicked():Promise<boolean> {
+    MessageDlg.show('Not yet implemented');
+    return false;
+}
+
 /**
  * switch to a tab
  */
@@ -252,6 +269,7 @@ async function login():Promise<void> {
             }
         } catch (e) {
             console.error(e);
+            MessageDlg.showError(e);
         }
     }
 }
@@ -276,6 +294,8 @@ function initBindings():void {
         ['openfilebutton', openFileClicked],
         ['savefilebutton', saveFileClicked],
         ['savefileasbutton', saveFileAsClicked],
+        ['importJsonButton', importJsonClicked],
+        ['importOfficialButton', importOfficialClicked],
         ['helpbutton', showHelp],
         ['metaTabBtn', ()=>tabClicked('metaTabBtn','metatab')],
         ['charTabBtn', ()=>tabClicked('charTabBtn','charactertab')],
@@ -367,6 +387,7 @@ async function initCustomEdition():Promise<void> {
     } catch (e) {
         console.error(e);
         customEdition.reset();
+        MessageDlg.showError(e);
     }
 }
 
