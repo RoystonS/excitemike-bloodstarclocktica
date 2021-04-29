@@ -11,7 +11,7 @@ body {
 h1, h2, h3, h4, h5, h6 {
     margin:3px 0;
 }
-a, button {
+a, button, summary {
     color:#eee;
     text-decoration: none;
     padding:2px;
@@ -21,8 +21,9 @@ a, button {
     font-family: 'Open Sans', sans-serif;
     font-size:13px;
     font-weight:bold;
+    letter-spacing: +1px;
 }
-a:hover, a:focus-visible, button:hover, button:focus-visible {
+a:hover, a:focus-visible, button:hover, button:focus-visible, summary:hover, summary:focus-visible {
     border: 1px solid #3977FF;
     background:#3977FF;
 }
@@ -45,6 +46,7 @@ input[type=checkbox] {
     height: 16px;
     border:1px solid #666;
     background:#333;
+    color:#eee;
     margin:0 6px 0 0;
     display:flex;
     justify-content: center;
@@ -61,6 +63,27 @@ input[type=checkbox]:checked::before {
 textarea {
     resize: both;
 }
+details {
+    margin-bottom:6px;
+}
+summary::marker {
+    content:"▶ ";
+    color: #666;
+    padding: 0;
+    width: 40px;
+}
+details[open] > summary::marker {
+    content:"▼ ";
+}
+summary:hover::marker {
+    color: #eee;
+}
+summary {
+    margin-bottom:6px;
+    border:1px solid #66666600;
+    background:none;
+    user-select: none;
+}
 #app {
     display:flex;
     flex-flow:column;
@@ -74,27 +97,8 @@ textarea {
     display: flex;
     flex-flow:row nowrap;
     align-items: stretch;
-    margin: 3px 6px;
+    margin: 3px 0px 3px 6px;
     overflow: hidden;
-}
-#character-pane {
-    display:flex;
-    flex-flow:column;
-    margin: 0;
-    padding: 0;
-    width:300px;
-}
-#character-pane-top {
-    display:flex;
-    flex-flow: row;
-    flex:0;
-    margin-bottom: 6px;
-}
-#character-pane-top > h4 {
-    flex:1;
-}
-#character-pane-top > a {
-    flex: initial;
 }
 
 ul#status {

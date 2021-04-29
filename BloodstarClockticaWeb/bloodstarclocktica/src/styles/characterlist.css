@@ -1,14 +1,40 @@
-#characterlistbuttons {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
+#character-pane {
+    display:grid;
+}
+#character-pane > details {
+    margin: 0;
+    padding: 0;
+    position:relative;
+    min-width:24px;
+}
+#character-pane > details[open] {
+    width:300px;
+}
+#character-pane > details > summary {
+    text-orientation: mixed;
+    writing-mode: vertical-lr;
+}
+#character-pane > details[open] > summary {
+    text-orientation: unset;
+    writing-mode: unset;
+}
+#character-pane > details > summary {
+    flex: 0 1 0;
 }
 #characterlist-container {
-    flex:1;
-    position:relative;
+    display: flex;
+    flex-flow: column nowrap;
+    position:absolute;
+    left:0;
+    right:0;
+    top:24px;
+    bottom:0;
+}
+#addcharacterbutton {
+    margin-bottom:6px;
 }
 ol#characterlist {
+    flex: 0 1 auto;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -16,7 +42,6 @@ ol#characterlist {
     display:flex;
     flex-flow: column;
     align-items: stretch;
-    position: absolute;
     left: 0;
     top: 0;
     bottom: 0;

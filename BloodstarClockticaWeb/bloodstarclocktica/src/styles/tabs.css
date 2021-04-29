@@ -35,6 +35,7 @@
 }
 .tab {
     display:none;
+    margin-right: 6px;
 }
 .activeTab {
     display:block;
