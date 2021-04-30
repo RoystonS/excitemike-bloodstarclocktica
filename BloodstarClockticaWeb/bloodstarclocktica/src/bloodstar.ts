@@ -22,6 +22,8 @@ const selectedCharacter = new BloodBind.Property<Character|null>(null);
 const characterListCleanupSideTable = new Map<HTMLElement, BloodBind.PropertyChangeListener<Character|null>>();
 
 /** list of ids of all controls on character tab that might need to be disabled */
+let characterTabIds:Set<string> = new Set<string>();
+
 const characterTabIds:ReadonlyArray<string> =
     'characterId characterName characterTeam characterAbility characterFirstNightReminder characterOtherNightReminder characterSetup characterReminderTokens globalReminderTokens characterExport characterAttribution characterAlmanacFlavor characterAlmanacOverview characterAlmanacExamples characterAlmanacHowToRun characterAlmanacTip'
     .split(' ');
@@ -330,29 +332,56 @@ function initBindings():void {
     BloodBind.bindCheckboxById('previewOnToken', customEdition.getPreviewOnTokenProperty());
 }
 
+/** helper for bindCharacterTabControls */
+function bindTrackedText(id:string, property:BloodBind.Property<string>, set:Set<string>):void {
+    set.add(id);
+    BloodBind.bindTextById(id, property);
+}
+/** helper for bindCharacterTabControls */
+function bindTrackedComboBox(id:string, property:BloodBind.EnumProperty<string>, set:Set<string>):void {
+    set.add(id);
+    BloodBind.bindComboBoxById(id, property);
+}
+/** helper for bindCharacterTabControls */
+function bindTrackedCheckBox(id:string, property:BloodBind.Property<boolean>, set:Set<string>):void {
+    set.add(id);
+    BloodBind.bindCheckboxById(id, property);
+}
+/** helper for bindCharacterTabControls */
+function bindTrackedImageDisplay(id:string, property:BloodBind.Property<string|null>, set:Set<string>):void {
+    set.add(id);
+    BloodBind.bindImageDisplayById(id, property);
+}
+/** helper for bindCharacterTabControls */
+function bindTrackedImageChooser(id:string, property:BloodBind.Property<string|null>, set:Set<string>):void {
+    set.add(id);
+    BloodBind.bindImageChooserById(id, property);
+}
+
 /** set up character tab bindings */
 function bindCharacterTabControls():void {
     const character = selectedCharacter.get();
     if (!character) {return;}
-    BloodBind.bindTextById('characterId', character.getIdProperty());
-    BloodBind.bindTextById('characterName', character.getNameProperty());
-    BloodBind.bindComboBoxById('characterTeam', character.getTeamProperty());
-    BloodBind.bindTextById('characterAbility', character.getAbilityProperty());
-    BloodBind.bindTextById('characterFirstNightReminder', character.getFirstNightReminderProperty());
-    BloodBind.bindTextById('characterOtherNightReminder', character.getOtherNightReminderProperty());
-    BloodBind.bindCheckboxById('characterSetup', character.getSetupProperty());
-    BloodBind.bindTextById('characterReminderTokens', character.getCharacterReminderTokensProperty());
-    BloodBind.bindTextById('globalReminderTokens', character.getGlobalReminderTokensProperty());
-    BloodBind.bindCheckboxById('characterExport', character.getExportProperty());
-    BloodBind.bindTextById('characterAttribution', character.getAttributionProperty());
-    BloodBind.bindTextById('characterAlmanacFlavor', character.getAlmanac().getFlavorProperty());
-    BloodBind.bindTextById('characterAlmanacOverview', character.getAlmanac().getOverviewProperty());
-    BloodBind.bindTextById('characterAlmanacExamples', character.getAlmanac().getExamplesProperty());
-    BloodBind.bindTextById('characterAlmanacHowToRun', character.getAlmanac().getHowToRunProperty());
-    BloodBind.bindTextById('characterAlmanacTip', character.getAlmanac().getTipProperty());
-    BloodBind.bindImageChooserById('characterUnstyledImageInput', character.getUnStyledImageProperty());
-    BloodBind.bindImageDisplayById('characterUnstyledImageDisplay', character.getUnStyledImageProperty());
-    BloodBind.bindImageDisplayById('characterStyledImageDisplay', character.getStyledImageProperty());
+    characterTabIds.clear();
+    bindTrackedText('characterId', character.getIdProperty(), characterTabIds);
+    bindTrackedText('characterName', character.getNameProperty(), characterTabIds);
+    bindTrackedComboBox('characterTeam', character.getTeamProperty(), characterTabIds);
+    bindTrackedText('characterAbility', character.getAbilityProperty(), characterTabIds);
+    bindTrackedText('characterFirstNightReminder', character.getFirstNightReminderProperty(), characterTabIds);
+    bindTrackedText('characterOtherNightReminder', character.getOtherNightReminderProperty(), characterTabIds);
+    bindTrackedCheckBox('characterSetup', character.getSetupProperty(), characterTabIds);
+    bindTrackedText('characterReminderTokens', character.getCharacterReminderTokensProperty(), characterTabIds);
+    bindTrackedText('globalReminderTokens', character.getGlobalReminderTokensProperty(), characterTabIds);
+    bindTrackedCheckBox('characterExport', character.getExportProperty(), characterTabIds);
+    bindTrackedText('characterAttribution', character.getAttributionProperty(), characterTabIds);
+    bindTrackedText('characterAlmanacFlavor', character.getAlmanac().getFlavorProperty(), characterTabIds);
+    bindTrackedText('characterAlmanacOverview', character.getAlmanac().getOverviewProperty(), characterTabIds);
+    bindTrackedText('characterAlmanacExamples', character.getAlmanac().getExamplesProperty(), characterTabIds);
+    bindTrackedText('characterAlmanacHowToRun', character.getAlmanac().getHowToRunProperty(), characterTabIds);
+    bindTrackedText('characterAlmanacTip', character.getAlmanac().getTipProperty(), characterTabIds);
+    bindTrackedImageChooser('characterUnstyledImageInput', character.getUnStyledImageProperty(), characterTabIds);
+    bindTrackedImageDisplay('characterUnstyledImageDisplay', character.getUnStyledImageProperty(), characterTabIds);
+    bindTrackedImageDisplay('characterStyledImageDisplay', character.getStyledImageProperty(), characterTabIds);
 
     hookupClickEvents([
         ['characterImageRemoveBtn', ()=>character.setUnStyledImage(null)]
