@@ -51,19 +51,19 @@ export class CollectionBinding<T extends ObservableObject> {
     }
 
     /** keep DOM in sync with collection changes */
-    private collectionChanged(value:ObservableCollectionChangedEvent<T>):void {
-        switch (value.action) {
+    private collectionChanged(event:ObservableCollectionChangedEvent<T>):void {
+        switch (event.action) {
             case ObservableCollectionChangeAction.Add:
-                this.insert(value.newStartingIndex, value.newItems);
+                this.insert(event.newStartingIndex, event.newItems);
                 break;
             case ObservableCollectionChangeAction.Move:
-                this.move(value.oldStartingIndex, value.newStartingIndex);
+                this.move(event.oldStartingIndex, event.newStartingIndex);
                 break;
             case ObservableCollectionChangeAction.Replace:
-                this.replace(value.newStartingIndex, value.newItems);
+                this.replace(event.newStartingIndex, event.oldItems, event.newItems);
                 break;
             case ObservableCollectionChangeAction.Remove:
-                this.remove(value.oldStartingIndex, value.oldItems.length);
+                this.remove(event.oldStartingIndex, event.oldItems);
                 break;
         }
     }
@@ -209,34 +209,37 @@ export class CollectionBinding<T extends ObservableObject> {
             const insertBeforeNode = this.listElement.childNodes[refIndex];
             this.listElement.insertBefore(node, insertBeforeNode);
         }
-        this.updateIndices(Math.min(oldIndex, newIndex), Math.max(oldIndex, newIndex));
+        this.updateIndices(Math.min(oldIndex, newIndex), Math.max(oldIndex, newIndex)+1);
     }
 
     /** update DOM elements to new data */
-    private replace(start:number, data:ReadonlyArray<T>):void {
-        if (!data.length) {return;}
+    private replace(start:number, oldData:ReadonlyArray<T>, newData:ReadonlyArray<T>):void {
+        if (!oldData.length) {return;}
+        if (!newData.length) {return;}
         if (start < 0) {return;}
         if (start >= this.listElement.childNodes.length) {return;}
-        const n = data.length;
+        const n = newData.length;
 
         for (let i=0; i<n; i++) {
             const oldChild = this.listElement.childNodes[start+i];
-            this.cleanupListItem(oldChild);
-            const newChild = this.renderListItem(i, data[i]);
+            this.cleanupListItem(oldChild, oldData[i]);
+            const newChild = this.renderListItem(i, newData[i]);
             this.listElement.replaceChild(newChild, oldChild);
         }
     }
 
     /** remove DOM elements in the specified index range */
-    private remove(start:number, numRemoved:number):void {
-        if (numRemoved <= 0) {return;}
+    private remove(start:number, oldItems:ReadonlyArray<T>):void {
+        const n = oldItems.length;
+        if (n === 0) {return;}
         if (start < 0) {return;}
         if (start >= this.listElement.childNodes.length) {return;}
 
-        for (let i=start+numRemoved-1; i>=start; i--) {
-            const child = this.listElement.childNodes[i];
+        for (let i=n-1; i>=0; i--) {
+            const childIndex = i+start;
+            const child = this.listElement.childNodes[childIndex];
             this.listElement.removeChild(child);
-            this.cleanupListItem(child);
+            this.cleanupListItem(child, oldItems[i]);
         }
 
         this.updateIndices(start);
@@ -277,17 +280,14 @@ export class CollectionBinding<T extends ObservableObject> {
     }
 
     /** cleanup whatever was done by renderListItem */
-    private cleanupListItem(listItem:Node):void {
+    private cleanupListItem(listItem:Node, oldData:T):void {
         if (!this.cleanupFn) { return; }
         if (!(listItem instanceof HTMLElement)) { return; }
         if (!listItem.dataset.index ) { return; }
 
-        const index = parseInt(listItem.dataset.index, 10);
-        const itemData = this.collection.get(index);
-
         const renderedElement = listItem.firstChild;
         if (renderedElement instanceof HTMLElement) {
-            this.cleanupFn(renderedElement, itemData);
+            this.cleanupFn(renderedElement, oldData);
         }
     }
 
@@ -295,7 +295,8 @@ export class CollectionBinding<T extends ObservableObject> {
     private clear():void {
         for (let i=0; i<this.listElement.childNodes.length; ++i) {
             const child = this.listElement.childNodes[i];
-            this.cleanupListItem(child);
+            const data = this.collection.get(i);
+            this.cleanupListItem(child, data);
         }
         this.listElement.innerText = '';
     }

@@ -129,6 +129,11 @@ export class ObservableCollection<ItemType extends ObservableObject> implements 
         return this.items.length;
     }
 
+    /** where in the list the given item is, or -1 if not present */
+    indexOf(item:ItemType):number {
+        return this.items.findIndex(itemPlus=>itemPlus.item===item);
+    }
+
     /** insert an item at the specified index */
     insert(i:number, item:ItemType):void {
         const itemPlus:ItemPlus<ItemType> = this.makeItemPlus(i, item);

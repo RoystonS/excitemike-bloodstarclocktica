@@ -63,7 +63,7 @@ function makeCharacterListItem(character: Character):HTMLElement {
         const up = document.createElement("button");
         up.className = "character-list-button";
         up.innerText = "▲";
-        up.onclick = () => console.log("up button clicked");
+        up.onclick = () => customEdition.moveCharacterUp(character);
         row.appendChild(up);
     }
 
@@ -71,7 +71,7 @@ function makeCharacterListItem(character: Character):HTMLElement {
         const down = document.createElement("button");
         down.className = "character-list-button";
         down.innerText = "▼";
-        down.onclick = () => console.log("down button clicked");
+        down.onclick = () => customEdition.moveCharacterDown(character);
         row.appendChild(down);
     }
 
@@ -79,7 +79,7 @@ function makeCharacterListItem(character: Character):HTMLElement {
         const del = document.createElement("button");
         del.className = "character-list-button";
         del.innerText = "Delete";
-        del.onclick = () => console.log("delete button clicked");
+        del.onclick = () => customEdition.deleteCharacter(character);
         row.appendChild(del);
     }
 
@@ -126,6 +126,8 @@ function cleanupListItem(element: Node, character: Character): void {
         characterListCleanupSideTable.delete(element);
     }
 }
+
+/** add a new character to the custom edition */
 function addCharacterClicked(_: Event): void {
     customEdition.addNewCharacter();
 }
