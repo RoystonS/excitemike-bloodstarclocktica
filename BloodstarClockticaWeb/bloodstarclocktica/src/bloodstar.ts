@@ -24,9 +24,8 @@ const characterListCleanupSideTable = new Map<HTMLElement, BloodBind.PropertyCha
 /** list of ids of all controls on character tab that might need to be disabled */
 let characterTabIds:Set<string> = new Set<string>();
 
-const characterTabIds:ReadonlyArray<string> =
-    'characterId characterName characterTeam characterAbility characterFirstNightReminder characterOtherNightReminder characterSetup characterReminderTokens globalReminderTokens characterExport characterAttribution characterAlmanacFlavor characterAlmanacOverview characterAlmanacExamples characterAlmanacHowToRun characterAlmanacTip'
-    .split(' ');
+/** cleanup function used to undo click event bindings set by `bindCharacterTabControls` */
+let characterTabButtonCleanupFn:(()=>void)|null = null;
 
 /** helper type for disableCharacterTab */
 type TagsThatCanBeDisabled = "button" | "fieldset" | "input" | "optgroup" | "option" | "select" | "textarea";
@@ -140,11 +139,22 @@ function showHelp() {
     MessageDlg.show('`showHelp` Not yet implemented');
 }
 
-function hookupClickEvents(data: [string, (e: Event) => void][]) {
+/** set event listeners for clicks, return a funciton you can call to undo it */
+function hookupClickEvents(data: [string, (e: Event) => void][]):()=>void {
   for (const [id, cb] of data) {
     const element = document.getElementById(id);
     if (element) {
       element.addEventListener("click", cb);
+    }
+  }
+
+  const backupData = data;
+  return ()=>{
+    for (const [id, cb] of backupData) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.removeEventListener("click", cb);
+      }
     }
   }
 }
@@ -383,7 +393,7 @@ function bindCharacterTabControls():void {
     bindTrackedImageDisplay('characterUnstyledImageDisplay', character.getUnStyledImageProperty(), characterTabIds);
     bindTrackedImageDisplay('characterStyledImageDisplay', character.getStyledImageProperty(), characterTabIds);
 
-    hookupClickEvents([
+    characterTabButtonCleanupFn = hookupClickEvents([
         ['characterImageRemoveBtn', ()=>character.setUnStyledImage(null)]
     ]);
 }
@@ -392,6 +402,11 @@ function bindCharacterTabControls():void {
 function unbindCharacterTabControls():void {
     for (const id of characterTabIds) {
         BloodBind.unbindElementById(id);
+    }
+    if (characterTabButtonCleanupFn) {
+        const backup = characterTabButtonCleanupFn;
+        characterTabButtonCleanupFn = null;
+        backup();
     }
 }
 
