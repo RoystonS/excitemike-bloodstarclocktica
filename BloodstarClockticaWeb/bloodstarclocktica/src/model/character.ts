@@ -121,7 +121,7 @@ class _Character {
 
     /** load in save data */
     open(data:CharacterSaveData):void {
-        if (!data) {this.reset();}
+        if (!data) {this.reset(); return;}
         this.ability.set(data.ability);
         this.attribution.set(data.attribution);
         this.almanac.open(data.almanac);

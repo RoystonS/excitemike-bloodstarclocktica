@@ -37,7 +37,7 @@ class _EditionMeta {
 
     /** set based on save data */
     open(data:EditionMetaSaveData):void {
-        if (!data) {this.reset('');}
+        if (!data) {this.reset(''); return;}
         this.name.set(data.name);
         this.author.set(data.author);
         this.logo.set(data.logo);

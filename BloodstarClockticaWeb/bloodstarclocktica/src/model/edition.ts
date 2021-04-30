@@ -173,7 +173,7 @@ class _Edition {
      * @param data 
      */
      open(saveName:string, data:EditionSaveData):boolean {
-        if (!data) {this.reset();}
+        if (!data) {this.reset(); return false;}
         this.saveName.set(saveName);
         this.almanac.open(data.almanac);
         

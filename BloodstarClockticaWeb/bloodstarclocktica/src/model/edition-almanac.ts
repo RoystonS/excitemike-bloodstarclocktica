@@ -40,7 +40,7 @@ class _EditionAlmanac {
 
     /** set based on save data */
     open(data:EditionAlmanacSaveData):void {
-        if (!data) {this.reset();}
+        if (!data) {this.reset(); return;}
         this.synopsis.set(data.synopsis);
         this.overview.set(data.overview);
     }

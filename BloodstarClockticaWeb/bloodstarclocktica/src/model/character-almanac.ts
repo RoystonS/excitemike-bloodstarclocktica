@@ -55,6 +55,7 @@ class _CharacterAlmanac {
 
     /** load in save data */
     open(data:CharacterAlmanacSaveData):void {
+        if (!data) {this.reset(); return;}
         this.flavor.set(data.flavor);
         this.overview.set(data.overview);
         this.examples.set(data.examples);
