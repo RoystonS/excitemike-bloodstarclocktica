@@ -167,8 +167,8 @@ class _Edition {
             }
         }
 
-        this.firstNightOrder.set(data.firstNightOrder.map(id=>charactersById.get(id) || new Character()));
-        this.otherNightOrder.set(data.otherNightOrder.map(id=>charactersById.get(id) || new Character()));
+        this.firstNightOrder.set(data.firstNightOrder.filter(id=>charactersById.has(id)).map(id=>charactersById.get(id) || new Character()));
+        this.otherNightOrder.set(data.otherNightOrder.filter(id=>charactersById.has(id)).map(id=>charactersById.get(id) || new Character()));
 
         this.dirty.set(false);
 
