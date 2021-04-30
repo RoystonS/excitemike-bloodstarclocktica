@@ -20,12 +20,6 @@ class _EditionMeta {
         this.logo = new Property<string|null>(null);
         this.name = new Property('New Edition');
     }
-    /// DESTRUCTIVE
-    reset(name:string) {
-        this.author.set('');
-        this.logo.set(null);
-        this.name.set(name);
-    }
 
     getAuthorProperty():Property<string> { return this.author; }
     getLogoProperty():Property<string|null> { return this.logo; }
@@ -43,9 +37,17 @@ class _EditionMeta {
 
     /** set based on save data */
     open(data:EditionMetaSaveData):void {
+        if (!data) {this.reset('');}
         this.name.set(data.name);
         this.author.set(data.author);
         this.logo.set(data.logo);
+    }
+    
+    /** set to default */
+    reset(name:string) {
+        this.author.set('');
+        this.logo.set(null);
+        this.name.set(name);
     }
 }
 

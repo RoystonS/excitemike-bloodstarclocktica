@@ -61,6 +61,15 @@ class _CharacterAlmanac {
         this.howToRun.set(data.howToRun);
         this.tip.set(data.tip);
     }
+
+    /** reset to default */
+    reset():void {
+        this.flavor.set('');
+        this.overview.set('');
+        this.examples.set('');
+        this.howToRun.set('');
+        this.tip.set('');
+    }
 }
 
 /** observable properties about the character's almanac entry */

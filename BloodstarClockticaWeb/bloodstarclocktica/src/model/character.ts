@@ -121,6 +121,7 @@ class _Character {
 
     /** load in save data */
     open(data:CharacterSaveData):void {
+        if (!data) {this.reset();}
         this.ability.set(data.ability);
         this.attribution.set(data.attribution);
         this.almanac.open(data.almanac);
@@ -135,6 +136,24 @@ class _Character {
         this.styledImage.set(data.styledImage);
         this.team.set(data.team);
         this.unStyledImage.set(data.unStyledImage);
+    }
+
+    /** reset to default */
+    reset():void {
+        this.ability.set('');
+        this.attribution.set('');
+        this.almanac.reset();
+        this.characterReminderTokens.set('');
+        this.export.set(true);
+        this.firstNightReminderProperty.set('');
+        this.globalReminderTokens.set('');
+        this.id.set('newcharacter');
+        this.name.set('New Character');
+        this.otherNightReminderProperty.set('');
+        this.setup.set(false);
+        this.styledImage.set(null);
+        this.team.set(BloodTeam.TOWNSFOLK);
+        this.unStyledImage.set(null);
     }
 
     setId(value:string):void { this.id.set(value); }
