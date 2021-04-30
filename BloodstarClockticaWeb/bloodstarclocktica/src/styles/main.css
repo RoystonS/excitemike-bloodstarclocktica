@@ -89,7 +89,7 @@ summary {
     user-select: none;
 }
 *:disabled {
-    filter: blur(2px) opacity(50%) invert(50%);
+    filter: blur(1px) opacity(50%) invert(25%);
 }
 #app {
     display:flex;
