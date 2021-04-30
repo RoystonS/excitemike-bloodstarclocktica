@@ -88,6 +88,9 @@ summary {
     background:none;
     user-select: none;
 }
+*:disabled {
+    filter: blur(2px) opacity(50%) invert(50%);
+}
 #app {
     display:flex;
     flex-flow:column;

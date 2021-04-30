@@ -370,12 +370,29 @@ function disableCharacterTab():void {
     }
 }
 
+/** undo disableCharacterTab */
+function enableCharacterTab():void {
+    const tabDiv = document.getElementById('charactertab');
+    if (!tabDiv) { return; }
+    const tags:ReadonlyArray<TagsThatCanBeDisabled> = ['button', 'fieldset', 'optgroup', 'option', 'select', 'textarea', 'input'];
+    for (const tag of tags) {
+        const elements = tabDiv.getElementsByTagName(tag);
+        for (let i=0;i<elements.length;i++){
+            const item = elements.item(i);
+            if (item) {
+                item.disabled = false;
+            }
+        }
+    }
+}
+
 /** update character tab to show this character */
 function selectedCharacterChanged(value:Character|null):void {
     unbindCharacterTabControls();
     if (value) {
         tabClicked('charTabBtn','charactertab');
         bindCharacterTabControls();
+        enableCharacterTab();
     } else {
         disableCharacterTab();
     }
