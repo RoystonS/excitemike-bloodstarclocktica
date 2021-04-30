@@ -15,30 +15,27 @@ export class ImageDisplayBinding extends BaseBinding<string|null> {
 }
 
 /** used with input elem [type=file] to set a property to a data URI */
-async function syncFileElemToProperty(element:HTMLInputElement, property:Property<string|null>):Promise<void> {
-    const oldValue = property.get();
-    if (oldValue) {
-        URL.revokeObjectURL(oldValue);
-    }
+async function syncFileElemToProperty(element:HTMLInputElement, property:Property<string|null>, maxWidth:number, maxHeight:number):Promise<void> {
     if (!element.files) {
         property.set(null);
         return;
     }
     const objectURL = URL.createObjectURL(element.files[0]);
-    const dataURI = await toDataUri(objectURL);
+    const dataURI = await toDataUri(objectURL, maxWidth, maxHeight);
     URL.revokeObjectURL(objectURL);
     property.set(dataURI)
 }
 
 /** convert a url to a data uri */
-async function toDataUri(url:string):Promise<string> {
+async function toDataUri(url:string, maxWidth:number, maxHeight:number):Promise<string> {
     return new Promise((resolve,reject)=>{
         try {
             const image = new Image();
             image.onload = ()=>{
                 const canvas = document.createElement('canvas');
-                canvas.width = image.width;
-                canvas.height = image.height;
+                const scale = Math.max(1.0, Math.min(maxWidth / image.width, maxHeight / image.height));
+                canvas.width = (scale * image.width) | 0;
+                canvas.height = (scale * image.height) | 0;
                 canvas.getContext('2d')?.drawImage(image,0,0);
                 resolve(canvas.toDataURL('image/png'));
             }
@@ -51,19 +48,15 @@ async function toDataUri(url:string):Promise<string> {
 
 /** one-way binding to set a property to a data URI from a chosen image file */
 export class ImageChooserBinding extends BaseBinding<string|null> {
-    constructor(element:HTMLInputElement, property:Property<string|null>) {
+    constructor(element:HTMLInputElement, property:Property<string|null>, maxWidth:number = 539, maxHeight:number = 539) {
         super(
             element,
             property,
             'change',
-            async _=>await syncFileElemToProperty(element, property),
+            async _=>await syncFileElemToProperty(element, property, maxWidth, maxHeight),
             null);
     }
     destroy():void {
-        const property = this.getProperty();
-        if (property) {
-            property.set(null);
-        }
         super.destroy();
     }
 }

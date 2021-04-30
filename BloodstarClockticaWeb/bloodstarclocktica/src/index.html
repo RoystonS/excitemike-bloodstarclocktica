@@ -114,17 +114,63 @@
                     <details open>
                         <summary>Character Image</summary>
                         <div class="fieldgroup">
-                            <div class="twoColumnGrid">
+                            <div class="row">
                                 <div class="column">
-                                    <label for="metaLogoInput" class="button">Upload Image</label>
-                                    <input type="file" accept="image/*" name="metaLogoInput" id="metaLogoInput" style="display:none">
-                                    <button id="metaLogoRemoveBtn">Remove</button>
+                                    <label for="characterUnstyledImageInput" class="button">Upload Image</label>
+                                    <input type="file" accept="image/*" name="characterUnstyledImageInput" id="characterUnstyledImageInput" style="display:none">
+                                    <button id="characterImageRemoveBtn">Remove</button>
                                     <div class="row">
                                         <input type="checkbox" name="previewOnToken" id="previewOnToken">
                                         <label for="previewOnToken">Preview on token</label>
                                     </div>
+                                    <details>
+                                        <summary>Style settings</summary>
+                                        <div class="fieldgroup">
+                                            <div class="twoColumnGrid">
+                                                <label for="characterImageRestyle">Restyle Image</label>
+                                                <input type="checkbox" name="characterImageRestyle" id="characterImageRestyle">
+                                                
+                                                <label for="characterImageColorize">Colorize</label>
+                                                <input type="checkbox" name="characterImageColorize" id="characterImageColorize">
+                                                
+                                                <label for="characterImageOutsiderAndMinionColors">Outsider/Minion Colors</label>
+                                                <input type="checkbox" name="characterImageOutsiderAndMinionColors" id="characterImageOutsiderAndMinionColors">
+                                                
+                                                <label for="characterImageTexture">Texture</label>
+                                                <input type="checkbox" name="characterImageTexture" id="characterImageTexture">
+                                                
+                                                <label for="characterImageBorder">Border</label>
+                                                <input type="checkbox" name="characterImageBorder" id="characterImageBorder">
+                                                
+                                                <label for="characterImageBorderBlur">Border Blur</label>
+                                                <input type="range" name="characterImageBorderBlur" id="characterImageBorderBlur" min="1" max="5" step="1">
+                                                
+                                                <label for="characterImageBorderThresholdMin">Border Threshold Min</label>
+                                                <input type="range" name="characterImageBorderThresholdMin" id="characterImageBorderThresholdMin" min="0" max="1" step="0.05">
+                                                
+                                                <label for="characterImageBorderThresholdMax">Border Threshold Max</label>
+                                                <input type="range" name="characterImageBorderThresholdMax" id="characterImageBorderThresholdMax" min="0" max="1" step="0.05">
+                                                
+                                                <label for="characterImageDropshadow">Drop Shadow</label>
+                                                <input type="checkbox" name="characterImageDropshadow" id="characterImageDropshadow">
+                                                
+                                                <label for="characterImageDropShadowSize">Dropshadow Size</label>
+                                                <input type="range" name="characterImageDropShadowSize" id="characterImageDropShadowSize" min="0" max="32" step="1">
+                                                
+                                                <label for="characterImageDropShadowOffsetX">Dropshadow Offset X</label>
+                                                <input type="range" name="characterImageDropShadowOffsetX" id="characterImageDropShadowOffsetX" min="-20" max="20" step="1">
+                                                
+                                                <label for="characterImageDropShadowOffsetY">Dropshadow Offset Y</label>
+                                                <input type="range" name="characterImageDropShadowOffsetY" id="characterImageDropShadowOffsetY" min="-20" max="20" step="1">
+                                                
+                                                <label for="characterImageDropShadowOpacity">Dropshadow Opacity</label>
+                                                <input type="range" name="characterImageDropShadowOpacity" id="characterImageDropShadowOpacity" min="0" max="1" step="0.05">
+                                            </div>
+                                        </div>
+                                    </details>
                                 </div>
-                                    <img class="userImage" id="metaLogoDisplay" height="200px"/>
+                                <img class="userImage" id="characterUnstyledImageDisplay" height="200px"/>
+                                <img class="userImage" id="characterStyledImageDisplay" height="200px"/>
                             </div>
                         </div>
                     </details>

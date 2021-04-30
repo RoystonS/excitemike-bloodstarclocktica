@@ -324,6 +324,7 @@ class _Character {
 
     setId(value:string):void { this.id.set(value); }
     setName(value:string):void{this.name.set(value);}
+    setUnStyledImage(v:string|null):void {this.unStyledImage.set(v);}
 }
 /** observable properties about the character */
 export const Character = ObservableObjectMixin(_Character);

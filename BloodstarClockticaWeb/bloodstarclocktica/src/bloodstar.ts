@@ -350,6 +350,13 @@ function bindCharacterTabControls():void {
     BloodBind.bindTextById('characterAlmanacExamples', character.getAlmanac().getExamplesProperty());
     BloodBind.bindTextById('characterAlmanacHowToRun', character.getAlmanac().getHowToRunProperty());
     BloodBind.bindTextById('characterAlmanacTip', character.getAlmanac().getTipProperty());
+    BloodBind.bindImageChooserById('characterUnstyledImageInput', character.getUnStyledImageProperty());
+    BloodBind.bindImageDisplayById('characterUnstyledImageDisplay', character.getUnStyledImageProperty());
+    BloodBind.bindImageDisplayById('characterStyledImageDisplay', character.getStyledImageProperty());
+
+    hookupClickEvents([
+        ['characterImageRemoveBtn', ()=>character.setUnStyledImage(null)]
+    ]);
 }
 
 /** clean up character tab bindings */
