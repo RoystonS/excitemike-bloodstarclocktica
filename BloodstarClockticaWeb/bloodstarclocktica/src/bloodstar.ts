@@ -321,6 +321,7 @@ function initBindings():void {
         ['metaLogoRemoveBtn', ()=>customEdition.getLogoProperty().set(null)]
     ]);
 
+    BloodBind.bindTextById('windowTitle', customEdition.getWindowTitleProperty());
     BloodBind.bindTextById('metaName', customEdition.getNameProperty());
     BloodBind.bindTextById('metaAuthor', customEdition.getAuthorProperty());
     BloodBind.bindTextById('metaSynopsis', customEdition.getSynopsisProperty());
@@ -340,6 +341,8 @@ function initBindings():void {
     selectedCharacter.set(customEdition.getCharacterList().get(0) || null);
 
     BloodBind.bindCheckboxById('previewOnToken', customEdition.getPreviewOnTokenProperty());
+
+    // TODO: status bar
 }
 
 /** helper for bindCharacterTabControls */

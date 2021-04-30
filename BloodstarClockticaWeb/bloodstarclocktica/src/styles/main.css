@@ -122,6 +122,11 @@ ul#status {
 #status > li {
     margin-right:12px;
 }
+#menu > #windowTitle {
+    text-align: center;
+    margin: auto;
+    font-weight: bold;
+}
 
 .twoColumnGrid {
     display: grid;

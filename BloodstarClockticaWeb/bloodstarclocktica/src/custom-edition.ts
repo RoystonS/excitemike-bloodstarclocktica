@@ -426,7 +426,7 @@ class _CustomEdition {
         this.otherNightOrder.addItemChangedListener(makeDirty);
 
         // automatic title change on dirty
-        const updateWindowTitle = ()=>this.windowTitle.set(`${(this.dirty.get() ? '[unsaved changes] ' : '')}${this.saveName.get()}`);
+        const updateWindowTitle = ()=>this.windowTitle.set(`File: ${(this.dirty.get() ? '[unsaved changes] ' : '')}${this.saveName.get() || 'unnamed'}`);
         this.dirty.addListener(_=>updateWindowTitle());
         this.saveName.addListener(_=>updateWindowTitle());
     }
@@ -533,6 +533,8 @@ class _CustomEdition {
     getSynopsisProperty():BloodBind.Property<string> {
         return this.meta.getSynopsisProperty();
     }
+
+    getWindowTitleProperty():BloodBind.Property<string> { return this.windowTitle; }
 
     /** move the specified character earlier in the order */
     moveCharacterUp(character:Character):void {
