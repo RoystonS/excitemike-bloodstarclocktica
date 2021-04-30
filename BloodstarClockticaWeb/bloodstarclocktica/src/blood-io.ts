@@ -18,10 +18,10 @@ export function hashFunc(input:string):number {
 }
 
 /// prompt for save if needed, then reset to new custom edition
-export async function newEdition(Edition:Edition):Promise<boolean> {
-    if (await SdcDlg.savePromptIfDirty(Edition)) {
-        Edition.reset();
-      return Promise.resolve(true);
+export async function newEdition(edition:Edition):Promise<boolean> {
+    if (await SdcDlg.savePromptIfDirty(edition)) {
+        edition.reset();
+        return Promise.resolve(true);
     }
     return Promise.resolve(false);
 }
@@ -31,20 +31,20 @@ export async function newEdition(Edition:Edition):Promise<boolean> {
  * Brings up the loading spinner during the operation
  * @param username login credentials
  * @param password login credentials
- * @param Edition file to save
+ * @param edition file to save
  * @returns promise resolving to whether the save was successful
  */
-export async function saveAs(username:string, password:string, Edition:Edition):Promise<boolean> {
-    const name = await promptForName(Edition.getSaveName());
+export async function saveAs(username:string, password:string, edition:Edition):Promise<boolean> {
+    const name = await promptForName(edition.getSaveName());
     if (!name) {
         return Promise.resolve(false);
     }
-    const backupName = Edition.getSaveName();
+    const backupName = edition.getSaveName();
     try {
-        Edition.setSaveName(name);
-        return await Spinner.show(`Saving as ${name}`, _save(username, password, Edition));
+        edition.setSaveName(name);
+        return await Spinner.show(`Saving as ${name}`, _save(username, password, edition));
     } catch (error) {
-        Edition.setSaveName(backupName);
+        edition.setSaveName(backupName);
         // TODO: Handle the error more gracefully. Explain to the user what went wrong.
         MessageDlg.showError(error);
     }
@@ -55,16 +55,16 @@ export async function saveAs(username:string, password:string, Edition:Edition):
  *  show loading dialog while saving
  * @param username login credentials
  * @param password login credentials
- * @param Edition file to save
+ * @param edition file to save
  * @returns promise resolving to whether the save was successful
  */
-export async function save(username:string, password:string, Edition:Edition):Promise<boolean> {
-    const saveName = Edition.getSaveName();
+export async function save(username:string, password:string, edition:Edition):Promise<boolean> {
+    const saveName = edition.getSaveName();
     switch (saveName) {
         case '':
-            return await saveAs(username, password, Edition);
+            return await saveAs(username, password, edition);
         default:
-            return await Spinner.show(`Saving as ${saveName}`, _save(username, password, Edition));
+            return await Spinner.show(`Saving as ${saveName}`, _save(username, password, edition));
     }
 }
 
@@ -73,21 +73,21 @@ export async function save(username:string, password:string, Edition:Edition):Pr
  * Brings up the loading spinner during the operation
  * @param username login credentials
  * @param password login credentials
- * @param Edition file to save
+ * @param edition file to save
  * @returns promise resolving to whether the save was successful
  */
-async function _save(username:string, password:string, Edition:Edition):Promise<boolean> {
+async function _save(username:string, password:string, edition:Edition):Promise<boolean> {
     type SaveData = {
         saveName:string,
         check:number,
-        Edition:EditionSaveData
+        edition:EditionSaveData
     };
     
-    const saveName = Edition.getSaveName();
+    const saveName = edition.getSaveName();
     const saveData:SaveData = {
         saveName: saveName,
         check: hashFunc(saveName),
-        Edition: Edition.getSaveData()
+        edition: edition.getSaveData()
     };
     const payload = JSON.stringify(saveData);
     const {error} = await cmd(username, password, 'save', `Saving as ${saveName}`, payload);
@@ -96,7 +96,7 @@ async function _save(username:string, password:string, Edition:Edition):Promise<
         MessageDlg.showError(error);
         return false;
     }
-    Edition.setDirty(false);
+    edition.setDirty(false);
     return true;
 }
 
@@ -104,12 +104,12 @@ async function _save(username:string, password:string, Edition:Edition):Promise<
  * Open a file
  * @param username login credentials
  * @param password login credentials
- * @param Edition Edition instance with which to open a file
+ * @param edition Edition instance with which to open a file
  * @returns whether a file was successfully opened
  */
-export async function open(username:string, password:string, Edition:Edition):Promise<boolean> {
-    if (await SdcDlg.savePromptIfDirty(Edition)) {
-        return await openNoSavePrompt(username, password, Edition);
+export async function open(username:string, password:string, edition:Edition):Promise<boolean> {
+    if (await SdcDlg.savePromptIfDirty(edition)) {
+        return await openNoSavePrompt(username, password, edition);
     }
     return Promise.resolve(false);
 }
@@ -118,13 +118,13 @@ export async function open(username:string, password:string, Edition:Edition):Pr
  * Prompt for the file to open and open it, skipping the save prompt
  * @param username login credentials
  * @param password login credentials
- * @param Edition Edition instance with which to open a file
+ * @param edition Edition instance with which to open a file
  * @returns whether a file was successfully opened
  */
-async function openNoSavePrompt(username:string, password:string, Edition:Edition):Promise<boolean> {
+async function openNoSavePrompt(username:string, password:string, edition:Edition):Promise<boolean> {
     const name = await OpenDlg.show(username, password);
     if (name) {
-        return await openNoPrompts(username, password, Edition, name);
+        return await openNoPrompts(username, password, edition, name);
     }
     return Promise.resolve(false);
 }
@@ -134,11 +134,11 @@ async function openNoSavePrompt(username:string, password:string, Edition:Editio
  * Brings up the loading spinner during the operation
  * @param username login credentials
  * @param password login credentials
- * @param Edition Edition instance with which to open a file
+ * @param edition Edition instance with which to open a file
  * @param name name of the file to open
  * @returns promise that resolves to whether a file was successfully opened
  */
-async function openNoPrompts(username:string, password:string, Edition:Edition, name:string):Promise<boolean> {
+async function openNoPrompts(username:string, password:string, edition:Edition, name:string):Promise<boolean> {
     const openData = {
         saveName: name,
         check: hashFunc(name)
@@ -151,7 +151,7 @@ async function openNoPrompts(username:string, password:string, Edition:Edition, 
         MessageDlg.showError(error);
         return false;
     }
-    const result = Edition.open(name, data as EditionSaveData);
+    const result = edition.open(name, data as EditionSaveData);
     return Promise.resolve(result);
 }
 

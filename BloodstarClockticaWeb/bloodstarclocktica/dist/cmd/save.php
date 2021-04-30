@@ -9,7 +9,7 @@
     $check = requireField($data, 'check');
     checkHash($saveName, $check);
 
-    $customEdition = requireField($data, 'customEdition');
+    $customEdition = requireField($data, 'edition');
     writeSaveFile($saveName, $customEdition);
 
     echo json_encode(array('success' => true));
