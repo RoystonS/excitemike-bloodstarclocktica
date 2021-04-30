@@ -1,10 +1,11 @@
-import {Character, CustomEdition} from "./custom-edition";
 import * as BloodBind from './bind/bindings';
 import * as BloodNewOpen from "./dlg/blood-new-open-dlg";
 import * as SpinnerDlg from './dlg/spinner-dlg';
 import * as LoginDlg from "./dlg/blood-login-dlg";
 import * as MessageDlg from "./dlg/blood-message-dlg";
 import * as BloodIO from "./blood-io";
+import {Character} from "./model/character";
+import {Edition} from "./model/edition";
 import './styles/main.css';
 import './styles/autogrowtextarea.css';
 import './styles/characterlist.css';
@@ -14,7 +15,7 @@ import './styles/menu.css';
 import './styles/nightorder.css';
 import './styles/tabs.css';
 
-let customEdition = new CustomEdition();
+let edition = new Edition();
 let username = '';
 let password = '';
 const selectedCharacter = new BloodBind.Property<Character|null>(null);
@@ -65,7 +66,7 @@ function makeCharacterListItem(character: Character):HTMLElement {
         const up = document.createElement("button");
         up.className = "character-list-button";
         up.innerText = "▲";
-        up.onclick = () => customEdition.moveCharacterUp(character);
+        up.onclick = () => edition.moveCharacterUp(character);
         row.appendChild(up);
     }
 
@@ -73,7 +74,7 @@ function makeCharacterListItem(character: Character):HTMLElement {
         const down = document.createElement("button");
         down.className = "character-list-button";
         down.innerText = "▼";
-        down.onclick = () => customEdition.moveCharacterDown(character);
+        down.onclick = () => edition.moveCharacterDown(character);
         row.appendChild(down);
     }
 
@@ -81,7 +82,7 @@ function makeCharacterListItem(character: Character):HTMLElement {
         const del = document.createElement("button");
         del.className = "character-list-button";
         del.innerText = "Delete";
-        del.onclick = () => customEdition.deleteCharacter(character);
+        del.onclick = () => edition.deleteCharacter(character);
         row.appendChild(del);
     }
 
@@ -131,7 +132,7 @@ function cleanupListItem(element: Node, character: Character): void {
 
 /** add a new character to the custom edition */
 function addCharacterClicked(_: Event): void {
-    customEdition.addNewCharacter();
+    edition.addNewCharacter();
 }
 
 /** clicked the help menu button */
@@ -189,7 +190,7 @@ function updateRecentFilesMenu():void {
  * user chose to open a new file
  */
 export async function newFileClicked():Promise<boolean> {
-    await BloodIO.newCustomEdition(customEdition);
+    await BloodIO.newEdition(edition);
     return true;
 }
 
@@ -197,8 +198,8 @@ export async function newFileClicked():Promise<boolean> {
  * user chose to open a file
  */
  export async function openFileClicked():Promise<boolean> {
-    if (await BloodIO.open(username, password, customEdition)) {
-        addToRecentFiles(customEdition.getSaveName());
+    if (await BloodIO.open(username, password, edition)) {
+        addToRecentFiles(edition.getSaveName());
         return true;
     }
     return false;
@@ -208,8 +209,8 @@ export async function newFileClicked():Promise<boolean> {
  * user chose to save the current file
  */
 export async function saveFileClicked():Promise<boolean> {
-    if (await BloodIO.save(username, password, customEdition)) {
-        addToRecentFiles(customEdition.getSaveName());
+    if (await BloodIO.save(username, password, edition)) {
+        addToRecentFiles(edition.getSaveName());
         return true;
     }
     return false;
@@ -219,8 +220,8 @@ export async function saveFileClicked():Promise<boolean> {
  * user chose to save the current file under a new name
  */
 export async function saveFileAsClicked():Promise<boolean> {
-    if (await BloodIO.saveAs(username, password, customEdition)) {
-        addToRecentFiles(customEdition.getSaveName());
+    if (await BloodIO.saveAs(username, password, edition)) {
+        addToRecentFiles(edition.getSaveName());
         return true;
     }
     return false;
@@ -302,7 +303,7 @@ function initBindings():void {
         if (e.ctrlKey) {
             if (e.code === "KeyS") {
                 e.preventDefault();
-                BloodIO.save(username, password, customEdition);
+                BloodIO.save(username, password, edition);
             }
         }
     };
@@ -319,43 +320,43 @@ function initBindings():void {
         ['charTabBtn', ()=>tabClicked('charTabBtn','charactertab')],
         ['firstNightTabBtn', ()=>tabClicked('firstNightTabBtn','firstNightOrderTab')],
         ['otherNightTabBtn', ()=>tabClicked('otherNightTabBtn','otherNightOrderTab')],
-        ['metaLogoRemoveBtn', ()=>customEdition.getLogoProperty().set(null)]
+        ['metaLogoRemoveBtn', ()=>edition.getLogoProperty().set(null)]
     ]);
 
-    BloodBind.bindTextById('windowTitle', customEdition.getWindowTitleProperty());
-    BloodBind.bindTextById('metaName', customEdition.getNameProperty());
-    BloodBind.bindTextById('metaAuthor', customEdition.getAuthorProperty());
-    BloodBind.bindTextById('metaSynopsis', customEdition.getSynopsisProperty());
-    BloodBind.bindTextById('metaOverview', customEdition.getOverviewProperty());
-    BloodBind.bindImageChooserById('metaLogoInput', customEdition.getLogoProperty());
-    BloodBind.bindImageDisplayById('metaLogoDisplay', customEdition.getLogoProperty());
+    BloodBind.bindTextById('windowTitle', edition.getWindowTitleProperty());
+    BloodBind.bindTextById('metaName', edition.getNameProperty());
+    BloodBind.bindTextById('metaAuthor', edition.getAuthorProperty());
+    BloodBind.bindTextById('metaSynopsis', edition.getSynopsisProperty());
+    BloodBind.bindTextById('metaOverview', edition.getOverviewProperty());
+    BloodBind.bindImageChooserById('metaLogoInput', edition.getLogoProperty());
+    BloodBind.bindImageDisplayById('metaLogoDisplay', edition.getLogoProperty());
 
     BloodBind.bindCollectionById(
         'characterlist',
-        customEdition.getCharacterList(),
+        edition.getCharacterList(),
         makeCharacterListItem,
         cleanupListItem
     );
 
     BloodBind.bindCollectionById(
         'firstNightOrderList',
-        customEdition.getFirstNightOrder(),
+        edition.getFirstNightOrder(),
         makeNightOrderItem,
         cleanupNightOrderItem
     );
 
     BloodBind.bindCollectionById(
         'otherNightOrderList',
-        customEdition.getOtherNightOrder(),
+        edition.getOtherNightOrder(),
         makeNightOrderItem,
         cleanupNightOrderItem
     );
     
     // tie selected character to character tab
     selectedCharacter.addListener(selectedCharacterChanged);
-    selectedCharacter.set(customEdition.getCharacterList().get(0) || null);
+    selectedCharacter.set(edition.getCharacterList().get(0) || null);
 
-    BloodBind.bindCheckboxById('previewOnToken', customEdition.getPreviewOnTokenProperty());
+    BloodBind.bindCheckboxById('previewOnToken', edition.getPreviewOnTokenProperty());
 
     // TODO: status bar
 }
@@ -484,7 +485,7 @@ async function initCustomEdition():Promise<void> {
         }
     } catch (e) {
         console.error(e);
-        customEdition.reset();
+        edition.reset();
         MessageDlg.showError(e);
     }
 }

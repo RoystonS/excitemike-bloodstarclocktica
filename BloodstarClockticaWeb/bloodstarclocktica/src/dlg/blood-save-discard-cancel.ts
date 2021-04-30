@@ -1,4 +1,4 @@
-import { CustomEdition } from '../custom-edition';
+import { Edition } from '../model/edition';
 import * as Bloodstar from '../bloodstar';
 import * as BloodDlg from './blood-dlg';
 
@@ -23,9 +23,9 @@ export function init() {
 }
 
 /// if dirty, prompt for a save. Call the callback if the user saves or discards changes
-export async function savePromptIfDirty(customEdition:CustomEdition) {
+export async function savePromptIfDirty(edition:Edition) {
     if (!initted) { init(); }
-    if (customEdition.getDirty()) {
+    if (edition.getDirty()) {
         return await showFn();
     }
     return true;
