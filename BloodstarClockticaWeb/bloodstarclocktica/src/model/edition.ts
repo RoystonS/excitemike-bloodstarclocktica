@@ -62,7 +62,7 @@ class _Edition {
         this.saveName.addListener(makeDirty);
 
         // automatic title change on dirty
-        const updateWindowTitle = ()=>this.windowTitle.set(`File: ${(this.dirty.get() ? '[unsaved changes] ' : '')}${this.saveName.get() || 'unnamed'}`);
+        const updateWindowTitle = ()=>this.windowTitle.set(`File: ${(this.dirty.get() ? '[unsaved changes] ' : '')}${this.saveName.get() || '[unnamed]'}`);
         this.dirty.addListener(_=>updateWindowTitle());
         this.saveName.addListener(_=>updateWindowTitle());
     }
