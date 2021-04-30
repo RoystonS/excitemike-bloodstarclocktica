@@ -71,7 +71,14 @@
                                 <label for="metaAuthor" title="This edition's author.">Author</label>
                                 <input type="text" name="metaAuthor" id="metaAuthor" title="This edition's author.">
                                 <label>Logo</label>
-                                <div></div>
+                                <div>
+                                    <img class="userImage" id="metaLogoDisplay" height="200px"/>
+                                    <div class="row">
+                                        <label for="metaLogoInput" class="button">Upload Image</label>
+                                        <input type="file" accept="image/*" name="metaLogoInput" id="metaLogoInput" style="display:none">
+                                        <button id="metaLogoRemoveBtn">Remove</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </details>
@@ -104,6 +111,23 @@
                     </details>
                 </div>
                 <div id="charactertab" class="tab">
+                    <details open>
+                        <summary>Character Image</summary>
+                        <div class="fieldgroup">
+                            <div class="twoColumnGrid">
+                                <div class="column">
+                                    <label for="metaLogoInput" class="button">Upload Image</label>
+                                    <input type="file" accept="image/*" name="metaLogoInput" id="metaLogoInput" style="display:none">
+                                    <button id="metaLogoRemoveBtn">Remove</button>
+                                    <div class="row">
+                                        <input type="checkbox" name="previewOnToken" id="previewOnToken">
+                                        <label for="previewOnToken">Preview on token</label>
+                                    </div>
+                                </div>
+                                    <img class="userImage" id="metaLogoDisplay" height="200px"/>
+                            </div>
+                        </div>
+                    </details>
                     <details open>
                         <summary>Character</summary>
                         <div class="fieldgroup">

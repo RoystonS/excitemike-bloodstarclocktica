@@ -306,12 +306,15 @@ function initBindings():void {
         ['charTabBtn', ()=>tabClicked('charTabBtn','charactertab')],
         ['firstNightTabBtn', ()=>tabClicked('firstNightTabBtn','firstnightordertab')],
         ['otherNightTabBtn', ()=>tabClicked('otherNightTabBtn','othernightordertab')],
+        ['metaLogoRemoveBtn', ()=>customEdition.getLogoProperty().set(null)]
     ]);
 
     BloodBind.bindTextById('metaName', customEdition.getNameProperty());
     BloodBind.bindTextById('metaAuthor', customEdition.getAuthorProperty());
     BloodBind.bindTextById('metaSynopsis', customEdition.getSynopsisProperty());
     BloodBind.bindTextById('metaOverview', customEdition.getOverviewProperty());
+    BloodBind.bindImageChooserById('metaLogoInput', customEdition.getLogoProperty());
+    BloodBind.bindImageDisplayById('metaLogoDisplay', customEdition.getLogoProperty());
 
     BloodBind.bindCollectionById(
         'characterlist',
@@ -323,6 +326,8 @@ function initBindings():void {
     // tie selected character to character tab
     selectedCharacter.addListener(selectedCharacterChanged);
     selectedCharacter.set(customEdition.getCharacterList().get(0) || null);
+
+    BloodBind.bindCheckboxById('previewOnToken', customEdition.getPreviewOnTokenProperty());
 }
 
 /** set up character tab bindings */

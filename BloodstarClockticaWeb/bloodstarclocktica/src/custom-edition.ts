@@ -145,6 +145,9 @@ class _CustomEditionMeta {
             almanac: this.almanac.getSaveData(),
         };
     }
+
+    getLogoProperty():BloodBind.Property<string|null> { return this.logo; }
+
     getName():string { return this.name.get(); }
     getNameProperty():BloodBind.Property<string> { return this.name; }
 
@@ -490,6 +493,8 @@ class _CustomEdition {
     getName():string { return this.meta.getName(); }
     getNameProperty():BloodBind.Property<string> { return this.meta.getNameProperty(); }
 
+    getLogoProperty():BloodBind.Property<string|null> { return this.meta.getLogoProperty(); }
+
     /**
      * get name to save as
      */
@@ -515,6 +520,8 @@ class _CustomEdition {
             characters:charactersSaveData
         };
     };
+
+    getPreviewOnTokenProperty():BloodBind.Property<boolean> { return this.previewOnToken; }
 
     /** get overview for binding */
     getOverviewProperty():BloodBind.Property<string> {

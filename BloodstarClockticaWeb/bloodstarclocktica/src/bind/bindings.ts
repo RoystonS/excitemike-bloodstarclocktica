@@ -1,41 +1,8 @@
+import {BaseBinding, Property, PropertyChangeListener} from './base-binding'
+import {CollectionBinding, RenderFn, CleanupFn} from './collection-binding'
+import {ImageChooserBinding, ImageDisplayBinding} from './image-binding';
 import {ObservableCollection} from './observable-collection';
 import {ObservableObject} from './observable-object';
-import {CollectionBinding, RenderFn, CleanupFn} from './collection-binding'
-
-export type PropertyChangeListener<T> = (value:T)=>void;
-
-/** generic observable property */
-export class Property<T> {
-    value:T;
-    listeners:PropertyChangeListener<T>[];
-
-    constructor(value:T) {
-        this.value = value;
-        this.listeners = [];
-    }
-    set(value:T) {
-        if (this.value !== value) {
-            this.value = value;
-            this.notifyListeners();
-        }
-    }
-    get() {
-        return this.value;
-    }
-    addListener(cb:PropertyChangeListener<T>) {
-        this.listeners.push(cb);
-    }
-    removeListener(cb:PropertyChangeListener<T>) {
-        this.listeners = this.listeners.filter(i=>i!==cb);
-    }
-    removeAllListeners() {
-        this.listeners = [];
-    }
-    private notifyListeners() {
-        const backup = this.listeners.concat();
-        backup.forEach(cb=>cb(this.value));
-    }
-}
 
 type DisplayValuePair<ValueType> = {display:string,value:ValueType};
 type DisplayValuePairs<ValueType> = ReadonlyArray<DisplayValuePair<ValueType>>;
@@ -54,51 +21,7 @@ export class EnumProperty<ValueType> extends Property<ValueType> {
 const bindings = new Map<Node, Binding>();
 
 type AnyProperty<ValueType> = Property<ValueType> | EnumProperty<ValueType>;
-type Binding = CheckboxBinding | TextBinding | ComboBoxBinding | CollectionBinding<any>;
-type SyncFromElementToPropertyFn = ((_:Event)=>void)|null;
-type SyncFromPropertyToElementFn<ValueType> = ((v:ValueType)=>void) | null;
-
-/** shared code between binding classes */
-class BaseBinding<ValueType> {
-    private element:HTMLElement|null;
-    private property:Property<ValueType>|null;
-    private eventName:string;
-    private syncFromElementToProperty:SyncFromElementToPropertyFn;
-    private syncFromPropertyToElement:SyncFromPropertyToElementFn<ValueType>;
-
-    /** set up the binding and bookkeeping for cleanup */
-    constructor(element:HTMLElement, property:Property<ValueType>, eventName:string, syncFromElementToProperty:SyncFromElementToPropertyFn, syncFromPropertyToElement:SyncFromPropertyToElementFn<ValueType>) {
-        this.element = element;
-        this.property = property;
-        this.eventName = eventName;
-
-        this.syncFromElementToProperty = syncFromElementToProperty;
-        this.syncFromPropertyToElement = syncFromPropertyToElement;
-
-        if (syncFromPropertyToElement) { syncFromPropertyToElement(property.get()); }
-
-        if (syncFromElementToProperty) {
-            element.addEventListener(eventName, syncFromElementToProperty);
-        }
-        if (syncFromPropertyToElement) {
-            property.addListener(syncFromPropertyToElement);
-        }
-    }
-
-    /** clean up */
-    destroy() {
-        if (this.syncFromElementToProperty !== null) {
-            this.element?.removeEventListener(this.eventName, this.syncFromElementToProperty);
-            this.syncFromElementToProperty = null;
-        }
-        if (this.syncFromPropertyToElement !== null) {
-            this.property?.removeListener(this.syncFromPropertyToElement);
-            this.syncFromPropertyToElement = null;
-        }
-        this.element = null;
-        this.property = null;
-    }
-}
+type Binding = BaseBinding<any> | CollectionBinding<any>;
 
 /** bindings for a checkbox */
 class CheckboxBinding extends BaseBinding<boolean> {
@@ -192,6 +115,34 @@ export function bindCollectionById<T extends ObservableObject>(id:string, collec
     }
 }
 
+/** bind an image to a `string|null` property that stores an object url */
+export function bindImageDisplay(element:HTMLImageElement, property:Property<string|null>):void {
+    unbindElement(element);
+    bindings.set(element, new ImageDisplayBinding(element, property));
+}
+
+/** bind an image to a `string|null` property that stores an object url */
+export function bindImageDisplayById(id:string, property:Property<string|null>):void {
+    const element = document.getElementById(id);
+    if (element instanceof HTMLImageElement) {
+        bindImageDisplay(element, property);
+    }
+}
+
+/** bind an `input[type=file]` element to a `string|null` property that stores an object url */
+export function bindImageChooser(element:HTMLInputElement, property:Property<string|null>):void {
+    unbindElement(element);
+    bindings.set(element, new ImageChooserBinding(element, property));
+}
+
+/** bind an `input[type=file] to a `string|null` property that stores an object url */
+export function bindImageChooserById(id:string, property:Property<string|null>):void {
+    const element = document.getElementById(id);
+    if (element instanceof HTMLInputElement) {
+        bindImageChooser(element, property);
+    }
+}
+
 /** clear element's current binding, if any */
 export function unbindElement(element:Node) {
     if (bindings.has(element)) {
@@ -206,3 +157,6 @@ export function unbindElementById(id:string) {
     if (!element) {return;}
     unbindElement(element);
 }
+
+// re-export
+export {Property, PropertyChangeListener};

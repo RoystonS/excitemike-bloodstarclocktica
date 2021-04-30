@@ -11,7 +11,7 @@ body {
 h1, h2, h3, h4, h5, h6 {
     margin:3px 0;
 }
-a, button, summary {
+a, button, summary, .button {
     color:#eee;
     text-decoration: none;
     padding:2px;
@@ -23,7 +23,10 @@ a, button, summary {
     font-weight:bold;
     letter-spacing: +1px;
 }
-a:hover, a:focus-visible, button:hover, button:focus-visible, summary:hover, summary:focus-visible {
+.button {
+    text-align: center;
+}
+a:hover, a:focus-visible, button:hover, button:focus-visible, summary:hover, summary:focus-visible, .button:hover, .button:focus-visible {
     border: 1px solid #3977FF;
     background:#3977FF;
 }
@@ -130,4 +133,30 @@ ul#status {
     grid-column-end: 3;
     border-left: 4px solid #666;
     padding-left: 6px;
+}
+.userImage {
+    border: 1px solid #666;
+}
+.userImage[src=""] {
+    display:none;
+}
+.row {
+    display:flex;
+    flex-flow: row;
+}
+.row > * {
+    margin-right:6px;
+}
+.row > *:last-child {
+    margin-right:0;
+}
+.column {
+    display:flex;
+    flex-flow: column nowrap;
+}
+.column > * {
+    margin-bottom:6px;
+}
+.column > *:last-child {
+    margin-right:0;
 }
