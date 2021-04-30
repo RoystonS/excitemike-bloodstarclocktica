@@ -4,7 +4,9 @@
     flex-flow: column nowrap;
 }
 #tabHolder {
+    flex: 1 1 0;
     overflow:auto;
+    display:grid;
 }
 #tabBar {
     flex: 0 0 auto;
@@ -38,5 +40,5 @@
     margin-right: 6px;
 }
 .activeTab {
-    display:block;
+    display:grid;
 }

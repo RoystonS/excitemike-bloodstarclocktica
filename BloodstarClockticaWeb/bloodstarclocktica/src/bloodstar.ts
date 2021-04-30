@@ -11,6 +11,7 @@ import './styles/characterlist.css';
 import './styles/dialog.css';
 import './styles/dragdrop.css';
 import './styles/menu.css';
+import './styles/nightorder.css';
 import './styles/tabs.css';
 
 let customEdition = new CustomEdition();
@@ -316,8 +317,8 @@ function initBindings():void {
         ['helpbutton', showHelp],
         ['metaTabBtn', ()=>tabClicked('metaTabBtn','metatab')],
         ['charTabBtn', ()=>tabClicked('charTabBtn','charactertab')],
-        ['firstNightTabBtn', ()=>tabClicked('firstNightTabBtn','firstnightordertab')],
-        ['otherNightTabBtn', ()=>tabClicked('otherNightTabBtn','othernightordertab')],
+        ['firstNightTabBtn', ()=>tabClicked('firstNightTabBtn','firstNightOrderTab')],
+        ['otherNightTabBtn', ()=>tabClicked('otherNightTabBtn','otherNightOrderTab')],
         ['metaLogoRemoveBtn', ()=>customEdition.getLogoProperty().set(null)]
     ]);
 
@@ -334,6 +335,20 @@ function initBindings():void {
         customEdition.getCharacterList(),
         makeCharacterListItem,
         cleanupListItem
+    );
+
+    BloodBind.bindCollectionById(
+        'firstNightOrderList',
+        customEdition.getFirstNightOrder(),
+        makeNightOrderItem,
+        cleanupNightOrderItem
+    );
+
+    BloodBind.bindCollectionById(
+        'otherNightOrderList',
+        customEdition.getOtherNightOrder(),
+        makeNightOrderItem,
+        cleanupNightOrderItem
     );
     
     // tie selected character to character tab
@@ -395,6 +410,8 @@ function bindCharacterTabControls():void {
     bindTrackedImageChooser('characterUnstyledImageInput', character.getUnStyledImageProperty(), characterTabIds);
     bindTrackedImageDisplay('characterUnstyledImageDisplay', character.getUnStyledImageProperty(), characterTabIds);
     bindTrackedImageDisplay('characterStyledImageDisplay', character.getStyledImageProperty(), characterTabIds);
+
+    // TODO: image settings bindings
 
     characterTabButtonCleanupFn = hookupClickEvents([
         ['characterImageRemoveBtn', ()=>character.setUnStyledImage(null)]
