@@ -116,6 +116,13 @@ export class ObservableCollection<ItemType extends ObservableObject> implements 
         });
     }
 
+    /** remove the specified item from the collection */
+    deleteItem(character:ItemType):void {
+        const i = this.indexOf(character);
+        if (i < 0) { return; }
+        this.remove(i);
+    }
+
     /** get an item in the collection */
     get(i:number):ItemType {
         return this.items[i].item;
@@ -168,6 +175,20 @@ export class ObservableCollection<ItemType extends ObservableObject> implements 
             oldStartingIndex: oldIndex
         });
         this.updateIndices(Math.min(oldIndex, newIndex));
+    }
+
+    /** find value in the collection and swap it with the item after it, if any */
+    moveItemDown(value:ItemType):void {
+        const i = this.indexOf(value);
+        if (i < 0) { return; }
+        this.move(i, i+1);
+    }
+
+    /** find value in the collection and swap it with the item before it, if any */
+    moveItemUp(value:ItemType):void {
+        const i = this.indexOf(value);
+        if (i < 1) { return; }
+        this.move(i, i-1);
     }
 
     /** remove an item from the collection */

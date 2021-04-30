@@ -1,7 +1,7 @@
 import {ObservableCollection, ObservableCollectionChangeAction, ObservableCollectionChangedEvent} from '../bind/observable-collection';
 import {ObservableObject} from '../bind/observable-object';
 
-export type RenderFn<T> = (itemData:T)=>Element;
+export type RenderFn<T extends ObservableObject> = (itemData:T, collection:ObservableCollection<T>)=>Element;
 export type CleanupFn<T> = (renderedElement:Element, itemData:T)=>void;
 
 /** get a y coordinate for the mouse relative to some element */
@@ -256,7 +256,7 @@ export class CollectionBinding<T extends ObservableObject> {
         li.addEventListener('dragover', e=>this.dragover(e));
         li.addEventListener('dragleave', e=>this.dragleave(e));
         li.addEventListener('drop', e => this.drop(e));
-        li.appendChild(this.renderFn(itemData));
+        li.appendChild(this.renderFn(itemData, this.collection));
 
         return li;
     }

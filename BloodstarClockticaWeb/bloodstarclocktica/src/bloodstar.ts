@@ -1,11 +1,14 @@
 import * as BloodBind from './bind/bindings';
 import * as BloodNewOpen from "./dlg/blood-new-open-dlg";
+import { ObservableCollection } from './bind/observable-collection';
 import * as SpinnerDlg from './dlg/spinner-dlg';
 import * as LoginDlg from "./dlg/blood-login-dlg";
 import * as MessageDlg from "./dlg/blood-message-dlg";
 import * as BloodIO from "./blood-io";
 import {Character} from "./model/character";
 import {Edition} from "./model/edition";
+import {cleanupNightOrderItem, makeNightOrderItem} from './night-order';
+import {walkHTMLElements} from './util';
 import './styles/main.css';
 import './styles/autogrowtextarea.css';
 import './styles/characterlist.css';
@@ -39,7 +42,7 @@ type TagsThatCanBeDisabled = "button" | "fieldset" | "input" | "optgroup" | "opt
  * @param character character for which we are making a list item
  * @returns HTMLElement to represent that character
  */
-function makeCharacterListItem(character: Character):HTMLElement {
+function makeCharacterListItem(character: Character, collection:ObservableCollection<Character>):HTMLElement {
     const row = document.createElement("div");
     row.className = "character-list-item";
     row.onclick = e => { 
@@ -66,7 +69,7 @@ function makeCharacterListItem(character: Character):HTMLElement {
         const up = document.createElement("button");
         up.className = "character-list-button";
         up.innerText = "▲";
-        up.onclick = () => edition.moveCharacterUp(character);
+        up.onclick = () => collection.moveItemUp(character);
         row.appendChild(up);
     }
 
@@ -74,7 +77,7 @@ function makeCharacterListItem(character: Character):HTMLElement {
         const down = document.createElement("button");
         down.className = "character-list-button";
         down.innerText = "▼";
-        down.onclick = () => edition.moveCharacterDown(character);
+        down.onclick = () => collection.moveItemDown(character);
         row.appendChild(down);
     }
 
@@ -82,7 +85,7 @@ function makeCharacterListItem(character: Character):HTMLElement {
         const del = document.createElement("button");
         del.className = "character-list-button";
         del.innerText = "Delete";
-        del.onclick = () => edition.deleteCharacter(character);
+        del.onclick = () => collection.deleteItem(character);
         row.appendChild(del);
     }
 
@@ -101,32 +104,24 @@ function makeCharacterListItem(character: Character):HTMLElement {
 
 /** recurses though children of element cleaning up click events and bindings */
 function cleanupListItem(element: Node, character: Character): void {
-    if (!(element instanceof HTMLElement)) {return;}
-    const stack:HTMLElement[] = [element];
-    while (stack.length) {
-        const htmlElement = stack.pop();
-        if (htmlElement) {
-            htmlElement.onclick = null;
-            BloodBind.unbindElement(htmlElement);
-            for (let i=0; i<htmlElement.children.length;i++) {
-                const child = htmlElement.children[i];
-                if (child instanceof HTMLElement) {
-                    stack.push(child);
-                }
-            }
-        }
-    }
     if (selectedCharacter.get() === character) {
         selectedCharacter.set(null);
     }
 
-    // cleanup listener from makeCharacterListItem
-    {
-        const cb = characterListCleanupSideTable.get(element);
-        if (cb) {
-            selectedCharacter.removeListener(cb);
+    if (element instanceof HTMLElement) {
+        walkHTMLElements(element, htmlElement=>{
+            htmlElement.onclick = null;
+            BloodBind.unbindElement(htmlElement);
+        });
+
+        // cleanup listener from makeCharacterListItem
+        {
+            const cb = characterListCleanupSideTable.get(element);
+            if (cb) {
+                selectedCharacter.removeListener(cb);
+            }
+            characterListCleanupSideTable.delete(element);
         }
-        characterListCleanupSideTable.delete(element);
     }
 }
 

@@ -76,13 +76,6 @@ class _Edition {
         this.otherNightOrder.add(character);
     }
 
-    /** remove the specified character from the collectionlater in the order */
-    deleteCharacter(character:Character):void {
-        const i = this.characterList.indexOf(character);
-        if (i < 0) { return; }
-        this.characterList.remove(i);
-    }
-
     getAuthorProperty():Property<string> { return this.meta.getAuthorProperty(); }
     getCharacterList() {
         return this.characterList;
@@ -154,25 +147,11 @@ class _Edition {
         } while (matchFound);
     }
 
-    /** move the specified character later in the order */
-    moveCharacterDown(character:Character):void {
-        const i = this.characterList.indexOf(character);
-        if (i < 0) { return; }
-        this.characterList.move(i, i+1);
-    }
-
-    /** move the specified character earlier in the order */
-    moveCharacterUp(character:Character):void {
-        const i = this.characterList.indexOf(character);
-        if (i < 1) { return; }
-        this.characterList.move(i, i-1);
-    }
-
     /**
      * set to opened file
      * @param data 
      */
-     open(saveName:string, data:EditionSaveData):boolean {
+    open(saveName:string, data:EditionSaveData):boolean {
         if (!data) {this.reset(); return false;}
         this.saveName.set(saveName);
         this.almanac.open(data.almanac);

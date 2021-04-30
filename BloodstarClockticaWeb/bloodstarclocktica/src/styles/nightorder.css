@@ -5,3 +5,14 @@
     flex-flow: column nowrap;
     list-style: none;
 }
+.nightOrderItem {
+    display: flex;
+    flex-flow: row nowrap;
+    margin:0 3px 0 0;
+    padding: 6px;
+    border:1px solid #666;
+    align-items: center;
+}
+.nightOrderItem:hover {
+    border-color: #3977FF;
+}
