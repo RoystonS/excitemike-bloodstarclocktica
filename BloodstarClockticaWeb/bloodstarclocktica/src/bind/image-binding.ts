@@ -33,10 +33,10 @@ async function toDataUri(url:string, maxWidth:number, maxHeight:number):Promise<
             const image = new Image();
             image.onload = ()=>{
                 const canvas = document.createElement('canvas');
-                const scale = Math.max(1.0, Math.min(maxWidth / image.width, maxHeight / image.height));
+                const scale = Math.min(1.0, maxWidth / image.width, maxHeight / image.height);
                 canvas.width = (scale * image.width) | 0;
                 canvas.height = (scale * image.height) | 0;
-                canvas.getContext('2d')?.drawImage(image,0,0);
+                canvas.getContext('2d')?.drawImage(image,0,0,canvas.width,canvas.height);
                 resolve(canvas.toDataURL('image/png'));
             }
             image.src = url;
