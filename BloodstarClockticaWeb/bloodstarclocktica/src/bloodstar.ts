@@ -7,7 +7,7 @@ import * as MessageDlg from "./dlg/blood-message-dlg";
 import * as BloodIO from "./blood-io";
 import {Character} from "./model/character";
 import {Edition} from "./model/edition";
-import {cleanupNightOrderItem, makeNightOrderItem} from './night-order';
+import {initNightOrderBindings} from './night-order';
 import {walkHTMLElements} from './util';
 import './styles/main.css';
 import './styles/autogrowtextarea.css';
@@ -333,19 +333,7 @@ function initBindings():void {
         cleanupListItem
     );
 
-    BloodBind.bindCollectionById(
-        'firstNightOrderList',
-        edition.getFirstNightOrder(),
-        makeNightOrderItem,
-        cleanupNightOrderItem
-    );
-
-    BloodBind.bindCollectionById(
-        'otherNightOrderList',
-        edition.getOtherNightOrder(),
-        makeNightOrderItem,
-        cleanupNightOrderItem
-    );
+    initNightOrderBindings(edition);
     
     // tie selected character to character tab
     selectedCharacter.addListener(selectedCharacterChanged);
