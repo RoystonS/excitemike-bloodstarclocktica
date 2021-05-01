@@ -3,7 +3,7 @@
  * @module EditionAlmanac
  */
 import {Property} from '../bind/bindings';
-import {ObservableObjectMixin} from '../bind/observable-object';
+import {ObservableObject, observableProperty} from '../bind/observable-object';
 
 /** data to persist on the server for the meta almanac portion of edition */
 export type EditionAlmanacSaveData = {
@@ -11,13 +11,15 @@ export type EditionAlmanacSaveData = {
     overview: string,
 };
 
-class _EditionAlmanac {
-    private synopsis: Property<string>;
-    private overview: Property<string>;
+export class EditionAlmanac extends ObservableObject {
+    @observableProperty
+    private synopsis = new Property('');
+    @observableProperty
+    private overview = new Property('');
 
     constructor() {
-        this.synopsis = new Property('');
-        this.overview = new Property('');
+        super();
+        this.init();
     }
 
     /** get overview for binding */
@@ -44,15 +46,4 @@ class _EditionAlmanac {
         this.synopsis.set(data.synopsis);
         this.overview.set(data.overview);
     }
-
-    /** reset to default */
-    reset() {
-        this.synopsis.set('');
-        this.overview.set('');
-    }
 }
-
-/** observable properties about the character */
-export const EditionAlmanac = ObservableObjectMixin(_EditionAlmanac);
-/** observable properties about the edition */
-export type EditionAlmanac = InstanceType<ReturnType<typeof ObservableObjectMixin>> & _EditionAlmanac;

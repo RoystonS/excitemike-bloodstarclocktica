@@ -3,7 +3,7 @@
  * @module EditionMeta
  */
  import {Property} from '../bind/bindings';
- import {ObservableObjectMixin} from '../bind/observable-object';
+ import {ObservableObject, observableProperty} from '../bind/observable-object';
 
 /** data to persist on the server for the meta portion of custom edition */
 export type EditionMetaSaveData = {
@@ -11,14 +11,22 @@ export type EditionMetaSaveData = {
     logo: string|null
     name: string,
 };
-class _EditionMeta {
-    private author: Property<string>;
-    private logo: Property<string|null>;
-    private name: Property<string>;
+export class EditionMeta extends ObservableObject {
+    /** who to credit for the edition */
+    @observableProperty
+    private author = new Property<string>('');
+
+    /** logo image for the edition */
+    @observableProperty
+    private logo = new Property<string|null>(null);
+
+    /** what the edition is called */
+    @observableProperty
+    private name = new Property<string>('New Edition');
+
     constructor() {
-        this.author = new Property('');
-        this.logo = new Property<string|null>(null);
-        this.name = new Property('New Edition');
+        super();
+        this.init();
     }
 
     getAuthorProperty():Property<string> { return this.author; }
@@ -37,22 +45,9 @@ class _EditionMeta {
 
     /** set based on save data */
     open(data:EditionMetaSaveData):void {
-        if (!data) {this.reset(''); return;}
+        if (!data) {this.reset(); return;}
         this.name.set(data.name);
         this.author.set(data.author);
         this.logo.set(data.logo);
     }
-    
-    /** set to default */
-    reset(name:string) {
-        this.author.set('');
-        this.logo.set(null);
-        this.name.set(name);
-    }
 }
-
-/** observable properties about the edition */
-export const EditionMeta = ObservableObjectMixin(_EditionMeta);
-
-/** observable properties about the edition */
-export type EditionMeta = InstanceType<ReturnType<typeof ObservableObjectMixin>> & _EditionMeta;

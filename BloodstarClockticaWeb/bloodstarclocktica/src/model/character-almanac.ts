@@ -4,7 +4,7 @@
  */
 
 import {Property} from '../bind/bindings';
-import {ObservableObjectMixin} from '../bind/observable-object';
+import {ObservableObject, observableProperty} from '../bind/observable-object';
 
 /** data to persist on the server for a character's almanac entry */
 export type CharacterAlmanacSaveData = {
@@ -15,19 +15,25 @@ export type CharacterAlmanacSaveData = {
     tip: string;
 };
 
-class _CharacterAlmanac {
-    private examples: Property<string>;
-    private flavor: Property<string>;
-    private howToRun: Property<string>;
-    private overview: Property<string>;
-    private tip: Property<string>;
+export class CharacterAlmanac extends ObservableObject {
+    @observableProperty
+    private examples = new Property('');
+    
+    @observableProperty
+    private flavor = new Property('');
+    
+    @observableProperty
+    private howToRun = new Property('');
+    
+    @observableProperty
+    private overview = new Property('');
+    
+    @observableProperty
+    private tip = new Property('');
 
     constructor() {
-        this.examples = new Property<string>('');
-        this.flavor = new Property<string>('');
-        this.howToRun = new Property<string>('');
-        this.overview = new Property<string>('');
-        this.tip = new Property<string>('');
+        super();
+        this.init();
     }
 
     getExamples():string{return this.examples.get();}
@@ -62,19 +68,4 @@ class _CharacterAlmanac {
         this.howToRun.set(data.howToRun);
         this.tip.set(data.tip);
     }
-
-    /** reset to default */
-    reset():void {
-        this.flavor.set('');
-        this.overview.set('');
-        this.examples.set('');
-        this.howToRun.set('');
-        this.tip.set('');
-    }
 }
-
-/** observable properties about the character's almanac entry */
-export const CharacterAlmanac = ObservableObjectMixin(_CharacterAlmanac);
-
-/** observable properties about the character's almanac entry */
-export type CharacterAlmanac = InstanceType<ReturnType<typeof ObservableObjectMixin>> & _CharacterAlmanac;

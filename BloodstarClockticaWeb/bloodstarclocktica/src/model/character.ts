@@ -4,7 +4,7 @@
  */
 import {CharacterAlmanac, CharacterAlmanacSaveData} from './character-almanac';
 import {EnumProperty, Property} from '../bind/bindings';
-import {ObservableObjectMixin} from '../bind/observable-object';
+import {observableChild, ObservableObject, observableProperty} from '../bind/observable-object';
 import {BLOODTEAM_OPTIONS, BloodTeam, parseBloodTeam} from '../model/blood-team';
 
 const splitLines = (str:string) => str.split(/\r?\n/);
@@ -27,39 +27,60 @@ export type CharacterSaveData = {
     unStyledImage:string|null,
 };
 
-class _Character {
-    private ability: Property<string>;
-    private attribution: Property<string>;
-    private almanac: CharacterAlmanac;
-    private characterReminderTokens: Property<string>;
-    private export: Property<boolean>;
-    private firstNightReminderProperty: Property<string>;
-    private globalReminderTokens: Property<string>;
-    private id: Property<string>;
-    private name: Property<string>;
-    private otherNightReminderProperty: Property<string>;
-    private setup: Property<boolean>;
-    private styledImage: Property<string|null>;
-    private team: EnumProperty<string>;
-    private unStyledImage: Property<string|null>;
-    constructor() {
-        this.ability = new Property('');
-        this.attribution = new Property('');
-        this.almanac = new CharacterAlmanac();
-        this.characterReminderTokens = new Property<string>('');
-        this.export = new Property<boolean>(true);
-        this.firstNightReminderProperty = new Property('');
-        this.globalReminderTokens = new Property<string>('');
-        this.id = new Property('newcharacter');
-        this.name = new Property('New Character');
-        this.otherNightReminderProperty = new Property('');
-        this.setup = new Property<boolean>(false);
-        this.styledImage = new Property<string|null>(null);
-        this.team = new EnumProperty<string>(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS);
-        this.unStyledImage = new Property<string|null>(null);
+export class Character extends ObservableObject {
+    @observableProperty
+    private ability = new Property('');
 
-        // TODO: image settings
-        // TODO: tie image settings to lazily re-generating styledImage
+    @observableProperty
+    private attribution = new Property('');
+    
+    @observableChild
+    private almanac = new CharacterAlmanac();
+    
+    @observableProperty
+    private characterReminderTokens = new Property('');
+    
+    @observableProperty
+    private export = new Property(true);
+
+    @observableProperty
+    private firstNightOrdinal = new Property('-');
+    
+    @observableProperty
+    private firstNightReminder = new Property('');
+    
+    @observableProperty
+    private globalReminderTokens = new Property('');
+    
+    @observableProperty
+    private id = new Property('newcharacter');
+    
+    @observableProperty
+    private name = new Property('New Character');
+
+    @observableProperty
+    private otherNightOrdinal = new Property('-');
+    
+    @observableProperty
+    private otherNightReminder = new Property('');
+    
+    @observableProperty
+    private setup = new Property(false);
+    
+    @observableProperty
+    private styledImage = new Property<string|null>(null);
+    
+    @observableProperty
+    private team = new EnumProperty<string>(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS);
+    
+    @observableProperty
+    private unStyledImage = new Property<string|null>(null);
+    // TODO: image settings
+    // TODO: tie image settings to lazily re-generating styledImage
+
+    constructor() {
+        super();
+        this.init();
     }
 
     /** create from save data */
@@ -79,16 +100,18 @@ class _Character {
     getCharacterReminderTokensProperty():Property<string> { return this.characterReminderTokens; }
     getExport():boolean{return this.export.get();}
     getExportProperty():Property<boolean>{return this.export;}
-    getFirstNightReminder():string{return this.firstNightReminderProperty.get();}
-    getFirstNightReminderProperty():Property<string>{return this.firstNightReminderProperty;}
+    getFirstNightOrdinalProperty():Property<string>{return this.firstNightOrdinal;}
+    getFirstNightReminder():string{return this.firstNightReminder.get();}
+    getFirstNightReminderProperty():Property<string>{return this.firstNightReminder;}
     getGlobalReminderTokens():ReadonlyArray<string> { return splitLines(this.globalReminderTokens.get()); }
     getGlobalReminderTokensProperty():Property<string> { return this.globalReminderTokens; }
     getId():string { return this.id.get(); }
     getIdProperty():Property<string>{return this.id;}
     getName():string{return this.name.get();}
     getNameProperty():Property<string>{return this.name;}
-    getOtherNightReminder():string{return this.otherNightReminderProperty.get();}
-    getOtherNightReminderProperty():Property<string>{return this.otherNightReminderProperty;}
+    getOtherNightOrdinalProperty():Property<string>{return this.otherNightOrdinal;}
+    getOtherNightReminder():string{return this.otherNightReminder.get();}
+    getOtherNightReminderProperty():Property<string>{return this.otherNightReminder;}
 
     /** get data to persist for the character */
     getSaveData():CharacterSaveData {
@@ -127,40 +150,18 @@ class _Character {
         this.almanac.open(data.almanac);
         this.characterReminderTokens.set(data.characterReminderTokens.join('\n'));
         this.export.set(data.export);
-        this.firstNightReminderProperty.set(data.firstNightReminder);
+        this.firstNightReminder.set(data.firstNightReminder);
         this.globalReminderTokens.set(data.globalReminderTokens.join('\n'));
         this.id.set(data.id);
         this.name.set(data.name);
-        this.otherNightReminderProperty.set(data.otherNightReminder);
+        this.otherNightReminder.set(data.otherNightReminder);
         this.setup.set(data.setup);
         this.styledImage.set(data.styledImage);
         this.team.set(data.team);
         this.unStyledImage.set(data.unStyledImage);
     }
 
-    /** reset to default */
-    reset():void {
-        this.ability.set('');
-        this.attribution.set('');
-        this.almanac.reset();
-        this.characterReminderTokens.set('');
-        this.export.set(true);
-        this.firstNightReminderProperty.set('');
-        this.globalReminderTokens.set('');
-        this.id.set('newcharacter');
-        this.name.set('New Character');
-        this.otherNightReminderProperty.set('');
-        this.setup.set(false);
-        this.styledImage.set(null);
-        this.team.set(BloodTeam.TOWNSFOLK);
-        this.unStyledImage.set(null);
-    }
-
     setId(value:string):void { this.id.set(value); }
     setName(value:string):void{this.name.set(value);}
     setUnStyledImage(v:string|null):void {this.unStyledImage.set(v);}
 }
-/** observable properties about the character */
-export const Character = ObservableObjectMixin(_Character);
-/** observable properties about the edition */
-export type Character = InstanceType<ReturnType<typeof ObservableObjectMixin>> & _Character;

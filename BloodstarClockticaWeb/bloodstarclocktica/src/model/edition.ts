@@ -7,7 +7,7 @@
  import {EditionAlmanac, EditionAlmanacSaveData} from './edition-almanac';
  import {EditionMeta, EditionMetaSaveData} from './edition-meta';
  import {ObservableCollection} from '../bind/observable-collection';
- import {ObservableObjectMixin} from '../bind/observable-object';
+ import {observableChild, observableCollection, ObservableObject, observableProperty} from '../bind/observable-object';
 
 /** data to persist on the server for the edition */
 export type EditionSaveData = {
@@ -20,51 +20,63 @@ export type EditionSaveData = {
 };
 
 /** observable properties for a custom edition */
-class _Edition {
-    private almanac: EditionAlmanac;
+export class Edition extends ObservableObject {
+    /** almanac-specific edition data */
+    @observableChild
+    private almanac = new EditionAlmanac();
+
     /** characters in the edition */
-    private characterList: ObservableCollection<Character>;
-    private dirty: Property<boolean>;
+    @observableCollection
+    private characterList = new ObservableCollection<Character>();
+
+    /** true when there are unsaved changes */
+    @observableProperty
+    private dirty = new Property<boolean>(false);
+
     /** contains the same Character objects as characterList, but ordered for night order */
-    private firstNightOrder: ObservableCollection<Character>;
-    private meta: EditionMeta;
+    @observableCollection
+    private firstNightOrder = new ObservableCollection<Character>();
+
+    /** data about the edition */
+    @observableChild
+    private meta = new EditionMeta();
+
     /** contains the same Character objects as characterList, but ordered for night order */
-    private otherNightOrder: ObservableCollection<Character>;
-    private previewOnToken: Property<boolean>;
-    private saveName: Property<string>;
-    private windowTitle: Property<string>;
+    @observableCollection
+    private otherNightOrder = new ObservableCollection<Character>();
+    
+    /** whether to render preview on a character token background like you would see on clocktower.online */
+    @observableProperty
+    private previewOnToken = new Property<boolean>(true);
+
+    /** name to use when saving */
+    @observableProperty
+    private saveName = new Property<string>('');
+
+    /** what to show as the current file and its status */
+    @observableProperty
+    private windowTitle = new Property<string>('Bloodstar Clocktica');
 
     /** create new edition */
     constructor() {
-        this.almanac = new EditionAlmanac();
-        this.characterList = new ObservableCollection<Character>();
-        this.dirty = new Property<boolean>(false);
-        this.firstNightOrder = new ObservableCollection<Character>();
-        this.meta = new EditionMeta();
-        this.otherNightOrder = new ObservableCollection<Character>();
-        this.previewOnToken = new Property<boolean>(true);
-        this.saveName = new Property<string>('');
-        this.windowTitle = new Property('Bloodstar Clocktica');
+        super();
+        this.init();
         this.addNewCharacter();
 
-        // hook up auto-dirty
-        const makeDirty = (_:any) => {
-            this.dirty.set(true);
-        };
-        this.characterList.addCollectionChangedListener(makeDirty);
-        this.characterList.addItemChangedListener(makeDirty);
-        this.firstNightOrder.addCollectionChangedListener(makeDirty);
-        this.firstNightOrder.addItemChangedListener(makeDirty);
-        this.meta.addPropertyChangedEventListener(makeDirty);
-        this.otherNightOrder.addCollectionChangedListener(makeDirty);
-        this.otherNightOrder.addItemChangedListener(makeDirty);
-        this.previewOnToken.addListener(makeDirty);
-        this.saveName.addListener(makeDirty);
-
-        // automatic title change on dirty
-        const updateWindowTitle = ()=>this.windowTitle.set(`File: ${(this.dirty.get() ? '[unsaved changes] ' : '')}${this.saveName.get() || '[unnamed]'}`);
-        this.dirty.addListener(_=>updateWindowTitle());
-        this.saveName.addListener(_=>updateWindowTitle());
+        // set dirty flag when most things change and update window title when dirty or savename change
+        this.addPropertyChangedEventListener(propName=>{
+            switch (propName) {
+                case 'dirty':
+                case 'saveName':
+                    this.windowTitle.set(`File: ${(this.dirty.get() ? '[unsaved changes] ' : '')}${this.saveName.get() || '[unnamed]'}`);
+                    break;
+                case 'windowTitle':
+                    break;
+                default:
+                    this.dirty.set(true);
+                    break;
+            }
+        });
     }
 
     /** add a new character to the set */
@@ -147,10 +159,7 @@ class _Edition {
         } while (matchFound);
     }
 
-    /**
-     * set to opened file
-     * @param data 
-     */
+    /** set to opened file */
     open(saveName:string, data:EditionSaveData):boolean {
         if (!data) {this.reset(); return false;}
         this.saveName.set(saveName);
@@ -177,28 +186,14 @@ class _Edition {
 
     /** reset to a blank edition */
     reset() {
-        this.almanac.reset();
-        this.saveName.set('');
-        this.previewOnToken.set(true);
-        this.meta.reset('New Edition');
-        this.windowTitle.set('Bloodstar Clocktica');
-
-        this.characterList.clear();
-        this.firstNightOrder.clear();
-        this.otherNightOrder.clear();
+        super.reset();
         this.addNewCharacter();
-
         this.dirty.set(false);
     }
 
+    /** record whether there are unsaved changes */
     setDirty(value:boolean):void {this.dirty.set(value); }
 
-    /**
-     * set name to save as
-     */
+    /** set name to save as */
     setSaveName(value:string):void { this.saveName.set(value); }
 }
-
-/** observable properties for a custom edition */
-export const Edition = ObservableObjectMixin(_Edition);
-export type Edition = InstanceType<ReturnType<typeof ObservableObjectMixin>> & _Edition;

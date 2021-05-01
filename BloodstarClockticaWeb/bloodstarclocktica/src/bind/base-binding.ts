@@ -8,10 +8,12 @@ export type PropertyChangeListener<T> = (value:T)=>void;
 
 /** generic observable property */
 export class Property<T> {
+    defaultValue:T;
     value:T;
     listeners:PropertyChangeListener<T>[];
 
     constructor(value:T) {
+        this.defaultValue = value;
         this.value = value;
         this.listeners = [];
     }
@@ -32,6 +34,9 @@ export class Property<T> {
     }
     removeAllListeners() {
         this.listeners = [];
+    }
+    reset():void {
+        this.set(this.defaultValue);
     }
     private notifyListeners() {
         const backup = this.listeners.concat();

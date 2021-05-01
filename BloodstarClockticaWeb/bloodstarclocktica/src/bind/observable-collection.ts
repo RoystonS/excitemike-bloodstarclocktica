@@ -1,7 +1,7 @@
-import {ObservableObject, PropertyChangedListener} from './observable-object';
+import {ObservableObject, PropKey, PropertyChangedListener} from './observable-object';
 
 export type ObservableCollectionListener<T> = (value:ObservableCollectionChangedEvent<T & ObservableObject>)=>void;
-export type ItemPropertyChangedListener<T> = (index:number, item:T, propName:string) => void;
+export type ItemPropertyChangedListener<T> = (index:number, item:T, propName:PropKey) => void;
 
 /** types of changes to ObservableCollections */
 export enum ObservableCollectionChangeAction {
@@ -340,7 +340,8 @@ export class ObservableCollection<ItemType extends ObservableObject> implements 
     }
 
     /** notify listeners of a change */
-    private notifyItemChangedListeners(itemPlus:ItemPlus<ItemType>, propName:string):void {
+    // TODO: this doesn't appear to be getting called!s
+    private notifyItemChangedListeners(itemPlus:ItemPlus<ItemType>, propName:PropKey):void {
         const backup = this.itemChangedListeners.concat();
         backup.forEach(cb=>cb(itemPlus.index, itemPlus.item, propName));
     }
@@ -348,7 +349,7 @@ export class ObservableCollection<ItemType extends ObservableObject> implements 
     /** wrap up an item with extra bookkeeping */
     private makeItemPlus(i:number, item:ItemType):ItemPlus<ItemType> {
         const itemPlus = {
-            listener: (propName:string):void=>this.notifyItemChangedListeners(itemPlus, propName),
+            listener: (propName:PropKey):void=>this.notifyItemChangedListeners(itemPlus, propName),
             index: i,
             item:item
         }

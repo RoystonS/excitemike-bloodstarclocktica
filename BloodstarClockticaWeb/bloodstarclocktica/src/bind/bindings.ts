@@ -20,12 +20,11 @@ export class EnumProperty<ValueType> extends Property<ValueType> {
 /** central authority on bindings */
 const bindings = new Map<Node, Binding>();
 
-type AnyProperty<ValueType> = Property<ValueType> | EnumProperty<ValueType>;
 type Binding = BaseBinding<any> | CollectionBinding<any>;
 
 /** bindings for a checkbox */
 class CheckboxBinding extends BaseBinding<boolean> {
-    constructor(element:HTMLInputElement, property:AnyProperty<boolean>) {
+    constructor(element:HTMLInputElement, property:Property<boolean>) {
         super(element, property, 'change', _=>property.set(element.checked), v=>element.checked=v);
     }
 }
