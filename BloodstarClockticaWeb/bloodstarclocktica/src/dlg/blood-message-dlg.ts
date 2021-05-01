@@ -4,37 +4,39 @@ import * as BloodDlg from './blood-dlg';
 let initted:boolean = false;
 let showFn:BloodDlg.OpenFn|null = null;
 let closeFn:BloodDlg.CloseFn|null = null;
-let nameArea:HTMLElement|null = null;
-let messageArea:HTMLElement|null = null;
-let stackArea:HTMLElement|null = null;
+let titleElement:HTMLElement|null = null;
+let messageElement:HTMLElement|null = null;
+let errorMessageElement:HTMLElement|null = null;
 
 /// prepare the dialog for use
 function init() {
     if (initted) { return; }
     initted = true;
 
-    nameArea = document.createElement('p');
-    messageArea = document.createElement('p');
-    stackArea = document.createElement('pre');
+    titleElement = document.createElement('p');
+    titleElement.classList.add('title');
+    messageElement = document.createElement('p');
+    errorMessageElement = document.createElement('pre');
     
     const buttons:BloodDlg.ButtonCfg[] = [
         {label:'Ok', callback:() => Promise.resolve(null)}
     ];
-    ;({open:showFn, close:closeFn} = BloodDlg.init('message-dlg', [nameArea, messageArea, stackArea], buttons));
+    ;({open:showFn, close:closeFn} = BloodDlg.init('message-dlg', [titleElement, messageElement, errorMessageElement], buttons));
 }
 
 /**
  * bring up the popup showing a message
  */
-export async function show(name:string, message?:string, stack?:string):Promise<string|null> {
+async function _show(titleText:string, messageText?:string, errorMessage?:string):Promise<void> {
     if (!initted) { init(); }
-    if (!(showFn && nameArea && messageArea && stackArea)) { return null; }
+    if (!(showFn && titleElement && messageElement && errorMessageElement)) { return; }
 
-    nameArea.innerText = name;
-    messageArea.style.display = message ? 'initial' : 'none';
-    messageArea.innerText = message ? message : '';
-    stackArea.style.display = stack ? 'initial' : 'none';
-    stackArea.innerText = stack ? stack : '';
+    messageElement.style.display = messageText ? 'initial' : 'none';
+    errorMessageElement.style.display = errorMessage ? 'initial' : 'none';
+
+    titleElement.innerText = titleText;
+    messageElement.innerText = messageText || '';
+    errorMessageElement.innerText = errorMessage || '';
 
     return await showFn();
 }
@@ -42,12 +44,15 @@ export async function show(name:string, message?:string, stack?:string):Promise<
 /**
  * bring up the popup showing exception information
  */
-export async function showError(error:any):Promise<string|null> {
-    if (error instanceof Error) {
-        return await show(error.name, error.message, error.stack);
-    } else {
-        return await show(error.toString());
-    }
+export async function showError(error:any):Promise<void> {
+    const errorMessage = (error instanceof Error) ? `${error.message}\n\n${error.stack}` : error.toString();
+    return await _show('Error', 'It looks like you encountered a bug! The error message below may help the developers fix it.', errorMessage);
+}
+/**
+ * bring up the popup showing a message
+ */
+export async function show(titleText:string, messageText?:string):Promise<void> {
+    return await _show(titleText, messageText);
 }
 
 /// close the popup early
