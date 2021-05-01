@@ -89,9 +89,9 @@ export type DialogFuncs = {open:OpenFn, close:CloseFn};
  * @param body Array of elements to be added inside the dialog
  * @param buttons Array of Objects that look like {label:'someLabel', callback:someCallback}. used to create buttons
  *                The callback should return a promise, whose result will be used as the result of the dialog
- * @return an array containing:
- *            0: a function that you can call to open the popup `function openFn():Promise{...}`
- *            1: a function you can call to close the popup early `function closeFn(result):void{...}`
+ * @return an object containing:
+ *            open: a function that you can call to open the popup `function openFn():Promise{...}`
+ *            close: a function you can call to close the popup early `function closeFn(result):void{...}`
  */
 export function init(id:string, body:HTMLElement[], buttons:ButtonCfg[]):DialogFuncs {
     if (dialogIds.has(id)) { throw new Error(`already made dialog with id "${id}"`); }
