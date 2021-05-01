@@ -7,6 +7,7 @@ let closeFn:BloodDlg.CloseFn|null = null;
 let titleElement:HTMLElement|null = null;
 let messageElement:HTMLElement|null = null;
 let errorMessageElement:HTMLElement|null = null;
+let count = 0;
 
 /// prepare the dialog for use
 function init() {
@@ -28,6 +29,9 @@ function init() {
  * bring up the popup showing a message
  */
 async function _show(titleText:string, messageText?:string, errorMessage?:string):Promise<void> {
+    ++count;
+    // TODO: make a queue
+    if (count !== 1) { throw new Error('overlapping message dialogs is not currently supported!');}
     if (!initted) { init(); }
     if (!(showFn && titleElement && messageElement && errorMessageElement)) { return; }
 
@@ -52,11 +56,13 @@ export async function showError(error:any):Promise<void> {
  * bring up the popup showing a message
  */
 export async function show(titleText:string, messageText?:string):Promise<void> {
+    ++count;
     return await _show(titleText, messageText);
 }
 
 /// close the popup early
 export function close(result:any):void {
+    --count;
     if (!closeFn) { return; }
     closeFn(result);
 }
