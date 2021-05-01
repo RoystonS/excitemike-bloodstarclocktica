@@ -21,15 +21,16 @@
 			"type": "npm",
 			"script": "watch",
 			"group": "build",
-			"label": "autobuild when files change",
+			"label": "watch",
 			"isBackground": true,
-			"detail": "webpack --watch"
+			"detail": "autobuild when files change"
 		},
 		{
 			"type": "npm",
 			"script": "serve",
 			"group": "build",
-			"label": "serve & auto-reload",
+			"label": "serve",
+			"detail": "open browser to site with auto-reload when there are changes",
 			"isBackground": true,
 			"problemMatcher": []
 		}
