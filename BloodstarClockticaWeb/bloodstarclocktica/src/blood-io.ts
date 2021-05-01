@@ -198,17 +198,24 @@ async function cmd(username:string, password:string, cmdName:string, spinnerMess
 async function _cmd(username:string, password:string, cmdName:string, body?:BodyInit|null):Promise<any> {
     let response:Response;
     const base64 = btoa(`${username}:${password}`);
-    response = await fetch(`https://www.bloodstar.xyz/cmd/${cmdName}.php`, {
-            method: 'POST',
-            headers:{
-                'Accept':'application/json',
-                'Content-Type':'application/json',
-                'Authorization': `Basic ${base64}`
-            },
-            mode: 'cors',
-            credentials: 'include',
-            body
-        });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(()=>controller.abort(), 30*1000);
+    try {
+        response = await fetch(`https://www.bloodstar.xyz/cmd/${cmdName}.php`, {
+                method: 'POST',
+                headers:{
+                    'Accept':'application/json',
+                    'Content-Type':'application/json',
+                    'Authorization': `Basic ${base64}`
+                },
+                mode: 'cors',
+                credentials: 'include',
+                signal: controller.signal,
+                body
+            });
+    } finally {
+        clearTimeout(timeoutId);
+    }
 
     const responseText = await response.text();
     const responseJson = JSON.parse(responseText);
