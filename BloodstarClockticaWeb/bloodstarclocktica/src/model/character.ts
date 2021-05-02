@@ -71,7 +71,7 @@ export class Character extends ObservableObject {
     private styledImage = new Property<string|null>(null);
     
     @observableProperty
-    private team = new EnumProperty<string>(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS);
+    private team = new EnumProperty<BloodTeam>(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS);
     
     @observableProperty
     private unStyledImage = new Property<string|null>(null);
@@ -138,7 +138,7 @@ export class Character extends ObservableObject {
     getStyledImage():string|null{return this.styledImage.get();}
     getStyledImageProperty():Property<string|null>{return this.styledImage;}
     getTeam():BloodTeam{return parseBloodTeam(this.team.get());}
-    getTeamProperty():EnumProperty<string>{return this.team;}
+    getTeamProperty():EnumProperty<BloodTeam>{return this.team;}
     getUnStyledImage():string|null{return this.unStyledImage.get();}
     getUnStyledImageProperty():Property<string|null>{return this.unStyledImage;}
 
@@ -157,7 +157,7 @@ export class Character extends ObservableObject {
         this.otherNightReminder.set(data.otherNightReminder);
         this.setup.set(data.setup);
         this.styledImage.set(data.styledImage);
-        this.team.set(data.team);
+        this.team.set(parseBloodTeam(data.team));
         this.unStyledImage.set(data.unStyledImage);
     }
 

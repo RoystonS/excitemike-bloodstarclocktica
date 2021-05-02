@@ -67,20 +67,22 @@ class TextEnumBinding extends BaseBinding<any> {
 }
 
 /** bindings for a ComboBox and EnumProperty */
-class ComboBoxBinding extends BaseBinding<string> {
-    constructor(element:HTMLSelectElement, property:EnumProperty<string>) {
+class ComboBoxBinding<T> extends BaseBinding<T> {
+    constructor(element:HTMLSelectElement, property:EnumProperty<T>, stringToEnum:(s:string)=>T, enumToString:(t:T)=>string) {
         element.innerText = '';
         property.getOptions().forEach(data => {
             const {display, value} = data;
             const optionElement = document.createElement('option');
-            optionElement.value = value;
+            optionElement.value = String(value);
             optionElement.innerText = display;
             element.appendChild(optionElement);
         });
 
-        super(element, property, 'change', _=>property.set(element.value), v=>element.value=v);
+        const syncFromElementToProperty = (_:Event)=>property.set(stringToEnum(element.value));
+        const syncFromPropertyToElement = (value:T)=>element.value=enumToString(value);
+        super(element, property, 'change', syncFromElementToProperty, syncFromPropertyToElement);
 
-        element.value = property.get();
+        syncFromPropertyToElement(property.get());
     }
 }
 
@@ -98,15 +100,15 @@ export function bindCheckboxById(id:string, boolProperty:Property<boolean>) {
 }
 
 /** bind ComboBox to EnumProperty */
-export function bindComboBox(selectElement:HTMLSelectElement, enumProperty:EnumProperty<string>) {
-    bindings.set(selectElement, new ComboBoxBinding(selectElement, enumProperty));
+export function bindComboBox<T>(selectElement:HTMLSelectElement, enumProperty:EnumProperty<T>, stringToEnum:(s:string)=>T, enumToString:(t:T)=>string) {
+    bindings.set(selectElement, new ComboBoxBinding<T>(selectElement, enumProperty, stringToEnum, enumToString));
 }
 
 /** bind ComboBox to EnumProperty */
-export function bindComboBoxById(id:string, enumProperty:EnumProperty<string>) {
+export function bindComboBoxById<T>(id:string, enumProperty:EnumProperty<T>, stringToEnum:(s:string)=>T, enumToString:(t:T)=>string) {
     const element = document.getElementById(id);
     if (element instanceof HTMLSelectElement) {
-        bindComboBox(element, enumProperty);
+        bindComboBox<T>(element, enumProperty, stringToEnum, enumToString);
     }
 }
 
@@ -124,7 +126,7 @@ export function bindTextById(id:string, property:Property<string>):void {
 }
 
 /** bind an enumproperty to a label, input text, or text area element, showing the display name of the value rather than the value */
-export function bindEnumDisplay(element:HTMLElement, property:EnumProperty<string>):void {
+export function bindEnumDisplay(element:HTMLElement, property:EnumProperty<any>):void {
     bindings.set(element, new TextEnumBinding(element, property));
 }
 

@@ -17,6 +17,7 @@ import './styles/dragdrop.css';
 import './styles/menu.css';
 import './styles/nightorder.css';
 import './styles/tabs.css';
+import { parseBloodTeam } from './model/blood-team';
 
 let edition = new Edition();
 let username = '';
@@ -350,9 +351,9 @@ function bindTrackedText(id:string, property:BloodBind.Property<string>, set:Set
     BloodBind.bindTextById(id, property);
 }
 /** helper for bindCharacterTabControls */
-function bindTrackedComboBox(id:string, property:BloodBind.EnumProperty<string>, set:Set<string>):void {
+function bindTrackedComboBox<T>(id:string, property:BloodBind.EnumProperty<T>, set:Set<string>, stringToEnum:(s:string)=>T, enumToString:(t:T)=>string):void {
     set.add(id);
-    BloodBind.bindComboBoxById(id, property);
+    BloodBind.bindComboBoxById<T>(id, property, stringToEnum, enumToString);
 }
 /** helper for bindCharacterTabControls */
 function bindTrackedCheckBox(id:string, property:BloodBind.Property<boolean>, set:Set<string>):void {
@@ -377,7 +378,7 @@ function bindCharacterTabControls():void {
     characterTabIds.clear();
     bindTrackedText('characterId', character.getIdProperty(), characterTabIds);
     bindTrackedText('characterName', character.getNameProperty(), characterTabIds);
-    bindTrackedComboBox('characterTeam', character.getTeamProperty(), characterTabIds);
+    bindTrackedComboBox('characterTeam', character.getTeamProperty(), characterTabIds, parseBloodTeam, x=>x);
     bindTrackedText('characterAbility', character.getAbilityProperty(), characterTabIds);
     bindTrackedText('characterFirstNightReminder', character.getFirstNightReminderProperty(), characterTabIds);
     bindTrackedText('characterOtherNightReminder', character.getOtherNightReminderProperty(), characterTabIds);

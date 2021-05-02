@@ -37,9 +37,40 @@
 .nightOrderName {
     width:150px;
 }
-.nightOrderTeam {
-    width:100px
+.nightOrderTeamSizer {
+    width:100px;
+    display:flex;
+    flex-flow: row nowrap;
 }
-.nightOrderAbility {
+.nightOrderTeamSizer::after {
+    content:'';
+    flex: 1 1 0;
+}
+.nightOrderReminder {
     flex: 1 0 auto;
+}
+.nightOrderTeamText {
+    border-radius:6px;
+    background: #222222cc;
+    padding: 0 6px;
+}
+.nightOrderTeamColor {
+    border-radius:6px;
+    padding: 2px;
+}
+.teamColorTownsfolk {
+    background-color:#3977FF;
+}
+.teamColorOutsider {
+    background-color:#46d5ff;
+}
+.teamColorMinion {
+    background-color:#ff6900;
+}
+.teamColorDemon {
+    background-color:#ce0100;
+}
+.teamColorTraveler {
+    background-color:#33333380;
+    background-image: linear-gradient(to right, #3977FF 47%, #eeeeee 50%, #ce0100 53%);
 }
