@@ -199,7 +199,7 @@ async function _cmd(username:string, password:string, cmdName:string, body?:Body
     let response:Response;
     const base64 = btoa(`${username}:${password}`);
     const controller = new AbortController();
-    const timeoutId = setTimeout(()=>controller.abort(), 30*1000);
+    const timeoutId = setTimeout(()=>controller.abort(), 15*1000);
     try {
         response = await fetch(`https://www.bloodstar.xyz/cmd/${cmdName}.php`, {
                 method: 'POST',
