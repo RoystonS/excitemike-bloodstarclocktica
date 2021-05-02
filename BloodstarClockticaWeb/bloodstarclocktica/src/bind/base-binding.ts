@@ -8,9 +8,9 @@ export type PropertyChangeListener<T> = (value:T)=>void;
 
 /** generic observable property */
 export class Property<T> {
-    defaultValue:T;
-    value:T;
-    listeners:PropertyChangeListener<T>[];
+    private defaultValue:T;
+    private value:T;
+    private listeners:PropertyChangeListener<T>[];
 
     constructor(value:T) {
         this.defaultValue = value;

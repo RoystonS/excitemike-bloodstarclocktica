@@ -16,3 +16,30 @@
 .nightOrderItem:hover {
     border-color: #3977FF;
 }
+.nightOrderItem > * {
+    margin-right:6px;
+}
+.nightOrderItem > *:last-child {
+    margin-right:0;
+}
+.ordinal {
+    min-width:36px;
+}
+.nightOrderItem::before{
+    content: '∙';
+    padding: 0 11px 0 6px;
+    text-shadow:
+        -5px -5px 0 #eee, 0px -5px 0 #eee, 5px -5px 0 #eee,
+        -5px 0px 0 #eee, 5px 0px 0 #eee,
+        -5px 5px 0 #eee, 0px 5px 0 #eee, 5px 5px 0 #eee;
+    font-size:20px;
+}
+.nightOrderName {
+    width:150px;
+}
+.nightOrderTeam {
+    width:100px
+}
+.nightOrderAbility {
+    flex: 1 0 auto;
+}

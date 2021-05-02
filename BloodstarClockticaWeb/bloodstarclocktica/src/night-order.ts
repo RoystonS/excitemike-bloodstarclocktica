@@ -2,7 +2,7 @@
  * code related to night order lists
  * @module NightOrder
  */
-import {bindCollectionById, bindText, unbindElement} from './bind/bindings';
+import {bindCollectionById, bindEnumDisplay, bindText, bindStyle, unbindElement} from './bind/bindings';
 import {ObservableCollection, ObservableCollectionChangedEvent} from './bind/observable-collection';
 import {PropKey} from './bind/observable-object';
 import {Character} from './model/character';
@@ -53,20 +53,41 @@ export function initNightOrderBindings(edition:Edition):void {
  */
 export function makeNightOrderItem(character: Character, collection:ObservableCollection<Character>, ordinalPropertyName:string):HTMLElement {
     const row = document.createElement("div");
-    row.className = "character-list-item";
+    row.className = "nightOrderItem";
 
     {
-        const ordinal = document.createElement("label");
+        const ordinal = document.createElement("span");
         ordinal.classList.add('ordinal');
         bindText(ordinal, character.getProperty(ordinalPropertyName));
+        bindStyle<boolean>(ordinal, character.getExportProperty(), (willExport:boolean, classList:DOMTokenList)=>{
+            if (willExport) {
+                classList.remove('dim');
+            } else {
+                classList.add('dim');
+            }
+        });
         row.appendChild(ordinal);
     }
 
     {
         const nameElement = document.createElement("span");
-        nameElement.className = "character-list-name";
+        nameElement.className = "nightOrderName";
         bindText(nameElement, character.getNameProperty());
         row.appendChild(nameElement);
+    }
+
+    {
+        const teamElement = document.createElement("span");
+        teamElement.className = "nightOrderTeam";
+        bindEnumDisplay(teamElement, character.getTeamProperty());
+        row.appendChild(teamElement);
+    }
+
+    {
+        const abilityElement = document.createElement("span");
+        abilityElement.className = "nightOrderAbility";
+        bindText(abilityElement, character.getAbilityProperty());
+        row.appendChild(abilityElement);
     }
 
     {
@@ -90,15 +111,22 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
 
 /** keep ordinal fields up to date as things change */
 function updateOrdinals(collection:ObservableCollection<Character>, ordinalPropName:string, reminderTextPropName:string):void {
-    let ordNumber:number = 0;
-    for (const character of collection) {
-        const willExport = character.getExport();
-        const hasReminder = !!character.getProperty(reminderTextPropName);
-        if (willExport && hasReminder) {
-            ordNumber++;
+    // set ordinal strings
+    {
+        let ordNumber:number = 1;
+        for (const character of collection) {
+            const willExport = character.getExport();
+            const x = character.getProperty(reminderTextPropName).get();
+            const y = !x;
+            const hasReminder = !y;
+
+            const place = hasReminder ? ordinal(ordNumber) : '-';
+            const parenned = willExport ? place : `(${place})`;
+            character.setPropertyValue(ordinalPropName, parenned);
+            
+            if (willExport && hasReminder) {
+                ordNumber++;
+            }
         }
-        const place = hasReminder ? ordinal(ordNumber) : '-';
-        const parenned = willExport ? `(${place})` : place;
-        character.setPropertyValue(ordinalPropName, parenned);
     }
 }
