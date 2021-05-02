@@ -17,7 +17,7 @@ export function ordinal(n:number):string {
             switch (n % 10)
             {
                 case 1: return `${n.toFixed(0)}st`;
-                case 2: return `${n.toFixed(0)}th`;
+                case 2: return `${n.toFixed(0)}nd`;
                 case 3: return `${n.toFixed(0)}rd`;
                 default: return `${n.toFixed(0)}th`;
             }
