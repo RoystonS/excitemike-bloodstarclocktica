@@ -21,7 +21,7 @@
 #characterPane > details > summary {
     flex: 0 1 0;
 }
-#characterPane {
+#characterListContainer {
     display: flex;
     flex-flow: column nowrap;
     position:absolute;
@@ -84,12 +84,12 @@ ol#characterList {
     flex: 1 1 0;
     pointer-events: none;
 }
-.characterListName {
+.characterListButton {
     display: none;
     background:none;
     border:none;
 }
-.characterListItem:hover > .characterListName, .characterListItemSelected > .characterListName {
+.characterListItem:hover > .characterListButton, .characterListItemSelected > .characterListButton {
     display: block;
 }
 .characterListItemSelected::before {

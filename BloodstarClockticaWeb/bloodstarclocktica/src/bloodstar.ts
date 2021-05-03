@@ -70,7 +70,7 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
 
     {
         const up = document.createElement("button");
-        up.className = "characterListName";
+        up.className = "characterListButton";
         up.innerText = "▲";
         up.onclick = () => collection.moveItemUp(character);
         row.appendChild(up);
@@ -78,7 +78,7 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
 
     {
         const down = document.createElement("button");
-        down.className = "characterListName";
+        down.className = "characterListButton";
         down.innerText = "▼";
         down.onclick = () => collection.moveItemDown(character);
         row.appendChild(down);
@@ -86,7 +86,7 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
 
     {
         const del = document.createElement("button");
-        del.className = "characterListName";
+        del.className = "characterListButton";
         del.innerText = "Delete";
         del.onclick = () => collection.deleteItem(character);
         row.appendChild(del);
