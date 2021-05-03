@@ -102,7 +102,7 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
 
     {
         const up = document.createElement("button");
-        up.className = "character-list-button";
+        up.className = "nightOrderButton";
         up.innerText = "▲";
         up.onclick = () => collection.moveItemUp(character);
         row.appendChild(up);
@@ -110,7 +110,7 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
 
     {
         const down = document.createElement("button");
-        down.className = "character-list-button";
+        down.className = "nightOrderButton";
         down.innerText = "▼";
         down.onclick = () => collection.moveItemDown(character);
         row.appendChild(down);

@@ -74,3 +74,11 @@
     background-color:#33333380;
     background-image: linear-gradient(to right, #3977FF 47%, #eeeeee 50%, #ce0100 53%);
 }
+.nightOrderButton {
+    display: none;
+    background:none;
+    border:none;
+}
+.nightOrderItem:hover > .nightOrderButton {
+    display: block;
+}
