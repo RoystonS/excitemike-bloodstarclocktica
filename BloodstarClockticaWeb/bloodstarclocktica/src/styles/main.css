@@ -137,6 +137,12 @@ ul#status {
     grid-template-columns: auto 1fr;
     gap:6px;
 }
+
+.imageSettingsGrid {
+    display: grid;
+    grid-template-columns: auto auto 28px;
+    gap:6px;
+}
 .fieldgroup {
     grid-column-start: 1;
     grid-column-end: 3;
