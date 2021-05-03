@@ -24,6 +24,8 @@ let username = '';
 let password = '';
 const selectedCharacter = new BloodBind.Property<Character|null>(null);
 
+// TODO: move characterlist stuff to another module
+
 /** need to track the listeners we add so that we can remove them */
 const characterListCleanupSideTable = new Map<HTMLElement, BloodBind.PropertyChangeListener<Character|null>>();
 
@@ -195,6 +197,7 @@ export async function newFileClicked():Promise<boolean> {
  */
  export async function openFileClicked():Promise<boolean> {
     if (await BloodIO.open(username, password, edition)) {
+        // TODO: auto-select one character
         addToRecentFiles(edition.getSaveName());
         return true;
     }
@@ -234,6 +237,13 @@ async function importJsonClicked():Promise<boolean> {
 async function importOfficialClicked():Promise<boolean> {
     // TODO: implement importOfficialClicked
     MessageDlg.show('`importOfficialClicked` Not yet implemented');
+    return false;
+}
+
+/** user chose to save and publish */
+async function saveAndPublishClicked():Promise<boolean> {
+    // TODO: implement saveAndPublishClicked
+    MessageDlg.show('`saveAndPublishClicked` Not yet implemented');
     return false;
 }
 
@@ -311,6 +321,7 @@ function initBindings():void {
         ['savefileasbutton', saveFileAsClicked],
         ['importJsonButton', importJsonClicked],
         ['importOfficialButton', importOfficialClicked],
+        ['saveAndPublishButton', saveAndPublishClicked],
         ['helpbutton', showHelp],
         ['metaTabBtn', ()=>tabClicked('metaTabBtn','metatab')],
         ['charTabBtn', ()=>tabClicked('charTabBtn','charactertab')],
