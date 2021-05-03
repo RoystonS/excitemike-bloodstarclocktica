@@ -391,6 +391,11 @@ function bindTrackedImageChooser(id:string, property:BloodBind.Property<string|n
     set.add(id);
     BloodBind.bindImageChooserById(id, property);
 }
+/** helper for bindCharacterTabControls */
+function bindTrackedSlider(id:string, property:BloodBind.Property<number>, set:Set<string>):void {
+    set.add(id);
+    BloodBind.bindSliderById(id, property);
+}
 
 /** set up character tab bindings */
 function bindCharacterTabControls():(()=>void)|null {

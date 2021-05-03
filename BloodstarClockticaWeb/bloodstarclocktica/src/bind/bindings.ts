@@ -1,6 +1,7 @@
 import {BaseBinding, FieldType, Property, PropertyChangeListener} from './base-binding'
 import {CollectionBinding, RenderFn, CleanupFn} from './collection-binding'
 import {ImageChooserBinding, ImageDisplayBinding} from './image-binding';
+import SliderBinding from './slider-binding';
 import {StyleBinding} from './style-binding';
 import {ObservableCollection} from './observable-collection';
 import {ObservableObject} from './observable-object';
@@ -122,6 +123,19 @@ export function bindTextById(id:string, property:Property<string>):void {
     const element = document.getElementById(id);
     if (element instanceof HTMLElement) {
         bindText(element, property);
+    }
+}
+
+/** bind a number property to a input[type=range] element */
+export function bindSlider(element:HTMLInputElement, property:Property<number>):void {
+    bindings.set(element, new SliderBinding(element, property));
+}
+
+/** bind a number property to a input[type=range] element */
+export function bindSliderById(id:string, property:Property<number>):void {
+    const element = document.getElementById(id);
+    if (element instanceof HTMLInputElement) {
+        bindSlider(element, property);
     }
 }
 
