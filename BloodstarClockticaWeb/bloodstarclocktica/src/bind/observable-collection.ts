@@ -366,7 +366,6 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** notify listeners of a change */
-    // TODO: this doesn't appear to be getting called!s
     private notifyItemChangedListeners(itemPlus:ItemPlus<ItemType>, propName:PropKey<ItemType>):void {
         const backup = this.itemChangedListeners.concat();
         backup.forEach(cb=>cb(itemPlus.index, itemPlus.item, propName));

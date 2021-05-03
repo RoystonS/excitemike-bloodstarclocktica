@@ -98,8 +98,6 @@ export class Edition extends ObservableObject<Edition> {
         this.otherNightOrder.add(character);
     }
 
-    // TODO: fields are public. I don't need so many getters
-
     /** make sure the name and id of a newly added character aren't taken */
     makeNameAndIdUnique(character:Character):void {
         let i = 1;

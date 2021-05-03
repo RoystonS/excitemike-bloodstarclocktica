@@ -105,7 +105,7 @@ export abstract class ObservableObject<T> {
                 if (!(collection instanceof ObservableCollection)) { throw new Error(`It looks like the "observableCollection" decorator was used on non-ObservableCollection field "${String(key)}" of class "${this.constructor.name}"!`); }
                 this.collections.set(key, collection);
                 collection.addCollectionChangedListener(_=>this.notifyPropertyChangedEventListeners(key));
-                // TODO: should changes in list items percolate up?
+                collection.addItemChangedListener((_1,_2,_3)=>this.notifyPropertyChangedEventListeners(key));
             }
             this.___queuedCollectionInit = undefined;
         }
