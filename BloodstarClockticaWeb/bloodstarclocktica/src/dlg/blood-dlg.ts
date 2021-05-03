@@ -14,6 +14,13 @@ type DialogData = {
 const dialogData = new Map<Element, DialogData>();
 const dialogIds = new Set<string>();
 
+/** test if a dialog is open */
+export function dialogOpen(elementInDialog:HTMLElement):boolean {
+    const dialog = elementInDialog.closest('.dialog-scrim');
+    if (!dialog) { return false; }
+    return dialogData.has(dialog);
+}
+
 /**
  * used internally to build the show function
  */
@@ -31,7 +38,7 @@ function openDialog(dialog:HTMLElement, resolve:ResolveFn, reject:RejectFn) {
  * promise with the callback's return value
  */
 async function closeDialog_cb(dialog:HTMLElement, callback:ButtonCb) {
-        closeDialogAsync(dialog, callback);
+    closeDialogAsync(dialog, callback);
 }
 
 /**
