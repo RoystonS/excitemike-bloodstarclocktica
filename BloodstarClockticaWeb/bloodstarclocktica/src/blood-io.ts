@@ -214,6 +214,16 @@ async function _cmd(username:string, password:string, cmdName:string, body?:Body
                 signal: controller.signal,
                 body
             });
+        
+        if (!response.ok) {
+            // TODO: Handle the error more gracefully. Explain to the user what went wrong.
+            MessageDlg.showError(`${response.status}: (${response.type}) ${response.statusText}`);
+            return null;
+        }
+    } catch (error) {
+        // TODO: Handle the error more gracefully. Explain to the user what went wrong.
+        MessageDlg.showError(error);
+        return null;
     } finally {
         clearTimeout(timeoutId);
     }
