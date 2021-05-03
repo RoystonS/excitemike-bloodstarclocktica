@@ -16,6 +16,7 @@ import './styles/dialog.css';
 import './styles/dragdrop.css';
 import './styles/menu.css';
 import './styles/nightorder.css';
+import './styles/slider.css';
 import './styles/tabs.css';
 import { parseBloodTeam } from './model/blood-team';
 import { PropKey } from './bind/observable-object';
@@ -392,9 +393,9 @@ function bindTrackedImageChooser(id:string, property:BloodBind.Property<string|n
     BloodBind.bindImageChooserById(id, property);
 }
 /** helper for bindCharacterTabControls */
-function bindTrackedSlider(id:string, property:BloodBind.Property<number>, set:Set<string>):void {
+function bindTrackedSlider(id:string, valueLabelId:string|null, property:BloodBind.Property<number>, set:Set<string>):void {
     set.add(id);
-    BloodBind.bindSliderById(id, property);
+    BloodBind.bindSliderById(id, valueLabelId, property);
 }
 
 /** set up character tab bindings */
@@ -423,19 +424,23 @@ function bindCharacterTabControls():(()=>void)|null {
     bindTrackedImageDisplay('characterUnstyledImageDisplay', character.unStyledImage, characterTabIds);
     bindTrackedImageDisplay('characterStyledImageDisplay', character.styledImage, characterTabIds);
 
-    bindTrackedCheckBox('characterImageRestyle', character.imageSettings.shouldRestyle, characterTabIds);
-    bindTrackedCheckBox('characterImageColorize', character.imageSettings.shouldColorize, characterTabIds);
-    bindTrackedCheckBox('characterImageOutsiderAndMinionColors', character.imageSettings.useOutsiderAndMinionColors, characterTabIds);
-    bindTrackedCheckBox('characterImageTexture', character.imageSettings.useTexture, characterTabIds);
-    bindTrackedCheckBox('characterImageBorder', character.imageSettings.useBorder, characterTabIds);
-    bindTrackedSlider('characterImageBorderBlur', character.imageSettings.borderBlur, characterTabIds);
-    bindTrackedSlider('characterImageBorderThresholdMin', character.imageSettings.borderThresholdMin, characterTabIds);
-    bindTrackedSlider('characterImageBorderThresholdMax', character.imageSettings.borderThresholdMax, characterTabIds);
-    bindTrackedCheckBox('characterImageDropshadow', character.imageSettings.useDropshadow, characterTabIds);
-    bindTrackedSlider('characterImageDropShadowSize', character.imageSettings.dropShadowSize, characterTabIds);
-    bindTrackedSlider('characterImageDropShadowOffsetX', character.imageSettings.dropShadowOffsetX, characterTabIds);
-    bindTrackedSlider('characterImageDropShadowOffsetY', character.imageSettings.dropShadowOffsetY, characterTabIds);
-    bindTrackedSlider('characterImageDropShadowOpacity', character.imageSettings.dropShadowOpacity, characterTabIds);
+    const sliderHelper = (id:string, p:BloodBind.Property<number>) => {
+        bindTrackedSlider(id, `${id}ValueLabel`, p, characterTabIds);
+    };
+
+    bindTrackedCheckBox('shouldRestyle', character.imageSettings.shouldRestyle, characterTabIds);
+    bindTrackedCheckBox('shouldColorize', character.imageSettings.shouldColorize, characterTabIds);
+    bindTrackedCheckBox('useOutsiderAndMinionColors', character.imageSettings.useOutsiderAndMinionColors, characterTabIds);
+    bindTrackedCheckBox('useTexture', character.imageSettings.useTexture, characterTabIds);
+    bindTrackedCheckBox('useBorder', character.imageSettings.useBorder, characterTabIds);
+    sliderHelper('borderBlur', character.imageSettings.borderBlur);
+    sliderHelper('borderThresholdMin', character.imageSettings.borderThresholdMin);
+    sliderHelper('borderThresholdMax', character.imageSettings.borderThresholdMax);
+    bindTrackedCheckBox('dropShadow', character.imageSettings.useDropshadow, characterTabIds);
+    sliderHelper('dropShadowSize', character.imageSettings.dropShadowSize);
+    sliderHelper('dropShadowOffsetX', character.imageSettings.dropShadowOffsetX);
+    sliderHelper('dropShadowOffsetY', character.imageSettings.dropShadowOffsetY);
+    sliderHelper('dropShadowOpacity', character.imageSettings.dropShadowOpacity);
     
     const imageStyleSettings:CharacterImageSettings = character.imageSettings;
     const imageStyleSettingsChangedListener = (_:PropKey<CharacterImageSettings>)=>{};

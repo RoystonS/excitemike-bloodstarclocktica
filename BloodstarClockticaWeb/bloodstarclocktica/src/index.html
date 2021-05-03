@@ -116,7 +116,6 @@
                         <div class="fieldgroup">
                             <div class="row">
                                 <div class="column">
-                                    <!-- TODO: generate styled image, show that -->
                                     <button onclick="document.getElementById('characterUnstyledImageInput').click()">Choose Image</button>
                                     <input type="file" accept="image/*" name="characterUnstyledImageInput" id="characterUnstyledImageInput" style="display:none">
                                     <button id="characterImageRemoveBtn">Remove</button>
@@ -128,44 +127,65 @@
                                         <summary>Style settings</summary>
                                         <div class="fieldgroup">
                                             <div class="twoColumnGrid">
-                                                <label for="characterImageRestyle">Restyle Image</label>
-                                                <input type="checkbox" name="characterImageRestyle" id="characterImageRestyle">
+                                                <label for="shouldRestyle">Restyle Image</label>
+                                                <input type="checkbox" name="shouldRestyle" id="shouldRestyle">
                                                 
-                                                <label for="characterImageColorize">Colorize</label>
-                                                <input type="checkbox" name="characterImageColorize" id="characterImageColorize">
+                                                <label for="shouldColorize">Colorize</label>
+                                                <input type="checkbox" name="shouldColorize" id="shouldColorize">
                                                 
-                                                <label for="characterImageOutsiderAndMinionColors">Outsider/Minion Colors</label>
-                                                <input type="checkbox" name="characterImageOutsiderAndMinionColors" id="characterImageOutsiderAndMinionColors">
+                                                <label for="useOutsiderAndMinionColors">Outsider/Minion Colors</label>
+                                                <input type="checkbox" name="useOutsiderAndMinionColors" id="useOutsiderAndMinionColors">
                                                 
-                                                <label for="characterImageTexture">Texture</label>
-                                                <input type="checkbox" name="characterImageTexture" id="characterImageTexture">
+                                                <label for="useTexture">Texture</label>
+                                                <input type="checkbox" name="useTexture" id="useTexture">
                                                 
-                                                <label for="characterImageBorder">Border</label>
-                                                <input type="checkbox" name="characterImageBorder" id="characterImageBorder">
+                                                <label for="useBorder">Border</label>
+                                                <input type="checkbox" name="useBorder" id="useBorder">
                                                 
-                                                <label for="characterImageBorderBlur">Border Blur</label>
-                                                <input type="range" name="characterImageBorderBlur" id="characterImageBorderBlur" min="1" max="5" step="1">
+                                                <label for="borderBlur">Border Blur</label>
+                                                <div>
+                                                    <input type="range" name="borderBlur" id="borderBlur" min="1" max="5" step="1">
+                                                    <label id="borderBlurValueLabel" for="borderBlur"></label>
+                                                </div>
                                                 
-                                                <label for="characterImageBorderThresholdMin">Border Threshold Min</label>
-                                                <input type="range" name="characterImageBorderThresholdMin" id="characterImageBorderThresholdMin" min="0" max="1" step="0.05">
+                                                <label for="borderThresholdMin">Border Threshold Min</label>
+                                                <div>
+                                                    <input type="range" name="borderThresholdMin" id="borderThresholdMin" min="0" max="1" step="0.05">
+                                                    <label id="borderThresholdMinValueLabel" for="borderThresholdMin"></label>
+                                                </div>
                                                 
-                                                <label for="characterImageBorderThresholdMax">Border Threshold Max</label>
-                                                <input type="range" name="characterImageBorderThresholdMax" id="characterImageBorderThresholdMax" min="0" max="1" step="0.05">
+                                                <label for="borderThresholdMax">Border Threshold Max</label>
+                                                <div>
+                                                    <input type="range" name="borderThresholdMax" id="borderThresholdMax" min="0" max="1" step="0.05">
+                                                    <label id="borderThresholdMaxValueLabel" for="borderThresholdMax"></label>
+                                                </div>
                                                 
-                                                <label for="characterImageDropshadow">Drop Shadow</label>
-                                                <input type="checkbox" name="characterImageDropshadow" id="characterImageDropshadow">
+                                                <label for="dropShadow">Drop Shadow</label>
+                                                <input type="checkbox" name="dropShadow" id="dropShadow">
                                                 
-                                                <label for="characterImageDropShadowSize">Dropshadow Size</label>
-                                                <input type="range" name="characterImageDropShadowSize" id="characterImageDropShadowSize" min="0" max="32" step="1">
+                                                <label for="dropShadowSize">Dropshadow Size</label>
+                                                <div>
+                                                    <input type="range" name="dropShadowSize" id="dropShadowSize" min="0" max="32" step="1">
+                                                    <label id="dropShadowSizeValueLabel" for="dropShadowSize"></label>
+                                                </div>
                                                 
-                                                <label for="characterImageDropShadowOffsetX">Dropshadow Offset X</label>
-                                                <input type="range" name="characterImageDropShadowOffsetX" id="characterImageDropShadowOffsetX" min="-20" max="20" step="1">
+                                                <label for="dropShadowOffsetX">Dropshadow Offset X</label>
+                                                <div>
+                                                    <input type="range" name="dropShadowOffsetX" id="dropShadowOffsetX" min="-20" max="20" step="1">
+                                                    <label id="dropShadowOffsetXValueLabel" for="dropShadowOffsetX"></label>
+                                                </div>
                                                 
-                                                <label for="characterImageDropShadowOffsetY">Dropshadow Offset Y</label>
-                                                <input type="range" name="characterImageDropShadowOffsetY" id="characterImageDropShadowOffsetY" min="-20" max="20" step="1">
+                                                <label for="dropShadowOffsetY">Dropshadow Offset Y</label>
+                                                <div>
+                                                    <input type="range" name="dropShadowOffsetY" id="dropShadowOffsetY" min="-20" max="20" step="1">
+                                                    <label id="dropShadowOffsetYValueLabel" for="dropShadowOffsetY"></label>
+                                                </div>
                                                 
-                                                <label for="characterImageDropShadowOpacity">Dropshadow Opacity</label>
-                                                <input type="range" name="characterImageDropShadowOpacity" id="characterImageDropShadowOpacity" min="0" max="1" step="0.05">
+                                                <label for="dropShadowOpacity">Dropshadow Opacity</label>
+                                                <div>
+                                                    <input type="range" name="dropShadowOpacity" id="dropShadowOpacity" min="0" max="1" step="0.05">
+                                                    <label id="dropShadowOpacityValueLabel" for="dropShadowOpacity"></label>
+                                                </div>
                                             </div>
                                         </div>
                                     </details>

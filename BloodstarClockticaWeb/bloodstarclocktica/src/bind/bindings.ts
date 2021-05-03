@@ -127,15 +127,16 @@ export function bindTextById(id:string, property:Property<string>):void {
 }
 
 /** bind a number property to a input[type=range] element */
-export function bindSlider(element:HTMLInputElement, property:Property<number>):void {
-    bindings.set(element, new SliderBinding(element, property));
+export function bindSlider(element:HTMLInputElement, valueLabel:HTMLElement|null, property:Property<number>):void {
+    bindings.set(element, new SliderBinding(element, valueLabel, property));
 }
 
 /** bind a number property to a input[type=range] element */
-export function bindSliderById(id:string, property:Property<number>):void {
+export function bindSliderById(id:string, valueLabelId:string|null, property:Property<number>):void {
     const element = document.getElementById(id);
+    const valueLabel = (valueLabelId===null)?null:document.getElementById(valueLabelId);
     if (element instanceof HTMLInputElement) {
-        bindSlider(element, property);
+        bindSlider(element, valueLabel, property);
     }
 }
 
