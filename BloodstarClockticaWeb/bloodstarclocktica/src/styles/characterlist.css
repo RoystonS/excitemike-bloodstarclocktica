@@ -57,7 +57,7 @@ ol#characterList {
     align-items: center;
     position:relative;
 }
-.characterListItem:hover {
+.characterListItem:hover, .characterListItem:focus-visible{
     border-color: #3977FF;
 }
 .characterListItem::before{
@@ -66,7 +66,8 @@ ol#characterList {
     top:0;
     bottom:0;
     left:0;
-    width:0%;
+    right:0;
+    display:none;
     background-image: linear-gradient(to right, #3977FF 2%, #3978ff40 2%);
     background-color: #3978ff80;
     z-index:-1;
@@ -85,13 +86,16 @@ ol#characterList {
     pointer-events: none;
 }
 .characterListButton {
-    display: none;
     background:none;
     border:none;
 }
-.characterListItem:hover > .characterListButton, .characterListItemSelected > .characterListButton {
+.characterListItem:hover > .characterListButton, .characterListItem:focus-visible > .characterListButton, .characterListItemSelected > .characterListButton {
     display: block;
+    border:none;
 }
 .characterListItemSelected::before {
-    width:100%;
+    display:unset;
+}
+.characterListItemSelected:hover, .characterListItemSelected:focus-visible {
+    border-color: #eee;
 }

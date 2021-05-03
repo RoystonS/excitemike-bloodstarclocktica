@@ -48,9 +48,20 @@ type TagsThatCanBeDisabled = "button" | "fieldset" | "input" | "optgroup" | "opt
 function makeCharacterListItem(character: Character, collection:ObservableCollection<Character>):HTMLElement {
     const row = document.createElement("div");
     row.className = "characterListItem";
+    row.tabIndex = 0;
     row.onclick = e => { 
         if (e.target === row) {
-            selectedCharacter.set(character); tabClicked('charTabBtn','charactertab');
+            selectedCharacter.set(character);
+            tabClicked('charTabBtn','charactertab');
+        }
+    }
+    row.onkeyup = e => {
+        switch (e.code) {
+            case 'Space':
+            case 'Enter':
+                selectedCharacter.set(character);
+                tabClicked('charTabBtn','charactertab');
+                break;
         }
     }
 

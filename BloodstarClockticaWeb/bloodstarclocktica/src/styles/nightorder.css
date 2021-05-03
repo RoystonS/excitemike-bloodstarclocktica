@@ -13,16 +13,17 @@
     border:1px solid #666;
     align-items: center;
 }
-.nightOrderItem:hover {
+.nightOrderItem:hover, .nightOrderItem:focus {
     border-color: #3977FF;
 }
 .nightOrderItem > * {
-    margin-right:6px;
+    margin-right:12px;
 }
 .nightOrderItem > *:last-child {
     margin-right:0;
 }
 .ordinal {
+    text-align: center;
     min-width:36px;
 }
 .nightOrderItem::before{
@@ -41,10 +42,7 @@
     width:100px;
     display:flex;
     flex-flow: row nowrap;
-}
-.nightOrderTeamSizer::after {
-    content:'';
-    flex: 1 1 0;
+    justify-content: center;
 }
 .nightOrderReminder {
     flex: 1 0 auto;
@@ -75,10 +73,6 @@
     background-image: linear-gradient(to right, #3977FF 47%, #eeeeee 50%, #ce0100 53%);
 }
 .nightOrderButton {
-    display: none;
     background:none;
     border:none;
-}
-.nightOrderItem:hover > .nightOrderButton {
-    display: block;
 }
