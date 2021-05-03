@@ -158,7 +158,8 @@ export abstract class ObservableObject<T> {
         }
         for (const [key, property] of this.properties) {
             if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
-            const propertyData = data[String(key)];
+            const stringKey = String(key);
+            const propertyData = data.hasOwnProperty(stringKey) ? data[stringKey] : property.getDefault();
             // TODO: check serializable
             property.set(propertyData);
         }

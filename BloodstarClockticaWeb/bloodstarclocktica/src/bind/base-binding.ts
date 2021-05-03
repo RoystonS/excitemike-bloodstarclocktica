@@ -32,6 +32,7 @@ export class Property<T/* extends FieldType*/> {
     addListener(cb:PropertyChangeListener<T>) {
         this.listeners.push(cb);
     }
+    getDefault():T {return this.defaultValue;}
     getSerializable():boolean { return this.serializable; }
     isDefault():boolean { return this.value === this.defaultValue; }
     removeListener(cb:PropertyChangeListener<T>) {
