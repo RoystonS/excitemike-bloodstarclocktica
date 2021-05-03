@@ -1,6 +1,6 @@
 import * as BloodBind from './bind/bindings';
-import * as BloodNewOpen from "./dlg/blood-new-open-dlg";
 import { ObservableCollection } from './bind/observable-collection';
+import * as BloodNewOpen from "./dlg/blood-new-open-dlg";
 import * as SpinnerDlg from './dlg/spinner-dlg';
 import * as LoginDlg from "./dlg/blood-login-dlg";
 import * as MessageDlg from "./dlg/blood-message-dlg";
@@ -8,7 +8,7 @@ import * as BloodIO from "./blood-io";
 import {Character} from "./model/character";
 import {Edition} from "./model/edition";
 import {initNightOrderBindings} from './night-order';
-import {walkHTMLElements} from './util';
+import {hookupClickEvents, walkHTMLElements} from './util';
 import './styles/main.css';
 import './styles/autogrowtextarea.css';
 import './styles/characterlist.css';
@@ -18,25 +18,17 @@ import './styles/menu.css';
 import './styles/nightorder.css';
 import './styles/slider.css';
 import './styles/tabs.css';
-import { parseBloodTeam } from './model/blood-team';
-import { PropKey } from './bind/observable-object';
-import { CharacterImageSettings } from './model/character-image-settings';
+import * as CharacterTab from './character-tab';
 
 let edition = new Edition();
 let username = '';
 let password = '';
 const selectedCharacter = new BloodBind.Property<Character|null>(null);
 
-/** returned by bindCharacterTabControls, used to undo what it did */
-let unbindCharacterTabControls:(()=>void)|null = null;
-
 // TODO: move characterlist stuff to another module
 
 /** need to track the listeners we add so that we can remove them */
 const characterListCleanupSideTable = new Map<HTMLElement, BloodBind.PropertyChangeListener<Character|null>>();
-
-/** helper type for disableCharacterTab */
-type TagsThatCanBeDisabled = "button" | "fieldset" | "input" | "optgroup" | "option" | "select" | "textarea";
 
 // TODO: exceptions in promises need to surface somewhere (test without internet connection!)
 
@@ -148,26 +140,6 @@ function addCharacterClicked(_: Event): void {
 function showHelp() {
     // TODO: implement showHelp
     MessageDlg.show('`showHelp` Not yet implemented');
-}
-
-/** set event listeners for clicks, return a funciton you can call to undo it */
-function hookupClickEvents(data: [string, (e: Event) => void][]):()=>void {
-  for (const [id, cb] of data) {
-    const element = document.getElementById(id);
-    if (element) {
-      element.addEventListener("click", cb);
-    }
-  }
-
-  const backupData = data;
-  return ()=>{
-    for (const [id, cb] of backupData) {
-      const element = document.getElementById(id);
-      if (element) {
-        element.removeEventListener("click", cb);
-      }
-    }
-  }
 }
 
 /**
@@ -359,154 +331,17 @@ function initBindings():void {
     initNightOrderBindings(edition);
     
     // tie selected character to character tab
-    selectedCharacter.addListener(selectedCharacterChanged);
+    selectedCharacter.addListener(v=>{
+        CharacterTab.setSelectedCharacter(v);
+        if (v) {
+            tabClicked('charTabBtn','charactertab');
+        }
+    });
     selectedCharacter.set(edition.characterList.get(0) || null);
 
     BloodBind.bindCheckboxById('previewOnToken', edition.previewOnToken);
 
     // TODO: status bar
-}
-
-/** helper for bindCharacterTabControls */
-function bindTrackedText(id:string, property:BloodBind.Property<string>, set:Set<string>):void {
-    set.add(id);
-    BloodBind.bindTextById(id, property);
-}
-/** helper for bindCharacterTabControls */
-function bindTrackedComboBox<ValueType extends BloodBind.FieldType>(id:string, property:BloodBind.EnumProperty<ValueType>, set:Set<string>, stringToEnum:(s:string)=>ValueType, enumToString:(t:ValueType)=>string):void {
-    set.add(id);
-    BloodBind.bindComboBoxById<ValueType>(id, property, stringToEnum, enumToString);
-}
-/** helper for bindCharacterTabControls */
-function bindTrackedCheckBox(id:string, property:BloodBind.Property<boolean>, set:Set<string>):void {
-    set.add(id);
-    BloodBind.bindCheckboxById(id, property);
-}
-/** helper for bindCharacterTabControls */
-function bindTrackedImageDisplay(id:string, property:BloodBind.Property<string|null>, set:Set<string>):void {
-    set.add(id);
-    BloodBind.bindImageDisplayById(id, property);
-}
-/** helper for bindCharacterTabControls */
-function bindTrackedImageChooser(id:string, property:BloodBind.Property<string|null>, set:Set<string>):void {
-    set.add(id);
-    BloodBind.bindImageChooserById(id, property);
-}
-/** helper for bindCharacterTabControls */
-function bindTrackedSlider(id:string, valueLabelId:string|null, property:BloodBind.Property<number>, set:Set<string>):void {
-    set.add(id);
-    BloodBind.bindSliderById(id, valueLabelId, property);
-}
-
-/** set up character tab bindings */
-function bindCharacterTabControls():(()=>void)|null {
-    const character = selectedCharacter.get();
-    if (!character) {return null;}
-    
-    let characterTabIds:Set<string> = new Set<string>();
-    bindTrackedText('characterId', character.id, characterTabIds);
-    bindTrackedText('characterName', character.name, characterTabIds);
-    bindTrackedComboBox('characterTeam', character.team, characterTabIds, parseBloodTeam, x=>x);
-    bindTrackedText('characterAbility', character.ability, characterTabIds);
-    bindTrackedText('characterFirstNightReminder', character.firstNightReminder, characterTabIds);
-    bindTrackedText('characterOtherNightReminder', character.otherNightReminder, characterTabIds);
-    bindTrackedCheckBox('characterSetup', character.setup, characterTabIds);
-    bindTrackedText('characterReminderTokens', character.characterReminderTokens, characterTabIds);
-    bindTrackedText('globalReminderTokens', character.globalReminderTokens, characterTabIds);
-    bindTrackedCheckBox('characterExport', character.export, characterTabIds);
-    bindTrackedText('characterAttribution', character.attribution, characterTabIds);
-    bindTrackedText('characterAlmanacFlavor', character.almanac.flavor, characterTabIds);
-    bindTrackedText('characterAlmanacOverview', character.almanac.overview, characterTabIds);
-    bindTrackedText('characterAlmanacExamples', character.almanac.examples, characterTabIds);
-    bindTrackedText('characterAlmanacHowToRun', character.almanac.howToRun, characterTabIds);
-    bindTrackedText('characterAlmanacTip', character.almanac.tip, characterTabIds);
-    bindTrackedImageChooser('characterUnstyledImageInput', character.unStyledImage, characterTabIds);
-    bindTrackedImageDisplay('characterUnstyledImageDisplay', character.unStyledImage, characterTabIds);
-    bindTrackedImageDisplay('characterStyledImageDisplay', character.styledImage, characterTabIds);
-
-    const sliderHelper = (id:string, p:BloodBind.Property<number>) => {
-        bindTrackedSlider(id, `${id}ValueLabel`, p, characterTabIds);
-    };
-
-    bindTrackedCheckBox('shouldRestyle', character.imageSettings.shouldRestyle, characterTabIds);
-    bindTrackedCheckBox('shouldColorize', character.imageSettings.shouldColorize, characterTabIds);
-    bindTrackedCheckBox('useOutsiderAndMinionColors', character.imageSettings.useOutsiderAndMinionColors, characterTabIds);
-    bindTrackedCheckBox('useTexture', character.imageSettings.useTexture, characterTabIds);
-    bindTrackedCheckBox('useBorder', character.imageSettings.useBorder, characterTabIds);
-    sliderHelper('borderBlur', character.imageSettings.borderBlur);
-    sliderHelper('borderThresholdMin', character.imageSettings.borderThresholdMin);
-    sliderHelper('borderThresholdMax', character.imageSettings.borderThresholdMax);
-    bindTrackedCheckBox('dropShadow', character.imageSettings.useDropshadow, characterTabIds);
-    sliderHelper('dropShadowSize', character.imageSettings.dropShadowSize);
-    sliderHelper('dropShadowOffsetX', character.imageSettings.dropShadowOffsetX);
-    sliderHelper('dropShadowOffsetY', character.imageSettings.dropShadowOffsetY);
-    sliderHelper('dropShadowOpacity', character.imageSettings.dropShadowOpacity);
-    
-    const imageStyleSettings:CharacterImageSettings = character.imageSettings;
-    const imageStyleSettingsChangedListener = (_:PropKey<CharacterImageSettings>)=>{};
-    imageStyleSettings.addPropertyChangedEventListener(imageStyleSettingsChangedListener);
-
-    const unhookupClickEvents = hookupClickEvents([
-        ['characterImageRemoveBtn', ()=>character.unStyledImage.set(null)]
-    ]);
-
-    // TODO: should probably have a separate developer mode where these don't show
-    if (unbindCharacterTabControls) { MessageDlg.showError(new Error('binding character tab controls without clearing previous bindings')); }
-
-    return () => {
-        unhookupClickEvents();
-
-        imageStyleSettings.removePropertyChangedEventListener(imageStyleSettingsChangedListener);
-
-        for (const id of characterTabIds) {
-            BloodBind.unbindElementById(id);
-        }
-    };
-}
-
-/** make the entire character tab disabled */
-function disableCharacterTab():void {
-    const tabDiv = document.getElementById('charactertab');
-    if (!tabDiv) { return; }
-    const tags:ReadonlyArray<TagsThatCanBeDisabled> = ['button', 'fieldset', 'optgroup', 'option', 'select', 'textarea', 'input'];
-    for (const tag of tags) {
-        const elements = tabDiv.getElementsByTagName(tag);
-        for (let i=0;i<elements.length;i++){
-            const item = elements.item(i);
-            if (item) {
-                item.disabled = true;
-            }
-        }
-    }
-}
-
-/** undo disableCharacterTab */
-function enableCharacterTab():void {
-    const tabDiv = document.getElementById('charactertab');
-    if (!tabDiv) { return; }
-    const tags:ReadonlyArray<TagsThatCanBeDisabled> = ['button', 'fieldset', 'optgroup', 'option', 'select', 'textarea', 'input'];
-    for (const tag of tags) {
-        const elements = tabDiv.getElementsByTagName(tag);
-        for (let i=0;i<elements.length;i++){
-            const item = elements.item(i);
-            if (item) {
-                item.disabled = false;
-            }
-        }
-    }
-}
-
-/** update character tab to show this character */
-function selectedCharacterChanged(value:Character|null):void {
-    if (unbindCharacterTabControls) {unbindCharacterTabControls();}
-    unbindCharacterTabControls = null;
-    if (value) {
-        tabClicked('charTabBtn','charactertab');
-        unbindCharacterTabControls = bindCharacterTabControls();
-        enableCharacterTab();
-    } else {
-        disableCharacterTab();
-    }
 }
 
 /** initialize CustomEdition object to bind to */
