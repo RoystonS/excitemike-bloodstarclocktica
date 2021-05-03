@@ -47,7 +47,7 @@ type TagsThatCanBeDisabled = "button" | "fieldset" | "input" | "optgroup" | "opt
  */
 function makeCharacterListItem(character: Character, collection:ObservableCollection<Character>):HTMLElement {
     const row = document.createElement("div");
-    row.className = "character-list-item";
+    row.className = "characterListItem";
     row.onclick = e => { 
         if (e.target === row) {
             selectedCharacter.set(character); tabClicked('charTabBtn','charactertab');
@@ -63,14 +63,14 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
 
     {
         const nameElement = document.createElement("span");
-        nameElement.className = "character-list-name";
+        nameElement.className = "characterListName";
         BloodBind.bindText(nameElement, character.getNameProperty());
         row.appendChild(nameElement);
     }
 
     {
         const up = document.createElement("button");
-        up.className = "character-list-button";
+        up.className = "characterListName";
         up.innerText = "▲";
         up.onclick = () => collection.moveItemUp(character);
         row.appendChild(up);
@@ -78,7 +78,7 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
 
     {
         const down = document.createElement("button");
-        down.className = "character-list-button";
+        down.className = "characterListName";
         down.innerText = "▼";
         down.onclick = () => collection.moveItemDown(character);
         row.appendChild(down);
@@ -86,7 +86,7 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
 
     {
         const del = document.createElement("button");
-        del.className = "character-list-button";
+        del.className = "characterListName";
         del.innerText = "Delete";
         del.onclick = () => collection.deleteItem(character);
         row.appendChild(del);
@@ -314,7 +314,7 @@ function initBindings():void {
         }
     };
     hookupClickEvents([
-        ['addcharacterbutton', addCharacterClicked],
+        ['addCharacterButton', addCharacterClicked],
         ['newfilebutton', newFileClicked],
         ['openfilebutton', openFileClicked],
         ['savefilebutton', saveFileClicked],
@@ -339,7 +339,7 @@ function initBindings():void {
     BloodBind.bindImageDisplayById('metaLogoDisplay', edition.getLogoProperty());
 
     BloodBind.bindCollectionById(
-        'characterlist',
+        'characterList',
         edition.getCharacterList(),
         makeCharacterListItem,
         cleanupListItem

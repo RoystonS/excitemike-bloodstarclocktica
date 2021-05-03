@@ -23,7 +23,7 @@ function init() {
         {label:'Ok', callback:() => Promise.resolve(inputBox ? inputBox.value : null)},
         {label:'Cancel', callback:() => Promise.resolve(null)}
     ];
-    ;({open:showFn, close:closeFn} = BloodDlg.init('string-dlg', [messageArea, inputBox], buttons));
+    ;({open:showFn, close:closeFn} = BloodDlg.init('stringDlg', [messageArea, inputBox], buttons));
 }
 
 /**

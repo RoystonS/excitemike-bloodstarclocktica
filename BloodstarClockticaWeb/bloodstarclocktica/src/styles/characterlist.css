@@ -1,27 +1,27 @@
-#character-pane {
+#characterPane {
     display:grid;
 }
-#character-pane > details {
+#characterPane > details {
     margin: 0;
     padding: 0;
     position:relative;
     min-width:24px;
 }
-#character-pane > details[open] {
+#characterPane > details[open] {
     width:300px;
 }
-#character-pane > details > summary {
+#characterPane > details > summary {
     text-orientation: mixed;
     writing-mode: vertical-lr;
 }
-#character-pane > details[open] > summary {
+#characterPane > details[open] > summary {
     text-orientation: unset;
     writing-mode: unset;
 }
-#character-pane > details > summary {
+#characterPane > details > summary {
     flex: 0 1 0;
 }
-#characterlist-container {
+#characterPane {
     display: flex;
     flex-flow: column nowrap;
     position:absolute;
@@ -30,10 +30,10 @@
     top:24px;
     bottom:0;
 }
-#addcharacterbutton {
+#addCharacterButton {
     margin-bottom:6px;
 }
-ol#characterlist {
+ol#characterList {
     flex: 0 1 auto;
     list-style: none;
     margin: 0;
@@ -46,11 +46,9 @@ ol#characterlist {
     top: 0;
     bottom: 0;
     width:300px;
-}
-ol#characterlist {
     user-select: none;
 }
-.character-list-item{
+.characterListItem{
     display: flex;
     flex-flow: row nowrap;
     margin:0 3px 0 0;
@@ -59,10 +57,10 @@ ol#characterlist {
     align-items: center;
     position:relative;
 }
-.character-list-item:hover {
+.characterListItem:hover {
     border-color: #3977FF;
 }
-.character-list-item::before{
+.characterListItem::before{
     content: '';
     position:absolute;
     top:0;
@@ -73,7 +71,7 @@ ol#characterlist {
     background-color: #3978ff80;
     z-index:-1;
 }
-.character-list-item::after{
+.characterListItem::after{
     content: '∙';
     padding: 0 3px 0 9px;
     text-shadow:
@@ -82,16 +80,16 @@ ol#characterlist {
         -5px 5px 0 #eee, 0px 5px 0 #eee, 5px 5px 0 #eee;
     font-size:20px;
 }
-.character-list-name{
+.characterListName{
     flex: 1 1 0;
     pointer-events: none;
 }
-.character-list-button {
+.characterListName {
     display: none;
     background:none;
     border:none;
 }
-.character-list-item:hover > .character-list-button, .characterListItemSelected > .character-list-button {
+.characterListItem:hover > .characterListName, .characterListItemSelected > .characterListName {
     display: block;
 }
 .characterListItemSelected::before {

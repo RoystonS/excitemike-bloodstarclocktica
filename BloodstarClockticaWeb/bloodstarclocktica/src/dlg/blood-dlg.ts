@@ -16,7 +16,7 @@ const dialogIds = new Set<string>();
 
 /** test if a dialog is open */
 export function dialogOpen(elementInDialog:HTMLElement):boolean {
-    const dialog = elementInDialog.closest('.dialog-scrim');
+    const dialog = elementInDialog.closest('.dialogScrim');
     if (!dialog) { return false; }
     return dialogData.has(dialog);
 }
@@ -74,7 +74,7 @@ function closeDialogSync(dialog:HTMLElement, result:any) {
  * resolve the show function's promise with the provided value
  */
 export function resolveDialog(element:HTMLElement, valueOrPromise:any) {
-    const dialog = element.closest('.dialog-scrim');
+    const dialog = element.closest('.dialogScrim');
     if (!dialog) { return; }
     const data = dialogData.get(dialog);
     if (!data) { return; }
@@ -103,15 +103,15 @@ export type DialogFuncs = {open:OpenFn, close:CloseFn};
 export function init(id:string, body:HTMLElement[], buttons:ButtonCfg[]):DialogFuncs {
     if (dialogIds.has(id)) { throw new Error(`already made dialog with id "${id}"`); }
     const dialog = document.createElement('div');
-    dialog.className = 'dialog-scrim';
+    dialog.className = 'dialogScrim';
     dialog.id = id;
     dialog.style.display = 'none';
 
     const box = document.createElement('div');
-    box.className = 'dialog-box';
+    box.className = 'dialogBox';
 
     const btnGroup = document.createElement('div');
-    btnGroup.className = 'dialog-btn-group';
+    btnGroup.className = 'dialogBtnGroup';
 
     // create buttons
     for (const {label, callback} of buttons) {

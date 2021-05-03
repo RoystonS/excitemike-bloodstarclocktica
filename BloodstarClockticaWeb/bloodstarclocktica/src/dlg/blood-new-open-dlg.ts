@@ -18,7 +18,7 @@ function init() {
         {label:'Open Existing', callback:Bloodstar.openFileClicked},
         {label:'Create New', callback:Bloodstar.newFileClicked}
     ];
-    ;({open:showFn, close:closeFn} = BloodDlg.init('new-open-dlg', [message], buttons));
+    ;({open:showFn, close:closeFn} = BloodDlg.init('newOpenDlg', [message], buttons));
 }
 
 /**

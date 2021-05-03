@@ -17,7 +17,7 @@ function init() {
     
     messageArea = document.createElement('span');
     
-    ;({open:showFn, close:closeFn} = BloodDlg.init('spinner-dlg', [spinner, messageArea], []));
+    ;({open:showFn, close:closeFn} = BloodDlg.init('spinnerDlg', [spinner, messageArea], []));
 }
 
 /// show the spinner until the promise resolves

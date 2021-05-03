@@ -22,7 +22,7 @@ function init() {
     const message = document.createElement('span');
     message.innerText = 'Choose an existing file to open:';
     fileListDiv = document.createElement('div');
-    fileListDiv.className = 'open-dlg-list';
+    fileListDiv.className = 'openDlgList';
     
     const buttons:BloodDlg.ButtonCfg[] = [{label:'Cancel', callback:cancelClicked}];
     ;({open:showFn, close:closeFn} = BloodDlg.init('open-dlg', [message, fileListDiv], buttons));

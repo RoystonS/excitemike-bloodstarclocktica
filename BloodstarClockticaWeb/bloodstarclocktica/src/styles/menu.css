@@ -28,7 +28,7 @@ ol#menu > li {
     padding: 3px 6px;
     position:relative;
 }
-.dropdown-content{
+.dropdownContent {
     flex:auto;
     position: absolute;
     top:24px;
@@ -39,18 +39,17 @@ ol#menu > li {
     min-width:150px;
     box-shadow: 0px 2px 4px 0px #3977FF;
 }
-.dropdown-content button {
+.dropdownContent button {
     display:flex;
     justify-content: space-between;
 }
 .dropdown:hover {
     border-color: #3977FF;
 }
-.dropdown:hover .dropdown-content{
-    scale:1;
+.dropdown:hover .dropdownContent{
     display: flex;
     flex-flow: column;
 }
-.dropdown-content a {
+.dropdownContent a {
     padding: 3px 6px;
 }

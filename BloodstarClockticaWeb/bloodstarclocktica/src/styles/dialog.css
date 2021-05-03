@@ -1,4 +1,4 @@
-.dialog-scrim {
+.dialogScrim {
     z-index:2;
     position:fixed;
     left:0;
@@ -10,7 +10,7 @@
     justify-content: space-around;
     align-items: center;
 }
-.dialog-box {
+.dialogBox {
     flex: 0 1 auto;
     background: #222;
     padding: 1rem;
@@ -20,42 +20,42 @@
     flex-flow:column;
     max-width:90vw;
 }
-.dialog-box > .title {
+.dialogBox > .title {
     text-align: center;
     font-weight: bold;
 }
-.dialog-box > p, .dialog-box > pre {
+.dialogBox > p, .dialogBox > pre {
     margin-block-start: 0;
 }
-.dialog-box > pre {
+.dialogBox > pre {
     background: #333;
     border: 1px solid #666;
     padding: 3px;
     max-height: 300px;
     overflow:auto;
 }
-.dialog-btn-group {
+.dialogBtnGroup {
     display:flex;
     flex-flow: row;
     align-self: stretch;
     margin-top:1em;
 }
-.dialog-btn-group > button {
+.dialogBtnGroup > button {
     flex:1;
 }
-.dialog-btn-group:empty {
+.dialogBtnGroup:empty {
     display: none;
 }
-#new-open-dlg {z-index:2;}
+#newOpenDlg {z-index:2;}
 #open-dlg {z-index:3;}
 #sdc-dlg {z-index:4;}
-#spinner-dlg {
+#spinnerDlg {
     z-index:1000;
 }
-#spinner-dlg > .dialog-box {
+#spinnerDlg > .dialogBox {
     align-items:center;
 }
-.open-dlg-list{
+.openDlgList{
     display: flex;
     flex-flow: column;
     max-height: 50vh;
@@ -80,7 +80,7 @@
 @-webkit-keyframes spin {
   to { -webkit-transform: rotate(360deg); }
 }
-#string-dlg > div > input {
+#stringDlg > div > input {
     margin-top:1em;
     width: 400px;
 }
