@@ -423,12 +423,25 @@ function bindCharacterTabControls():(()=>void)|null {
     bindTrackedImageDisplay('characterUnstyledImageDisplay', character.unStyledImage, characterTabIds);
     bindTrackedImageDisplay('characterStyledImageDisplay', character.styledImage, characterTabIds);
 
-    // TODO: image settings bindings
+    bindTrackedCheckBox('characterImageRestyle', character.imageSettings.shouldRestyle, characterTabIds);
+    bindTrackedCheckBox('characterImageColorize', character.imageSettings.shouldColorize, characterTabIds);
+    bindTrackedCheckBox('characterImageOutsiderAndMinionColors', character.imageSettings.useOutsiderAndMinionColors, characterTabIds);
+    bindTrackedCheckBox('characterImageTexture', character.imageSettings.useTexture, characterTabIds);
+    bindTrackedCheckBox('characterImageBorder', character.imageSettings.useBorder, characterTabIds);
+    bindTrackedSlider('characterImageBorderBlur', character.imageSettings.borderBlur, characterTabIds);
+    bindTrackedSlider('characterImageBorderThresholdMin', character.imageSettings.borderThresholdMin, characterTabIds);
+    bindTrackedSlider('characterImageBorderThresholdMax', character.imageSettings.borderThresholdMax, characterTabIds);
+    bindTrackedCheckBox('characterImageDropshadow', character.imageSettings.useDropshadow, characterTabIds);
+    bindTrackedSlider('characterImageDropShadowSize', character.imageSettings.dropShadowSize, characterTabIds);
+    bindTrackedSlider('characterImageDropShadowOffsetX', character.imageSettings.dropShadowOffsetX, characterTabIds);
+    bindTrackedSlider('characterImageDropShadowOffsetY', character.imageSettings.dropShadowOffsetY, characterTabIds);
+    bindTrackedSlider('characterImageDropShadowOpacity', character.imageSettings.dropShadowOpacity, characterTabIds);
+    
     const imageStyleSettings:CharacterImageSettings = character.imageSettings;
     const imageStyleSettingsChangedListener = (_:PropKey<CharacterImageSettings>)=>{};
     imageStyleSettings.addPropertyChangedEventListener(imageStyleSettingsChangedListener);
 
-    const characterTabButtonCleanupFn = hookupClickEvents([
+    const unhookupClickEvents = hookupClickEvents([
         ['characterImageRemoveBtn', ()=>character.unStyledImage.set(null)]
     ]);
 
@@ -436,7 +449,7 @@ function bindCharacterTabControls():(()=>void)|null {
     if (unbindCharacterTabControls) { MessageDlg.showError(new Error('binding character tab controls without clearing previous bindings')); }
 
     return () => {
-        characterTabButtonCleanupFn();
+        unhookupClickEvents();
 
         imageStyleSettings.removePropertyChangedEventListener(imageStyleSettingsChangedListener);
 
