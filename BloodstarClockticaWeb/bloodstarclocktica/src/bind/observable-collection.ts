@@ -1,7 +1,8 @@
+import { FieldType } from './bindings';
 import {ObservableObject, PropKey, PropertyChangedListener} from './observable-object';
 
-export type ObservableCollectionListener<T> = (value:ObservableCollectionChangedEvent<T & ObservableObject>)=>void;
-export type ItemPropertyChangedListener<T> = (index:number, item:T, propName:PropKey) => void;
+export type ObservableCollectionListener<T extends ObservableObject<T>> = (value:ObservableCollectionChangedEvent<T>)=>void;
+export type ItemPropertyChangedListener<T> = (index:number, item:T, propName:PropKey<T>) => void;
 
 /** types of changes to ObservableCollections */
 export enum ObservableCollectionChangeAction {
@@ -19,7 +20,7 @@ export enum ObservableCollectionChangeAction {
 }
 
 /** describes the change in an ObservableCollection */
-export type ObservableCollectionChangedEvent<T extends ObservableObject> = {
+export type ObservableCollectionChangedEvent<T extends ObservableObject<T>> = {
     /** the list in which the change occurred */
     list:ObservableCollection<T>,
 
@@ -40,21 +41,23 @@ export type ObservableCollectionChangedEvent<T extends ObservableObject> = {
 };
 
 type ItemPlus<ItemType> = {
-    listener:PropertyChangedListener,
+    listener:PropertyChangedListener<ItemType>,
     index:number,
     item:ItemType
 };
 
 /** observe a collection of things */
-export class ObservableCollection<ItemType extends ObservableObject> implements Iterable<ItemType> {
+export class ObservableCollection<ItemType extends ObservableObject<ItemType>> implements Iterable<ItemType> {
     private items:ItemPlus<ItemType>[];
     private collectionChangedListeners:ObservableCollectionListener<ItemType>[];
     private itemChangedListeners:ItemPropertyChangedListener<ItemType>[];
+    private itemCtor:new ()=>ItemType;
 
-    constructor() {
+    constructor(itemCtor:new ()=>ItemType) {
         this.items = [];
         this.collectionChangedListeners = [];
         this.itemChangedListeners = [];
+        this.itemCtor = itemCtor;
     }
 
     /** iterate */
@@ -121,6 +124,24 @@ export class ObservableCollection<ItemType extends ObservableObject> implements 
         const i = this.indexOf(character);
         if (i < 0) { return; }
         this.remove(i);
+    }
+
+    /** inverse of serialize */
+    deserialize(serialized:ReadonlyArray<FieldType>):void {
+        this.clear();
+        const toAdd:ItemType[] = [];
+        for (const itemData of serialized) {
+            if ((itemData !== null) &&
+                (typeof itemData !== 'string') &&
+                (typeof itemData !== 'number') &&
+                (typeof itemData !== 'boolean') &&
+                !Array.isArray(itemData) ) {
+                const item = new this.itemCtor();
+                item.deserialize(itemData);
+                toAdd.push(item);
+            }
+        }
+        this.addMany(toAdd);
     }
 
     /** get an item in the collection */
@@ -237,7 +258,7 @@ export class ObservableCollection<ItemType extends ObservableObject> implements 
      * @param items items to insert where start was.
      */
     replaceRange(start:number, end:number, items:ReadonlyArray<ItemType>):void {
-        if (end <= start) {return;}
+        if (end < start) {return;}
 
         const removedItemsPlus = this.items.slice(start, end);
         const removedItems = removedItemsPlus.map(itemPlus=>itemPlus.item);
@@ -283,6 +304,11 @@ export class ObservableCollection<ItemType extends ObservableObject> implements 
                 oldStartingIndex: -1
             });
         }
+    }
+
+    /** convert to something that could be converted to JSON and/or read back with deserialize */
+    serialize():FieldType[] {
+        return this.items.map(i=>i.item.serialize());
     }
 
     /** add/replace/remove to match the passed-in array */
@@ -341,7 +367,7 @@ export class ObservableCollection<ItemType extends ObservableObject> implements 
 
     /** notify listeners of a change */
     // TODO: this doesn't appear to be getting called!s
-    private notifyItemChangedListeners(itemPlus:ItemPlus<ItemType>, propName:PropKey):void {
+    private notifyItemChangedListeners(itemPlus:ItemPlus<ItemType>, propName:PropKey<ItemType>):void {
         const backup = this.itemChangedListeners.concat();
         backup.forEach(cb=>cb(itemPlus.index, itemPlus.item, propName));
     }
@@ -349,7 +375,7 @@ export class ObservableCollection<ItemType extends ObservableObject> implements 
     /** wrap up an item with extra bookkeeping */
     private makeItemPlus(i:number, item:ItemType):ItemPlus<ItemType> {
         const itemPlus = {
-            listener: (propName:PropKey):void=>this.notifyItemChangedListeners(itemPlus, propName),
+            listener: (propName:PropKey<ItemType>):void=>this.notifyItemChangedListeners(itemPlus, propName),
             index: i,
             item:item
         }

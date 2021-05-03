@@ -1,7 +1,7 @@
 import {ObservableCollection, ObservableCollectionChangeAction, ObservableCollectionChangedEvent} from '../bind/observable-collection';
 import {ObservableObject} from '../bind/observable-object';
 
-export type RenderFn<T extends ObservableObject> = (itemData:T, collection:ObservableCollection<T>)=>Element;
+export type RenderFn<T extends ObservableObject<T>> = (itemData:T, collection:ObservableCollection<T>)=>Element;
 export type CleanupFn<T> = (renderedElement:Element, itemData:T)=>void;
 
 /** get a y coordinate for the mouse relative to some element */
@@ -19,7 +19,7 @@ function checkInsertAfter(event:MouseEvent, refElement:Element):boolean {
     return getRelativeY(event, refElement) > 0.5 * refElement.getBoundingClientRect().height;
 }
 
-export class CollectionBinding<T extends ObservableObject> {
+export class CollectionBinding<T extends ObservableObject<T>> {
     /** ol element this will keep in sync with the data */
     private listElement:HTMLOListElement;
 

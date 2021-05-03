@@ -2,80 +2,66 @@
  * Model for character data
  * @module Character
  */
-import {CharacterAlmanac, CharacterAlmanacSaveData} from './character-almanac';
+import {CharacterAlmanac} from './character-almanac';
 import {EnumProperty, Property} from '../bind/bindings';
 import {observableChild, ObservableObject, observableProperty} from '../bind/observable-object';
 import {BLOODTEAM_OPTIONS, BloodTeam, parseBloodTeam} from '../model/blood-team';
+import {CharacterImageSettings} from '../model/character-image-settings';
 
 const splitLines = (str:string) => str.split(/\r?\n/);
 
-/** data to persist on the server for a character */
-export type CharacterSaveData = {
-    ability:string,
-    almanac: CharacterAlmanacSaveData
-    attribution:string,
-    characterReminderTokens:ReadonlyArray<string>,
-    export:boolean,
-    firstNightReminder:string,
-    globalReminderTokens:ReadonlyArray<string>,
-    id:string,
-    name:string,
-    otherNightReminder:string,
-    setup:boolean,
-    styledImage:string|null,
-    team:string,
-    unStyledImage:string|null,
-};
-
-export class Character extends ObservableObject {
+export class Character extends ObservableObject<Character> {
     @observableProperty
-    private ability = new Property('');
+    ability = new Property<string>('');
 
     @observableProperty
-    private attribution = new Property('');
+    attribution = new Property<string>('');
     
     @observableChild
-    private almanac = new CharacterAlmanac();
+    almanac = new CharacterAlmanac();
     
     @observableProperty
-    private characterReminderTokens = new Property('');
+    characterReminderTokens = new Property<string>('');
     
     @observableProperty
-    private export = new Property(true);
+    export = new Property<boolean>(true);
 
     @observableProperty
-    private firstNightOrdinal = new Property('-');
+    firstNightOrdinal = new Property<string>('-');
     
     @observableProperty
-    private firstNightReminder = new Property('');
+    firstNightReminder = new Property<string>('');
     
     @observableProperty
-    private globalReminderTokens = new Property('');
+    globalReminderTokens = new Property<string>('');
     
     @observableProperty
-    private id = new Property('newcharacter');
+    id = new Property<string>('newcharacter');
     
-    @observableProperty
-    private name = new Property('New Character');
+    @observableChild
+    imageSettings = new CharacterImageSettings();
 
     @observableProperty
-    private otherNightOrdinal = new Property('-');
+    name = new Property<string>('New Character');
+
+    @observableProperty
+    otherNightOrdinal = new Property<string>('-');
     
     @observableProperty
-    private otherNightReminder = new Property('');
+    otherNightReminder = new Property<string>('');
     
     @observableProperty
-    private setup = new Property(false);
+    setup = new Property<boolean>(false);
     
     @observableProperty
-    private styledImage = new Property<string|null>(null);
+    styledImage = new Property<string|null>(null);
     
     @observableProperty
-    private team = new EnumProperty<BloodTeam>(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS);
+    team = new EnumProperty<BloodTeam>(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS);
     
     @observableProperty
-    private unStyledImage = new Property<string|null>(null);
-    // TODO: image settings
+    unStyledImage = new Property<string|null>(null);
+    
     // TODO: tie image settings to lazily re-generating styledImage
 
     constructor() {
@@ -83,19 +69,11 @@ export class Character extends ObservableObject {
         this.init();
     }
 
-    /** create from save data */
-    static from(data:CharacterSaveData):Character {
-        const character = new Character();
-        character.open(data);
-        return character;
-    }
-
     getAbility():string{return this.ability.get();}
     getAbilityProperty():Property<string>{return this.ability;}
     getAttribution():string{return this.attribution.get();}
     getAttributionProperty():Property<string>{return this.attribution;}
     getAlmanac():CharacterAlmanac { return this.almanac; }
-    getAlmanacSaveData():CharacterAlmanacSaveData { return this.almanac.getSaveData(); }
     getCharacterReminderTokens():ReadonlyArray<string> { return splitLines(this.characterReminderTokens.get()); }
     getCharacterReminderTokensProperty():Property<string> { return this.characterReminderTokens; }
     getExport():boolean{return this.export.get();}
@@ -107,32 +85,12 @@ export class Character extends ObservableObject {
     getGlobalReminderTokensProperty():Property<string> { return this.globalReminderTokens; }
     getId():string { return this.id.get(); }
     getIdProperty():Property<string>{return this.id;}
+    getImageStyleSettings():CharacterImageSettings {return this.imageSettings;}
     getName():string{return this.name.get();}
     getNameProperty():Property<string>{return this.name;}
     getOtherNightOrdinalProperty():Property<string>{return this.otherNightOrdinal;}
     getOtherNightReminder():string{return this.otherNightReminder.get();}
     getOtherNightReminderProperty():Property<string>{return this.otherNightReminder;}
-
-    /** get data to persist for the character */
-    getSaveData():CharacterSaveData {
-        return {
-            ability:this.getAbility(),
-            almanac: this.getAlmanacSaveData(),
-            attribution:this.getAttribution(),
-            characterReminderTokens:this.getCharacterReminderTokens(),
-            firstNightReminder:this.getFirstNightReminder(),
-            globalReminderTokens:this.getGlobalReminderTokens(),
-            id:this.getId(),
-            name:this.getName(),
-            otherNightReminder:this.getOtherNightReminder(),
-            unStyledImage:this.getUnStyledImage(),
-            setup:this.getSetup(),
-            styledImage:this.getStyledImage(),
-            team:this.getTeam(),
-            export:this.getExport()
-        };
-    }
-
     getSetup():boolean{return this.setup.get();}
     getSetupProperty():Property<boolean>{return this.setup;}
     getStyledImage():string|null{return this.styledImage.get();}
@@ -141,25 +99,6 @@ export class Character extends ObservableObject {
     getTeamProperty():EnumProperty<BloodTeam>{return this.team;}
     getUnStyledImage():string|null{return this.unStyledImage.get();}
     getUnStyledImageProperty():Property<string|null>{return this.unStyledImage;}
-
-    /** load in save data */
-    open(data:CharacterSaveData):void {
-        if (!data) {this.reset(); return;}
-        this.ability.set(data.ability);
-        this.attribution.set(data.attribution);
-        this.almanac.open(data.almanac);
-        this.characterReminderTokens.set(data.characterReminderTokens.join('\n'));
-        this.export.set(data.export);
-        this.firstNightReminder.set(data.firstNightReminder);
-        this.globalReminderTokens.set(data.globalReminderTokens.join('\n'));
-        this.id.set(data.id);
-        this.name.set(data.name);
-        this.otherNightReminder.set(data.otherNightReminder);
-        this.setup.set(data.setup);
-        this.styledImage.set(data.styledImage);
-        this.team.set(parseBloodTeam(data.team));
-        this.unStyledImage.set(data.unStyledImage);
-    }
 
     setId(value:string):void { this.id.set(value); }
     setName(value:string):void{this.name.set(value);}

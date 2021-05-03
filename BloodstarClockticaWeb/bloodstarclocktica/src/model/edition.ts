@@ -2,60 +2,70 @@
  * Model for edition data
  * @module Edition
  */
- import {Property} from '../bind/bindings';
- import {Character, CharacterSaveData} from './character';
- import {EditionAlmanac, EditionAlmanacSaveData} from './edition-almanac';
- import {EditionMeta, EditionMetaSaveData} from './edition-meta';
- import {ObservableCollection} from '../bind/observable-collection';
- import {observableChild, observableCollection, ObservableObject, observableProperty} from '../bind/observable-object';
+import {FieldType, Property} from '../bind/bindings';
+import {Character} from './character';
+import {EditionAlmanac} from './edition-almanac';
+import {EditionMeta} from './edition-meta';
+import {ObservableCollection} from '../bind/observable-collection';
+import {customSerialize, observableChild, observableCollection, ObservableObject, observableProperty, ObservableType} from '../bind/observable-object';
 
-/** data to persist on the server for the edition */
-export type EditionSaveData = {
-    firstNightOrder:ReadonlyArray<string>,
-    meta:EditionMetaSaveData,
-    otherNightOrder:ReadonlyArray<string>,
-    previewOnToken:boolean,
-    characters:ReadonlyArray<CharacterSaveData>,
-    almanac: EditionAlmanacSaveData
-};
+function serializeJustIds(_:ObservableObject<any>, nightOrder:ObservableType):FieldType {
+    if (!(nightOrder instanceof ObservableCollection)) {return [];}
+    return nightOrder.map((c:Character)=>c.getId())
+}
+function deserializeFromIds(object:ObservableObject<any>, nightOrder:ObservableType, data:FieldType):void {
+    if (!(nightOrder instanceof ObservableCollection)) {return;}
+    if (!Array.isArray(data)){return;}
+    const characterList = object.getCollection('characterList');
+    if (!(characterList instanceof ObservableCollection)) {return;}
+
+    const charactersById = new Map<string, Character>();
+    for (const character of characterList) {
+        if (!(character instanceof Character)) {return;}
+        charactersById.set(character.getId(), character);
+    }
+    nightOrder.set(data.filter(id=>charactersById.has(String(id))).map(id=>charactersById.get(String(id)) || new Character()));
+}
 
 /** observable properties for a custom edition */
-export class Edition extends ObservableObject {
+export class Edition extends ObservableObject<Edition> {
     /** almanac-specific edition data */
     @observableChild
-    private almanac = new EditionAlmanac();
+    almanac = new EditionAlmanac();
 
     /** characters in the edition */
     @observableCollection
-    private characterList = new ObservableCollection<Character>();
+    characterList = new ObservableCollection(Character);
 
     /** true when there are unsaved changes */
     @observableProperty
-    private dirty = new Property<boolean>(false);
+    dirty = new Property<boolean>(false);
 
     /** contains the same Character objects as characterList, but ordered for night order */
+    @customSerialize(serializeJustIds, deserializeFromIds)
     @observableCollection
-    private firstNightOrder = new ObservableCollection<Character>();
+    firstNightOrder = new ObservableCollection(Character);
 
     /** data about the edition */
     @observableChild
-    private meta = new EditionMeta();
+    meta = new EditionMeta();
 
     /** contains the same Character objects as characterList, but ordered for night order */
+    @customSerialize(serializeJustIds, deserializeFromIds)
     @observableCollection
-    private otherNightOrder = new ObservableCollection<Character>();
+    otherNightOrder = new ObservableCollection(Character);
     
     /** whether to render preview on a character token background like you would see on clocktower.online */
     @observableProperty
-    private previewOnToken = new Property<boolean>(true);
+    previewOnToken = new Property<boolean>(true);
 
     /** name to use when saving */
     @observableProperty
-    private saveName = new Property<string>('');
+    saveName = new Property<string>('');
 
     /** what to show as the current file and its status */
     @observableProperty
-    private windowTitle = new Property<string>('Bloodstar Clocktica');
+    windowTitle = new Property<string>('Bloodstar Clocktica');
 
     /** create new edition */
     constructor() {
@@ -88,6 +98,8 @@ export class Edition extends ObservableObject {
         this.otherNightOrder.add(character);
     }
 
+    // TODO: fields are public. I don't need so many getters
+
     getAuthorProperty():Property<string> { return this.meta.getAuthorProperty(); }
     getCharacterList() {
         return this.characterList;
@@ -109,23 +121,6 @@ export class Edition extends ObservableObject {
     }
 
     getPreviewOnTokenProperty():Property<boolean> { return this.previewOnToken; }
-
-    /**
-     * object to serialize as save file
-     */ 
-    getSaveData():EditionSaveData {
-        const firstNightOrderSaveData:string[] = this.firstNightOrder.map(c=>c.getId());
-        const otherNightOrderSaveData:string[] = this.otherNightOrder.map(c=>c.getId());
-        const charactersSaveData:CharacterSaveData[] = this.characterList.map(c=>c.getSaveData());
-        return {
-            firstNightOrder:firstNightOrderSaveData,
-            meta: this.meta.getSaveData(),
-            otherNightOrder:otherNightOrderSaveData,
-            previewOnToken:this.previewOnToken.get(),
-            characters:charactersSaveData,
-            almanac: this.almanac.getSaveData(),
-        };
-    }
 
     /**
      * get name to save as
@@ -160,25 +155,10 @@ export class Edition extends ObservableObject {
     }
 
     /** set to opened file */
-    open(saveName:string, data:EditionSaveData):boolean {
+    open(saveName:string, data:{ [key: string]: FieldType; }):boolean {
         if (!data) {this.reset(); return false;}
-        this.saveName.set(saveName);
-        this.almanac.open(data.almanac);
-        
-        this.meta.open(data.meta);
-        
-        this.characterList.set(data.characters.map(characterSaveData=>Character.from(characterSaveData)));
-
-        const charactersById = new Map<string, Character>();
-        {
-            for (const character of this.characterList) {
-                charactersById.set(character.getId(), character);
-            }
-        }
-
-        this.firstNightOrder.set(data.firstNightOrder.filter(id=>charactersById.has(id)).map(id=>charactersById.get(id) || new Character()));
-        this.otherNightOrder.set(data.otherNightOrder.filter(id=>charactersById.has(id)).map(id=>charactersById.get(id) || new Character()));
-
+        this.deserialize(data);
+        this.setSaveName(saveName);
         this.dirty.set(false);
 
         return true;

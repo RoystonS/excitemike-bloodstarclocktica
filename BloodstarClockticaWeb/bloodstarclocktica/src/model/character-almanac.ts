@@ -6,30 +6,21 @@
 import {Property} from '../bind/bindings';
 import {ObservableObject, observableProperty} from '../bind/observable-object';
 
-/** data to persist on the server for a character's almanac entry */
-export type CharacterAlmanacSaveData = {
-    examples: string;
-    flavor: string;
-    howToRun: string;
-    overview: string;
-    tip: string;
-};
-
-export class CharacterAlmanac extends ObservableObject {
+export class CharacterAlmanac extends ObservableObject<CharacterAlmanac> {
     @observableProperty
-    private examples = new Property('');
+    private examples = new Property<string>('');
     
     @observableProperty
-    private flavor = new Property('');
+    private flavor = new Property<string>('');
     
     @observableProperty
-    private howToRun = new Property('');
+    private howToRun = new Property<string>('');
     
     @observableProperty
-    private overview = new Property('');
+    private overview = new Property<string>('');
     
     @observableProperty
-    private tip = new Property('');
+    private tip = new Property<string>('');
 
     constructor() {
         super();
@@ -45,27 +36,6 @@ export class CharacterAlmanac extends ObservableObject {
     getOverview():string{return this.overview.get();}
     getOverviewProperty():Property<string> {return this.overview;}
 
-    /** get data to persist for the character's almanac entry */
-    getSaveData():CharacterAlmanacSaveData {
-        return {
-            flavor:this.getFlavor(),
-            overview:this.getOverview(),
-            examples:this.getExamples(),
-            howToRun:this.getHowToRun(),
-            tip:this.getTip(),
-        };
-    }
-
     getTip():string{return this.tip.get();}
     getTipProperty():Property<string> {return this.tip;}
-
-    /** load in save data */
-    open(data:CharacterAlmanacSaveData):void {
-        if (!data) {this.reset(); return;}
-        this.flavor.set(data.flavor);
-        this.overview.set(data.overview);
-        this.examples.set(data.examples);
-        this.howToRun.set(data.howToRun);
-        this.tip.set(data.tip);
-    }
 }

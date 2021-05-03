@@ -2,7 +2,7 @@
  * code related to night order lists
  * @module NightOrder
  */
-import {bindCollectionById, bindEnumDisplay, bindText, bindStyle, unbindElement} from './bind/bindings';
+import {bindCollectionById, bindEnumDisplay, bindText, bindStyle, unbindElement, Property} from './bind/bindings';
 import {ObservableCollection, ObservableCollectionChangedEvent} from './bind/observable-collection';
 import {PropKey} from './bind/observable-object';
 import { BloodTeam } from './model/blood-team';
@@ -20,7 +20,7 @@ export function cleanupNightOrderItem(element: Node, _:Character): void {
 }
 
 /** initialize listeners and data bindings */
-function initNightOrderBinding(id:string, collection:ObservableCollection<Character>, ordinalPropName:string, reminderTextPropName:string):void {
+function initNightOrderBinding(id:string, collection:ObservableCollection<Character>, ordinalPropName:'firstNightOrdinal'|'otherNightOrdinal', reminderTextPropName:'firstNightReminder'|'otherNightReminder'):void {
     bindCollectionById(
         id,
         collection,
@@ -32,7 +32,7 @@ function initNightOrderBinding(id:string, collection:ObservableCollection<Charac
     collection.addCollectionChangedListener((_:ObservableCollectionChangedEvent<Character>)=>{
         updateOrdinals(collection, ordinalPropName, reminderTextPropName);
     });
-    collection.addItemChangedListener((_1:number, _2:Character, propName:PropKey) => {
+    collection.addItemChangedListener((_1:number, _2:Character, propName:PropKey<Character>) => {
         if ((propName === 'export') || (propName === reminderTextPropName)) {
             updateOrdinals(collection, ordinalPropName, reminderTextPropName);
         }
@@ -52,14 +52,14 @@ export function initNightOrderBindings(edition:Edition):void {
  * @param character character for which we are making a list item
  * @returns HTMLElement to represent that character
  */
-export function makeNightOrderItem(character: Character, collection:ObservableCollection<Character>, ordinalPropertyName:string, reminderPropertyName:string):HTMLElement {
+export function makeNightOrderItem(character: Character, collection:ObservableCollection<Character>, ordinalPropertyName:'firstNightOrdinal'|'otherNightOrdinal', reminderPropertyName:'firstNightReminder'|'otherNightReminder'):HTMLElement {
     const row = document.createElement("div");
     row.className = "nightOrderItem";
 
     {
         const ordinal = document.createElement("span");
         ordinal.classList.add('ordinal');
-        bindText(ordinal, character.getProperty(ordinalPropertyName));
+        bindText(ordinal, character.getProperty(ordinalPropertyName) as Property<string>);
         bindStyle<boolean>(ordinal, character.getExportProperty(), (willExport:boolean, classList:DOMTokenList)=>{
             if (willExport) {
                 classList.remove('dim');
@@ -96,7 +96,7 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
     {
         const reminderElement = document.createElement("span");
         reminderElement.className = "nightOrderReminder";
-        bindText(reminderElement, character.getProperty(reminderPropertyName));
+        bindText(reminderElement, character.getProperty(reminderPropertyName) as Property<string>);
         row.appendChild(reminderElement);
     }
 
@@ -120,7 +120,7 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
 }
 
 /** keep ordinal fields up to date as things change */
-function updateOrdinals(collection:ObservableCollection<Character>, ordinalPropName:string, reminderTextPropName:string):void {
+function updateOrdinals(collection:ObservableCollection<Character>, ordinalPropName:'firstNightOrdinal'|'otherNightOrdinal', reminderTextPropName:'firstNightReminder'|'otherNightReminder'):void {
     // set ordinal strings
     {
         let ordNumber:number = 1;

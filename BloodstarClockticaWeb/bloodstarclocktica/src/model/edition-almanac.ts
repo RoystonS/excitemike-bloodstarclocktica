@@ -5,17 +5,11 @@
 import {Property} from '../bind/bindings';
 import {ObservableObject, observableProperty} from '../bind/observable-object';
 
-/** data to persist on the server for the meta almanac portion of edition */
-export type EditionAlmanacSaveData = {
-    synopsis: string,
-    overview: string,
-};
-
-export class EditionAlmanac extends ObservableObject {
+export class EditionAlmanac extends ObservableObject<EditionAlmanac> {
     @observableProperty
-    private synopsis = new Property('');
+    private synopsis = new Property<string>('');
     @observableProperty
-    private overview = new Property('');
+    private overview = new Property<string>('');
 
     constructor() {
         super();
@@ -30,20 +24,5 @@ export class EditionAlmanac extends ObservableObject {
     /** get synopsis for binding */
     getSynopsisProperty():Property<string> {
         return this.synopsis;
-    }
-
-    /** get representation to be stored on server */
-    getSaveData():EditionAlmanacSaveData {
-        return {
-            synopsis: this.synopsis.get(),
-            overview: this.overview.get(),
-        };
-    }
-
-    /** set based on save data */
-    open(data:EditionAlmanacSaveData):void {
-        if (!data) {this.reset(); return;}
-        this.synopsis.set(data.synopsis);
-        this.overview.set(data.overview);
     }
 }

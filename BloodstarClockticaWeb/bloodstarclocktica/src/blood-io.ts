@@ -1,9 +1,10 @@
-import {Edition, EditionSaveData} from './model/edition';
+import {Edition} from './model/edition';
 import * as Spinner from './dlg/spinner-dlg';
 import * as MessageDlg from "./dlg/blood-message-dlg";
 import * as OpenDlg from './dlg/blood-open-dlg';
 import * as SdcDlg from './dlg/blood-save-discard-cancel';
 import * as StringDlg from './dlg/blood-string-dlg';
+import { FieldType } from './bind/base-binding';
 
 /// hash used by the server to sanity check
 export function hashFunc(input:string):number {
@@ -80,14 +81,14 @@ async function _save(username:string, password:string, edition:Edition):Promise<
     type SaveData = {
         saveName:string,
         check:number,
-        edition:EditionSaveData
+        edition:FieldType
     };
     
     const saveName = edition.getSaveName();
     const saveData:SaveData = {
         saveName: saveName,
         check: hashFunc(saveName),
-        edition: edition.getSaveData()
+        edition: edition.serialize()
     };
     const payload = JSON.stringify(saveData);
     const {error} = await cmd(username, password, 'save', `Saving as ${saveName}`, payload);
@@ -151,7 +152,7 @@ async function openNoPrompts(username:string, password:string, edition:Edition, 
         MessageDlg.showError(error);
         return false;
     }
-    const result = edition.open(name, data as EditionSaveData);
+    const result = edition.open(name, data);
     return Promise.resolve(result);
 }
 

@@ -18,22 +18,21 @@ import './styles/menu.css';
 import './styles/nightorder.css';
 import './styles/tabs.css';
 import { parseBloodTeam } from './model/blood-team';
+import { PropKey } from './bind/observable-object';
+import { CharacterImageSettings } from './model/character-image-settings';
 
 let edition = new Edition();
 let username = '';
 let password = '';
 const selectedCharacter = new BloodBind.Property<Character|null>(null);
 
+/** returned by bindCharacterTabControls, used to undo what it did */
+let unbindCharacterTabControls:(()=>void)|null = null;
+
 // TODO: move characterlist stuff to another module
 
 /** need to track the listeners we add so that we can remove them */
 const characterListCleanupSideTable = new Map<HTMLElement, BloodBind.PropertyChangeListener<Character|null>>();
-
-/** list of ids of all controls on character tab that might need to be disabled */
-let characterTabIds:Set<string> = new Set<string>();
-
-/** cleanup function used to undo click event bindings set by `bindCharacterTabControls` */
-let characterTabButtonCleanupFn:(()=>void)|null = null;
 
 /** helper type for disableCharacterTab */
 type TagsThatCanBeDisabled = "button" | "fieldset" | "input" | "optgroup" | "option" | "select" | "textarea";
@@ -373,9 +372,9 @@ function bindTrackedText(id:string, property:BloodBind.Property<string>, set:Set
     BloodBind.bindTextById(id, property);
 }
 /** helper for bindCharacterTabControls */
-function bindTrackedComboBox<T>(id:string, property:BloodBind.EnumProperty<T>, set:Set<string>, stringToEnum:(s:string)=>T, enumToString:(t:T)=>string):void {
+function bindTrackedComboBox<ValueType extends BloodBind.FieldType>(id:string, property:BloodBind.EnumProperty<ValueType>, set:Set<string>, stringToEnum:(s:string)=>ValueType, enumToString:(t:ValueType)=>string):void {
     set.add(id);
-    BloodBind.bindComboBoxById<T>(id, property, stringToEnum, enumToString);
+    BloodBind.bindComboBoxById<ValueType>(id, property, stringToEnum, enumToString);
 }
 /** helper for bindCharacterTabControls */
 function bindTrackedCheckBox(id:string, property:BloodBind.Property<boolean>, set:Set<string>):void {
@@ -394,10 +393,11 @@ function bindTrackedImageChooser(id:string, property:BloodBind.Property<string|n
 }
 
 /** set up character tab bindings */
-function bindCharacterTabControls():void {
+function bindCharacterTabControls():(()=>void)|null {
     const character = selectedCharacter.get();
-    if (!character) {return;}
-    characterTabIds.clear();
+    if (!character) {return null;}
+    
+    let characterTabIds:Set<string> = new Set<string>();
     bindTrackedText('characterId', character.getIdProperty(), characterTabIds);
     bindTrackedText('characterName', character.getNameProperty(), characterTabIds);
     bindTrackedComboBox('characterTeam', character.getTeamProperty(), characterTabIds, parseBloodTeam, x=>x);
@@ -419,22 +419,26 @@ function bindCharacterTabControls():void {
     bindTrackedImageDisplay('characterStyledImageDisplay', character.getStyledImageProperty(), characterTabIds);
 
     // TODO: image settings bindings
+    const imageStyleSettings:CharacterImageSettings = character.getImageStyleSettings();
+    const imageStyleSettingsChangedListener = (_:PropKey<CharacterImageSettings>)=>{};
+    imageStyleSettings.addPropertyChangedEventListener(imageStyleSettingsChangedListener);
 
-    characterTabButtonCleanupFn = hookupClickEvents([
+    const characterTabButtonCleanupFn = hookupClickEvents([
         ['characterImageRemoveBtn', ()=>character.setUnStyledImage(null)]
     ]);
-}
 
-/** clean up character tab bindings */
-function unbindCharacterTabControls():void {
-    for (const id of characterTabIds) {
-        BloodBind.unbindElementById(id);
-    }
-    if (characterTabButtonCleanupFn) {
-        const backup = characterTabButtonCleanupFn;
-        characterTabButtonCleanupFn = null;
-        backup();
-    }
+    // TODO: should probably have a separate developer mode where these don't show
+    if (unbindCharacterTabControls) { MessageDlg.showError(new Error('binding character tab controls without clearing previous bindings')); }
+
+    return () => {
+        characterTabButtonCleanupFn();
+
+        imageStyleSettings.removePropertyChangedEventListener(imageStyleSettingsChangedListener);
+
+        for (const id of characterTabIds) {
+            BloodBind.unbindElementById(id);
+        }
+    };
 }
 
 /** make the entire character tab disabled */
@@ -471,10 +475,11 @@ function enableCharacterTab():void {
 
 /** update character tab to show this character */
 function selectedCharacterChanged(value:Character|null):void {
-    unbindCharacterTabControls();
+    if (unbindCharacterTabControls) {unbindCharacterTabControls();}
+    unbindCharacterTabControls = null;
     if (value) {
         tabClicked('charTabBtn','charactertab');
-        bindCharacterTabControls();
+        unbindCharacterTabControls = bindCharacterTabControls();
         enableCharacterTab();
     } else {
         disableCharacterTab();
