@@ -43,8 +43,8 @@ function initNightOrderBinding(id:string, collection:ObservableCollection<Charac
 
 /** initialize listeners and data bindings */
 export function initNightOrderBindings(edition:Edition):void {
-    initNightOrderBinding('firstNightOrderList', edition.getFirstNightOrder(), 'firstNightOrdinal', 'firstNightReminder');
-    initNightOrderBinding('otherNightOrderList', edition.getOtherNightOrder(), 'otherNightOrdinal', 'otherNightReminder');
+    initNightOrderBinding('firstNightOrderList', edition.firstNightOrder, 'firstNightOrdinal', 'firstNightReminder');
+    initNightOrderBinding('otherNightOrderList', edition.otherNightOrder, 'otherNightOrdinal', 'otherNightReminder');
 }
 
 /**
@@ -60,7 +60,7 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
         const ordinal = document.createElement("span");
         ordinal.classList.add('ordinal');
         bindText(ordinal, character.getProperty(ordinalPropertyName) as Property<string>);
-        bindStyle<boolean>(ordinal, character.getExportProperty(), (willExport:boolean, classList:DOMTokenList)=>{
+        bindStyle<boolean>(ordinal, character.export, (willExport:boolean, classList:DOMTokenList)=>{
             if (willExport) {
                 classList.remove('dim');
             } else {
@@ -73,7 +73,7 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
     {
         const nameElement = document.createElement("span");
         nameElement.className = "nightOrderName";
-        bindText(nameElement, character.getNameProperty());
+        bindText(nameElement, character.name);
         row.appendChild(nameElement);
     }
 
@@ -84,12 +84,12 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
 
         const teamColor = document.createElement('div');
         teamColor.className = "nightOrderTeamColor";
-        bindStyle<BloodTeam>(teamColor, character.getTeamProperty(), setTeamColorStyle);
+        bindStyle<BloodTeam>(teamColor, character.team, setTeamColorStyle);
         teamSizer.appendChild(teamColor);
 
         const teamElement = document.createElement("div");
         teamElement.className = "nightOrderTeamText";
-        bindEnumDisplay(teamElement, character.getTeamProperty());
+        bindEnumDisplay(teamElement, character.team);
         teamColor.appendChild(teamElement);
     }
 
@@ -125,7 +125,7 @@ function updateOrdinals(collection:ObservableCollection<Character>, ordinalPropN
     {
         let ordNumber:number = 1;
         for (const character of collection) {
-            const willExport = character.getExport();
+            const willExport = character.export.get();
             const x = character.getProperty(reminderTextPropName).get();
             const y = !x;
             const hasReminder = !y;

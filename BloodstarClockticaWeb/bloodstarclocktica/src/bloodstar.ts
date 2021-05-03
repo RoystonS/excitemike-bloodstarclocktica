@@ -67,14 +67,14 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
     {
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
-        BloodBind.bindCheckbox(checkbox, character.getExportProperty());
+        BloodBind.bindCheckbox(checkbox, character.export);
         row.appendChild(checkbox);
     }
 
     {
         const nameElement = document.createElement("span");
         nameElement.className = "characterListName";
-        BloodBind.bindText(nameElement, character.getNameProperty());
+        BloodBind.bindText(nameElement, character.name);
         row.appendChild(nameElement);
     }
 
@@ -208,7 +208,7 @@ export async function newFileClicked():Promise<boolean> {
  export async function openFileClicked():Promise<boolean> {
     if (await BloodIO.open(username, password, edition)) {
         // TODO: auto-select one character
-        addToRecentFiles(edition.getSaveName());
+        addToRecentFiles(edition.saveName.get());
         return true;
     }
     return false;
@@ -219,7 +219,7 @@ export async function newFileClicked():Promise<boolean> {
  */
 export async function saveFileClicked():Promise<boolean> {
     if (await BloodIO.save(username, password, edition)) {
-        addToRecentFiles(edition.getSaveName());
+        addToRecentFiles(edition.saveName.get());
         return true;
     }
     return false;
@@ -230,7 +230,7 @@ export async function saveFileClicked():Promise<boolean> {
  */
 export async function saveFileAsClicked():Promise<boolean> {
     if (await BloodIO.saveAs(username, password, edition)) {
-        addToRecentFiles(edition.getSaveName());
+        addToRecentFiles(edition.saveName.get());
         return true;
     }
     return false;
@@ -337,20 +337,20 @@ function initBindings():void {
         ['charTabBtn', ()=>tabClicked('charTabBtn','charactertab')],
         ['firstNightTabBtn', ()=>tabClicked('firstNightTabBtn','firstNightOrderTab')],
         ['otherNightTabBtn', ()=>tabClicked('otherNightTabBtn','otherNightOrderTab')],
-        ['metaLogoRemoveBtn', ()=>edition.getLogoProperty().set(null)]
+        ['metaLogoRemoveBtn', ()=>edition.meta.logo.set(null)]
     ]);
 
-    BloodBind.bindTextById('windowTitle', edition.getWindowTitleProperty());
-    BloodBind.bindTextById('metaName', edition.getNameProperty());
-    BloodBind.bindTextById('metaAuthor', edition.getAuthorProperty());
-    BloodBind.bindTextById('metaSynopsis', edition.getSynopsisProperty());
-    BloodBind.bindTextById('metaOverview', edition.getOverviewProperty());
-    BloodBind.bindImageChooserById('metaLogoInput', edition.getLogoProperty());
-    BloodBind.bindImageDisplayById('metaLogoDisplay', edition.getLogoProperty());
+    BloodBind.bindTextById('windowTitle', edition.windowTitle);
+    BloodBind.bindTextById('metaName', edition.meta.name);
+    BloodBind.bindTextById('metaAuthor', edition.meta.author);
+    BloodBind.bindTextById('metaSynopsis', edition.almanac.synopsis);
+    BloodBind.bindTextById('metaOverview', edition.almanac.overview);
+    BloodBind.bindImageChooserById('metaLogoInput', edition.meta.logo);
+    BloodBind.bindImageDisplayById('metaLogoDisplay', edition.meta.logo);
 
     BloodBind.bindCollectionById(
         'characterList',
-        edition.getCharacterList(),
+        edition.characterList,
         makeCharacterListItem,
         cleanupListItem
     );
@@ -359,9 +359,9 @@ function initBindings():void {
     
     // tie selected character to character tab
     selectedCharacter.addListener(selectedCharacterChanged);
-    selectedCharacter.set(edition.getCharacterList().get(0) || null);
+    selectedCharacter.set(edition.characterList.get(0) || null);
 
-    BloodBind.bindCheckboxById('previewOnToken', edition.getPreviewOnTokenProperty());
+    BloodBind.bindCheckboxById('previewOnToken', edition.previewOnToken);
 
     // TODO: status bar
 }
@@ -398,33 +398,33 @@ function bindCharacterTabControls():(()=>void)|null {
     if (!character) {return null;}
     
     let characterTabIds:Set<string> = new Set<string>();
-    bindTrackedText('characterId', character.getIdProperty(), characterTabIds);
-    bindTrackedText('characterName', character.getNameProperty(), characterTabIds);
-    bindTrackedComboBox('characterTeam', character.getTeamProperty(), characterTabIds, parseBloodTeam, x=>x);
-    bindTrackedText('characterAbility', character.getAbilityProperty(), characterTabIds);
-    bindTrackedText('characterFirstNightReminder', character.getFirstNightReminderProperty(), characterTabIds);
-    bindTrackedText('characterOtherNightReminder', character.getOtherNightReminderProperty(), characterTabIds);
-    bindTrackedCheckBox('characterSetup', character.getSetupProperty(), characterTabIds);
-    bindTrackedText('characterReminderTokens', character.getCharacterReminderTokensProperty(), characterTabIds);
-    bindTrackedText('globalReminderTokens', character.getGlobalReminderTokensProperty(), characterTabIds);
-    bindTrackedCheckBox('characterExport', character.getExportProperty(), characterTabIds);
-    bindTrackedText('characterAttribution', character.getAttributionProperty(), characterTabIds);
-    bindTrackedText('characterAlmanacFlavor', character.getAlmanac().getFlavorProperty(), characterTabIds);
-    bindTrackedText('characterAlmanacOverview', character.getAlmanac().getOverviewProperty(), characterTabIds);
-    bindTrackedText('characterAlmanacExamples', character.getAlmanac().getExamplesProperty(), characterTabIds);
-    bindTrackedText('characterAlmanacHowToRun', character.getAlmanac().getHowToRunProperty(), characterTabIds);
-    bindTrackedText('characterAlmanacTip', character.getAlmanac().getTipProperty(), characterTabIds);
-    bindTrackedImageChooser('characterUnstyledImageInput', character.getUnStyledImageProperty(), characterTabIds);
-    bindTrackedImageDisplay('characterUnstyledImageDisplay', character.getUnStyledImageProperty(), characterTabIds);
-    bindTrackedImageDisplay('characterStyledImageDisplay', character.getStyledImageProperty(), characterTabIds);
+    bindTrackedText('characterId', character.id, characterTabIds);
+    bindTrackedText('characterName', character.name, characterTabIds);
+    bindTrackedComboBox('characterTeam', character.team, characterTabIds, parseBloodTeam, x=>x);
+    bindTrackedText('characterAbility', character.ability, characterTabIds);
+    bindTrackedText('characterFirstNightReminder', character.firstNightReminder, characterTabIds);
+    bindTrackedText('characterOtherNightReminder', character.otherNightReminder, characterTabIds);
+    bindTrackedCheckBox('characterSetup', character.setup, characterTabIds);
+    bindTrackedText('characterReminderTokens', character.characterReminderTokens, characterTabIds);
+    bindTrackedText('globalReminderTokens', character.globalReminderTokens, characterTabIds);
+    bindTrackedCheckBox('characterExport', character.export, characterTabIds);
+    bindTrackedText('characterAttribution', character.attribution, characterTabIds);
+    bindTrackedText('characterAlmanacFlavor', character.almanac.flavor, characterTabIds);
+    bindTrackedText('characterAlmanacOverview', character.almanac.overview, characterTabIds);
+    bindTrackedText('characterAlmanacExamples', character.almanac.examples, characterTabIds);
+    bindTrackedText('characterAlmanacHowToRun', character.almanac.howToRun, characterTabIds);
+    bindTrackedText('characterAlmanacTip', character.almanac.tip, characterTabIds);
+    bindTrackedImageChooser('characterUnstyledImageInput', character.unStyledImage, characterTabIds);
+    bindTrackedImageDisplay('characterUnstyledImageDisplay', character.unStyledImage, characterTabIds);
+    bindTrackedImageDisplay('characterStyledImageDisplay', character.styledImage, characterTabIds);
 
     // TODO: image settings bindings
-    const imageStyleSettings:CharacterImageSettings = character.getImageStyleSettings();
+    const imageStyleSettings:CharacterImageSettings = character.imageSettings;
     const imageStyleSettingsChangedListener = (_:PropKey<CharacterImageSettings>)=>{};
     imageStyleSettings.addPropertyChangedEventListener(imageStyleSettingsChangedListener);
 
     const characterTabButtonCleanupFn = hookupClickEvents([
-        ['characterImageRemoveBtn', ()=>character.setUnStyledImage(null)]
+        ['characterImageRemoveBtn', ()=>character.unStyledImage.set(null)]
     ]);
 
     // TODO: should probably have a separate developer mode where these don't show

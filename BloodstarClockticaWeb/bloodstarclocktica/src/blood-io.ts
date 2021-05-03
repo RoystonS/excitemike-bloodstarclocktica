@@ -36,11 +36,11 @@ export async function newEdition(edition:Edition):Promise<boolean> {
  * @returns promise resolving to whether the save was successful
  */
 export async function saveAs(username:string, password:string, edition:Edition):Promise<boolean> {
-    const name = await promptForName(edition.getSaveName());
+    const name = await promptForName(edition.saveName.get());
     if (!name) {
         return Promise.resolve(false);
     }
-    const backupName = edition.getSaveName();
+    const backupName = edition.saveName.get();
     try {
         edition.setSaveName(name);
         return await Spinner.show(`Saving as ${name}`, _save(username, password, edition));
@@ -60,7 +60,7 @@ export async function saveAs(username:string, password:string, edition:Edition):
  * @returns promise resolving to whether the save was successful
  */
 export async function save(username:string, password:string, edition:Edition):Promise<boolean> {
-    const saveName = edition.getSaveName();
+    const saveName = edition.saveName.get();
     switch (saveName) {
         case '':
             return await saveAs(username, password, edition);
@@ -84,7 +84,7 @@ async function _save(username:string, password:string, edition:Edition):Promise<
         edition:FieldType
     };
     
-    const saveName = edition.getSaveName();
+    const saveName = edition.saveName.get();
     const saveData:SaveData = {
         saveName: saveName,
         check: hashFunc(saveName),

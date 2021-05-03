@@ -11,7 +11,7 @@ import {customSerialize, observableChild, observableCollection, ObservableObject
 
 function serializeJustIds(_:ObservableObject<any>, nightOrder:ObservableType):FieldType {
     if (!(nightOrder instanceof ObservableCollection)) {return [];}
-    return nightOrder.map((c:Character)=>c.getId())
+    return nightOrder.map((c:Character)=>c.id.get())
 }
 function deserializeFromIds(object:ObservableObject<any>, nightOrder:ObservableType, data:FieldType):void {
     if (!(nightOrder instanceof ObservableCollection)) {return;}
@@ -22,7 +22,7 @@ function deserializeFromIds(object:ObservableObject<any>, nightOrder:ObservableT
     const charactersById = new Map<string, Character>();
     for (const character of characterList) {
         if (!(character instanceof Character)) {return;}
-        charactersById.set(character.getId(), character);
+        charactersById.set(character.id.get(), character);
     }
     nightOrder.set(data.filter(id=>charactersById.has(String(id))).map(id=>charactersById.get(String(id)) || new Character()));
 }
@@ -31,41 +31,41 @@ function deserializeFromIds(object:ObservableObject<any>, nightOrder:ObservableT
 export class Edition extends ObservableObject<Edition> {
     /** almanac-specific edition data */
     @observableChild
-    almanac = new EditionAlmanac();
+    readonly almanac = new EditionAlmanac();
 
     /** characters in the edition */
     @observableCollection
-    characterList = new ObservableCollection(Character);
+    readonly characterList = new ObservableCollection(Character);
 
     /** true when there are unsaved changes */
     @observableProperty
-    dirty = new Property<boolean>(false);
+    readonly dirty = new Property<boolean>(false);
 
     /** contains the same Character objects as characterList, but ordered for night order */
     @customSerialize(serializeJustIds, deserializeFromIds)
     @observableCollection
-    firstNightOrder = new ObservableCollection(Character);
+    readonly firstNightOrder = new ObservableCollection(Character);
 
     /** data about the edition */
     @observableChild
-    meta = new EditionMeta();
+    readonly meta = new EditionMeta();
 
     /** contains the same Character objects as characterList, but ordered for night order */
     @customSerialize(serializeJustIds, deserializeFromIds)
     @observableCollection
-    otherNightOrder = new ObservableCollection(Character);
+    readonly otherNightOrder = new ObservableCollection(Character);
     
     /** whether to render preview on a character token background like you would see on clocktower.online */
     @observableProperty
-    previewOnToken = new Property<boolean>(true);
+    readonly previewOnToken = new Property<boolean>(true);
 
     /** name to use when saving */
     @observableProperty
-    saveName = new Property<string>('');
+    readonly saveName = new Property<string>('');
 
     /** what to show as the current file and its status */
     @observableProperty
-    windowTitle = new Property<string>('Bloodstar Clocktica');
+    readonly windowTitle = new Property<string>('Bloodstar Clocktica');
 
     /** create new edition */
     constructor() {
@@ -100,53 +100,19 @@ export class Edition extends ObservableObject<Edition> {
 
     // TODO: fields are public. I don't need so many getters
 
-    getAuthorProperty():Property<string> { return this.meta.getAuthorProperty(); }
-    getCharacterList() {
-        return this.characterList;
-    }
-    getDirty():boolean { return this.dirty.get(); }
-    getFirstNightOrder() {
-        return this.firstNightOrder;
-    }
-    getOtherNightOrder() {
-        return this.otherNightOrder;
-    }
-    getLogoProperty():Property<string|null> { return this.meta.getLogoProperty(); }
-    getName():string { return this.meta.getName(); }
-    getNameProperty():Property<string> { return this.meta.getNameProperty(); }
-
-    /** get overview for binding */
-    getOverviewProperty():Property<string> {
-        return this.almanac.getOverviewProperty();
-    }
-
-    getPreviewOnTokenProperty():Property<boolean> { return this.previewOnToken; }
-
-    /**
-     * get name to save as
-     */
-    getSaveName():string { return this.saveName.get(); }
-
-    /** get synopsis for binding */
-    getSynopsisProperty():Property<string> {
-        return this.almanac.getSynopsisProperty();
-    }
-
-    getWindowTitleProperty():Property<string> { return this.windowTitle; }
-
     /** make sure the name and id of a newly added character aren't taken */
     makeNameAndIdUnique(character:Character):void {
         let i = 1;
-        const originalId = character.getId();
-        const originalName = character.getName();
+        const originalId = character.id.get();
+        const originalName = character.name.get();
         let matchFound;
         do {
             matchFound = false;
             for (const existingCharacter of this.characterList) {
-                if ((existingCharacter.getId() === character.getId()) || (existingCharacter.getName() === character.getName())) {
+                if ((existingCharacter.id.get() === character.id.get()) || (existingCharacter.name.get() === character.name.get())) {
                     matchFound = true;
-                    character.setId(originalId + i);
-                    character.setName(originalName + i);
+                    character.id.set(originalId + i);
+                    character.name.set(originalName + i);
                     i++;
                     break;
                 }
