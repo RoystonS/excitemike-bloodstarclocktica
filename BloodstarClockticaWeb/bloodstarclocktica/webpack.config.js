@@ -21,6 +21,18 @@ const config = {
         {
             test: /\.html$/i,
             type: "asset/resource",
+            exclude: /node_modules/
+        },
+        {
+            test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+            use: [{
+                loader: 'file-loader',
+                options: {
+                    name: '[name].[ext]',
+                    outputPath: 'fonts/'
+                }
+            }],
+            exclude: /node_modules/
         }]
     },
     plugins: [

@@ -1,7 +1,30 @@
 #characterImagePreview {
     position:relative;
+    width: 200px;
     height: 200px;
 }
-#characterImagePreview > img {
+#characterImagePreview > * {
     position:absolute;
+}
+.curvedCharacterName {
+    pointer-events: none;
+    font-size:24px;
+}
+.curvedCharacterNameText {
+    filter: drop-shadow(0 1.5px 0 white) drop-shadow(0 -1.5px 0 white) drop-shadow(1.5px 0 0 white) drop-shadow(-1.5px 0 0 white) drop-shadow(0 2px 2px rgba(0,0,0,.5));
+    font-family:Papyrus,serif;
+    font-size:1.2em;
+    font-weight:700;
+    letter-spacing:1px;
+    stroke:none;
+    text-shadow:none;
+    user-select: none;
+}
+@font-face {
+    font-family: Papyrus;
+    src: url("../fonts/papyrus.eot") format("embedded-opentype"),
+         url("../fonts/papyrus.woff2") format("woff2"),
+         url("../fonts/papyrus.woff") format("woff"),
+         url("../fonts/papyrus.ttf") format("truetype"),
+         url("../fonts/papyrus.svg") format("svg");
 }
