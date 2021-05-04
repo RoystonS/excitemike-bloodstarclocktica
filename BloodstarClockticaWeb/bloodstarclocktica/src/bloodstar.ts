@@ -221,11 +221,18 @@ function initBindings():void {
     BloodBind.bindImageChooserById('metaLogoInput', edition.meta.logo, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
     BloodBind.bindImageDisplayById('metaLogoDisplay', edition.meta.logo);
     
-    const tokenBackground = document.getElementById('tokenBackground');
-    if (tokenBackground instanceof HTMLImageElement) {
-        tokenBackground.src = Images.TOKEN_URL;
-        BloodBind.bindVisibility(tokenBackground, edition.previewOnToken);
+    {
+        const tokenBackground = document.getElementById('tokenBackground');
+        if (tokenBackground instanceof HTMLImageElement) {
+            tokenBackground.src = Images.TOKEN_URL;
+            BloodBind.bindVisibility(tokenBackground, edition.previewOnToken);
+        }
+        const curvedCharacterText = document.getElementById('curvedCharacterNameHolder');
+        if (curvedCharacterText) {
+            BloodBind.bindVisibility(curvedCharacterText, edition.previewOnToken);
+        }
     }
+
 
     bindCharacterList('characterList', edition.characterList, selectedCharacter);
 
