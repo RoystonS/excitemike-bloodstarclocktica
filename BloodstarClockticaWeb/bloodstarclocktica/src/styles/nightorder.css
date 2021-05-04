@@ -70,7 +70,7 @@
 }
 .teamColorTraveler {
     background-color:#33333380;
-    background-image: linear-gradient(to right, #3977FF 47%, #eeeeee 50%, #ce0100 53%);
+    background-image: linear-gradient(to right, #3977FF 50%, #ce0100 50%);
 }
 .nightOrderButton {
     background:none;
