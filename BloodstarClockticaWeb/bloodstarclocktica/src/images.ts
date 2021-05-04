@@ -3,7 +3,6 @@
  * @module Images
  */
 
-// TODO: these should be image files on the server downloaded as needed
 enum Images {
     TOKEN_URL = './img/token.png',
     TEXTURE_URL = './img/texture.png',

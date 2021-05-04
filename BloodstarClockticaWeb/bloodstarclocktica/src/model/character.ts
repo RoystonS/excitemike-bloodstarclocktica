@@ -59,8 +59,6 @@ export class Character extends ObservableObject<Character> {
     
     @observableProperty
     readonly unStyledImage = new Property<string|null>(null);
-    
-    // TODO: tie image settings to lazily re-generating styledImage
 
     constructor() {
         super();
