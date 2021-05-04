@@ -152,9 +152,6 @@ ul#status {
 .userImage {
     border: 1px solid #666;
 }
-.userImage[src=""] {
-    display:none;
-}
 .row {
     display:flex;
     flex-flow: row;

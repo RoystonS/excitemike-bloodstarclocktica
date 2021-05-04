@@ -6,7 +6,8 @@
 #tabHolder {
     flex: 1 1 0;
     overflow:auto;
-    display:grid;
+    display:flex;
+    flex-flow: column nowrap;
 }
 #tabBar {
     flex: 0 0 auto;

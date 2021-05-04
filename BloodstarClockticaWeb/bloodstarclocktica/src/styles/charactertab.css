@@ -1,0 +1,7 @@
+#characterImagePreview {
+    position:relative;
+    height: 200px;
+}
+#characterImagePreview > img {
+    position:absolute;
+}

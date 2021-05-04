@@ -175,12 +175,16 @@
                                                 <label for="dropShadowOpacity">Dropshadow Opacity</label>
                                                 <input type="range" name="dropShadowOpacity" id="dropShadowOpacity" min="0" max="1" step="0.05">
                                                 <label id="dropShadowOpacityValueLabel" for="dropShadowOpacity"></label>
+
                                             </div>
+                                            <button id="resetImageSettings">Reset Defaults</button>
                                         </div>
                                     </details>
                                 </div>
-                                <img class="userImage" id="characterUnstyledImageDisplay" height="200px"/>
-                                <img class="userImage" id="characterStyledImageDisplay" height="200px"/>
+                                <div id="characterImagePreview">
+                                    <img class="userImage" id="tokenBackground" height="200px"/>
+                                    <img class="userImage" id="characterStyledImageDisplay" height="200px"/>
+                                </div>
                             </div>
                         </div>
                     </details>

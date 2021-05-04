@@ -34,7 +34,6 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
     bindTrackedText('characterAlmanacHowToRun', character.almanac.howToRun, characterTabIds);
     bindTrackedText('characterAlmanacTip', character.almanac.tip, characterTabIds);
     bindTrackedImageChooser('characterUnstyledImageInput', character.unStyledImage, characterTabIds);
-    bindTrackedImageDisplay('characterUnstyledImageDisplay', character.unStyledImage, characterTabIds);
     bindTrackedImageDisplay('characterStyledImageDisplay', character.styledImage, characterTabIds);
 
     const sliderHelper = (id:string, p:Property<number>) => {
@@ -61,7 +60,8 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
     character.team.addListener(regenCb);
 
     const unhookupClickEvents = hookupClickEvents([
-        ['characterImageRemoveBtn', ()=>character.unStyledImage.set(null)]
+        ['characterImageRemoveBtn', ()=>character.unStyledImage.set(null)],
+        ['resetImageSettings', ()=>character.imageSettings.reset()]
     ]);
 
     // TODO: should probably have a separate developer mode where these don't show

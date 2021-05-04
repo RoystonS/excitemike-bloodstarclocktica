@@ -3,6 +3,7 @@ import {CollectionBinding, RenderFn, CleanupFn} from './collection-binding'
 import {ImageChooserBinding, ImageDisplayBinding} from './image-binding';
 import SliderBinding from './slider-binding';
 import {StyleBinding} from './style-binding';
+import {VisibilityBinding} from './visibility-binding';
 import {ObservableCollection} from './observable-collection';
 import {ObservableObject} from './observable-object';
 
@@ -198,10 +199,23 @@ export function bindStyle<ValueType extends FieldType>(element:HTMLElement, prop
 }
 
 /** one way binding. automatically add or remove a css class based on the property value and callback */
-export function bindbindStyleById<ValueType extends FieldType>(id:string, property:Property<ValueType>, cb:(value:ValueType, classList:DOMTokenList)=>void):void {
+export function bindStyleById<ValueType extends FieldType>(id:string, property:Property<ValueType>, cb:(value:ValueType, classList:DOMTokenList)=>void):void {
     const element = document.getElementById(id);
     if (element instanceof HTMLElement) {
         bindStyle(element, property, cb);
+    }
+}
+
+/** one-way binding. make the element visible or not based on a boolean property */
+export function bindVisibility(element:HTMLElement, property:Property<boolean>):void {
+    bindings.set(element, new VisibilityBinding(element, property));
+}
+
+/** one-way binding. make the element visible or not based on a boolean property */
+export function bindVisibilityById(id:string, property:Property<boolean>):void {
+    const element = document.getElementById(id);
+    if (element instanceof HTMLElement) {
+        bindVisibility(element, property);
     }
 }
 

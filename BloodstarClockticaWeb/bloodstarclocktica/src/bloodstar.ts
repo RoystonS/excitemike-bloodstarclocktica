@@ -12,6 +12,7 @@ import {hookupClickEvents, walkHTMLElements} from './util';
 import './styles/main.css';
 import './styles/autogrowtextarea.css';
 import './styles/characterlist.css';
+import './styles/charactertab.css';
 import './styles/dialog.css';
 import './styles/dragdrop.css';
 import './styles/menu.css';
@@ -20,6 +21,7 @@ import './styles/slider.css';
 import './styles/tabs.css';
 import * as CharacterTab from './character-tab';
 import { ProcessImageSettings } from './blood-image';
+import Images from './images';
 
 let edition = new Edition();
 let username = '';
@@ -321,6 +323,12 @@ function initBindings():void {
     BloodBind.bindTextById('metaOverview', edition.almanac.overview);
     BloodBind.bindImageChooserById('metaLogoInput', edition.meta.logo, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
     BloodBind.bindImageDisplayById('metaLogoDisplay', edition.meta.logo);
+    
+    const tokenBackground = document.getElementById('tokenBackground');
+    if (tokenBackground instanceof HTMLImageElement) {
+        tokenBackground.src = Images.TOKEN_IMAGE;
+        BloodBind.bindVisibility(tokenBackground, edition.previewOnToken);
+    }
 
     BloodBind.bindCollectionById(
         'characterList',
