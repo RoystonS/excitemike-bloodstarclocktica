@@ -48,7 +48,7 @@ async function toDataUri(url:string, maxWidth:number, maxHeight:number):Promise<
 
 /** one-way binding to set a property to a data URI from a chosen image file */
 export class ImageChooserBinding extends BaseBinding<string|null> {
-    constructor(element:HTMLInputElement, property:Property<string|null>, maxWidth:number = 539, maxHeight:number = 539) {
+    constructor(element:HTMLInputElement, property:Property<string|null>, maxWidth:number, maxHeight:number) {
         super(
             element,
             property,

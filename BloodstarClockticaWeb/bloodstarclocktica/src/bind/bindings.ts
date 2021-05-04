@@ -180,12 +180,12 @@ export function bindImageDisplayById(id:string, property:Property<string|null>):
 }
 
 /** bind an `input[type=file]` element to a `string|null` property that stores an object url */
-export function bindImageChooser(element:HTMLInputElement, property:Property<string|null>, maxWidth?:number, maxHeight?:number):void {
+export function bindImageChooser(element:HTMLInputElement, property:Property<string|null>, maxWidth:number, maxHeight:number):void {
     bindings.set(element, new ImageChooserBinding(element, property, maxWidth, maxHeight));
 }
 
 /** bind an `input[type=file] to a `string|null` property that stores an object url */
-export function bindImageChooserById(id:string, property:Property<string|null>, maxWidth?:number, maxHeight?:number):void {
+export function bindImageChooserById(id:string, property:Property<string|null>, maxWidth:number, maxHeight:number):void {
     const element = document.getElementById(id);
     if (element instanceof HTMLInputElement) {
         bindImageChooser(element, property, maxWidth, maxHeight);

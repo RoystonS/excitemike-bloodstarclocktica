@@ -11,6 +11,10 @@ export class CharacterImageSettings extends ObservableObject<CharacterImageSetti
     @observableProperty
     readonly shouldRestyle = new Property(true);
 
+    /** whether to crop the image to just the visible portions before processing further */
+    @observableProperty
+    readonly shouldTrim = new Property(true);
+
     /** whether to colorize the image. default: true */
     @observableProperty
     readonly shouldColorize = new Property(true);

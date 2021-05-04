@@ -19,6 +19,7 @@ import './styles/nightorder.css';
 import './styles/slider.css';
 import './styles/tabs.css';
 import * as CharacterTab from './character-tab';
+import { ProcessImageSettings } from './blood-image';
 
 let edition = new Edition();
 let username = '';
@@ -318,7 +319,7 @@ function initBindings():void {
     BloodBind.bindTextById('metaAuthor', edition.meta.author);
     BloodBind.bindTextById('metaSynopsis', edition.almanac.synopsis);
     BloodBind.bindTextById('metaOverview', edition.almanac.overview);
-    BloodBind.bindImageChooserById('metaLogoInput', edition.meta.logo);
+    BloodBind.bindImageChooserById('metaLogoInput', edition.meta.logo, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
     BloodBind.bindImageDisplayById('metaLogoDisplay', edition.meta.logo);
 
     BloodBind.bindCollectionById(
