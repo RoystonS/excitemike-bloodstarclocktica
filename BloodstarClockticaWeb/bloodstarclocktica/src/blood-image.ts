@@ -529,7 +529,6 @@ export async function urlToCanvas(url:string, width:number, height:number):Promi
 
 /** find the appropriate gradient image for the team and settings */
 export async function getGradientForTeam(team:BloodTeam, useOutsiderAndMinionColors:boolean, width:number, height:number):Promise<BloodImage> {
-    // TODO: I should probably cache these
     let url:string;
     switch (team) {
         case BloodTeam.TOWNSFOLK:

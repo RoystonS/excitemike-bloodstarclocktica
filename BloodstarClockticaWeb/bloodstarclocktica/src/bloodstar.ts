@@ -81,7 +81,6 @@ export async function newFileClicked():Promise<boolean> {
  */
  export async function openFileClicked():Promise<boolean> {
     if (await BloodIO.open(username, password, edition)) {
-        // TODO: auto-select one character
         addToRecentFiles(edition.saveName.get());
         return true;
     }

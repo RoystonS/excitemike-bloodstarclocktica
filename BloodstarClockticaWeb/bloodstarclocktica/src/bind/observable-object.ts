@@ -162,7 +162,6 @@ export abstract class ObservableObject<T> {
                 (typeof childData !== 'boolean') &&
                 !Array.isArray(childData) )
             {
-                // TODO: check serializable
                 child.deserialize(childData);
             }
         }
@@ -171,7 +170,6 @@ export abstract class ObservableObject<T> {
             if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
             const collectionData = data[String(key)];
             if (Array.isArray(collectionData)) {
-                // TODO: check serializable
                 collection.deserialize(collectionData);
             }
         }
@@ -180,7 +178,6 @@ export abstract class ObservableObject<T> {
             if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
             const stringKey = String(key);
             const propertyData = data.hasOwnProperty(stringKey) ? data[stringKey] : property.getDefault();
-            // TODO: check serializable
             property.set(propertyData);
         }
 
