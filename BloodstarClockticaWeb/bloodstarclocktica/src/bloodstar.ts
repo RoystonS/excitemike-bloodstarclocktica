@@ -22,6 +22,7 @@ import * as CharacterTab from './character-tab';
 import { ProcessImageSettings } from './blood-image';
 import Images from './images';
 import { bindCharacterList } from './character-list';
+import { BloodTeam } from './model/blood-team';
 
 let edition = new Edition();
 let username = '';
@@ -249,7 +250,12 @@ function initBindings():void {
 
     BloodBind.bindCheckboxById('previewOnToken', edition.previewOnToken);
 
-    // TODO: status bar
+    edition.addPropertyChangedEventListener(key => {
+        if (key === 'characterList') {
+            updateStatusbar();
+        }
+    });
+    updateStatusbar();
 }
 
 /** initialize CustomEdition object to bind to */
@@ -277,20 +283,39 @@ async function init() {
     initBindings();
 }
 
-/**
- * get the username that the user logged in with
- * @returns username the user logged in with
- */
-export function getUsername():string {
-    return username;
+type StatusBarData = Map<string, {id:string,exported:number,total:number}>;
+
+/** update status bar text */
+function collectStatusBarData():StatusBarData {
+    const data:StatusBarData = new Map();
+    data.set('all', {id:'charactersStatus',exported:0,total:0});
+    data.set(BloodTeam.TOWNSFOLK, {id:'townsfolkStatus',exported:0,total:0});
+    data.set(BloodTeam.OUTSIDER, {id:'outsidersStatus',exported:0,total:0});
+    data.set(BloodTeam.MINION, {id:'minionsStatus',exported:0,total:0});
+    data.set(BloodTeam.DEMON, {id:'demonsStatus',exported:0,total:0});
+    data.set(BloodTeam.TRAVELER, {id:'travelersStatus',exported:0,total:0});
+    for (const character of edition.characterList) {
+        const exported = character.export.get();
+        for (const teamKey of ['all', character.team.get()]) {
+            let teamData = data.get(teamKey);
+            if (!teamData) {continue;}
+            teamData.total++;
+            if (exported) {
+                teamData.exported++;
+            }
+        }
+    }
+    return data;
 }
 
-/**
- * get the password that the user logged in with
- * @returns password the user logged in with
- */
-export function getPassword():string {
-    return password;
+/** update status bar text */
+function updateStatusbar():void {
+    for (const {id,exported,total} of collectStatusBarData().values()) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.innerText = `${exported}/${total}`;
+        }
+    }
 }
 
 // wait for dom to load
