@@ -19,11 +19,11 @@
             <div class="dropdown">
             File
             <div class="dropdownContent">
-                <button id="newfilebutton" title="begin making a new custom edition">New</button>
-                <button id="openfilebutton" title="load an existing custom edition">Open</button>
-                <button id="savefilebutton" title="save this custom edition">Save <span class="dim">ctrl+S</span></button>
-                <button id="savefileasbutton" title="save this custom edition under a new name">Save As</button>
-                <button id="helpbutton" title="how to use this website">Help</button>
+                <button id="newfilebutton" title="Begin making a new custom edition.">New</button>
+                <button id="openfilebutton" title="Load an existing custom edition.">Open</button>
+                <button id="savefilebutton" title="Save this custom edition.">Save <span class="dim">ctrl+S</span></button>
+                <button id="savefileasbutton" title="Save this custom edition under a new name.">Save As</button>
+                <button id="helpbutton" title="How to use this website.">Help</button>
             </div>
             </div>
             <div class="dropdown">
@@ -127,55 +127,53 @@
                                         <summary>Style settings</summary>
                                         <div class="fieldgroup">
                                             <div class="imageSettingsGrid">
-                                                <!-- TODO: tooltips! -->
                                                 <label for="shouldRestyle" title="Whether to restyle the image at all.">Restyle Image</label>
                                                 <input type="checkbox" name="shouldRestyle" id="shouldRestyle" title="Whether to restyle the image at all.">
                                                 <div></div>
 
-                                                <label for="shouldReposition">Reposition Image</label>
-                                                <input type="checkbox" name="shouldReposition" id="shouldReposition">
+                                                <label for="shouldReposition" title="Whether to reposition the image so that it looks right on a character token when used on clocktower.online">Reposition Image</label>
+                                                <input type="checkbox" name="shouldReposition" id="shouldReposition" title="Whether to reposition the image so that it looks right on a character token when used on clocktower.online">
                                                 <div></div>
                                                 
                                                 <label for="shouldColorize">Colorize</label>
-                                                <input type="checkbox" name="shouldColorize" id="shouldColorize">
+                                                <input type="checkbox" name="shouldColorize" id="shouldColorize" title="Whether to recolor the image based on team.">
                                                 <div></div>
                                                 
-                                                <label for="useOutsiderAndMinionColors">Outsider/Minion Colors</label>
-                                                <input type="checkbox" name="useOutsiderAndMinionColors" id="useOutsiderAndMinionColors">
+                                                <label for="useOutsiderAndMinionColors" title="If checked, Outsiders and Minions get their own colors instead of using just blue/red for Good/Evil colors.">Outsider/Minion Colors</label>
+                                                <input type="checkbox" name="useOutsiderAndMinionColors" id="useOutsiderAndMinionColors" title="If checked, Outsiders and Minions get their own colors instead of using just blue/red for Good/Evil colors.">
                                                 <div></div>
                                                 
-                                                <label for="useTexture">Texture</label>
-                                                <input type="checkbox" name="useTexture" id="useTexture">
+                                                <label for="useTexture" title="If checked, a grunge texture is applied to the image.">Texture</label>
+                                                <input type="checkbox" name="useTexture" id="useTexture" title="If checked, a grunge texture is applied to the image.">
                                                 <div></div>
                                                 
-                                                <label for="useBorder">Border</label>
-                                                <input type="checkbox" name="useBorder" id="useBorder">
+                                                <label for="useBorder" title="Whether a border should be added to the image.">Border</label>
+                                                <input type="checkbox" name="useBorder" id="useBorder" title="Whether a border should be added to the image.">
                                                 <div></div>
                                                 
-                                                <label for="borderIntensity">Border Intensity</label>
-                                                <input type="range" name="borderIntensity" id="borderIntensity" min="0" max="5" step="1">
+                                                <label for="borderIntensity" title="Scales the border effect.">Border Intensity</label>
+                                                <input type="range" name="borderIntensity" id="borderIntensity" min="0" max="5" step="1" title="Scales the border effect.">
                                                 <label id="borderIntensityValueLabel" for="borderIntensity"></label>
                                                 
-                                                <label for="dropShadow">Drop Shadow</label>
-                                                <input type="checkbox" name="dropShadow" id="dropShadow">
+                                                <label for="dropShadow" title="Whether to add a drop shadow effect to the image.">Drop Shadow</label>
+                                                <input type="checkbox" name="dropShadow" id="dropShadow" title="Whether to add a drop shadow effect to the image.">
                                                 <div></div>
                                                 
-                                                <label for="dropShadowSize">Dropshadow Size</label>
-                                                <input type="range" name="dropShadowSize" id="dropShadowSize" min="0" max="32" step="1">
+                                                <label for="dropShadowSize" title="How much the dropshadow spreads.">Dropshadow Size</label>
+                                                <input type="range" name="dropShadowSize" id="dropShadowSize" min="0" max="32" step="1" title="How much the dropshadow spreads.">
                                                 <label id="dropShadowSizeValueLabel" for="dropShadowSize"></label>
                                                 
-                                                <label for="dropShadowOffsetX">Dropshadow Offset X</label>
-                                                <input type="range" name="dropShadowOffsetX" id="dropShadowOffsetX" min="-20" max="20" step="1">
+                                                <label for="dropShadowOffsetX" title="Horizontal offset of the dropshadow effect.">Dropshadow Offset X</label>
+                                                <input type="range" name="dropShadowOffsetX" id="dropShadowOffsetX" min="-20" max="20" step="1" title="Horizontal offset of the dropshadow effect.">
                                                 <label id="dropShadowOffsetXValueLabel" for="dropShadowOffsetX"></label>
                                                 
-                                                <label for="dropShadowOffsetY">Dropshadow Offset Y</label>
-                                                <input type="range" name="dropShadowOffsetY" id="dropShadowOffsetY" min="-20" max="20" step="1">
+                                                <label for="dropShadowOffsetY" title="Vertical offset of the dropshadow effect.">Dropshadow Offset Y</label>
+                                                <input type="range" name="dropShadowOffsetY" id="dropShadowOffsetY" min="-20" max="20" step="1" title="Vertical offset of the dropshadow effect.">
                                                 <label id="dropShadowOffsetYValueLabel" for="dropShadowOffsetY"></label>
                                                 
-                                                <label for="dropShadowOpacity">Dropshadow Opacity</label>
-                                                <input type="range" name="dropShadowOpacity" id="dropShadowOpacity" min="0" max="1" step="0.05">
+                                                <label for="dropShadowOpacity" title="Opacity of the dropshadow effect: 0=invisible, 1=fully opaque.">Dropshadow Opacity</label>
+                                                <input type="range" name="dropShadowOpacity" id="dropShadowOpacity" min="0" max="1" step="0.05" title="Opacity of the dropshadow effect: 0=invisible, 1=fully opaque.">
                                                 <label id="dropShadowOpacityValueLabel" for="dropShadowOpacity"></label>
-
                                             </div>
                                             <button id="resetImageSettings">Reset Defaults</button>
                                         </div>
