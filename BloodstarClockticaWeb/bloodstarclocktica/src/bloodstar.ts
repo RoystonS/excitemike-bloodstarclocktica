@@ -94,6 +94,7 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
         const del = document.createElement("button");
         del.className = "characterListButton";
         del.innerText = "Delete";
+        // TODO: confirm delete
         del.onclick = () => collection.deleteItem(character);
         row.appendChild(del);
     }
