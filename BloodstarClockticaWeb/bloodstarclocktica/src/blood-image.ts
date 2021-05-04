@@ -308,9 +308,9 @@ export default class BloodImage {
                 const alpha = pixels[i + 3];
                 if (alpha > 0) {
                     left = Math.min(left, x);
-                    top = Math.min(top, x);
+                    top = Math.min(top, y);
                     right = Math.max(right, x);
-                    bottom = Math.max(bottom, x);
+                    bottom = Math.max(bottom, y);
                 }
             }
         }
