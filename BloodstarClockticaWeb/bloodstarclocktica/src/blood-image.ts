@@ -496,14 +496,14 @@ export default class BloodImage {
     }
 }
 
-/** get BloodImage from dataUri */
-export async function dataUriToBloodImage(dataUri:string, maxWidth:number, maxHeight:number):Promise<BloodImage> {
-    const canvas = await dataUriToCanvas(dataUri, maxWidth, maxHeight);
+/** get BloodImage from url */
+export async function urlToBloodImage(url:string, maxWidth:number, maxHeight:number):Promise<BloodImage> {
+    const canvas = await urlToCanvas(url, maxWidth, maxHeight);
     return new BloodImage(canvas);
 }
 
-/** get image data from the dataUri */
-export async function dataUriToCanvas(dataUri:string, width:number, height:number):Promise<HTMLCanvasElement> {
+/** get image data from the url and put it in a new canvas */
+export async function urlToCanvas(url:string, width:number, height:number):Promise<HTMLCanvasElement> {
     return new Promise((resolve,reject)=>{
         try {
             const image = new Image();
@@ -520,7 +520,7 @@ export async function dataUriToCanvas(dataUri:string, width:number, height:numbe
                 ctx.drawImage(image,0,0,canvas.width,canvas.height);
                 resolve(canvas);
             };
-            image.src = dataUri;
+            image.src = url;
         } catch (error) {
             reject(error);
         }
@@ -530,24 +530,24 @@ export async function dataUriToCanvas(dataUri:string, width:number, height:numbe
 /** find the appropriate gradient image for the team and settings */
 export async function getGradientForTeam(team:BloodTeam, useOutsiderAndMinionColors:boolean, width:number, height:number):Promise<BloodImage> {
     // TODO: I should probably cache these
-    let dataUri:string;
+    let url:string;
     switch (team) {
         case BloodTeam.TOWNSFOLK:
-            dataUri = Images.TOWNSFOLK_GRADIENT;
+            url = Images.TOWNSFOLK_GRADIENT_URL;
             break;
         case BloodTeam.OUTSIDER:
-            dataUri = useOutsiderAndMinionColors ? Images.OUTSIDER_GRADIENT : Images.TOWNSFOLK_GRADIENT;
+            url = useOutsiderAndMinionColors ? Images.OUTSIDER_GRADIENT_URL : Images.TOWNSFOLK_GRADIENT_URL;
             break;
         case BloodTeam.MINION:
-            dataUri = useOutsiderAndMinionColors ? Images.MINION_GRADIENT : Images.DEMON_GRADIENT;
+            url = useOutsiderAndMinionColors ? Images.MINION_GRADIENT_URL : Images.DEMON_GRADIENT_URL;
             break;
         case BloodTeam.DEMON:
-            dataUri = Images.DEMON_GRADIENT;
+            url = Images.DEMON_GRADIENT_URL;
             break;
         case BloodTeam.TRAVELER:
         default:
-            dataUri = Images.TRAVELER_GRADIENT;
+            url = Images.TRAVELER_GRADIENT_URL;
             break;
     }
-    return await dataUriToBloodImage(dataUri, width, height);
+    return await urlToBloodImage(url, width, height);
 }

@@ -4,7 +4,7 @@
  */
 import {bindCheckboxById, bindComboBoxById, bindImageChooserById, bindImageDisplayById, bindSliderById, bindTextById, EnumProperty, FieldType, Property, unbindElementById} from './bind/bindings';
 import * as MessageDlg from "./dlg/blood-message-dlg";
-import BloodImage, { dataUriToBloodImage, getGradientForTeam, ProcessImageSettings } from './blood-image';
+import BloodImage, { getGradientForTeam, ProcessImageSettings, urlToBloodImage } from './blood-image';
 import { parseBloodTeam } from './model/blood-team';
 import { Character } from './model/character';
 import { CharacterImageSettings } from './model/character-image-settings';
@@ -157,7 +157,7 @@ async function regenerateStyledImage(character:Character):Promise<void> {
     }
     
     // start from the unstyled image
-    let bloodImage = await dataUriToBloodImage(unstyledImage, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
+    let bloodImage = await urlToBloodImage(unstyledImage, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
 
     // crop
     if (imageSettings.shouldTrim.get()) {
@@ -188,7 +188,7 @@ async function regenerateStyledImage(character:Character):Promise<void> {
 
     // texture
     if (imageSettings.useTexture.get()) {
-        const tokenTexture = await dataUriToBloodImage(Images.TOKEN_TEXTURE, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
+        const tokenTexture = await urlToBloodImage(Images.TEXTURE_URL, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
         bloodImage.multiply(tokenTexture);
     }
 

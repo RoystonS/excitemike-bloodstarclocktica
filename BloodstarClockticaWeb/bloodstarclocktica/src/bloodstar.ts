@@ -327,7 +327,7 @@ function initBindings():void {
     
     const tokenBackground = document.getElementById('tokenBackground');
     if (tokenBackground instanceof HTMLImageElement) {
-        tokenBackground.src = Images.TOKEN_IMAGE;
+        tokenBackground.src = Images.TOKEN_URL;
         BloodBind.bindVisibility(tokenBackground, edition.previewOnToken);
     }
 
