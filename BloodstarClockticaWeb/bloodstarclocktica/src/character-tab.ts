@@ -47,9 +47,7 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
     bindTrackedCheckBox('useOutsiderAndMinionColors', character.imageSettings.useOutsiderAndMinionColors, characterTabIds);
     bindTrackedCheckBox('useTexture', character.imageSettings.useTexture, characterTabIds);
     bindTrackedCheckBox('useBorder', character.imageSettings.useBorder, characterTabIds);
-    sliderHelper('borderBlur', character.imageSettings.borderBlur);
-    sliderHelper('borderThresholdMin', character.imageSettings.borderThresholdMin);
-    sliderHelper('borderThresholdMax', character.imageSettings.borderThresholdMax);
+    sliderHelper('borderIntensity', character.imageSettings.borderIntensity);
     bindTrackedCheckBox('dropShadow', character.imageSettings.useDropshadow, characterTabIds);
     sliderHelper('dropShadowSize', character.imageSettings.dropShadowSize);
     sliderHelper('dropShadowOffsetX', character.imageSettings.dropShadowOffsetX);
@@ -196,7 +194,7 @@ async function regenerateStyledImage(character:Character):Promise<void> {
 
     // border
     if (imageSettings.useBorder.get()) {
-        bloodImage.addBorder(imageSettings.borderBlur.get(), imageSettings.borderThresholdMin.get(), imageSettings.borderThresholdMax.get());
+        bloodImage.addBorder(imageSettings.borderIntensity.get());
     }
 
     // dropshadow

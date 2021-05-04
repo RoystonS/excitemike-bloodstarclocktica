@@ -89,14 +89,24 @@ export default class BloodImage {
      * modifieds image in place
      * Adds a border along edges (based on alpha)
      */
-    addBorder(blurSize:number, alphaThreshMin:number, alphaThreshMax:number):void {
-        const byteMax = toByte(255 * alphaThreshMax);
-        const byteMin = toByte(255 * alphaThreshMin);
-        const overlay = this
-            .edgeDetect()
-            .gaussianBlurChannel(3, blurSize);
-        overlay.transformChannel(3, alpha => toByte(255 * (alpha - byteMin) / (byteMax - byteMin)));
-        this.alphaComposite(overlay);
+    addBorder(intensity:number):void {
+        if (intensity === 0) {
+            this.alphaComposite(this.edgeDetect());
+        } else {
+            const overlay = this.edgeDetect().gaussianBlurChannel(3, intensity);
+
+            // even though edge detect in theory left everything white, HTML canvas uses premultiplied alpha
+            // and getting that color back out is lossy, so this has to change RGB to white as well
+            if (intensity > 1) {
+                overlay.transform((_r:number,_g:number,_b:number,a:number) => [
+                    255,
+                    255,
+                    255,
+                    toByte(255 * intensity * a / 255)]
+                );
+            }
+            this.alphaComposite(overlay);
+        }
     }
 
     /**
@@ -435,7 +445,7 @@ export default class BloodImage {
     }
 
     /**
-     * edit pixels fo a channel in place
+     * edit channel values in place
      */
     transformChannel(channel:number, cb:(x:number)=>number):void {
         const imageData = this.ctx.getImageData(0, 0, this.width, this.height);
@@ -447,6 +457,31 @@ export default class BloodImage {
             for (let x = 0; x < w; ++x) {
                 const i = (x + y * this.width) * 4;
                 pixels[i + channel] = toByte(cb(pixels[i + channel]));
+            }
+        }
+        this.ctx.putImageData(imageData, 0, 0);
+    }
+
+    /** edit pixel values in place */
+    transform(cb:(r:number, g:number, b:number, a:number)=>[number,number,number,number]):void {
+        const imageData = this.ctx.getImageData(0, 0, this.width, this.height);
+        const pixels = imageData.data;
+
+        const w = this.width;
+        const h = this.height;
+        for (let y = 0; y < h; ++y) {
+            for (let x = 0; x < w; ++x) {
+                const i = (x + y * this.width) * 4;
+                const [r,g,b,a] = cb(
+                    pixels[i + 0],
+                    pixels[i + 1],
+                    pixels[i + 2],
+                    pixels[i + 3]
+                );
+                pixels[i + 0] = toByte(r);
+                pixels[i + 1] = toByte(g);
+                pixels[i + 2] = toByte(b);
+                pixels[i + 3] = toByte(a);
             }
         }
         this.ctx.putImageData(imageData, 0, 0);

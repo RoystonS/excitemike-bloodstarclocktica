@@ -31,17 +31,9 @@ export class CharacterImageSettings extends ObservableObject<CharacterImageSetti
     @observableProperty
     readonly useBorder = new Property(true);
 
-    /** amount of Gaussian blur used when creating the border. default: 3 */
+    /** scales the spreading of the border from where edges were detected. default: 3 */
     @observableProperty
-    readonly borderBlur = new Property(3);
-
-    /** lower alpha threshold for counting as a border pixel after Gaussian. default: 0.3 */
-    @observableProperty
-    readonly borderThresholdMin = new Property(0.3);
-
-    /** upper alpha threshold for counting as a border pixel after Gaussian. default: 0.45 */
-    @observableProperty
-    readonly borderThresholdMax = new Property(0.45);
+    readonly borderIntensity = new Property(3);
 
     /** whether to apply a dropshadow to the character icon. default: true */
     @observableProperty
