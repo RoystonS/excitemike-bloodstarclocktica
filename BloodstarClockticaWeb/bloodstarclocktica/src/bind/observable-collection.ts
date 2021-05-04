@@ -91,12 +91,14 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     /** add multiple items to the end of the collection */
     addMany(items:ReadonlyArray<ItemType>):void {
         const itemsPlus:ReadonlyArray<ItemPlus<ItemType>> = items.map(item=>this.makeItemPlus(this.items.length, item));
+        const oldNumItems = this.items.length;
         this.items.push(...itemsPlus);
+        this.updateIndices(oldNumItems);
         this.notifyCollectionChangedListeners({
             list: this,
             action: ObservableCollectionChangeAction.Add,
             newItems: items,
-            newStartingIndex: this.items.length-1,
+            newStartingIndex: oldNumItems,
             oldItems: [],
             oldStartingIndex: -1
         });
@@ -166,6 +168,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     insert(i:number, item:ItemType):void {
         const itemPlus:ItemPlus<ItemType> = this.makeItemPlus(i, item);
         this.items.splice(i, 0, itemPlus);
+        this.updateIndices(i+1);
         this.notifyCollectionChangedListeners({
             list: this,
             action: ObservableCollectionChangeAction.Add,
@@ -174,7 +177,6 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
             oldItems: [],
             oldStartingIndex: -1
         });
-        this.updateIndices(i+1);
     }
 
     /** calls a callback on each item, returns array of results */
@@ -187,6 +189,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
         const item = this.items[oldIndex];
         this.items.splice(oldIndex, 1);
         this.items.splice(newIndex, 0, item);
+        this.updateIndices(Math.min(oldIndex, newIndex));
         this.notifyCollectionChangedListeners({
             list: this,
             action: ObservableCollectionChangeAction.Move,
@@ -195,7 +198,6 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
             oldItems: [],
             oldStartingIndex: oldIndex
         });
-        this.updateIndices(Math.min(oldIndex, newIndex));
     }
 
     /** find value in the collection and swap it with the item after it, if any */
@@ -217,6 +219,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
         const itemPlus = this.items[i];
         this.cleanupItemPlus(itemPlus);
         this.items.splice(i, 1);
+        this.updateIndices(i);
         this.notifyCollectionChangedListeners({
             list: this,
             action: ObservableCollectionChangeAction.Remove,
@@ -225,7 +228,6 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
             oldItems: [itemPlus.item],
             oldStartingIndex: i
         });
-        this.updateIndices(i);
     }
 
     /** replace an item in the collection */
