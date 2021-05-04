@@ -7,15 +7,15 @@
 
 export class EditionMeta extends ObservableObject<EditionMeta> {
     /** who to credit for the edition */
-    @observableProperty
+    @observableProperty()
     readonly author = new Property<string>('');
 
     /** logo image for the edition */
-    @observableProperty
+    @observableProperty()
     readonly logo = new Property<string|null>(null);
 
     /** what the edition is called */
-    @observableProperty
+    @observableProperty()
     readonly name = new Property<string>('New Edition');
 
     constructor() {

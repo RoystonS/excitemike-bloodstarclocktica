@@ -6,9 +6,9 @@ import {Property} from '../bind/bindings';
 import {ObservableObject, observableProperty} from '../bind/observable-object';
 
 export class EditionAlmanac extends ObservableObject<EditionAlmanac> {
-    @observableProperty
+    @observableProperty()
     readonly synopsis = new Property<string>('');
-    @observableProperty
+    @observableProperty()
     readonly overview = new Property<string>('');
 
     constructor() {

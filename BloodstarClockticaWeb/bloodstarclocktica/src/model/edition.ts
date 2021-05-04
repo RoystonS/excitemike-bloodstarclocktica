@@ -30,41 +30,41 @@ function deserializeFromIds(object:ObservableObject<any>, nightOrder:ObservableT
 /** observable properties for a custom edition */
 export class Edition extends ObservableObject<Edition> {
     /** almanac-specific edition data */
-    @observableChild
+    @observableChild()
     readonly almanac = new EditionAlmanac();
 
     /** characters in the edition */
-    @observableCollection
+    @observableCollection()
     readonly characterList = new ObservableCollection(Character);
 
     /** true when there are unsaved changes */
-    @observableProperty
+    @observableProperty()
     readonly dirty = new Property<boolean>(false);
 
     /** contains the same Character objects as characterList, but ordered for night order */
     @customSerialize(serializeJustIds, deserializeFromIds)
-    @observableCollection
+    @observableCollection()
     readonly firstNightOrder = new ObservableCollection(Character);
 
     /** data about the edition */
-    @observableChild
+    @observableChild()
     readonly meta = new EditionMeta();
 
     /** contains the same Character objects as characterList, but ordered for night order */
     @customSerialize(serializeJustIds, deserializeFromIds)
-    @observableCollection
+    @observableCollection()
     readonly otherNightOrder = new ObservableCollection(Character);
     
     /** whether to render preview on a character token background like you would see on clocktower.online */
-    @observableProperty
+    @observableProperty()
     readonly previewOnToken = new Property<boolean>(true);
 
     /** name to use when saving */
-    @observableProperty
+    @observableProperty()
     readonly saveName = new Property<string>('');
 
     /** what to show as the current file and its status */
-    @observableProperty
+    @observableProperty()
     readonly windowTitle = new Property<string>('Bloodstar Clocktica');
 
     /** create new edition */

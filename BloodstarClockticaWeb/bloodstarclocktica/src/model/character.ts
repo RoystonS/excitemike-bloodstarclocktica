@@ -9,55 +9,55 @@ import {BLOODTEAM_OPTIONS, BloodTeam} from '../model/blood-team';
 import {CharacterImageSettings} from '../model/character-image-settings';
 
 export class Character extends ObservableObject<Character> {
-    @observableProperty
+    @observableProperty()
     readonly ability = new Property<string>('');
 
-    @observableProperty
+    @observableProperty()
     readonly attribution = new Property<string>('');
     
-    @observableChild
+    @observableChild()
     readonly almanac = new CharacterAlmanac();
     
-    @observableProperty
+    @observableProperty()
     readonly characterReminderTokens = new Property<string>('');
     
-    @observableProperty
+    @observableProperty()
     readonly export = new Property<boolean>(true);
 
-    @observableProperty
+    @observableProperty()
     readonly firstNightOrdinal = new Property<string>('-');
     
-    @observableProperty
+    @observableProperty()
     readonly firstNightReminder = new Property<string>('');
     
-    @observableProperty
+    @observableProperty()
     readonly globalReminderTokens = new Property<string>('');
     
-    @observableProperty
+    @observableProperty()
     readonly id = new Property<string>('newcharacter');
     
-    @observableChild
+    @observableChild()
     readonly imageSettings = new CharacterImageSettings();
 
-    @observableProperty
+    @observableProperty()
     readonly name = new Property<string>('New Character');
 
-    @observableProperty
+    @observableProperty()
     readonly otherNightOrdinal = new Property<string>('-');
     
-    @observableProperty
+    @observableProperty()
     readonly otherNightReminder = new Property<string>('');
     
-    @observableProperty
+    @observableProperty()
     readonly setup = new Property<boolean>(false);
     
-    @observableProperty
+    @observableProperty()
     readonly styledImage = new Property<string|null>(null);
     
-    @observableProperty
+    @observableProperty()
     readonly team = new EnumProperty<BloodTeam>(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS);
     
-    @observableProperty
+    @observableProperty()
     readonly unStyledImage = new Property<string|null>(null);
 
     constructor() {

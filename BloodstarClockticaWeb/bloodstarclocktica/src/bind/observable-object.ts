@@ -26,23 +26,26 @@ export function customSerialize(
 }
 
 /** decorator to make the ObservableObject manage the child observable */
-export const observableChild:PropertyDecorator = (target:any, propertyKey:string|symbol):void => {
-    // TODO: set serializable
-    target._queueInitChild(propertyKey);
+export function observableChild(serializable:boolean = true):PropertyDecorator {
+    return (target:any, propertyKey:string|symbol):void => {
+        target._queueInitChild(propertyKey, serializable);
 };
+}
 
 /** decorator to make the ObservableObject manage the collection */
-export const observableCollection:PropertyDecorator = (target:any, propertyKey:string|symbol):void => {
-    // TODO: set serializable
-    target._queueInitCollection(propertyKey);
+export function observableCollection(serializable:boolean = true):PropertyDecorator {
+    return (target:any, propertyKey:string|symbol):void => {
+        target._queueInitCollection(propertyKey, serializable);
 };
+}
 
 /** decorator to make the ObservableObject manage the property */
-export const observableProperty:PropertyDecorator = (target:any, propertyKey:string|symbol):void => {
-    // TODO: set serializable
+export function observableProperty(serializable:boolean = true):PropertyDecorator {
+    return (target:any, propertyKey:string|symbol):void => {
     if (!(target instanceof ObservableObject)){return;}
-    target._queueInitProperty(propertyKey);
+        target._queueInitProperty(propertyKey, serializable);
 };
+}
 
 /** extend this to advertise your properties and changes to them */
 export abstract class ObservableObject<T> {
@@ -54,6 +57,7 @@ export abstract class ObservableObject<T> {
     private observableChildren = new Map<keyof T, ObservableObject<any>>();
     private properties = new Map<keyof T, Property<FieldType>>();
     private propertyChangedListeners:PropertyChangedListener<T>[] = [];
+    private unserializableFields?:Set<PropKey<T>>;
 
     /** trigger a reminder if a developer forgets to make the subclass call init */
     constructor() {
@@ -61,20 +65,32 @@ export abstract class ObservableObject<T> {
     }
 
     /** called by decorator to schedule work in constructor */
-    _queueInitChild(key:PropKey<T>):void {
+    _queueInitChild(key:PropKey<T>, serializable:boolean):void {
         if (!this.___queuedChildInit) {this.___queuedChildInit=[];}
+        if (!serializable) {
+            if (!this.unserializableFields) {this.unserializableFields=new Set<PropKey<T>>();}
+            this.unserializableFields.add(key);
+        }
         this.___queuedChildInit.push(key);
     }
 
     /** called by decorator */
-    _queueInitCollection(key:PropKey<T>): void {
+    _queueInitCollection(key:PropKey<T>, serializable:boolean): void {
         if (!this.___queuedCollectionInit) {this.___queuedCollectionInit=[];}
+        if (!serializable) {
+            if (!this.unserializableFields) {this.unserializableFields=new Set<PropKey<T>>();}
+            this.unserializableFields.add(key);
+        }
         this.___queuedCollectionInit.push(key);
     }
 
     /** called by decorator */
-    _queueInitProperty(key:PropKey<T>):void {
+    _queueInitProperty(key:PropKey<T>, serializable:boolean):void {
         if (!this.___queuedPropInit) {this.___queuedPropInit=[];}
+        if (!serializable) {
+            if (!this.unserializableFields) {this.unserializableFields=new Set<PropKey<T>>();}
+            this.unserializableFields.add(key);
+        }
         this.___queuedPropInit.push(key);
     }
 
@@ -137,18 +153,21 @@ export abstract class ObservableObject<T> {
     /** inverse operation from serialize */
     deserialize(data:{[key:string]:FieldType}):void {
         for (const [key, child] of this.observableChildren) {
+            if (this.unserializableFields && this.unserializableFields.has(key)) { continue; }
             if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
             const childData = data[String(key)];
             if ((childData !== null) &&
                 (typeof childData !== 'string') &&
                 (typeof childData !== 'number') &&
                 (typeof childData !== 'boolean') &&
-                !Array.isArray(childData) ) {
+                !Array.isArray(childData) )
+            {
                 // TODO: check serializable
                 child.deserialize(childData);
             }
         }
         for (const [key, collection] of this.collections) {
+            if (this.unserializableFields && this.unserializableFields.has(key)) { continue; }
             if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
             const collectionData = data[String(key)];
             if (Array.isArray(collectionData)) {
@@ -157,6 +176,7 @@ export abstract class ObservableObject<T> {
             }
         }
         for (const [key, property] of this.properties) {
+            if (this.unserializableFields && this.unserializableFields.has(key)) { continue; }
             if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
             const stringKey = String(key);
             const propertyData = data.hasOwnProperty(stringKey) ? data[stringKey] : property.getDefault();
@@ -166,6 +186,7 @@ export abstract class ObservableObject<T> {
 
         if (this.customSerializeTable) {
             for (const [key,{d}] of this.customSerializeTable) {
+                if (this.unserializableFields && this.unserializableFields.has(key)) { continue; }
                 const observableField = this.properties.get(key)||this.collections.get(key)||this.observableChildren.get(key);
                 if (!observableField) {continue;}
                 d(this, observableField, data[String(key)]);
@@ -243,17 +264,17 @@ export abstract class ObservableObject<T> {
         const converted:{[key:string]:FieldType} = {};
 
         for (const [key, child] of this.observableChildren) {
-            // TODO: check serializable
+            if (this.unserializableFields && this.unserializableFields.has(key)) { continue; }
             if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
             converted[String(key)] = child.serialize();
         }
         for (const [key, collection] of this.collections) {
-            // TODO: check serializable
+            if (this.unserializableFields && this.unserializableFields.has(key)) { continue; }
             if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
             converted[String(key)] = collection.serialize();
         }
         for (const [key, property] of this.properties) {
-            // TODO: check serializable
+            if (this.unserializableFields && this.unserializableFields.has(key)) { continue; }
             if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
             converted[String(key)] = property.get();
         }

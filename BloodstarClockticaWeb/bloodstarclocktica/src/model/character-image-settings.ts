@@ -8,51 +8,51 @@ import {ObservableObject, observableProperty} from '../bind/observable-object';
 export class CharacterImageSettings extends ObservableObject<CharacterImageSettings> {
 
     /** whether to restyle the image at all. default: true */
-    @observableProperty
+    @observableProperty()
     readonly shouldRestyle = new Property(true);
 
     /** whether to crop the image to just the visible portions before processing further */
-    @observableProperty
+    @observableProperty()
     readonly shouldReposition = new Property(true);
 
     /** whether to colorize the image. default: true */
-    @observableProperty
+    @observableProperty()
     readonly shouldColorize = new Property(true);
 
     /** whether to use teal for outsiders instead of blue, orange for minions instead of red. default: true */
-    @observableProperty
+    @observableProperty()
     readonly useOutsiderAndMinionColors = new Property(true);
 
     /** whether to apply the grunge texture to the character icon. default: true */
-    @observableProperty
+    @observableProperty()
     readonly useTexture = new Property(true);
 
     /** whether to add a border to the character icon. default: true */
-    @observableProperty
+    @observableProperty()
     readonly useBorder = new Property(true);
 
     /** scales the spreading of the border from where edges were detected. default: 3 */
-    @observableProperty
+    @observableProperty()
     readonly borderIntensity = new Property(3);
 
     /** whether to apply a dropshadow to the character icon. default: true */
-    @observableProperty
+    @observableProperty()
     readonly useDropshadow = new Property(true);
 
     /** amount of blur applied to the dropshadow. default: 16 */
-    @observableProperty
+    @observableProperty()
     readonly dropShadowSize = new Property(16);
 
     /** horizontal offset of drop shadow. default: 0 */
-    @observableProperty
+    @observableProperty()
     readonly dropShadowOffsetX = new Property(0);
 
     /** vertical offset of drop shadow. default: 10 */
-    @observableProperty
+    @observableProperty()
     readonly dropShadowOffsetY = new Property(10);
 
     /** opacity of drop shadow. default: 0.5 */
-    @observableProperty
+    @observableProperty()
     readonly dropShadowOpacity = new Property<number>(0.5);
 
     constructor() {

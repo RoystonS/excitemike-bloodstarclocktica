@@ -12,13 +12,11 @@ export class Property<T/* extends FieldType*/> {
     private defaultValue:T;
     private value:T;
     private listeners:PropertyChangeListener<T>[];
-    private serializable:boolean;
 
     constructor(value:T) {
         this.defaultValue = value;
         this.value = value;
         this.listeners = [];
-        this.serializable = true;
     }
     set(value:T) {
         if (this.value !== value) {
@@ -33,7 +31,6 @@ export class Property<T/* extends FieldType*/> {
         this.listeners.push(cb);
     }
     getDefault():T {return this.defaultValue;}
-    getSerializable():boolean { return this.serializable; }
     isDefault():boolean { return this.value === this.defaultValue; }
     removeListener(cb:PropertyChangeListener<T>) {
         this.listeners = this.listeners.filter(i=>i!==cb);
@@ -43,9 +40,6 @@ export class Property<T/* extends FieldType*/> {
     }
     reset():void {
         this.set(this.defaultValue);
-    }
-    setSerializable(serializable:boolean):void {
-        this.serializable = serializable;
     }
     private notifyListeners() {
         const backup = this.listeners.concat();

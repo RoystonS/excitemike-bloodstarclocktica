@@ -7,19 +7,19 @@ import {Property} from '../bind/bindings';
 import {ObservableObject, observableProperty} from '../bind/observable-object';
 
 export class CharacterAlmanac extends ObservableObject<CharacterAlmanac> {
-    @observableProperty
+    @observableProperty()
     readonly examples = new Property<string>('');
     
-    @observableProperty
+    @observableProperty()
     readonly flavor = new Property<string>('');
     
-    @observableProperty
+    @observableProperty()
     readonly howToRun = new Property<string>('');
     
-    @observableProperty
+    @observableProperty()
     readonly overview = new Property<string>('');
     
-    @observableProperty
+    @observableProperty()
     readonly tip = new Property<string>('');
 
     constructor() {
