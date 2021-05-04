@@ -8,7 +8,8 @@
     min-width:24px;
 }
 #characterPane > details[open] {
-    width:300px;
+    width: 20vw;
+    min-width:300px;
 }
 #characterPane > details > summary {
     text-orientation: mixed;
@@ -45,7 +46,6 @@ ol#characterList {
     left: 0;
     top: 0;
     bottom: 0;
-    width:300px;
     user-select: none;
 }
 .characterListItem{

@@ -36,6 +36,8 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
     bindTrackedImageChooser('characterUnstyledImageInput', character.unStyledImage, characterTabIds);
     bindTrackedImageDisplay('characterStyledImageDisplay', character.styledImage, characterTabIds);
 
+    bindTrackedText('curvedCharacterName', character.name, characterTabIds);
+
     const sliderHelper = (id:string, p:Property<number>) => {
         bindTrackedSlider(id, `${id}ValueLabel`, p, characterTabIds);
     };

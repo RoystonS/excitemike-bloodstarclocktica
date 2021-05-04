@@ -184,6 +184,14 @@
                                 <div id="characterImagePreview">
                                     <img class="userImage" id="tokenBackground" height="200px"/>
                                     <img class="userImage" id="characterStyledImageDisplay" height="200px"/>
+                                    <div id="curvedCharacterNameHolder">
+                                        <svg class="curvedCharacterName" viewBox="0 0 150 150">
+                                            <path d="M 13 75 C 13 160, 138 160, 138 75" id="characterNameCurvePath" fill="transparent"></path>
+                                            <text class="curvedCharacterNameText" width="150" x="66.67%" text-anchor="middle" font-size="110%">
+                                                <textPath xlink:href="#characterNameCurvePath" id="curvedCharacterName">Character Name</textPath>
+                                            </text>
+                                        </svg>
+                                    </div>
                                 </div>
                             </div>
                         </div>

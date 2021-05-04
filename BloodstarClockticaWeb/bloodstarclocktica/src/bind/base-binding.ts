@@ -58,15 +58,15 @@ export type SyncFromPropertyToElementFn<ValueType> = ((v:ValueType)=>void) | nul
 
 /** shared code between binding classes */
 export class BaseBinding<ValueType extends FieldType> {
-    private element:HTMLElement|null;
+    private htmlElement:HTMLElement|null;
     private property:Property<ValueType>|null;
     private eventName:string;
     private syncFromElementToProperty:SyncFromElementToPropertyFn;
     private syncFromPropertyToElement:SyncFromPropertyToElementFn<ValueType>;
 
     /** set up the binding and bookkeeping for cleanup */
-    constructor(element:HTMLElement, property:Property<ValueType>, eventName:string, syncFromElementToProperty:SyncFromElementToPropertyFn, syncFromPropertyToElement:SyncFromPropertyToElementFn<ValueType>) {
-        this.element = element;
+    constructor(node:Node, property:Property<ValueType>, eventName:string, syncFromElementToProperty:SyncFromElementToPropertyFn, syncFromPropertyToElement:SyncFromPropertyToElementFn<ValueType>) {
+        this.htmlElement = (node instanceof HTMLElement) ? node : null;
         this.property = property;
         this.eventName = eventName;
 
@@ -75,8 +75,8 @@ export class BaseBinding<ValueType extends FieldType> {
 
         if (syncFromPropertyToElement) { syncFromPropertyToElement(property.get()); }
 
-        if (syncFromElementToProperty) {
-            element.addEventListener(eventName, syncFromElementToProperty);
+        if (this.htmlElement && syncFromElementToProperty) {
+            this.htmlElement.addEventListener(eventName, syncFromElementToProperty);
         }
         if (syncFromPropertyToElement) {
             property.addListener(syncFromPropertyToElement);
@@ -85,15 +85,15 @@ export class BaseBinding<ValueType extends FieldType> {
 
     /** clean up */
     destroy() {
-        if (this.syncFromElementToProperty !== null) {
-            this.element?.removeEventListener(this.eventName, this.syncFromElementToProperty);
+        if (this.htmlElement && this.syncFromElementToProperty) {
+            this.htmlElement.removeEventListener(this.eventName, this.syncFromElementToProperty);
             this.syncFromElementToProperty = null;
         }
-        if (this.syncFromPropertyToElement !== null) {
+        if (this.syncFromPropertyToElement) {
             this.property?.removeListener(this.syncFromPropertyToElement);
             this.syncFromPropertyToElement = null;
         }
-        this.element = null;
+        this.htmlElement = null;
         this.property = null;
     }
 

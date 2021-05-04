@@ -48,11 +48,13 @@ class CheckboxBinding extends BaseBinding<boolean> {
 
 /** binding between a label, input text, ot text area element and a string property */
 class TextBinding extends BaseBinding<string> {
-    constructor(element:HTMLElement, property:Property<string>) {
-        if ((element instanceof HTMLTextAreaElement) || (element instanceof HTMLInputElement)) {
-            super(element, property, 'input', _=>property.set(element.value), v=>element.value=v);
+    constructor(node:Node, property:Property<string>) {
+        if ((node instanceof HTMLTextAreaElement) || (node instanceof HTMLInputElement)) {
+            super(node, property, 'input', _=>property.set(node.value), v=>node.value=v);
+        } else if (node instanceof HTMLElement) {
+            super(node, property, '', null, v=>node.innerText=v);
         } else {
-            super(element, property, '', null, v=>element.innerText=v);
+            super(node, property, '', null, v=>node.textContent=v);
         }
     }
 }
@@ -114,15 +116,15 @@ export function bindComboBoxById<ValueType extends FieldType>(id:string, enumPro
     }
 }
 
-/** bind a string property to a label, input text, or text area element */
-export function bindText(element:HTMLElement, property:Property<string>):void {
+/** bind a string property to a label, input text, text area, or even SVG element */
+export function bindText(element:Node, property:Property<string>):void {
     bindings.set(element, new TextBinding(element, property));
 }
 
 /** bind a string property to a label, input text, or text area element */
 export function bindTextById(id:string, property:Property<string>):void {
     const element = document.getElementById(id);
-    if (element instanceof HTMLElement) {
+    if (element instanceof Node) {
         bindText(element, property);
     }
 }

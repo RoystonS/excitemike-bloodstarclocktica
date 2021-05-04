@@ -1,5 +1,4 @@
 import * as BloodBind from './bind/bindings';
-import { ObservableCollection } from './bind/observable-collection';
 import * as BloodNewOpen from "./dlg/blood-new-open-dlg";
 import * as SpinnerDlg from './dlg/spinner-dlg';
 import * as LoginDlg from "./dlg/blood-login-dlg";
@@ -8,7 +7,7 @@ import * as BloodIO from "./blood-io";
 import {Character} from "./model/character";
 import {Edition} from "./model/edition";
 import {initNightOrderBindings} from './night-order';
-import {hookupClickEvents, walkHTMLElements} from './util';
+import {hookupClickEvents} from './util';
 import './styles/main.css';
 import './styles/autogrowtextarea.css';
 import './styles/characterlist.css';
@@ -22,118 +21,15 @@ import './styles/tabs.css';
 import * as CharacterTab from './character-tab';
 import { ProcessImageSettings } from './blood-image';
 import Images from './images';
+import { bindCharacterList } from './character-list';
 
 let edition = new Edition();
 let username = '';
 let password = '';
 const selectedCharacter = new BloodBind.Property<Character|null>(null);
 
-// TODO: move characterlist stuff to another module
-
-/** need to track the listeners we add so that we can remove them */
-const characterListCleanupSideTable = new Map<HTMLElement, BloodBind.PropertyChangeListener<Character|null>>();
-
 // TODO: exceptions in promises need to surface somewhere (test without internet connection!)
 
-/**
- * create the HTMLElement for an item in the character list
- * @param character character for which we are making a list item
- * @returns HTMLElement to represent that character
- */
-function makeCharacterListItem(character: Character, collection:ObservableCollection<Character>):HTMLElement {
-    const row = document.createElement("div");
-    row.className = "characterListItem";
-    row.tabIndex = 0;
-    row.onclick = e => { 
-        if (e.target === row) {
-            selectedCharacter.set(character);
-            tabClicked('charTabBtn','charactertab');
-        }
-    }
-    row.onkeyup = e => {
-        switch (e.code) {
-            case 'Space':
-            case 'Enter':
-                selectedCharacter.set(character);
-                tabClicked('charTabBtn','charactertab');
-                break;
-        }
-    }
-
-    {
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        BloodBind.bindCheckbox(checkbox, character.export);
-        row.appendChild(checkbox);
-    }
-
-    {
-        const nameElement = document.createElement("span");
-        nameElement.className = "characterListName";
-        BloodBind.bindText(nameElement, character.name);
-        row.appendChild(nameElement);
-    }
-
-    {
-        const up = document.createElement("button");
-        up.className = "characterListButton";
-        up.innerText = "▲";
-        up.onclick = () => collection.moveItemUp(character);
-        row.appendChild(up);
-    }
-
-    {
-        const down = document.createElement("button");
-        down.className = "characterListButton";
-        down.innerText = "▼";
-        down.onclick = () => collection.moveItemDown(character);
-        row.appendChild(down);
-    }
-
-    {
-        const del = document.createElement("button");
-        del.className = "characterListButton";
-        del.innerText = "Delete";
-        // TODO: confirm delete
-        del.onclick = () => collection.deleteItem(character);
-        row.appendChild(del);
-    }
-
-    const cb = (selectedCharacter:Character|null):void => {
-        if (selectedCharacter === character) {
-            row.classList.add('characterListItemSelected');
-        } else {
-            row.classList.remove('characterListItemSelected');
-        }
-    };
-    selectedCharacter.addListener(cb);
-    characterListCleanupSideTable.set(row, cb);
-
-    return row;
-};
-
-/** recurses though children of element cleaning up click events and bindings */
-function cleanupListItem(element: Node, character: Character): void {
-    if (selectedCharacter.get() === character) {
-        selectedCharacter.set(null);
-    }
-
-    if (element instanceof HTMLElement) {
-        walkHTMLElements(element, htmlElement=>{
-            htmlElement.onclick = null;
-            BloodBind.unbindElement(htmlElement);
-        });
-
-        // cleanup listener from makeCharacterListItem
-        {
-            const cb = characterListCleanupSideTable.get(element);
-            if (cb) {
-                selectedCharacter.removeListener(cb);
-            }
-            characterListCleanupSideTable.delete(element);
-        }
-    }
-}
 
 /** add a new character to the custom edition */
 function addCharacterClicked(_: Event): void {
@@ -331,12 +227,7 @@ function initBindings():void {
         BloodBind.bindVisibility(tokenBackground, edition.previewOnToken);
     }
 
-    BloodBind.bindCollectionById(
-        'characterList',
-        edition.characterList,
-        makeCharacterListItem,
-        cleanupListItem
-    );
+    bindCharacterList('characterList', edition.characterList, selectedCharacter);
 
     initNightOrderBindings(edition);
     
