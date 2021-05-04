@@ -128,12 +128,12 @@
                                         <div class="fieldgroup">
                                             <div class="imageSettingsGrid">
                                                 <!-- TODO: tooltips! -->
-                                                <label for="shouldRestyle">Restyle Image</label>
-                                                <input type="checkbox" name="shouldRestyle" id="shouldRestyle">
+                                                <label for="shouldRestyle" title="Whether to restyle the image at all.">Restyle Image</label>
+                                                <input type="checkbox" name="shouldRestyle" id="shouldRestyle" title="Whether to restyle the image at all.">
                                                 <div></div>
 
-                                                <label for="shouldTrim">Trim Image</label>
-                                                <input type="checkbox" name="shouldTrim" id="shouldTrim">
+                                                <label for="shouldReposition">Reposition Image</label>
+                                                <input type="checkbox" name="shouldReposition" id="shouldReposition">
                                                 <div></div>
                                                 
                                                 <label for="shouldColorize">Colorize</label>
@@ -185,10 +185,10 @@
                                     <img class="userImage" id="tokenBackground" height="200px"/>
                                     <img class="userImage" id="characterStyledImageDisplay" height="200px"/>
                                     <div id="curvedCharacterNameHolder">
-                                        <svg class="curvedCharacterName" viewBox="0 0 150 150">
+                                        <svg class="curvedCharacterNameSvg" viewBox="0 0 150 150">
                                             <path d="M 13 75 C 13 160, 138 160, 138 75" id="characterNameCurvePath" fill="transparent"></path>
-                                            <text class="curvedCharacterNameText" width="150" x="66.67%" text-anchor="middle" font-size="110%">
-                                                <textPath xlink:href="#characterNameCurvePath" id="curvedCharacterName">Character Name</textPath>
+                                            <text width="150" x="66.67%" text-anchor="middle">
+                                                <textPath xlink:href="#characterNameCurvePath" id="curvedCharacterNameTextPath">/textPath>
                                             </text>
                                         </svg>
                                     </div>

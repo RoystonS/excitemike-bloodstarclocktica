@@ -36,14 +36,14 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
     bindTrackedImageChooser('characterUnstyledImageInput', character.unStyledImage, characterTabIds);
     bindTrackedImageDisplay('characterStyledImageDisplay', character.styledImage, characterTabIds);
 
-    bindTrackedText('curvedCharacterName', character.name, characterTabIds);
+    bindTrackedText('curvedCharacterNameTextPath', character.name, characterTabIds);
 
     const sliderHelper = (id:string, p:Property<number>) => {
         bindTrackedSlider(id, `${id}ValueLabel`, p, characterTabIds);
     };
 
     bindTrackedCheckBox('shouldRestyle', character.imageSettings.shouldRestyle, characterTabIds);
-    bindTrackedCheckBox('shouldTrim', character.imageSettings.shouldTrim, characterTabIds);
+    bindTrackedCheckBox('shouldReposition', character.imageSettings.shouldReposition, characterTabIds);
     bindTrackedCheckBox('shouldColorize', character.imageSettings.shouldColorize, characterTabIds);
     bindTrackedCheckBox('useOutsiderAndMinionColors', character.imageSettings.useOutsiderAndMinionColors, characterTabIds);
     bindTrackedCheckBox('useTexture', character.imageSettings.useTexture, characterTabIds);
@@ -162,7 +162,7 @@ async function regenerateStyledImage(character:Character):Promise<void> {
     let bloodImage = await urlToBloodImage(unstyledImage, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
 
     // crop
-    if (imageSettings.shouldTrim.get()) {
+    if (imageSettings.shouldReposition.get()) {
         bloodImage = bloodImage.trim();
     }
 
@@ -179,14 +179,18 @@ async function regenerateStyledImage(character:Character):Promise<void> {
     }
 
     // make full size image with icon pasted into the correct place
-    bloodImage = new BloodImage([ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT])
-        .pasteZoomed(
-            bloodImage,
-            ProcessImageSettings.USABLE_REGION_X,
-            ProcessImageSettings.USABLE_REGION_Y,
-            ProcessImageSettings.USABLE_REGION_WIDTH,
-            ProcessImageSettings.USABLE_REGION_HEIGHT
-        );
+    if (imageSettings.shouldReposition.get()) {
+        bloodImage = new BloodImage([ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT])
+            .pasteZoomed(
+                bloodImage,
+                ProcessImageSettings.USABLE_REGION_X,
+                ProcessImageSettings.USABLE_REGION_Y,
+                ProcessImageSettings.USABLE_REGION_WIDTH,
+                ProcessImageSettings.USABLE_REGION_HEIGHT
+            );
+    } else {
+        bloodImage = bloodImage.fit(ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
+    }
 
     // texture
     if (imageSettings.useTexture.get()) {
