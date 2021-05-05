@@ -10,7 +10,7 @@ body {
 h1, h2, h3, h4, h5, h6 {
     margin:3px 0;
 }
-a, button, summary, .button {
+a, button, summary {
     color:#eee;
     text-decoration: none;
     padding:2px;
@@ -22,12 +22,21 @@ a, button, summary, .button {
     font-weight:bold;
     letter-spacing: +1px;
 }
-.button {
-    text-align: center;
-}
-a:hover, a:focus-visible, button:hover, button:focus-visible, summary:hover, summary:focus-visible, .button:hover, .button:focus-visible {
+a:hover
+, a:focus-visible
+, button:hover
+, button:focus-visible
+, summary:hover
+, summary:focus-visible
+{
     border: 1px solid #3977FF;
     background:#3977FF;
+}
+a:focus
+, button:focus
+, summary:focus
+{
+    border: 1px solid #3977FF;
 }
 input[type=text], input[type=password], textarea, select {
     background-color: #222;
@@ -37,7 +46,7 @@ input[type=text], input[type=password], textarea, select {
 input[type=text]:hover,
 input[type=text]:focus-visible,
 input[type=password]:hover,
-input[type=tepasswordxt]:focus-visible,
+input[type=password]:focus-visible,
 textarea:hover, textarea:focus-visible,
 select:hover, select:focus-visible {
     border: 1px solid #3977FF;
