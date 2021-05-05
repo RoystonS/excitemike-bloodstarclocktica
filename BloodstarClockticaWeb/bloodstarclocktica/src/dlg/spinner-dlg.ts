@@ -16,6 +16,9 @@ function init() {
     spinner.className = 'spinner';
     
     messageArea = document.createElement('span');
+    messageArea.tabIndex = 0;
+    messageArea.id = 'spinnerMsg';
+    messageArea.setAttribute('role', 'alert');
     
     ;({open:showFn, close:closeFn} = BloodDlg.init('spinnerDlg', [spinner, messageArea], []));
 }

@@ -15,7 +15,7 @@ import Images from './images';
 type TagsThatCanBeDisabled = "button" | "fieldset" | "input" | "optgroup" | "option" | "select" | "textarea";
 
 /** set up character tab bindings */
-function bindCharacterTabControls(character:Character):(()=>void)|null {    
+function bindCharacterTabControls(character:Character):(()=>void)|null {
     let characterTabIds:Set<string> = new Set<string>();
     bindTrackedText('characterId', character.id, characterTabIds);
     bindTrackedText('characterName', character.name, characterTabIds);

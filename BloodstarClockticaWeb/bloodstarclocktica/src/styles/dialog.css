@@ -1,3 +1,19 @@
+[role="alertdialog"],
+[role="dialog"] {
+    box-sizing: border-box;
+    background-color: rgba(0,0,0,0.4);
+    position:absolute;
+    left:0;
+    top:0;
+    min-width: 100vw;
+    min-height: 100vh;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+    display:flex;
+    justify-content: space-around;
+    align-items: center;
+}
+/*TODO: remove*/
 .dialogScrim {
     z-index:2;
     position:fixed;
@@ -84,4 +100,8 @@
 #stringDlg > div > input {
     margin-top:1em;
     width: 400px;
+}
+/* added to the body when a dialog is open */
+.hasDialog {
+    overflow:hidden;
 }

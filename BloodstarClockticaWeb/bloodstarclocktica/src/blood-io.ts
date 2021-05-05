@@ -53,7 +53,7 @@ export async function saveAs(username:string, password:string, edition:Edition):
 }
 
 /**
- *  show loading dialog while saving
+ * show loading dialog while saving
  * @param username login credentials
  * @param password login credentials
  * @param edition file to save
@@ -65,7 +65,7 @@ export async function save(username:string, password:string, edition:Edition):Pr
         case '':
             return await saveAs(username, password, edition);
         default:
-            return await Spinner.show(`Saving as ${saveName}`, _save(username, password, edition));
+            return await _save(username, password, edition);
     }
 }
 
@@ -195,7 +195,9 @@ async function cmd(username:string, password:string, cmdName:string, spinnerMess
     return await Spinner.show(spinnerMessage, _cmd(username, password, cmdName, body));
 }
 
-/** send a command to the server, await response */
+/**
+ * send a command to the server, await response 
+ */
 async function _cmd(username:string, password:string, cmdName:string, body?:BodyInit|null):Promise<any> {
     let response:Response;
     const base64 = btoa(`${username}:${password}`);
