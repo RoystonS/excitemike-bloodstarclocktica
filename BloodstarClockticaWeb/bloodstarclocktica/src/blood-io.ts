@@ -43,7 +43,7 @@ export async function saveAs(username:string, password:string, edition:Edition):
     const backupName = edition.saveName.get();
     try {
         edition.setSaveName(name);
-        return await Spinner.show(`Saving as ${name}`, _save(username, password, edition));
+        return !!(await Spinner.show(`Saving as ${name}`, _save(username, password, edition)));
     } catch (error) {
         edition.setSaveName(backupName);
         // TODO: Handle the error more gracefully. Explain to the user what went wrong.
@@ -270,6 +270,6 @@ async function _listFiles(username:string, password:string):Promise<string[]> {
  * @param username username
  * @param password password
  */
-export async function listFiles(username:string, password:string):Promise<string[]> {
+export async function listFiles(username:string, password:string):Promise<string[]|null> {
     return await Spinner.show('Retrieving file list', _listFiles(username, password));
 }

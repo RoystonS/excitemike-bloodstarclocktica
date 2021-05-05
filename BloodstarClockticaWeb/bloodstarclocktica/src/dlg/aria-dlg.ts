@@ -126,6 +126,9 @@ export class AriaDialog<ResultType> {
     constructor() {
     }
 
+    /** whether escape can close the dialog */
+    canCancel():boolean{return true;}
+
     /** close the dialog early. resolve result promise with specified value */
     close(value:ResultType|null = null):void {
         if (!this.resolveFn){return;}
@@ -306,7 +309,11 @@ export class AriaDialog<ResultType> {
 
 // escape to cancel current dialog
 document.addEventListener('keyup', (event:KeyboardEvent) => {
-    if ((event.code === 'Escape') && closeCurrentDialog()) {
+    if (event.code !== 'Escape') {return;}
+    const dlg = getCurrentDialog();
+    if (!dlg) {return;}
+    if (!dlg.canCancel()) {return;}
+    if (closeCurrentDialog()) {
         event.stopPropagation();
     }
 });

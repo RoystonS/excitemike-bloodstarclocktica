@@ -1,46 +1,40 @@
-// 'please wait' style spinner popup for bloodstar clocktica
-import * as BloodDlg from './blood-dlg';
+/**
+ * 'please wait' style spinner popup for bloodstar clocktica
+ * @module SpinnerDlg
+ */
+import { CreateElementsOptions } from '../util';
+import {AriaDialog} from './aria-dlg';
 
-let initted = false;
-let showFn:BloodDlg.OpenFn|null = null;
-let closeFn:BloodDlg.CloseFn|null = null;
-let count = 0;
-let messageArea:HTMLElement|null = null;
+class SpinnerDialog<T> extends AriaDialog<T> {
+    canCancel():boolean {return false;}
 
-/// prepare the dialog for use
-function init() {
-    if (initted) { return; }
-    initted = true;
+    async open(message:string, somePromise:Promise<T>):Promise<T|null> {
+        const body:CreateElementsOptions = [
+            {t:'div',css:['spinner']},
+            {t:'span',a:{tabindex:'0',role:'alert'},txt:message}
+        ];
 
-    const spinner = document.createElement('div');
-    spinner.className = 'spinner';
-    
-    messageArea = document.createElement('span');
-    messageArea.tabIndex = 0;
-    messageArea.id = 'spinnerMsg';
-    messageArea.setAttribute('role', 'alert');
-    
-    ;({open:showFn, close:closeFn} = BloodDlg.init('spinnerDlg', [spinner, messageArea], []));
+        // TODO: special case spinners on top of spinners
+
+        // do NOT await the dialog in this case
+        this.baseOpen(document.activeElement, 'spinner', body, []);
+
+        let result:T|null = null;
+        try {
+            result = await somePromise;
+        } finally {
+            this.close(result);
+        }
+        
+        return result;
+    }
 }
 
-/// show the spinner until the promise resolves
-export async function show<T>(message:string, somePromise:Promise<T>):Promise<T> {
-    if (!initted) { init(); }
-    if (!(showFn && closeFn && messageArea)) {throw new Error("no showFn");}
-
-    messageArea.innerText = message;
-
-    ++count;
-    if (1 === count) {
-        // ignore result promise
-        showFn();
-    }
-    try {
-        return await somePromise;
-    } finally {
-        --count;
-        if (0 === count) {
-            closeFn(null);
-        }
-    }
+/**
+ * show a spinner until the given promise resolves
+ * @param message message to display while waiting
+ * @param somePromise promise to spin during
+ */
+export async function show<T>(message:string, somePromise:Promise<T>):Promise<T|null> {
+    return await new SpinnerDialog<T>().open(message, somePromise);
 }

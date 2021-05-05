@@ -51,11 +51,12 @@ function repopulateFileList(fileList:string[]) {
  * bring up dialog for picking whether to open an existing file or start a new one
  * returns a promise that resolves to a name, or null if the dialog was cancelled
  */
-export async function show(username:string, password:string) {
+export async function show(username:string, password:string):Promise<string|null> {
     if (!initted) { init(); }
-    if (!showFn) { return; }
+    if (!showFn) { return null; }
 
     const files = await Spinner.show('Retrieving file list', BloodIO.listFiles(username, password));
+    if (!files) {return null;}
     repopulateFileList(files);
     return await showFn();
 }

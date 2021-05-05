@@ -37,6 +37,12 @@
     flex-flow:column;
     max-width:90vw;
 }
+.dialogBox > * {
+    margin-block-end: 1em;
+}
+.dialogBox > *:last-child {
+    margin-block-end: 0;
+}
 .dialogBox > .title {
     text-align: center;
     font-weight: bold;
@@ -55,7 +61,6 @@
     display:flex;
     flex-flow: row;
     align-self: stretch;
-    margin-top:1em;
 }
 .dialogBtnGroup > button {
     flex:1;
@@ -63,22 +68,12 @@
 .dialogBtnGroup:empty {
     display: none;
 }
-#newOpenDlg {z-index:2;}
-#open-dlg {z-index:3;}
-#sdc-dlg {z-index:4;}
-#spinnerDlg {
-    z-index:1000;
-}
-#spinnerDlg > .dialogBox {
-    align-items:center;
-}
 .openDlgList{
     display: flex;
     flex-flow: column;
     max-height: 50vh;
     max-width: 90vw;
     overflow:auto;
-    margin:0.5rem 0 0 0;
 }
 .spinner {
     display: inline-block;
@@ -90,16 +85,13 @@
     animation: spin 2.618s linear infinite;
     -webkit-animation: spin 2.618s linear infinite;
     margin-bottom: 1em;
+    align-self: center;
 }
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 @-webkit-keyframes spin {
   to { -webkit-transform: rotate(360deg); }
-}
-#stringDlg > div > input {
-    margin-top:1em;
-    width: 400px;
 }
 /* added to the body when a dialog is open */
 .hasDialog {
