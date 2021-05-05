@@ -3,26 +3,34 @@
  * @module Util
  */
 
-
 /** set event listeners for clicks, return a function you can call to undo it */
 export function hookupClickEvents(data: [string, (e: Event) => void][]):()=>void {
     for (const [id, cb] of data) {
-      const element = document.getElementById(id);
-      if (element) {
-        element.addEventListener("click", cb);
-      }
-    }
-  
-    const backupData = data;
-    return ()=>{
-      for (const [id, cb] of backupData) {
         const element = document.getElementById(id);
         if (element) {
-          element.removeEventListener("click", cb);
+            element.addEventListener("click", cb);
         }
-      }
     }
-  }
+
+    const backupData = data;
+    return ()=>{
+        for (const [id, cb] of backupData) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.removeEventListener("click", cb);
+            }
+        }
+    }
+}
+
+/** show/hide the element */
+export function showHideElement(element:Element, visible:boolean):void {
+    if (visible) {
+        element.classList.remove('hidden');
+    } else {
+        element.classList.add('hidden');
+    }
+}
 
 /** ordinal string based on number */
 export function ordinal(n:number):string {

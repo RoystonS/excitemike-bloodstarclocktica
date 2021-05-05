@@ -3,6 +3,8 @@
  * @module
  */
 
+import { showHideElement } from "../util";
+
 type ResolveFn = (value:any)=>void;
 type RejectFn = (error:any)=>void;
 type ButtonCb = ()=>Promise<any>;
@@ -29,7 +31,7 @@ function openDialog(dialog:HTMLElement, resolve:ResolveFn, reject:RejectFn) {
     if (data) {
         data.reject('dialog closed prematurely');
     }
-    dialog.style.display = 'flex';
+    showHideElement(dialog, true);
     dialogData.set(dialog, {resolve, reject});
 }
 
@@ -47,7 +49,7 @@ async function closeDialog_cb(dialog:HTMLElement, callback:ButtonCb) {
  */
 async function closeDialogAsync(dialog:HTMLElement, callback:ButtonCb) {
     try {
-        dialog.style.display = 'none';
+        showHideElement(dialog, false);
         const data = dialogData.get(dialog);
         if (!data) { return; }
         data.resolve(await callback());
@@ -62,7 +64,7 @@ async function closeDialogAsync(dialog:HTMLElement, callback:ButtonCb) {
  * promise with the provided value
  */
 function closeDialogSync(dialog:HTMLElement, result:any) {
-    dialog.style.display = 'none';
+    showHideElement(dialog, false);
     const data = dialogData.get(dialog);
     if (!data) { return; }
     data.resolve(result);
@@ -80,7 +82,7 @@ export function resolveDialog(element:HTMLElement, valueOrPromise:any) {
     if (!data) { return; }
     dialogData.delete(dialog);
     if (dialog instanceof HTMLElement) {
-        dialog.style.display = 'none';
+        showHideElement(dialog, false);
     }
     data.resolve(valueOrPromise);
 }
@@ -105,7 +107,7 @@ export function init(id:string, body:HTMLElement[], buttons:ButtonCfg[]):DialogF
     const dialog = document.createElement('div');
     dialog.className = 'dialogScrim';
     dialog.id = id;
-    dialog.style.display = 'none';
+    showHideElement(dialog, false);
 
     const box = document.createElement('div');
     box.className = 'dialogBox';

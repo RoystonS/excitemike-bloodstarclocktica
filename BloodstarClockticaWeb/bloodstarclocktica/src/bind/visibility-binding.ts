@@ -1,15 +1,14 @@
-import {BaseBinding, FieldType, Property} from './base-binding'
+import { showHideElement } from '../util';
+import {BaseBinding, Property} from './base-binding'
 
 /** one way binding to `display` property of element style to tie its visibility to a boolean property */
-export class VisibilityBinding<ValueType extends FieldType> extends BaseBinding<ValueType> {
-    constructor(element:HTMLElement, property:Property<ValueType>) {
-        const oldDisplay = element.style.display;
-        const defaultDisplay = (oldDisplay==='none')?'unset':oldDisplay;
+export class VisibilityBinding extends BaseBinding<boolean> {
+    constructor(element:HTMLElement, property:Property<boolean>) {
         super(
             element,
             property,
             '',
             null,
-            v=>element.style.display=(v?defaultDisplay:'none'));
+            v=>showHideElement(element, v))
     }
 }
