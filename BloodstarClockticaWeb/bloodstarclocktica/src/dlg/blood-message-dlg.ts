@@ -2,29 +2,23 @@
  * dialog to prompt for a string
  * @module MessageDlg
  */
+import { CreateElementsOptions } from '../util';
 import {AriaDialog} from './aria-dlg';
 
 class MessageDialog extends AriaDialog<void> {
     async open(focusAfterClose:Element|string|null, titleText:string, messageText?:string, errorMessage?:string):Promise<void|null> {
-        const body = [];
-
-        {
-            const titleElement = document.createElement('p');
-            titleElement.classList.add('title');
-            titleElement.innerText = titleText;
-            body.push(titleElement);
-        }
-
+        const body:CreateElementsOptions = [{
+            t:'p',
+            css:['title'],
+            txt:titleText
+        }];
+        
         if (messageText) {
-            const messageElement = document.createElement('p');
-            messageElement.innerText = messageText;
-            body.push(messageElement);
+            body.push({t:'p', txt:messageText});
         }
-
+        
         if (errorMessage) {
-            const errorMessageElement = document.createElement('pre');
-            errorMessageElement.innerText = errorMessage;
-            body.push(errorMessageElement);
+            body.push({t:'pre', txt:errorMessage});
         }
 
         return await this.baseOpen(

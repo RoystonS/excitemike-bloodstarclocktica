@@ -18,13 +18,13 @@ export type CreateElementOptions<K extends keyof HTMLElementTagNameMap> = {
     css?:string[],
 
     /** event listeners to add to the element */
-    events?:{[key:string]:(e:Event)=>void},
+    events?:{[key:string]:EventListenerOrEventListenerObject|undefined},
 
     /** inner text to set on the element */
     txt?:string,
 };
 
-export type CreateElementsOptions = (CreateElementOptions<keyof HTMLElementTagNameMap>|Node)[];
+export type CreateElementsOptions = (CreateElementOptions<keyof HTMLElementTagNameMap>)[];
 
 /** more concise element creation. see comments on CreateElementOptions */
 export function createElement<K extends keyof HTMLElementTagNameMap>(options:CreateElementOptions<K>):HTMLElementTagNameMap[K] {
@@ -61,7 +61,9 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(options:Cre
 
     if (eventListeners) {
         for (const eventType of Object.keys(eventListeners)) {
-            element.addEventListener(eventType, eventListeners[eventType]);
+            const listener = eventListeners[eventType];
+            if (!listener) {continue;}
+            element.addEventListener(eventType, listener);
         }
     }
 

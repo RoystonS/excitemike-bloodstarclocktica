@@ -2,40 +2,38 @@
  * dialog to prompt for a string
  * @module StringDlg
  */
+import { CreateElementsOptions } from '../util';
 import {ButtonCfg, AriaDialog} from './aria-dlg';
 
 
 class StringDialog extends AriaDialog<string> {
     async open(prompt:string, defaultValue:string, validation?:{pattern:string,hint?:string, sanitizeFn?:(inStr:string)=>string}):Promise<string|null> {
-        const body = [];
-        const sanitizeFn = (validation && validation.sanitizeFn) ? validation.sanitizeFn : null;
-
-        {
-            const messageArea = document.createElement('span');
-            messageArea.innerText = prompt;
-            messageArea.setAttribute('role', 'alert');
-            body.push(messageArea);
-        }
-
-        const inputBox = document.createElement('input');
-        {
-            inputBox.type = 'text';
-            inputBox.required = true;
-            inputBox.value = defaultValue;
-            inputBox.pattern = (validation && validation.pattern) ? validation.pattern : '';
-            inputBox.title = (validation && validation.hint) ? validation.hint : '';
-            if (sanitizeFn) {
-                inputBox.addEventListener('change', _=>{
-                    if (inputBox && !inputBox.validity.valid) {
-                        inputBox.value = sanitizeFn(inputBox.value);
-                    }
-                });
-            }
-            body.push(inputBox);
-        }
+        let enteredString = '';
+        
+        const body:CreateElementsOptions = [{
+            t:'span',
+            a:{role:'alert'},
+            txt:prompt
+        },{
+            t:'input',
+            a:{
+                required:'true',
+                type:'text',
+                value:defaultValue,
+                pattern:(validation && validation.pattern) ? validation.pattern : '',
+                title:(validation && validation.hint) ? validation.hint : ''
+            },
+            events: {change:((event:Event)=>{
+                if (!(event.target instanceof HTMLInputElement)){return;}
+                if (validation && validation.sanitizeFn) {
+                    event.target.value = validation.sanitizeFn(event.target.value);
+                }
+                enteredString = event.target.value;
+            })}
+        }];
         
         const buttons:ButtonCfg[] = [
-            {label:'Ok', callback:() => Promise.resolve(inputBox ? inputBox.value : null)},
+            {label:'Ok', callback:() => Promise.resolve(enteredString)},
             {label:'Cancel', callback:() => Promise.resolve(null)}
         ];
 
