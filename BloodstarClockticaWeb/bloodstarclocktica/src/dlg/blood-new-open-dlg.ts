@@ -1,24 +1,32 @@
+/**
+ * dialog for initial new/open prompt
+ * @module NewOpenDlg
+ */
+
 // newfile/openfile dialog for bloodstar clocktica
-import * as Bloodstar from '../bloodstar';
-import * as BloodDlg from './blood-dlg';
+import { CreateElementsOptions } from '../util';
+import {AriaDialog, ButtonCfg} from './aria-dlg';
+import {newFileClicked, openFileClicked} from '../bloodstar';
 
-let initted:boolean = false;
-let showFn:BloodDlg.OpenFn|null = null;
-let closeFn:BloodDlg.CloseFn|null = null;
-
-/// prepare the dialog for use
-function init() {
-    if (initted) { return; }
-    initted = true;
-
-    const message = document.createElement('span');
-    message.innerText = 'To get started, open an existing edition or create a new one.';
-    
-    const buttons:BloodDlg.ButtonCfg[] = [
-        {label:'Open Existing', callback:Bloodstar.openFileClicked},
-        {label:'Create New', callback:Bloodstar.newFileClicked}
-    ];
-    ;({open:showFn, close:closeFn} = BloodDlg.init('newOpenDlg', [message], buttons));
+class NewOpenDlg extends AriaDialog<boolean> {
+    canCancel():boolean{return false;}
+    async open():Promise<boolean> {
+        const body:CreateElementsOptions = [{
+            t:'p',
+            css:['title'],
+            txt:'To get started, open an existing edition or create a new one.'
+        }];
+        const buttons:ButtonCfg[] = [
+            {label:'Open Existing', callback:openFileClicked},
+            {label:'Create New', callback:newFileClicked}
+        ];
+        return !!await this.baseOpen(
+            document.activeElement,
+            'newopen',
+            body,
+            buttons
+        );
+    }
 }
 
 /**
@@ -26,14 +34,5 @@ function init() {
  * @returns promise that resolves to whether the dialog was successful
  */
 export async function show():Promise<boolean> {
-    if (!initted) { init(); }
-    if (!showFn) { return false; }
-    const result = await showFn();
-    return !!result;
-}
-
-/// take down the popup
-export function close(result:any) {
-    if (!closeFn) { return; }
-    closeFn(result);
+    return await new NewOpenDlg().open();
 }

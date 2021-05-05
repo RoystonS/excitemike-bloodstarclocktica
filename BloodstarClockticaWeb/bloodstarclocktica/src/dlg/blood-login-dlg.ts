@@ -11,6 +11,7 @@ class LoginDlg extends AriaDialog<UserPass> {
     private username:string = '';
     private password:string = '';
 
+    canCancel():boolean{return false;}
     async open(prompt:string):Promise<UserPass|null> {
         const body:CreateElementsOptions = [{
             t:'p',
