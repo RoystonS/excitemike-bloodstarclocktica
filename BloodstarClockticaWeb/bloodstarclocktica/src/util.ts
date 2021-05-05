@@ -3,6 +3,71 @@
  * @module Util
  */
 
+/** configuration used to create DOM elements */
+export type CreateElementOptions<K extends keyof HTMLElementTagNameMap> = {
+    /** tag name of the element to create */
+    t:K
+
+    /** attributes to set on the created element (used the same as a) */
+    a?:{[key:string]:string},
+
+    /** children to append or configuration used to create those children */
+    children?:CreateElementsOptions,
+
+    /** css classes to add to the element */
+    css?:string[],
+
+    /** event listeners to add to the element */
+    events?:{[key:string]:(e:Event)=>void},
+
+    /** inner text to set on the element */
+    txt?:string,
+};
+
+export type CreateElementsOptions = (CreateElementOptions<keyof HTMLElementTagNameMap>|Node)[];
+
+/** more concise element creation. see comments on CreateElementOptions */
+export function createElement<K extends keyof HTMLElementTagNameMap>(options:CreateElementOptions<K>):HTMLElementTagNameMap[K] {
+    const {a: attributes, children, css: classes, events: eventListeners, txt: innerText, t: tag} = options;
+    const element = document.createElement(tag);
+
+    if (attributes) {
+        for (const key of Object.keys(attributes)) {
+            const value = attributes[key];
+            element.setAttribute(key, value);
+        }
+    }
+
+    if (innerText !== undefined) {
+        element.innerText = innerText;
+    }
+
+    if (classes) {
+        for (const className of classes) {
+            element.classList.add(className);
+        }
+    }
+
+    if (children) {
+        for (const childOptions of children) {
+            if (childOptions instanceof Node) {
+                element.appendChild(childOptions);
+            } else {
+                const child = createElement(childOptions);
+                element.appendChild(child);
+            }
+        }
+    }
+
+    if (eventListeners) {
+        for (const eventType of Object.keys(eventListeners)) {
+            element.addEventListener(eventType, eventListeners[eventType]);
+        }
+    }
+
+    return element;
+}
+
 /** set event listeners for clicks, return a function you can call to undo it */
 export function hookupClickEvents(data: [string, (e: Event) => void][]):()=>void {
     for (const [id, cb] of data) {

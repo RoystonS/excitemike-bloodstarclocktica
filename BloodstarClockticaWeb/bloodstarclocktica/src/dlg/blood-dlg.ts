@@ -3,6 +3,8 @@
  * @module
  */
 
+// TODO: remove this file
+
 import { showHideElement } from "../util";
 
 type ResolveFn = (value:any)=>void;

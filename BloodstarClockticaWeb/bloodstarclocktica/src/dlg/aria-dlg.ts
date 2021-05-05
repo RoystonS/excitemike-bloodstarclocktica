@@ -1,7 +1,10 @@
 /**
- * Prepares a dialog. Use to build custom dialogs. FSee other moduels in this folder for examples
- * @module
+ * Used to build custom dialogs.
+ * See other modules in this folder for examples
+ * @module AriaDialog
  */
+
+import { createElement, CreateElementsOptions } from "../util";
 
 type ResolveFn = (value:any)=>void;
 type ButtonCb = ()=>Promise<any>;
@@ -174,7 +177,7 @@ export class AriaDialog<ResultType> {
      */
     private createDialog(
         debugName:string,
-        body:HTMLElement[] = [],
+        body:CreateElementsOptions = [],
         buttons:ButtonCfg[] = [{label:'OK',callback:async ()=>{}}]
     ):Element {
         const id = `${debugName}${unique++}`;
@@ -197,8 +200,12 @@ export class AriaDialog<ResultType> {
         }
     
         // add body elements to box
-        for (const element of body) {
-            box.appendChild(element);
+        for (const child of body) {
+            if (child instanceof Node) {
+                box.appendChild(child);
+            } else {
+                box.appendChild(createElement(child));
+            }
         }
     
         // followed by buttons
@@ -232,7 +239,7 @@ export class AriaDialog<ResultType> {
     protected async baseOpen(
         focusAfterClose:Element|string|null,
         debugName:string = '',
-        body:HTMLElement[] = [],
+        body:CreateElementsOptions,
         buttons:ButtonCfg[] = [{label:'OK',callback:async ()=>{}}]
     ):Promise<ResultType|null> {
         this.root = this.createDialog(debugName, body, buttons);
