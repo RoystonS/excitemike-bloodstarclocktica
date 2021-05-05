@@ -1,38 +1,40 @@
+/**
+ * dialog for initial new/open prompt
+ * @module SaveDiscardCancelDlg
+ */
 import { Edition } from '../model/edition';
-import * as Bloodstar from '../bloodstar';
-import * as BloodDlg from './blood-dlg';
+import {CreateElementsOptions} from '../util';
+import {AriaDialog, ButtonCfg} from './aria-dlg';
+import {saveFileClicked} from '../bloodstar';
 
-let initted:boolean = false;
-let showFn:BloodDlg.OpenFn = ()=>Promise.resolve(null);
-let closeFn:BloodDlg.CloseFn = _=>{};
-
-/// one-time initialization
-export function init() {
-    if (initted) { return; }
-    initted = true;
-
-    const message = document.createElement('span');
-    message.innerText = 'You have unsaved changes! Would you like to save now or discard them?';
-
-    const buttons = [
-        {label:'Save', callback:async ()=>await Bloodstar.saveFileClicked()},
-        {label:'Discard', callback:async ()=>Promise.resolve(true)},
-        {label:'Cancel', callback:async ()=>Promise.resolve(false)},
-    ];
-    ;({open:showFn, close:closeFn} = BloodDlg.init('sdc-dlg', [message], buttons));
+class SaveDiscardCancelDlg extends AriaDialog<boolean> {
+    async open():Promise<boolean>{
+        const body:CreateElementsOptions = [{
+            t:'p',
+            txt:'You have unsaved changes! Would you like to save now or discard them?'
+        }];
+        const buttons:ButtonCfg[] = [
+            {label:'Save', callback:async ()=>await saveFileClicked()},
+            {label:'Discard', callback:async ()=>Promise.resolve(true)},
+            {label:'Cancel', callback:async ()=>Promise.resolve(false)},
+        ];
+        return !!await this.baseOpen(
+            document.activeElement,
+            'savediscardcancel',
+            body,
+            buttons
+        );
+    }
 }
 
-/// if dirty, prompt for a save. Call the callback if the user saves or discards changes
-export async function savePromptIfDirty(edition:Edition) {
-    if (!initted) { init(); }
+/**
+ * if dirty, prompt for a save.
+ * @param edition 
+ * @returns promise that resolves to true if the user did not cancel
+ */
+export async function savePromptIfDirty(edition:Edition):Promise<boolean> {
     if (edition.dirty.get()) {
-        return await showFn();
+        return !!await new SaveDiscardCancelDlg().open();
     }
     return true;
-};
-
-/// take down the popup
-export function close(result:any) {
-    if (!closeFn) { return; }
-    closeFn(result);
 }

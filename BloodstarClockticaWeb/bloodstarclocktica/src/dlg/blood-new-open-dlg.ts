@@ -3,7 +3,6 @@
  * @module NewOpenDlg
  */
 
-// newfile/openfile dialog for bloodstar clocktica
 import { CreateElementsOptions } from '../util';
 import {AriaDialog, ButtonCfg} from './aria-dlg';
 import {newFileClicked, openFileClicked} from '../bloodstar';
