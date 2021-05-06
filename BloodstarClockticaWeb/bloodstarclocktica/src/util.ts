@@ -2,6 +2,7 @@
  * Miscellaneous useful things
  * @module Util
  */
+import {showError} from './dlg/blood-message-dlg';
 
 /** configuration used to create DOM elements */
 export type CreateElementOptions<K extends keyof HTMLElementTagNameMap> = {
@@ -68,6 +69,44 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(options:Cre
     }
 
     return element;
+}
+
+/** attempt to read some json from the internet */
+export async function fetchJson(uri:string):Promise<any> {
+    let response:Response;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(()=>controller.abort(), 15*1000);
+    try {
+        response = await fetch(uri, {
+                method: 'GET',
+                headers:{
+                    'Accept':'application/json'
+                },
+                mode: 'cors',
+                signal: controller.signal
+            });
+        
+        if (!response.ok) {
+            // TODO: Handle the error more gracefully. Explain to the user what went wrong.
+            showError(`${response.status}: (${response.type}) ${response.statusText}`);
+            return null;
+        }
+    } catch (error) {
+        // TODO: Handle the error more gracefully. Explain to the user what went wrong.
+        showError(error);
+        return null;
+    } finally {
+        clearTimeout(timeoutId);
+    }
+
+    const responseText = await response.text();
+    const responseJson = JSON.parse(responseText);
+    return responseJson;
+}
+
+/** get url for when you want to use a cors proxy */
+export function getCorsProxyUrl(url:string):string {
+    return `https://www.bloodstar.xyz/corsproxy/?url=${encodeURIComponent(url)}`;
 }
 
 /** set event listeners for clicks, return a function you can call to undo it */

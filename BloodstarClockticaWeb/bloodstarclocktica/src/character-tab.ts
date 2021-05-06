@@ -4,12 +4,10 @@
  */
 import {bindCheckboxById, bindComboBoxById, bindImageChooserById, bindImageDisplayById, bindSliderById, bindTextById, EnumProperty, FieldType, Property, unbindElementById} from './bind/bindings';
 import * as MessageDlg from "./dlg/blood-message-dlg";
-import BloodImage, { getGradientForTeam, ProcessImageSettings, urlToBloodImage } from './blood-image';
+import { ProcessImageSettings } from './blood-image';
 import { parseBloodTeam } from './model/blood-team';
 import { Character } from './model/character';
-import { CharacterImageSettings } from './model/character-image-settings';
 import {hookupClickEvents} from './util';
-import Images from './images';
 
 /** helper type for disableCharacterTab */
 type TagsThatCanBeDisabled = "button" | "fieldset" | "input" | "optgroup" | "option" | "select" | "textarea";
@@ -54,12 +52,6 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
     sliderHelper('dropShadowOffsetX', character.imageSettings.dropShadowOffsetX);
     sliderHelper('dropShadowOffsetY', character.imageSettings.dropShadowOffsetY);
     sliderHelper('dropShadowOpacity', character.imageSettings.dropShadowOpacity);
-    
-    const regenCb = (_:any)=>regenerateStyledImage(character);
-    const imageStyleSettings:CharacterImageSettings = character.imageSettings;
-    imageStyleSettings.addPropertyChangedEventListener(regenCb);
-    character.unStyledImage.addListener(regenCb);
-    character.team.addListener(regenCb);
 
     const unhookupClickEvents = hookupClickEvents([
         ['characterImageRemoveBtn', ()=>character.unStyledImage.set(null)],
@@ -71,10 +63,6 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
 
     return () => {
         unhookupClickEvents();
-
-        character.team.removeListener(regenCb);
-        character.unStyledImage.removeListener(regenCb);
-        imageStyleSettings.removePropertyChangedEventListener(regenCb);
 
         for (const id of characterTabIds) {
             unbindElementById(id);
@@ -147,71 +135,6 @@ function enableCharacterTab():void {
             }
         }
     }
-}
-
-/** generate styled image from unstyled image and image settings */
-async function regenerateStyledImage(character:Character):Promise<void> {
-    const unstyledImage = character.unStyledImage.get();
-    const imageSettings = character.imageSettings;
-    if (!unstyledImage || !imageSettings.shouldRestyle.get()) {
-        character.styledImage.set(unstyledImage);
-        return;
-    }
-    
-    // start from the unstyled image
-    let bloodImage = await urlToBloodImage(unstyledImage, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
-
-    // crop
-    if (imageSettings.shouldReposition.get()) {
-        bloodImage = bloodImage.trim();
-    }
-
-    // colorize
-    if (imageSettings.shouldColorize.get()) {
-        const gradientImage = await getGradientForTeam(
-            character.team.get(),
-            imageSettings.useOutsiderAndMinionColors.get(),
-            bloodImage.width,
-            bloodImage.height
-        );
-        bloodImage.setRGB(255,255,255);
-        bloodImage.multiply(gradientImage.resized(bloodImage.width, bloodImage.height));
-    }
-
-    // make full size image with icon pasted into the correct place
-    if (imageSettings.shouldReposition.get()) {
-        bloodImage = new BloodImage([ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT])
-            .pasteZoomed(
-                bloodImage,
-                ProcessImageSettings.USABLE_REGION_X,
-                ProcessImageSettings.USABLE_REGION_Y,
-                ProcessImageSettings.USABLE_REGION_WIDTH,
-                ProcessImageSettings.USABLE_REGION_HEIGHT
-            );
-    } else {
-        bloodImage = bloodImage.fit(ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
-    }
-
-    // texture
-    if (imageSettings.useTexture.get()) {
-        const tokenTexture = await urlToBloodImage(Images.TEXTURE_URL, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
-        bloodImage.multiply(tokenTexture);
-    }
-
-    // border
-    if (imageSettings.useBorder.get()) {
-        bloodImage.addBorder(imageSettings.borderIntensity.get());
-    }
-
-    // dropshadow
-    if (imageSettings.useDropshadow.get()) {
-        bloodImage = bloodImage.addDropShadow(
-            imageSettings.dropShadowSize.get(),
-            imageSettings.dropShadowOffsetX.get(),
-            imageSettings.dropShadowOffsetY.get(),
-            imageSettings.dropShadowOpacity.get());
-    }
-    character.styledImage.set(bloodImage.toDataUri());
 }
 
 /** update character tab to show this character */

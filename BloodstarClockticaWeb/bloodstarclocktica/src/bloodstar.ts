@@ -109,20 +109,6 @@ export async function saveFileAsClicked():Promise<boolean> {
     return false;
 }
 
-/** user chose to import character(s) from a json file */
-async function importJsonFromUrlClicked():Promise<boolean> {
-    // TODO: implement importJsonFromUrlClicked
-    MessageDlg.show('`importJsonFromUrlClicked` Not yet implemented');
-    return false;
-}
-
-/** user chose to import character(s) from a json file */
-async function importJsonFromFileClicked():Promise<boolean> {
-    // TODO: implement importJsonFromFileClicked
-    MessageDlg.show('`importJsonFromFileClicked` Not yet implemented');
-    return false;
-}
-
 /** user chose to import official character(s) */
 async function importOfficialClicked():Promise<boolean> {
     // TODO: implement importOfficialClicked
@@ -209,10 +195,8 @@ function initBindings():void {
         ['openfilebutton', openFileClicked],
         ['savefilebutton', saveFileClicked],
         ['savefileasbutton', saveFileAsClicked],
-
-        ['jsonFromUrlButton', importJsonFromUrlClicked],
-        ['jsonFromFileButton', importJsonFromFileClicked],
-
+        ['jsonFromUrlButton', ()=>BloodIO.importJsonFromUrl(edition)],
+        ['jsonFromFileButton', ()=>BloodIO.importJsonFromFile(edition)],
         ['importOfficialButton', importOfficialClicked],
         ['saveAndPublishButton', saveAndPublishClicked],
         ['helpbutton', showHelp],

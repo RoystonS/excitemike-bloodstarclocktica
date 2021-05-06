@@ -18,6 +18,7 @@
 }
 .nightOrderItem > * {
     margin-right:12px;
+    flex: 0 0 auto;
 }
 .nightOrderItem > *:last-child {
     margin-right:0;
@@ -45,7 +46,7 @@
     justify-content: center;
 }
 .nightOrderReminder {
-    flex: 1 0 auto;
+    flex: 1 1 auto;
 }
 .nightOrderTeamText {
     border-radius:6px;

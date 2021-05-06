@@ -90,12 +90,13 @@ export class Edition extends ObservableObject<Edition> {
     }
 
     /** add a new character to the set */
-    addNewCharacter() {
+    addNewCharacter():Character {
         const character = new Character();
         this.makeNameAndIdUnique(character);
         this.characterList.add(character);
         this.firstNightOrder.add(character);
         this.otherNightOrder.add(character);
+        return character;
     }
 
     /** make sure the name and id of a newly added character aren't taken */

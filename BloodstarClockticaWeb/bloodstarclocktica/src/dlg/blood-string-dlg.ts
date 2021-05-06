@@ -51,6 +51,6 @@ class StringDialog extends AriaDialog<string> {
  * returns a promise that resolves to the entered
  * string or null if the user cancelled
  */
-export async function show(prompt:string, defaultValue:string, validation?:{pattern:string,hint?:string,sanitizeFn?:(inStr:string)=>string}):Promise<string|null> {
+export async function show(prompt:string, defaultValue:string='', validation?:{pattern:string,hint?:string,sanitizeFn?:(inStr:string)=>string}):Promise<string|null> {
     return await new StringDialog().open(prompt, defaultValue, validation);
 }

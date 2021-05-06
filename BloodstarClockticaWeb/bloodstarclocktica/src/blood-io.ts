@@ -5,6 +5,8 @@ import * as OpenDlg from './dlg/blood-open-dlg';
 import * as SdcDlg from './dlg/blood-save-discard-cancel';
 import * as StringDlg from './dlg/blood-string-dlg';
 import { FieldType } from './bind/base-binding';
+import {importJson} from './import/json';
+import { fetchJson } from './util';
 
 /// hash used by the server to sanity check
 export function hashFunc(input:string):number {
@@ -272,4 +274,36 @@ async function _listFiles(username:string, password:string):Promise<string[]> {
  */
 export async function listFiles(username:string, password:string):Promise<string[]|null> {
     return await Spinner.show('Retrieving file list', _listFiles(username, password));
+}
+
+/** user chose to import character(s) from a json file */
+export async function importJsonFromUrl(edition:Edition):Promise<boolean> {
+    if (!await SdcDlg.savePromptIfDirty(edition)) {return false;}
+    const url = await StringDlg.show('Enter URL to a custom-script.json file.');
+    if (!url){return false;}
+    const json = await fetchJson(url);
+    return await Spinner.show('Importing json', importJson(json, edition)) || false;
+}
+
+/** promise for choosing a JSON file */
+async function chooseJsonFile():Promise<File|null> {
+    // TODO: I don't think this has any reason to be async
+    return new Promise<File|null>((resolve,_):void=>{
+        const fileInput = document.getElementById('jsonFileInput');
+        let file:File|null = null;
+        if (fileInput instanceof HTMLInputElement) {
+            fileInput.files = null; // cancelling hopefully clears this anyway, but just in case
+            fileInput.click();
+            file = fileInput.files && fileInput.files[0];
+        }
+        resolve(file);
+    });
+}
+
+/** user chose to import character(s) from a json file */
+export async function importJsonFromFile(edition:Edition):Promise<boolean> {
+    if (!await SdcDlg.savePromptIfDirty(edition)) {return false;}
+    const file = await chooseJsonFile();
+    if (!file){return false;}
+    return await Spinner.show('Importing json', importJson(file, edition)) || false;
 }

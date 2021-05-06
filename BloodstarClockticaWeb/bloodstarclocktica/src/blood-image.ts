@@ -5,6 +5,7 @@
 
 import { BloodTeam } from "./model/blood-team";
 import Images from "./images";
+import { getCorsProxyUrl } from "./util";
 
 /** data about how clocktower.online wants the images */
 export const enum ProcessImageSettings {
@@ -502,10 +503,47 @@ export async function urlToBloodImage(url:string, maxWidth:number, maxHeight:num
     return new BloodImage(canvas);
 }
 
+/** get image data from the url and convert it to a dataUri */
+export async function imageUrlToDataUri(url:string, useCorsProxy:boolean):Promise<string> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(()=>controller.abort(), 15*1000);
+    try {
+        const proxiedUrl = useCorsProxy ? getCorsProxyUrl(url) : url;
+        const response = await fetch(proxiedUrl, {
+            method:'GET',
+            mode: 'cors',
+            signal: controller.signal
+        });
+        if (!response.ok) {
+            // TODO: Handle the error more gracefully. Explain to the user what went wrong.
+            console.error(`${response.status}: (${response.type}) ${response.statusText}`);
+            return '';
+        }
+        const buffer = await response.arrayBuffer();
+        /*const bytes = new Uint8Array(buffer);
+        const len = bytes.byteLength;
+        let binaryString = '';
+        for (let i=0;i<len;++i){
+            binaryString += String.fromCharCode(bytes[i]);
+        }
+        const base64  = btoa(binaryString);
+        return `data:image/png;base64,${base64}`;*/
+        return await new Promise((resolve)=>{
+            const reader = new FileReader();
+            reader.onload = ()=>{
+                const base64 = reader.result || '';
+                resolve(base64 as string);
+            };
+            reader.readAsDataURL(new Blob([buffer]));
+        });
+    } finally {
+        clearTimeout(timeoutId);
+    }
+}
+
 /** get image data from the url and put it in a new canvas */
 export async function urlToCanvas(url:string, width:number, height:number):Promise<HTMLCanvasElement> {
     return new Promise((resolve,reject)=>{
-        try {
             const image = new Image();
             image.onload = function() {
                 const canvas = document.createElement('canvas');
@@ -521,9 +559,6 @@ export async function urlToCanvas(url:string, width:number, height:number):Promi
                 resolve(canvas);
             };
             image.src = url;
-        } catch (error) {
-            reject(error);
-        }
     });
 }
 
