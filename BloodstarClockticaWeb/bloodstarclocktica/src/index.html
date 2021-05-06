@@ -17,19 +17,25 @@
     <div id="app">
         <div id="menu">
             <div class="dropdown" tabindex="0">
-            File
-            <div class="dropdownContent">
-                <button id="newfilebutton" title="Begin making a new custom edition.">New</button>
-                <button id="openfilebutton" title="Load an existing custom edition.">Open</button>
-                <button id="savefilebutton" title="Save this custom edition.">Save <span class="dim">ctrl+S</span></button>
-                <button id="savefileasbutton" title="Save this custom edition under a new name.">Save As</button>
-                <button id="helpbutton" title="How to use this website.">Help</button>
-            </div>
+                File
+                <div class="dropdownContent">
+                    <button id="newfilebutton" title="Begin making a new custom edition.">New</button>
+                    <button id="openfilebutton" title="Load an existing custom edition.">Open</button>
+                    <button id="savefilebutton" title="Save this custom edition.">Save <span class="dim">ctrl+S</span></button>
+                    <button id="savefileasbutton" title="Save this custom edition under a new name.">Save As</button>
+                    <button id="helpbutton" title="How to use this website.">Help</button>
+                </div>
             </div>
             <div class="dropdown" tabindex="0">
             Import
             <div class="dropdownContent">
-                <button id="importJsonButton" title="Import characters from a json file.">From JSON</button>
+                <div class="dropRight">
+                    <button title="Import characters from a json file.">JSON</button>
+                    <div class="dropdownContentRight">
+                        <button id="jsonFromUrlButton" title="Import characters from a json file at a url you provide.">From URL</button>
+                        <button id="jsonFromFileButton" title="Import characters from a json file on your computer.">Select File</button>
+                    </div>
+                </div>
                 <button id="importOfficialButton" title="Import official character.">Official Character</button>
             </div>
             </div>

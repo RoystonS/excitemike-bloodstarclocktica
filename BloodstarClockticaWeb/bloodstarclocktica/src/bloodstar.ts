@@ -110,9 +110,16 @@ export async function saveFileAsClicked():Promise<boolean> {
 }
 
 /** user chose to import character(s) from a json file */
-async function importJsonClicked():Promise<boolean> {
-    // TODO: implement importJsonClicked
-    MessageDlg.show('`importJsonClicked` Not yet implemented');
+async function importJsonFromUrlClicked():Promise<boolean> {
+    // TODO: implement importJsonFromUrlClicked
+    MessageDlg.show('`importJsonFromUrlClicked` Not yet implemented');
+    return false;
+}
+
+/** user chose to import character(s) from a json file */
+async function importJsonFromFileClicked():Promise<boolean> {
+    // TODO: implement importJsonFromFileClicked
+    MessageDlg.show('`importJsonFromFileClicked` Not yet implemented');
     return false;
 }
 
@@ -202,7 +209,10 @@ function initBindings():void {
         ['openfilebutton', openFileClicked],
         ['savefilebutton', saveFileClicked],
         ['savefileasbutton', saveFileAsClicked],
-        ['importJsonButton', importJsonClicked],
+
+        ['jsonFromUrlButton', importJsonFromUrlClicked],
+        ['jsonFromFileButton', importJsonFromFileClicked],
+
         ['importOfficialButton', importOfficialClicked],
         ['saveAndPublishButton', saveAndPublishClicked],
         ['helpbutton', showHelp],
