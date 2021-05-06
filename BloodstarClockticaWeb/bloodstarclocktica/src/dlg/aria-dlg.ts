@@ -191,17 +191,6 @@ export class AriaDialog<ResultType> {
         const box = document.createElement('div');
         box.className = 'dialogBox';
     
-        const btnGroup = document.createElement('div');
-        btnGroup.className = 'dialogBtnGroup';
-    
-        // create buttons
-        for (const {label, callback} of buttons) {
-            const btn = document.createElement('button');
-            btn.addEventListener('click', async () => this.close(await callback()));
-            btn.innerText = label;
-            btnGroup.appendChild(btn);
-        }
-    
         // add body elements to box
         for (const child of body) {
             if (child instanceof Node) {
@@ -212,7 +201,18 @@ export class AriaDialog<ResultType> {
         }
     
         // followed by buttons
-        box.appendChild(btnGroup);
+        if (buttons.length) {
+            const btnGroup = document.createElement('div');
+            btnGroup.className = 'dialogBtnGroup';
+        
+            for (const {label, callback} of buttons) {
+                const btn = document.createElement('button');
+                btn.addEventListener('click', async () => this.close(await callback()));
+                btn.innerText = label;
+                btnGroup.appendChild(btn);
+            }
+            box.appendChild(btnGroup);
+        }
     
         // box in dlg, dlg in document.
         root.appendChild(box);
