@@ -8,24 +8,10 @@
     min-width: 100vw;
     min-height: 100vh;
     overflow: auto;
-    background-color: rgba(0,0,0,0.4);
     display:flex;
     justify-content: space-around;
     align-items: center;
-}
-/*TODO: remove*/
-.dialogScrim {
     z-index:2;
-    position:fixed;
-    left:0;
-    top:0;
-    width:100vw;
-    height:100vh;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.4);
-    display:flex;
-    justify-content: space-around;
-    align-items: center;
 }
 .dialogBox {
     flex: 0 1 auto;
