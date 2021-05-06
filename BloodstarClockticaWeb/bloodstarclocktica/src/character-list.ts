@@ -1,5 +1,6 @@
 import { bindCheckbox, bindCollectionById, bindText, Property, PropertyChangeListener, unbindElement } from "./bind/bindings";
 import { ObservableCollection, ObservableCollectionChangedEvent } from "./bind/observable-collection";
+import {show as getConfirmation} from "./dlg/yes-no-dlg";
 import { Character } from "./model/character";
 import { walkHTMLElements } from "./util";
 
@@ -105,7 +106,11 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
         del.className = "characterListButton";
         del.innerText = "Delete";
         // TODO: confirm delete
-        del.onclick = () => collection.deleteItem(character);
+        del.onclick = async () => {
+            if (await getConfirmation(`Are you sure you want to delete character "${character.name.get()}"?`)) {
+                collection.deleteItem(character);
+            }
+        };
         row.appendChild(del);
     }
 
