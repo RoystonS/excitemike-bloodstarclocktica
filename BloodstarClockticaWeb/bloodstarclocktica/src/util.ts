@@ -24,7 +24,7 @@ export type CreateElementOptions<K extends keyof HTMLElementTagNameMap> = {
     txt?:string,
 };
 
-export type CreateElementsOptions = (CreateElementOptions<keyof HTMLElementTagNameMap>)[];
+export type CreateElementsOptions = (CreateElementOptions<keyof HTMLElementTagNameMap>|Node)[];
 
 /** more concise element creation. see comments on CreateElementOptions */
 export function createElement<K extends keyof HTMLElementTagNameMap>(options:CreateElementOptions<K>):HTMLElementTagNameMap[K] {

@@ -1,49 +1,37 @@
-// open dialog for bloodstar clocktica
-import * as BloodDlg from './blood-dlg';
-import * as BloodIO from '../blood-io';
+/**
+ * prompt for opening a file
+ * @module OpenDlg
+ */
+import {createElement, CreateElementsOptions} from '../util';
+import {AriaDialog} from './aria-dlg';
 import * as Spinner from './spinner-dlg';
-import * as Util from '../blood-util';
+import {listFiles} from '../blood-io';
 
-let initted:boolean = false;
-let showFn:BloodDlg.OpenFn|null = null;
-let closeFn:BloodDlg.CloseFn|null = null;
-let fileListDiv:HTMLElement|null = null;
+class OpenDlg extends AriaDialog<string> {
+    async open(username:string, password:string):Promise<string|null> {
+        const fileListDiv = createElement({t:'div',css:['openDlgList']});
+        const body:CreateElementsOptions = [
+            {t:'p',txt:'Choose an existing file to open:'},
+            fileListDiv
+        ];
 
-/// user chose to cancel
-function cancelClicked():Promise<any> {
-    return Promise.resolve(null);
-}
-
-/// prepare the dialog for use
-function init() {
-    if (initted) { return; }
-    initted = true;
-
-    const message = document.createElement('span');
-    message.innerText = 'Choose an existing file to open:';
-    fileListDiv = document.createElement('div');
-    fileListDiv.className = 'openDlgList';
-    
-    const buttons:BloodDlg.ButtonCfg[] = [{label:'Cancel', callback:cancelClicked}];
-    ;({open:showFn, close:closeFn} = BloodDlg.init('open-dlg', [message, fileListDiv], buttons));
-}
-
-/// update list of files
-function repopulateFileList(fileList:string[]) {
-    if (!fileListDiv) {return;}
-    Util.removeAllChildNodes(fileListDiv);
-
-    if (fileList.length === 0) {
-        const span = document.createElement('span');
-        span.innerText = 'No files found.';
-        fileListDiv.appendChild(span);
-    } else {
-        for (const name of fileList) {
-            const element = document.createElement('a');
-            element.addEventListener('click', _=>BloodDlg.resolveDialog(element, name));
-            element.innerText = name;
-            fileListDiv.appendChild(element);
+        const files = await Spinner.show('Retrieving file list', listFiles(username, password));
+        if (!files) {return null;}
+        if (files.length) {
+            for (const name of files) {
+                const button = createElement({t:'button',txt:name,events:{click:_=>this.close(name)}});
+                fileListDiv.appendChild(button);
+            }
+        } else {
+            fileListDiv.appendChild(createElement({t:'p',txt:'No files found.',a:{role:'alert'}}));
         }
+        
+        return await this.baseOpen(
+            document.activeElement,
+            'open',
+            body,
+            [{label:'Cancel', callback:async()=>null}]
+        );
     }
 }
 
@@ -52,17 +40,5 @@ function repopulateFileList(fileList:string[]) {
  * returns a promise that resolves to a name, or null if the dialog was cancelled
  */
 export async function show(username:string, password:string):Promise<string|null> {
-    if (!initted) { init(); }
-    if (!showFn) { return null; }
-
-    const files = await Spinner.show('Retrieving file list', BloodIO.listFiles(username, password));
-    if (!files) {return null;}
-    repopulateFileList(files);
-    return await showFn();
-}
-
-/// take down the popup
-export function close(result:any) {
-    if (!closeFn) { return; }
-    closeFn(result);
+    return await new OpenDlg().open(username, password);
 }
