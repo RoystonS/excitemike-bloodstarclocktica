@@ -22,6 +22,10 @@ a, button, summary {
     font-weight:bold;
     letter-spacing: +1px;
 }
+button {
+    padding-left:6px;
+    padding-right:6px;
+}
 a:hover
 , a:focus-visible
 , button:hover
