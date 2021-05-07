@@ -116,13 +116,7 @@ async function importEdition(json:ScriptEntry[], edition:Edition):Promise<boolea
     edition.reset();
     edition.characterList.clear();
     const nightOrder:NightOrderTracker = new Map<'first'|'other', Map<number, string[]>>();
-    const promises = json.map(async characterJson=>await importEntry(characterJson, edition, nightOrder));
-    for (const characterJson of json) {
-        promises.push
-        if (!await importEntry(characterJson, edition, nightOrder)) {
-            return false;
-        }
-    }
+    const promises = json.map(characterJson=>importEntry(characterJson, edition, nightOrder));
     return (await Promise.all(promises)).reduce((a,b)=>a&&b, true);
 }
 
@@ -139,6 +133,5 @@ export async function importJson(fileOrStringOrArray:File|string|any[], edition:
     } else {
         json = fileOrStringOrArray;
     }
-    // TODO: I have some kind of bug causing everything to get added twice!
     return await importEdition(json, edition);
 }
