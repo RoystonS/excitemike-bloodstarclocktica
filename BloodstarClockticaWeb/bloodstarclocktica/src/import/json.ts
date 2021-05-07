@@ -3,8 +3,10 @@
  * @module ImportJson
  */
 
+import { ObservableCollection } from "../bind/observable-collection";
 import { urlToCanvas } from "../blood-image";
 import { parseBloodTeam } from "../model/blood-team";
+import { Character } from "../model/character";
 import { Edition } from "../model/edition";
 
 type MetaEntry = {
@@ -29,7 +31,7 @@ type CharacterEntry = {
     ability?:string,
 };
 type ScriptEntry = MetaEntry|CharacterEntry;
-type NightOrderTracker = Map<'first'|'other', Map<number, string[]>>;
+type NightOrderTracker = Map<number, Character[]>;
 
 // sizes here based on what what I see clocktower.online using
 const MAX_LOGO_WIDTH = 1661;
@@ -53,25 +55,23 @@ async function importMeta(entry:MetaEntry, edition:Edition):Promise<boolean> {
 }
 
 /** import a character into the edition */
-async function importCharacter(entry:CharacterEntry, edition:Edition, nightOrder:NightOrderTracker):Promise<boolean> {
+async function importCharacter(entry:CharacterEntry, edition:Edition, firstNightOrder:NightOrderTracker, otherNightOrder:NightOrderTracker):Promise<boolean> {
     const character = edition.addNewCharacter();
     character.id.set(entry.id);
     {
-        const fno = nightOrder.get('first') || new Map<number, string[]>();
-        const fnoList = (entry.firstNight!==undefined) && fno.get(entry.firstNight) || [];
-        fnoList.push(entry.id);
-        fno.set(entry.firstNight || 0, fnoList);
-        nightOrder.set('first', fno);
+        const nightNumber = entry.firstNight || 0;
+        const fnoList = firstNightOrder.get(nightNumber) || [];
+        fnoList.push(character);
+        firstNightOrder.set(nightNumber, fnoList);
     }
     if (entry.firstNightReminder){
         character.firstNightReminder.set(entry.firstNightReminder);
     }
     {
-        const ono = nightOrder.get('other') || new Map<number, string[]>();
-        const onoList = (entry.otherNight!==undefined) && ono.get(entry.otherNight) || [];
-        onoList.push(entry.id);
-        ono.set(entry.otherNight || 0, onoList);
-        nightOrder.set('other', ono);
+        const nightNumber = entry.otherNight || 0;
+        const onoList = otherNightOrder.get(nightNumber) || [];
+        onoList.push(character);
+        otherNightOrder.set(nightNumber, onoList);
     }
     if (entry.otherNightReminder){
         character.otherNightReminder.set(entry.otherNightReminder);
@@ -105,23 +105,38 @@ async function importCharacter(entry:CharacterEntry, edition:Edition, nightOrder
 }
 
 /** import one entry of a script */
-async function importEntry(entry:ScriptEntry, edition:Edition, nightOrder:NightOrderTracker):Promise<boolean> {
+async function importEntry(entry:ScriptEntry, edition:Edition, firstNightOrder:NightOrderTracker, otherNightOrder:NightOrderTracker):Promise<boolean> {
     if (!entry.id) {
         return false;
     }
     if (entry.id === '_meta') {
         return await importMeta(entry as MetaEntry, edition);
     }
-    return await importCharacter(entry as CharacterEntry, edition, nightOrder);
+    return await importCharacter(entry as CharacterEntry, edition, firstNightOrder, otherNightOrder);
 }
 
 /** import a whole script */
 async function importEdition(json:ScriptEntry[], edition:Edition):Promise<boolean> {
     edition.reset();
     edition.characterList.clear();
-    const nightOrder:NightOrderTracker = new Map<'first'|'other', Map<number, string[]>>();
-    const promises = json.map(characterJson=>importEntry(characterJson, edition, nightOrder));
-    return (await Promise.all(promises)).reduce((a,b)=>a&&b, true);
+    const firstNightOrder:NightOrderTracker = new Map<number, Character[]>();
+    const otherNightOrder:NightOrderTracker = new Map<number, Character[]>();
+    const promises = json.map(characterJson=>importEntry(characterJson, edition, firstNightOrder, otherNightOrder));
+
+    const allImported = (await Promise.all(promises)).reduce((a,b)=>a&&b, true);
+    if (!allImported) { return false; }
+
+    // set night order
+    const data:[NightOrderTracker, ObservableCollection<Character>][] = [[firstNightOrder, edition.firstNightOrder],[otherNightOrder, edition.otherNightOrder]];
+    for (const [nightMap, collection] of data) {
+        const keys = Array.from(nightMap.keys()).sort();
+        collection.clear();
+        for (const key of keys) {
+            collection.addMany(nightMap.get(key) || []);
+        }
+    }
+
+    return true;
 }
 
 /** import a json file, replacing the edition's current contents */
