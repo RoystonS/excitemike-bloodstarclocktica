@@ -240,6 +240,7 @@ export abstract class ObservableObject<T> {
     /** send out notification of a property changing */
     notifyPropertyChangedEventListeners(propName:PropKey<T>):void {
         const backup = this.propertyChangedListeners.concat();
+        // TODO: these can be async and should be waited for
         backup.forEach(cb=>cb(propName));
     }
 

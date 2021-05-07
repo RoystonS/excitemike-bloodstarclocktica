@@ -43,6 +43,7 @@ export class Property<T/* extends FieldType*/> {
     }
     private notifyListeners() {
         const backup = this.listeners.concat();
+        // TODO: these can be async and should be waited for
         backup.forEach(cb=>cb(this.value));
     }
 }

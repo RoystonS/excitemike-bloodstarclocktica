@@ -8,6 +8,7 @@ import { FieldType } from './bind/base-binding';
 import {importJson} from './import/json';
 import { fetchJson } from './util';
 import { AriaDialog } from './dlg/aria-dlg';
+import { importBloodFile } from './import/blood-file';
 
 /// hash used by the server to sanity check
 export function hashFunc(input:string):number {
@@ -326,4 +327,10 @@ export async function importJsonFromFile(edition:Edition):Promise<boolean> {
     const file = await chooseJsonFile();
     if (!file){return false;}
     return await Spinner.show('Importing json', importJson(file, edition)) || false;
+}
+
+/** user chose to import a project form the windows version of Bloodstar Clocktica */
+export async function importBlood(edition:Edition):Promise<boolean> {
+    if (!await SdcDlg.savePromptIfDirty(edition)) {return false;}
+    return await importBloodFile(edition);
 }

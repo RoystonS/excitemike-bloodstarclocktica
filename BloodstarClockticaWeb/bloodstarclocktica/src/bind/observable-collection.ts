@@ -336,6 +336,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     /** notify listeners of a change */
     private notifyCollectionChangedListeners(event:ObservableCollectionChangedEvent<ItemType>):void {
         const backup = this.collectionChangedListeners.concat();
+        // TODO: these can be async and should be waited for
         backup.forEach(cb=>cb(event));
     }
 
@@ -370,6 +371,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     /** notify listeners of a change */
     private notifyItemChangedListeners(itemPlus:ItemPlus<ItemType>, propName:PropKey<ItemType>):void {
         const backup = this.itemChangedListeners.concat();
+        // TODO: these can be async and should be waited for
         backup.forEach(cb=>cb(itemPlus.index, itemPlus.item, propName));
     }
 

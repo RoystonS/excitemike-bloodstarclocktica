@@ -67,6 +67,7 @@ export class Character extends ObservableObject<Character> {
         this.init();
         
         // set up auto-regen of styled images
+        // TODO: it's actually kind of a problem that this is async but never waited for
         const regenCb = (_:any)=>this.regenerateStyledImage();
         this.imageSettings.addPropertyChangedEventListener(regenCb);
         this.unStyledImage.addListener(regenCb);

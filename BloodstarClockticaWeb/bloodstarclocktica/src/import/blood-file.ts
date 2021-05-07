@@ -11,19 +11,23 @@ import { createElement } from '../util';
 import { Character } from '../model/character';
 import { Property } from '../bind/bindings';
 import { ObservableCollection } from '../bind/observable-collection';
+import LockSet from '../lock';
+import { parseBloodTeam } from '../model/blood-team';
 
-
+/** set property if the value is not undefined */
 function trySet<T>(value:T|undefined, property:Property<T>):void {
-    if (value) {
+    if (value !== undefined) {
         property.set(value);
     }
 }
+
+/** keep image work from overlapping in the same character */
+const characterLockSet = new LockSet<Character>();
 
 class BloodImporter {
     private readonly firstNightOrderTracker = new Map<number, Character[]>();
     private readonly otherNightOrderTracker = new Map<number, Character[]>();
     private readonly charactersById = new Map<string, Character>();
-    private readonly hasSourceImage = new Set<string>();
     private readonly edition:Edition;
 
     constructor(edition:Edition) {
@@ -39,9 +43,10 @@ class BloodImporter {
         zip.forEach(relativePath=>allPaths.push(relativePath));
 
         const promises:Promise<boolean>[] = [];
+        // TODO: do source images before processed images
         for (const relativePath of allPaths) {
-            console.log(`found path "${relativePath}"`);
             const zipEntry = zip.file(relativePath);
+            if (!zipEntry) {continue;}
             promises.push(this.importPart(relativePath, zipEntry));
         }
         const allImported = (await Promise.all(promises)).reduce((a,b)=>a&&b, true);
@@ -53,7 +58,7 @@ class BloodImporter {
     }
 
     /** once all character are loaded, correct the night order */
-    finalizeNightOrder():void {
+    private finalizeNightOrder():void {
         const data:[Map<number, Character[]>, ObservableCollection<Character>][] = [[this.firstNightOrderTracker, this.edition.firstNightOrder],[this.otherNightOrderTracker, this.edition.otherNightOrder]];
         for (const [nightMap, collection] of data) {
             const keys = Array.from(nightMap.keys()).sort();
@@ -65,7 +70,7 @@ class BloodImporter {
     }
 
     /** load from the meta portion of a .blood into the edition */
-    async importMeta(zipEntry:JSZipObject):Promise<boolean> {
+    private async importMeta(zipEntry:JSZipObject):Promise<boolean> {
         const text = await zipEntry.async('text');
         const json = JSON.parse(text);
         trySet(json.name, this.edition.meta.name);
@@ -76,14 +81,31 @@ class BloodImporter {
     }
 
     /** load a processed image from the .blood file */
-    async importProcessedImage(id:string, zipEntry:JSZipObject):Promise<boolean> {
-        if (this.hasSourceImage.has(id)) { return true; } // don't clobber source image
-        const character = this.charactersById.get(id) || this.edition.addNewCharacter();
+    private async importProcessedImage(character:Character, zipEntry:JSZipObject):Promise<boolean> {
+console.log(`BEGIN importProcessedImage for ${character.id.get()}`);
+        // It is just barely possible for a character's source image and 
+        // processed image load to overlap. put that work in this queue 
+        // to make sure they don't run together
+
+        const id = character.id.get();
+        if (character.unStyledImage.get()) { return true; } // don't clobber source image
         const base64 = await zipEntry.async('base64');
         character.unStyledImage.set(`data:image/png;base64,${base64}`);
         character.imageSettings.shouldRestyle.set(false); // image is pre-processed
         this.charactersById.set(id, character);
+console.log(`END importProcessedImage for ${character.id.get()}`);
         return true;
+    }
+
+    /** make sure that acharacter exists in the edition/map before continuing */
+    private ensureCharacter(id:string):Character {
+        let character = this.charactersById.get(id);
+        if (!character) {
+            character = this.edition.addNewCharacter();
+            character.id.set(id);
+            this.charactersById.set(id, character);
+        }
+        return character;
     }
 
     /** import part of a .blood file */
@@ -96,23 +118,32 @@ class BloodImporter {
             return await this.importMeta(zipEntry);
         } else if (relativePath.startsWith('roles/') && relativePath.endsWith('.json')) {
             const id = relativePath.slice(6, relativePath.length - 5);
-            return await this.importRole(id, zipEntry);
+            const character = this.ensureCharacter(id);
+            return await this.importRole(character, zipEntry);
         } else if (relativePath.startsWith('src_images/') && relativePath.endsWith('.png')) {
             const id = relativePath.slice(11, relativePath.length - 4);
-            return await this.importSourceImage(id, zipEntry);
+            const character = this.ensureCharacter(id);
+            characterLockSet.enqueue(
+                character,
+                async ()=>await this.importSourceImage(character, zipEntry)
+            );
         } else if (relativePath.startsWith('processed_images/') && relativePath.endsWith('.png')) {
             const id = relativePath.slice(17, relativePath.length - 4);
-            return await this.importProcessedImage(id, zipEntry);
+            const character = this.ensureCharacter(id);
+            return await characterLockSet.enqueue(
+                character,
+                async ()=>await this.importProcessedImage(character, zipEntry)
+            );
+        } else {
+            console.error(`unhandled bloodfile part "${relativePath}"`);
         }
-        console.error(`unhandled bloodfile part "${relativePath}"`);
         return false;
     }
 
     /** load a json from the roles directory of the .blood file */
-    async importRole(id:string, zipEntry:JSZipObject):Promise<boolean> {
+    private async importRole(character:Character, zipEntry:JSZipObject):Promise<boolean> {
         const text = await zipEntry.async('text');
         const json = JSON.parse(text);
-        const character = this.charactersById.get(id) || this.edition.addNewCharacter();
         trySet(json.name, character.name);
         trySet(json.setup, character.setup);
         trySet(json.ability, character.ability);
@@ -129,6 +160,9 @@ class BloodImporter {
             trySet(almanac.tip, character.almanac.tip);
         }
 
+        if (json.team) {
+            character.team.set(parseBloodTeam(json.team));
+        }
         if (json.reminders) {
             character.characterReminderTokens.set(json.reminders.join('\n'))
         }
@@ -148,18 +182,19 @@ class BloodImporter {
             this.otherNightOrderTracker.set(otherNightNumber, ono);
         }
 
-        this.charactersById.set(id, character);
+        this.charactersById.set(character.id.get(), character);
         return true;
     }
 
     /** load a source image from the .blood file */
-    async importSourceImage(id:string, zipEntry:JSZipObject):Promise<boolean> {
-        const character = this.charactersById.get(id) || this.edition.addNewCharacter();
+    private async importSourceImage(character:Character, zipEntry:JSZipObject):Promise<boolean> {
+console.log(`BEGIN importSourceImage for ${character.id.get()}`);
         const base64 = await zipEntry.async('base64');
         character.unStyledImage.set(`data:image/png;base64,${base64}`);
-        character.imageSettings.shouldRestyle.set(true); // clear if set by importProcessedImage
+        character.imageSettings.shouldRestyle.set(true); // restore if set by importProcessedImage
+        const id = character.id.get();
         this.charactersById.set(id, character);
-        this.hasSourceImage.add(id);
+console.log(`END importSourceImage for ${character.id.get()}`);
         return true;
     }
 }
@@ -201,5 +236,5 @@ export async function importBloodFile(edition:Edition):Promise<boolean> {
     const file = await chooseBloodFile();
     if (!file){return false;}
     const importer = new BloodImporter(edition);
-    return await showSpinner('Importing .blood', importer.importBlood(file));
+    return await showSpinner('Importing .blood', importer.importBlood(file)) || false;
 }

@@ -27,24 +27,25 @@
                 </div>
             </div>
             <div class="dropdown" tabindex="0">
-            Import
-            <div class="dropdownContent">
-                <div class="dropRight">
-                    <button title="Import characters from a json file.">JSON</button>
-                    <div class="dropdownContentRight">
-                        <button id="jsonFromUrlButton" title="Import characters from a json file at a url you provide.">From URL</button>
-                        <button id="jsonFromFileButton" title="Import characters from a json file on your computer.">From File</button>
-                        <input type="file" accept=".json" name="jsonFileInput" id="jsonFileInput" style="display:none">
+                Import
+                <div class="dropdownContent">
+                    <div class="dropRight">
+                        <button title="Import characters from a json file.">JSON</button>
+                        <div class="dropdownContentRight">
+                            <button id="jsonFromUrlButton" title="Import characters from a json file at a url you provide.">From URL</button>
+                            <button id="jsonFromFileButton" title="Import characters from a json file on your computer.">From File</button>
+                            <input type="file" accept=".json" name="jsonFileInput" id="jsonFileInput" style="display:none">
+                        </div>
                     </div>
+                    <button id="importBlood" title="Import a .blood file.">From *.blood File</button>
+                    <button id="importOfficialButton" title="Import official character.">Official Character</button>
                 </div>
-                <button id="importOfficialButton" title="Import official character.">Official Character</button>
-            </div>
             </div>
             <div class="dropdown" tabindex="0">
-            Publish
-            <div class="dropdownContent">
-                <button id="saveAndPublishButton" title="Save changes, then create json and almanac links.">Save and Publish</button>
-            </div>
+                Publish
+                <div class="dropdownContent">
+                    <button id="saveAndPublishButton" title="Save changes, then create json and almanac links.">Save and Publish</button>
+                </div>
             </div>
             <div id="windowTitle"></div>
         </div>

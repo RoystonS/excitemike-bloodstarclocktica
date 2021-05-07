@@ -31,7 +31,6 @@ const selectedCharacter = new BloodBind.Property<Character|null>(null);
 
 // TODO: exceptions in promises need to surface somewhere (test without internet connection!)
 
-
 /** add a new character to the custom edition */
 function addCharacterClicked(_: Event): void {
     edition.addNewCharacter();
@@ -195,9 +194,10 @@ function initBindings():void {
         ['openfilebutton', openFileClicked],
         ['savefilebutton', saveFileClicked],
         ['savefileasbutton', saveFileAsClicked],
+        ['importBlood', ()=>BloodIO.importBlood(edition)],
+        ['importOfficialButton', importOfficialClicked],
         ['jsonFromUrlButton', ()=>BloodIO.importJsonFromUrl(edition)],
         ['jsonFromFileButton', ()=>BloodIO.importJsonFromFile(edition)],
-        ['importOfficialButton', importOfficialClicked],
         ['saveAndPublishButton', saveAndPublishClicked],
         ['helpbutton', showHelp],
         ['metaTabBtn', ()=>tabClicked('metaTabBtn','metatab')],
