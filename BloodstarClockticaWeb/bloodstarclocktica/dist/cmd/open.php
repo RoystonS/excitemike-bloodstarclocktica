@@ -10,6 +10,6 @@
     checkHash($saveName, $check);
     
     $data = readSaveFile($saveName);
-    // TODO: fix unnecessary round trip decoding and re-encoding as json
-    echo json_encode(array('data' => $data));
+    
+    echo('{"data":'.$data.'}');
 ?>

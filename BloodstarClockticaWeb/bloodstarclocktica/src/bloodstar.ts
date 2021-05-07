@@ -48,24 +48,24 @@ function showHelp() {
  * @param name file name
  */
 function addToRecentFiles(_name:string):void {
-    // TODO
+    // TODO: implement addToRecentFiles
     updateRecentFilesMenu();
 }
 
 /**
- * If a file turns out to be delted or renamed or something, delete the old
+ * If a file turns out to be deleted or renamed or something, delete the old
  * name from the list
  * @param name file name to remove
  */
 //function removeFromRecentFiles(_name:string):void {
-    // TODO
+    // TODO: implement removeFromRecentFiles
 //}
 
 /**
  * update the recent files menu based on the recent files in local storage
  */
 function updateRecentFilesMenu():void {
-    // TODO
+    // TODO: implement updateRecentFilesMenu
 }
 
 /**

@@ -230,6 +230,7 @@ async function _cmd(username:string, password:string, cmdName:string, body?:Body
         clearTimeout(timeoutId);
     }
 
+    // TODO: catch and surface parse errors here
     const responseText = await response.text();
     const responseJson = JSON.parse(responseText);
     return responseJson;

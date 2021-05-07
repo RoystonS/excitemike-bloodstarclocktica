@@ -50,9 +50,20 @@
         }
     }
 
+    // crude filename sanitize
+    function sanitizeFilename($filename) {
+        return ;
+    }
+
     // encode as json and write to save directory
     function writeSaveFile($saveName, $data) {
         global $saveDir;
+
+        // don't blindly trust input
+        if (!preg_match("([^\w\s\d\-_~,;\[\]\(\).])|([\.]{2,})", '', $saveName)) {
+            echo json_encode(array('error' =>"invalid save name '$saveName'"));
+            exit();
+        }
 
         // ensure directory exists
         if (!file_exists($saveDir)) {
@@ -79,7 +90,7 @@
     function readSaveFile($saveName) {
         global $saveDir;
         $path = join_paths($saveDir, $saveName);
-        return json_decode(file_get_contents($path));
+        return file_get_contents($path);
     }
 
     // error out if filename invalid

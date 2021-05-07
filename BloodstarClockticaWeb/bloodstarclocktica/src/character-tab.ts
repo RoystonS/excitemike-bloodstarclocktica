@@ -58,7 +58,6 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
         ['resetImageSettings', ()=>character.imageSettings.reset()]
     ]);
 
-    // TODO: should probably have a separate developer mode where these don't show
     if (unbindCharacterTabControls) {
         const message = 'binding character tab controls without clearing previous bindings';
         showError('Programmer Error', message, new Error(message));
