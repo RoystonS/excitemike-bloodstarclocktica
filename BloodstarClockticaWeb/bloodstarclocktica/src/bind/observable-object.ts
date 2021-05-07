@@ -117,6 +117,7 @@ export abstract class ObservableObject<T> {
                 const property = (this as any)[key];
                 if (!(property instanceof Property)) { throw new Error(`It looks like the "observableProperty" decorator was used on non-Property field "${String(key)}" of class "${this.constructor.name}"!`); }
                 this.properties.set(key, property);
+                // TODO: what if listeners do async work? how do we wait for it?
                 property.addListener(()=>this.notifyPropertyChangedEventListeners(key));
             }
             this.___queuedPropInit = undefined;
@@ -126,6 +127,7 @@ export abstract class ObservableObject<T> {
                 const collection = (this as any)[key];
                 if (!(collection instanceof ObservableCollection)) { throw new Error(`It looks like the "observableCollection" decorator was used on non-ObservableCollection field "${String(key)}" of class "${this.constructor.name}"!`); }
                 this.collections.set(key, collection);
+                // TODO: what if listeners do async work? how do we wait for it?
                 collection.addCollectionChangedListener(()=>this.notifyPropertyChangedEventListeners(key));
                 collection.addItemChangedListener(()=>this.notifyPropertyChangedEventListeners(key));
             }
@@ -136,6 +138,7 @@ export abstract class ObservableObject<T> {
                 const child = (this as any)[key];
                 if (!(child instanceof ObservableObject)) { throw new Error(`It looks like the "observableChild" decorator was used on non-ObservableObject field "${String(key)}" of class "${this.constructor.name}"!`); }
                 this.observableChildren.set(key, child);
+                // TODO: what if listeners do async work? how do we wait for it?
                 child.addPropertyChangedEventListener(()=>this.notifyPropertyChangedEventListeners(key));
             }
             this.___queuedChildInit = undefined;
@@ -239,9 +242,9 @@ export abstract class ObservableObject<T> {
     }
 
     /** send out notification of a property changing */
-    notifyPropertyChangedEventListeners(propName:PropKey<T>):void {
+    private notifyPropertyChangedEventListeners(propName:PropKey<T>):void {
         const backup = this.propertyChangedListeners.concat();
-        // TODO: these can be async and should be waited for
+        // TODO: what if listeners do async work? how do we wait for it?
         backup.forEach(cb=>cb(propName));
     }
 
@@ -252,16 +255,17 @@ export abstract class ObservableObject<T> {
 
     /** reset all properties to default values */
     async reset():Promise<void> {
-        // TODO: use Promise.all
+        const promises = [];
         for (const child of this.observableChildren.values()) {
-            await child.reset();
+            promises.push(child.reset());
         }
         for (const collection of this.collections.values()) {
-            await collection.clear();
+            promises.push(collection.clear());
         }
         for (const property of this.properties.values()) {
-            await property.reset();
+            promises.push(property.reset());
         }
+        await Promise.all(promises);
     }
 
     /** convert to an object ready for JSON conversion and that could be read back with deserialize */

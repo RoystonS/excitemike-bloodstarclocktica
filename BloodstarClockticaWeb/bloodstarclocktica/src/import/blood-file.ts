@@ -32,15 +32,8 @@ class BloodImporter {
     private readonly charactersById = new Map<string, Character>();
     private readonly edition:Edition;
 
-    private constructor(edition:Edition) {
+    constructor(edition:Edition) {
         this.edition = edition;
-    }
-
-    // TODO: why even have this? just only export a single importBlood function
-    static async asyncNew(edition:Edition):Promise<BloodImporter> {
-        await edition.reset();
-        await edition.characterList.clear();
-        return new BloodImporter(edition);
     }
 
     /** import a whole blood file */
@@ -236,6 +229,8 @@ export async function importBloodFile(edition:Edition):Promise<boolean> {
     if (!await savePromptIfDirty(edition)) {return false;}
     const file = await chooseBloodFile();
     if (!file){return false;}
-    const importer = await BloodImporter.asyncNew(edition);
+    await edition.reset();
+    await edition.characterList.clear();
+    const importer = new BloodImporter(edition);
     return await showSpinner('Importing .blood', importer.importBlood(file)) || false;
 }
