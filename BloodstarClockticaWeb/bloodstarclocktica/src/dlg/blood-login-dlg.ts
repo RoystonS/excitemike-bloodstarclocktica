@@ -8,8 +8,8 @@ import {ButtonCfg, AriaDialog} from './aria-dlg';
 export type UserPass = {username:string,password:string};
 
 class LoginDlg extends AriaDialog<UserPass> {
-    private username:string = '';
-    private password:string = '';
+    private username = '';
+    private password = '';
 
     canCancel():boolean{return false;}
     async open(prompt:string):Promise<UserPass|null> {

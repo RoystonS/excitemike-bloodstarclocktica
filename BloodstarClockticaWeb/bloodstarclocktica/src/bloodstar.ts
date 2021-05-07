@@ -47,6 +47,7 @@ function showHelp() {
  * maintain a list of recent files - both in the menu and in local storage
  * @param name file name
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function addToRecentFiles(_name:string):void {
     // TODO: implement addToRecentFiles
     updateRecentFilesMenu();
@@ -161,8 +162,7 @@ function tabClicked(btnId:string, tabId:string):void {
 
 /** prompt for login information */
 async function login():Promise<void> {
-    let done = false;
-    while (done) {
+    while (true) {
         try {
             const loginInfo = await LoginDlg.show("Enter username and password");
             if (loginInfo) {
@@ -170,7 +170,6 @@ async function login():Promise<void> {
                 username = newUsername;
                 password = newPassword;
                 if (await SpinnerDlg.show('Logging in', BloodIO.login(username, password))) {
-                    done = true;
                     break;
                 }
             }
@@ -264,10 +263,8 @@ async function initBindings():Promise<void> {
 /** initialize CustomEdition object to bind to */
 async function initCustomEdition():Promise<void> {
     try {
-        let done = false;
-        while (done) {
+        while (true) {
             if (await BloodNewOpen.show()) {
-                done = true;
                 break;
             }
         }

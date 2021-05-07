@@ -5,10 +5,16 @@ import * as OpenDlg from './dlg/blood-open-dlg';
 import * as SdcDlg from './dlg/blood-save-discard-cancel';
 import * as StringDlg from './dlg/blood-string-dlg';
 import { FieldType } from './bind/base-binding';
-import {importJson} from './import/json';
+import {importJson, ScriptEntry} from './import/json';
 import { fetchJson } from './util';
 import { AriaDialog } from './dlg/aria-dlg';
 import { importBloodFile } from './import/blood-file';
+
+type ListFilesReturn = {error?:string,files:string[]};
+type LoginReturn = {success:boolean};
+type SaveReturn = {error?:string};
+type OpenReturn = {error?:string,data:{[key:string]:FieldType}};
+type CmdReturn = ListFilesReturn|LoginReturn|SaveReturn|OpenReturn|null;
 
 /// hash used by the server to sanity check
 export function hashFunc(input:string):number {
@@ -94,7 +100,7 @@ async function _save(username:string, password:string, edition:Edition):Promise<
         edition: edition.serialize()
     };
     const payload = JSON.stringify(saveData);
-    const {error} = await cmd(username, password, 'save', `Saving as ${saveName}`, payload);
+    const {error} = await cmd(username, password, 'save', `Saving as ${saveName}`, payload) as SaveReturn;
     if (error) {
         showError('Error', 'Error encountered while trying to save', error);
         return false;
@@ -147,8 +153,7 @@ async function openNoPrompts(username:string, password:string, edition:Edition, 
         check: hashFunc(name)
     };
     const payload = JSON.stringify(openData);
-    const cmdResult = await cmd(username, password, 'open', `Opening ${name}`, payload);
-    const {error,data} = cmdResult;
+    const {error,data} = await cmd(username, password, 'open', `Opening ${name}`, payload) as OpenReturn;
     if (error) {
         showError('Error', `Error encountered while trying to open file ${name}`, error);
         return false;
@@ -191,14 +196,14 @@ function sanitizeSaveName(original:string):string {
  * send a command to the server, await response
  * Brings up the loading spinner during the operation
  */
-async function cmd(username:string, password:string, cmdName:string, spinnerMessage:string, body?:BodyInit|null|undefined):Promise<any> {
+async function cmd(username:string, password:string, cmdName:string, spinnerMessage:string, body?:BodyInit|null|undefined):Promise<CmdReturn> {
     return await Spinner.show(spinnerMessage, _cmd(username, password, cmdName, body));
 }
 
 /**
  * send a command to the server, await response 
  */
-async function _cmd(username:string, password:string, cmdName:string, body?:BodyInit|null):Promise<any> {
+async function _cmd(username:string, password:string, cmdName:string, body?:BodyInit|null):Promise<CmdReturn> {
     let response:Response;
     const base64 = btoa(`${username}:${password}`);
     const controller = new AbortController();
@@ -246,7 +251,7 @@ async function _cmd(username:string, password:string, cmdName:string, body?:Body
  */
 export async function login(username:string, password:string):Promise<boolean> {
     try {
-        const {success} = await cmd(username, password, 'login', `Logging in as ${username}`);
+        const {success} = await cmd(username, password, 'login', `Logging in as ${username}`) as LoginReturn;
         return success;
     } catch (error) {
         showError('Network Error', `Error encountered during login`, error);
@@ -261,7 +266,7 @@ export async function login(username:string, password:string):Promise<boolean> {
  * @param password password
  */
 async function _listFiles(username:string, password:string):Promise<string[]> {
-    const {error,files} = await cmd(username, password, 'list', 'Retrieving file list');
+    const {error,files} = await cmd(username, password, 'list', 'Retrieving file list') as ListFilesReturn;
     if (error) {
         showError('Network Error', `Error encountered while retrieving file list`, error);
         console.error(error);
@@ -284,7 +289,8 @@ export async function importJsonFromUrl(edition:Edition):Promise<boolean> {
     if (!await SdcDlg.savePromptIfDirty(edition)) {return false;}
     const url = await StringDlg.show('Enter URL to a custom-script.json file.');
     if (!url){return false;}
-    const json = await fetchJson(url);
+    const json = await fetchJson<ScriptEntry[]>(url);
+    if (!json) {return false;}
     return await Spinner.show('Importing json', importJson(json, edition)) || false;
 }
 

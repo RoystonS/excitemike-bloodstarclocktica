@@ -6,7 +6,7 @@ import { CreateElementsOptions } from '../util';
 import {AriaDialog} from './aria-dlg';
 
 class YesNoDialog extends AriaDialog<boolean> {
-    async open(titleText:string, messageText?:string, yesLabel:string='Yes', noLabel:string='No'):Promise<boolean> {
+    async open(titleText:string, messageText?:string, yesLabel='Yes', noLabel='No'):Promise<boolean> {
         const body:CreateElementsOptions = [{
             t:'p',
             css:['title'],
@@ -30,6 +30,6 @@ class YesNoDialog extends AriaDialog<boolean> {
 }
 
 /** bring up the confirmation dialog */
-export async function show(titleText:string, messageText?:string, yesLabel:string='Yes', noLabel:string='No'):Promise<boolean> {
+export async function show(titleText:string, messageText?:string, yesLabel='Yes', noLabel='No'):Promise<boolean> {
     return await new YesNoDialog().open(titleText, messageText, yesLabel, noLabel);
 }

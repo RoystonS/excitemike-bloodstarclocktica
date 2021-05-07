@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {BaseBinding, FieldType, Property, PropertyChangeListener} from './base-binding'
 import {CollectionBinding, RenderFn, CleanupFn} from './collection-binding'
 import {ImageChooserBinding, ImageDisplayBinding} from './image-binding';
@@ -42,7 +43,7 @@ type Binding = BaseBinding<any> | CollectionBinding<any>;
 /** bindings for a checkbox */
 class CheckboxBinding extends BaseBinding<boolean> {
     constructor(element:HTMLInputElement, property:Property<boolean>) {
-        super(element, property, 'change', _=>property.set(element.checked), v=>element.checked=v);
+        super(element, property, 'change', ()=>property.set(element.checked), v=>element.checked=v);
     }
 }
 
@@ -50,7 +51,7 @@ class CheckboxBinding extends BaseBinding<boolean> {
 class TextBinding extends BaseBinding<string> {
     constructor(node:Node, property:Property<string>) {
         if ((node instanceof HTMLTextAreaElement) || (node instanceof HTMLInputElement)) {
-            super(node, property, 'input', _=>property.set(node.value), v=>{
+            super(node, property, 'input', ()=>property.set(node.value), v=>{
                 node.value=v;
                 node.dispatchEvent(new Event('change'));
                 node.dispatchEvent(new Event('input'));
@@ -67,9 +68,9 @@ class TextBinding extends BaseBinding<string> {
 class TextEnumBinding extends BaseBinding<any> {
     constructor(element:HTMLElement, property:EnumProperty<any>) {
         if ((element instanceof HTMLTextAreaElement) || (element instanceof HTMLInputElement)) {
-            super(element, property, 'input', null, _=>element.value=property.getDisplay());
+            super(element, property, 'input', null, ()=>element.value=property.getDisplay());
         } else {
-            super(element, property, '', null, _=>element.innerText=property.getDisplay());
+            super(element, property, '', null, ()=>element.innerText=property.getDisplay());
         }
     }
 }
@@ -86,7 +87,7 @@ class ComboBoxBinding<T extends FieldType> extends BaseBinding<T> {
             element.appendChild(optionElement);
         });
 
-        const syncFromElementToProperty = (_:Event)=>property.set(stringToEnum(element.value));
+        const syncFromElementToProperty = ()=>property.set(stringToEnum(element.value));
         const syncFromPropertyToElement = (value:T)=>element.value=enumToString(value);
         super(element, property, 'change', syncFromElementToProperty, syncFromPropertyToElement);
 
@@ -95,12 +96,12 @@ class ComboBoxBinding<T extends FieldType> extends BaseBinding<T> {
 }
 
 /** bind checkbox to some data */
-export function bindCheckbox(checkboxElement:HTMLInputElement, boolProperty:Property<boolean>) {
+export function bindCheckbox(checkboxElement:HTMLInputElement, boolProperty:Property<boolean>):void {
     bindings.set(checkboxElement, new CheckboxBinding(checkboxElement, boolProperty));
 }
 
 /** bind checkbox to some data */
-export function bindCheckboxById(id:string, boolProperty:Property<boolean>) {
+export function bindCheckboxById(id:string, boolProperty:Property<boolean>):void {
     const element = document.getElementById(id);
     if (element instanceof HTMLInputElement) {
         bindCheckbox(element, boolProperty);
@@ -108,12 +109,12 @@ export function bindCheckboxById(id:string, boolProperty:Property<boolean>) {
 }
 
 /** bind ComboBox to EnumProperty */
-export function bindComboBox<ValueType extends FieldType>(selectElement:HTMLSelectElement, enumProperty:EnumProperty<ValueType>, stringToEnum:(s:string)=>ValueType, enumToString:(t:ValueType)=>string) {
+export function bindComboBox<ValueType extends FieldType>(selectElement:HTMLSelectElement, enumProperty:EnumProperty<ValueType>, stringToEnum:(s:string)=>ValueType, enumToString:(t:ValueType)=>string):void {
     bindings.set(selectElement, new ComboBoxBinding<ValueType>(selectElement, enumProperty, stringToEnum, enumToString));
 }
 
 /** bind ComboBox to EnumProperty */
-export function bindComboBoxById<ValueType extends FieldType>(id:string, enumProperty:EnumProperty<ValueType>, stringToEnum:(s:string)=>ValueType, enumToString:(t:ValueType)=>string) {
+export function bindComboBoxById<ValueType extends FieldType>(id:string, enumProperty:EnumProperty<ValueType>, stringToEnum:(s:string)=>ValueType, enumToString:(t:ValueType)=>string):void {
     const element = document.getElementById(id);
     if (element instanceof HTMLSelectElement) {
         bindComboBox<ValueType>(element, enumProperty, stringToEnum, enumToString);
@@ -226,7 +227,7 @@ export function bindVisibilityById(id:string, property:Property<boolean>):void {
 }
 
 /** clear element's current binding, if any */
-export function unbindElement(element:Node) {
+export function unbindElement(element:Node):void {
     if (bindings.has(element)) {
         bindings.get(element)?.destroy();
     }
@@ -234,7 +235,7 @@ export function unbindElement(element:Node) {
 }
 
 /** clear element's current binding, if any */
-export function unbindElementById(id:string) {
+export function unbindElementById(id:string):void {
     const element = document.getElementById(id);
     if (!element) {return;}
     unbindElement(element);

@@ -72,7 +72,7 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(options:Cre
 }
 
 /** attempt to read some json from the internet */
-export async function fetchJson(uri:string):Promise<any> {
+export async function fetchJson<T>(uri:string):Promise<T|null> {
     let response:Response;
     const controller = new AbortController();
     const timeoutId = setTimeout(()=>controller.abort(), 15*1000);

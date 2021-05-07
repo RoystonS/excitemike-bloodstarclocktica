@@ -1,10 +1,10 @@
-type RenderFn = (itemData:any)=>Element;
+type RenderFn = (itemData:unknown)=>Element;
 type CleanupFn = (listElement:HTMLElement)=>void;
 type ItemDragData = {
     element:HTMLElement,
-    itemData:any,
+    itemData:unknown,
     list:HTMLElement,
-    listData:any[],
+    listData:unknown[],
     renderItemFn:RenderFn,
     cleanupItemFn:CleanupFn
 };
@@ -23,10 +23,10 @@ function clearItems(listElement:HTMLElement):void {
     listElement.innerText = '';
 }
 
-export function renderItems(list:HTMLElement, data:any[], renderItemFn:RenderFn, cleanupItemFn:CleanupFn):void {
+export function renderItems(list:HTMLElement, data:unknown[], renderItemFn:RenderFn, cleanupItemFn:CleanupFn):void {
     clearItems(list);
     data.forEach((itemData, index) => {
-        var li = document.createElement('li');
+        const li = document.createElement('li');
         li.draggable = true;
         const itemDragData:ItemDragData = {
             element:li,
@@ -37,9 +37,9 @@ export function renderItems(list:HTMLElement, data:any[], renderItemFn:RenderFn,
             cleanupItemFn
         };
         li.dataset.index = String(index);
-        li.addEventListener('drag', _=>dragBegin(itemDragData));
+        li.addEventListener('drag', ()=>dragBegin(itemDragData));
         li.addEventListener('dragover', e=>dragOver(e, itemDragData));
-        li.addEventListener('drop', _=>dragEnd());
+        li.addEventListener('drop', ()=>dragEnd());
         li.appendChild(renderItemFn(itemData));
         list.appendChild(li);
 

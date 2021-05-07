@@ -33,6 +33,12 @@
 			"detail": "open browser to site with auto-reload when there are changes",
 			"isBackground": true,
 			"problemMatcher": []
+		},
+		{
+			"type":"eslint",
+			"group": "build",
+			"label": "lint",
+			"detail": "lint project using eslint"
 		}
 	]
 }

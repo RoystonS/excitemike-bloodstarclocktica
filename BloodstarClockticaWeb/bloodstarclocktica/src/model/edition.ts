@@ -9,11 +9,11 @@ import {EditionMeta} from './edition-meta';
 import {ObservableCollection} from '../bind/observable-collection';
 import {customSerialize, observableChild, observableCollection, ObservableObject, observableProperty, ObservableType} from '../bind/observable-object';
 
-function serializeJustIds(_:ObservableObject<any>, nightOrder:ObservableType):FieldType {
+function serializeJustIds(_:ObservableObject<Edition>, nightOrder:ObservableType):FieldType {
     if (!(nightOrder instanceof ObservableCollection)) {return [];}
     return nightOrder.map((c:Character)=>c.id.get())
 }
-async function deserializeFromIds(object:ObservableObject<any>, nightOrder:ObservableType, data:FieldType):Promise<void> {
+async function deserializeFromIds(object:ObservableObject<Edition>, nightOrder:ObservableType, data:FieldType):Promise<void> {
     if (!(nightOrder instanceof ObservableCollection)) {return;}
     if (!Array.isArray(data)){return;}
     const characterList = object.getCollection('characterList');

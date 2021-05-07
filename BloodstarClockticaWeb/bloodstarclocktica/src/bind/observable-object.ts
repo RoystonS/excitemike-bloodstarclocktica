@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { FieldType, Property } from "./bindings";
 import { ObservableCollection } from "./observable-collection";
 import { showError } from '../dlg/blood-message-dlg';
@@ -233,7 +234,7 @@ export abstract class ObservableObject<T> {
     }
 
     /** retrieve a property value by name */
-    getPropertyValue(propName:PropKey<T>):any {
+    getPropertyValue(propName:PropKey<T>):FieldType {
         return this.getProperty(propName)?.get();
     }
 
@@ -295,7 +296,7 @@ export abstract class ObservableObject<T> {
     }
 
     /** set a property value by name */
-    async setPropertyValue(propName:PropKey<T>, value:any):Promise<void> {
+    async setPropertyValue(propName:PropKey<T>, value:FieldType):Promise<void> {
         await this.getProperty(propName)?.set(value);
     }
 }

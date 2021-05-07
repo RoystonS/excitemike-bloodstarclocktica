@@ -53,7 +53,7 @@ export class ImageChooserBinding extends BaseBinding<string|null> {
             element,
             property,
             'change',
-            async _=>await syncFileElemToProperty(element, property, maxWidth, maxHeight),
+            async ()=>await syncFileElemToProperty(element, property, maxWidth, maxHeight),
             null);
     }
     destroy():void {

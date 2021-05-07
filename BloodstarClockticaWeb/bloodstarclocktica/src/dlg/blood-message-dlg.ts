@@ -5,6 +5,10 @@
 import { CreateElementsOptions } from '../util';
 import {AriaDialog} from './aria-dlg';
 
+interface ToStringable {
+    toString():string;
+}
+
 class MessageDialog extends AriaDialog<void> {
     async open(focusAfterClose:Element|string|null, titleText:string, messageText?:string, errorMessage?:string):Promise<void|null> {
         const body:CreateElementsOptions = [{
@@ -33,7 +37,7 @@ class MessageDialog extends AriaDialog<void> {
 /**
  * bring up the popup showing exception information
  */
-export async function showError(title:string, message:string, error?:any):Promise<void|null> {
+export async function showError(title:string, message:string, error?:Error|ToStringable):Promise<void|null> {
     title = title || 'Error';
     message = message || 'It looks like you encountered a bug! The error message below may help the developers fix it.';
     error = error || new Error(message);

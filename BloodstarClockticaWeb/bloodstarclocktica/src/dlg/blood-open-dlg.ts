@@ -19,7 +19,7 @@ class OpenDlg extends AriaDialog<string> {
         if (!files) {return null;}
         if (files.length) {
             for (const name of files) {
-                const button = createElement({t:'button',txt:name,events:{click:_=>this.close(name)}});
+                const button = createElement({t:'button',txt:name,events:{click:()=>this.close(name)}});
                 fileListDiv.appendChild(button);
             }
         } else {

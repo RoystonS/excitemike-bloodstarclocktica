@@ -9,13 +9,13 @@ import { parseBloodTeam } from "../model/blood-team";
 import { Character } from "../model/character";
 import { Edition } from "../model/edition";
 
-type MetaEntry = {
+export type MetaEntry = {
     id:'_meta',
     name?:string,
     author?:string,
     logo?:string
 };
-type CharacterEntry = {
+export type CharacterEntry = {
     id:string,
     image?:string,
     edition?:string,
@@ -30,7 +30,7 @@ type CharacterEntry = {
     team?:string,
     ability?:string,
 };
-type ScriptEntry = MetaEntry|CharacterEntry;
+export type ScriptEntry = MetaEntry|CharacterEntry;
 type NightOrderTracker = Map<number, Character[]>;
 
 // sizes here based on what what I see clocktower.online using
@@ -140,7 +140,7 @@ async function importEdition(json:ScriptEntry[], edition:Edition):Promise<boolea
 }
 
 /** import a json file, replacing the edition's current contents */
-export async function importJson(fileOrStringOrArray:File|string|any[], edition:Edition):Promise<boolean> {
+export async function importJson(fileOrStringOrArray:File|string|ScriptEntry[], edition:Edition):Promise<boolean> {
     let json:ScriptEntry[];
     if (fileOrStringOrArray instanceof File) {
         const text = await fileOrStringOrArray.text();

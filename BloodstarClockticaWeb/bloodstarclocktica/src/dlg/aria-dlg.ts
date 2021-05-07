@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /**
  * Used to build custom dialogs.
  * See other modules in this folder for examples
@@ -11,13 +12,13 @@ type ButtonCb = ()=>Promise<any>;
 export type ButtonCfg = {label:string,callback:ButtonCb};
 
 /** used to make each dialog definitely have a unique id */
-let unique:number = 1;
+let unique = 1;
 
 /** track all active dialogs */
-const dialogStack:AriaDialog<any>[] = [];
+const dialogStack:AriaDialog<unknown>[] = [];
 
 /** used to globally disable focus blocking while we force focus */
-let pauseFocusTrap:boolean = false;
+let pauseFocusTrap = false;
 
 /**
  * try to focus the node
@@ -29,8 +30,9 @@ let pauseFocusTrap:boolean = false;
     pauseFocusTrap = true;
     try {
         (node as unknown as HTMLOrSVGElement).focus();
-    } catch (_) {}
-    pauseFocusTrap = false;
+    } finally {
+        pauseFocusTrap = false;
+    }
     return document.activeElement === node;
 }
 
@@ -78,7 +80,7 @@ function focusLastDescendant(node:Node):boolean {
 }
 
 /** get the currently active dialog, if any */
-function getCurrentDialog():AriaDialog<any>|null {
+function getCurrentDialog():AriaDialog<unknown>|null {
     return (dialogStack.length) ?
         dialogStack[dialogStack.length-1] :
         null;
@@ -90,7 +92,9 @@ function getCurrentDialog():AriaDialog<any>|null {
  * @returns 
  */
 function isFocusable(node:Node):boolean {
-    let element = node as any;
+    if (!node){return false;}
+    const element = node as any;
+
     if (element.tabIndex > 0 || (element.tabIndex === 0 && element.getAttribute('tabIndex') !== null)) {
         return true;
     }
@@ -123,9 +127,6 @@ export class AriaDialog<ResultType> {
     private resolveFn:ResolveFn|null = null;
     private lastFocus:Node|null = null;
 
-    constructor() {
-    }
-
     /** whether escape can close the dialog */
     canCancel():boolean{return true;}
 
@@ -146,10 +147,8 @@ export class AriaDialog<ResultType> {
                     if (i > 0) {
                         dialogStack[i-1].trapFocus();
                     }
-                    if (this.focusAfterClose && 
-                        (typeof ((this.focusAfterClose as any).focus) === 'function'))
-                    {
-                        (this.focusAfterClose as any).focus();
+                    if (this.focusAfterClose) {
+                        (this.focusAfterClose as unknown as HTMLOrSVGElement).focus();
                     } else {
                         focusFirstDescendant(document.body);
                     }
@@ -181,7 +180,7 @@ export class AriaDialog<ResultType> {
     private createDialog(
         debugName:string,
         body:CreateElementsOptions = [],
-        buttons:ButtonCfg[] = [{label:'OK',callback:async ()=>{}}]
+        buttons:ButtonCfg[] = [{label:'OK',callback:async ()=>null}]
     ):Element {
         const id = `${debugName}${unique++}`;
         const root = document.createElement('div');
@@ -241,9 +240,9 @@ export class AriaDialog<ResultType> {
      */
     async baseOpen(
         focusAfterClose:Element|string|null,
-        debugName:string = '',
+        debugName = '',
         body:CreateElementsOptions,
-        buttons:ButtonCfg[] = [{label:'OK',callback:async ()=>{}}]
+        buttons:ButtonCfg[] = [{label:'OK',callback:async ()=>null}]
     ):Promise<ResultType|null> {
         this.root = this.createDialog(debugName, body, buttons);
         if (!this.root) {return null;}
@@ -269,7 +268,7 @@ export class AriaDialog<ResultType> {
         dialogStack.push(this);
 
         // result promise
-        this.promise = new Promise<ResultType|null>((resolve, _)=>{
+        this.promise = new Promise<ResultType|null>((resolve)=>{
             this.resolveFn = resolve;
         });
 
