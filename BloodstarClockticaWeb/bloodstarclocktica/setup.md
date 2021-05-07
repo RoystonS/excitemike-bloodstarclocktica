@@ -12,6 +12,10 @@ Once you have cloned the repository, you can get set up to work in it by:
     - Serve files locally: `npm run-script serve`
     - In VS Code, tasks are set up for the above. Just press Ctrl+B and select which thing you'd like.
 
+I like to use ESLint, too. For that, you'll want to
+
+1. install eslint-typescript-support: `npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin`
+
 ## How project was initialized
 
 Initial setup was done like this. **(DO NOT do this with an already set-up project)**
