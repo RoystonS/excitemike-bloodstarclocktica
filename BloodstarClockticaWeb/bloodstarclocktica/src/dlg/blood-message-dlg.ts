@@ -33,9 +33,12 @@ class MessageDialog extends AriaDialog<void> {
 /**
  * bring up the popup showing exception information
  */
-export async function showError(error:any):Promise<void|null> {
+export async function showError(title:string, message:string, error?:any):Promise<void|null> {
+    title = title || 'Error';
+    message = message || 'It looks like you encountered a bug! The error message below may help the developers fix it.';
+    error = error || new Error(message);
     const errorMessage = (error instanceof Error) ? `${error.message}\n\n${error.stack}` : error.toString();
-    return await new MessageDialog().open(document.activeElement, 'Error', 'It looks like you encountered a bug! The error message below may help the developers fix it.', errorMessage);
+    return await new MessageDialog().open(document.activeElement, title, message, errorMessage);
 }
 
 /**

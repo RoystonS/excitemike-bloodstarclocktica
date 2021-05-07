@@ -2,7 +2,7 @@
  * Miscellaneous useful things
  * @module Util
  */
-import {showError} from './dlg/blood-message-dlg';
+import {show as showMessage} from './dlg/blood-message-dlg';
 
 /** configuration used to create DOM elements */
 export type CreateElementOptions<K extends keyof HTMLElementTagNameMap> = {
@@ -87,13 +87,13 @@ export async function fetchJson(uri:string):Promise<any> {
             });
         
         if (!response.ok) {
-            // TODO: Handle the error more gracefully. Explain to the user what went wrong.
-            showError(`${response.status}: (${response.type}) ${response.statusText}`);
+            showMessage('Network Error', `Something went wrong while trying to reach ${uri}`);
+            console.error(`${response.status}: (${response.type}) ${response.statusText}`);
             return null;
         }
     } catch (error) {
-        // TODO: Handle the error more gracefully. Explain to the user what went wrong.
-        showError(error);
+        showMessage('Network Error', `Something went wrong while trying to reach ${uri}`);
+        console.error(error);
         return null;
     } finally {
         clearTimeout(timeoutId);

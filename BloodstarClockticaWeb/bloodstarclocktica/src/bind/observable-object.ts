@@ -12,7 +12,12 @@ function makeCustomSerializeTable<T>():CustomSerializeTable<T> {
     return new Map<keyof T, {s:CustomSerializeFn,d:CustomDeserializeFn}>();
 }
 
-function noSuchProperty<T>(object:any, key:PropKey<T>):never { const e = new Error(`no property '${String(key)}' on object (${object.constructor.name})`); showError(e); throw e; }
+function noSuchProperty<T>(object:any, key:PropKey<T>):never {
+    const message = `no property '${String(key)}' on object (${object.constructor.name})`;
+    const error = new Error(message);
+    console.error('Error', message, error);
+    throw error;
+}
 
 /** decorator to customize serialization and deserialization for a field */
 export function customSerialize(
@@ -140,7 +145,7 @@ export abstract class ObservableObject<T> {
     initCheck():void|never {
         if (this.___queuedChildInit || this.___queuedCollectionInit || this.___queuedPropInit) {
             const error = new Error(`It appears a developer forgot to call init() after super() when ${this.constructor.name} extended ObservableObject!`);
-            showError(error);
+            showError('Programmer Error', 'Forgot to init', error);
             throw error;
         };
     }

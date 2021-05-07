@@ -1,6 +1,6 @@
 import {Edition} from './model/edition';
 import * as Spinner from './dlg/spinner-dlg';
-import * as MessageDlg from "./dlg/blood-message-dlg";
+import {showError} from "./dlg/blood-message-dlg";
 import * as OpenDlg from './dlg/blood-open-dlg';
 import * as SdcDlg from './dlg/blood-save-discard-cancel';
 import * as StringDlg from './dlg/blood-string-dlg';
@@ -49,8 +49,7 @@ export async function saveAs(username:string, password:string, edition:Edition):
         return !!(await Spinner.show(`Saving as ${name}`, _save(username, password, edition)));
     } catch (error) {
         edition.setSaveName(backupName);
-        // TODO: Handle the error more gracefully. Explain to the user what went wrong.
-        MessageDlg.showError(error);
+        showError('Error', 'Error encountered while trying to save', error);
     }
     return Promise.resolve(false);
 }
@@ -96,8 +95,7 @@ async function _save(username:string, password:string, edition:Edition):Promise<
     const payload = JSON.stringify(saveData);
     const {error} = await cmd(username, password, 'save', `Saving as ${saveName}`, payload);
     if (error) {
-        // TODO: Handle the error more gracefully. Explain to the user what went wrong.
-        MessageDlg.showError(error);
+        showError('Error', 'Error encountered while trying to save', error);
         return false;
     }
     edition.setDirty(false);
@@ -151,8 +149,7 @@ async function openNoPrompts(username:string, password:string, edition:Edition, 
     const cmdResult = await cmd(username, password, 'open', `Opening ${name}`, payload);
     const {error,data} = cmdResult;
     if (error) {
-        // TODO: Handle the error more gracefully. Explain to the user what went wrong.
-        MessageDlg.showError(error);
+        showError('Error', `Error encountered while trying to open file ${name}`, error);
         return false;
     }
     const result = edition.open(name, data);
@@ -221,13 +218,13 @@ async function _cmd(username:string, password:string, cmdName:string, body?:Body
             });
         
         if (!response.ok) {
-            // TODO: Handle the error more gracefully. Explain to the user what went wrong.
-            MessageDlg.showError(`${response.status}: (${response.type}) ${response.statusText}`);
+            const error = `${response.status}: (${response.type}) ${response.statusText}`;
+            showError('Network Error', `Error encountered during command ${cmdName}`, error);
+            console.error(error);
             return null;
         }
     } catch (error) {
-        // TODO: Handle the error more gracefully. Explain to the user what went wrong.
-        MessageDlg.showError(error);
+        showError('Network Error', `Error encountered during command ${cmdName}`, error);
         return null;
     } finally {
         clearTimeout(timeoutId);
@@ -247,8 +244,8 @@ export async function login(username:string, password:string):Promise<boolean> {
         const {success} = await cmd(username, password, 'login', `Logging in as ${username}`);
         return success;
     } catch (error) {
-        // TODO: Handle the error more gracefully. Explain to the user what went wrong.
-        MessageDlg.showError(error);
+        showError('Network Error', `Error encountered during login`, error);
+        console.error(error);
         return false;
     }
 }
@@ -261,8 +258,8 @@ export async function login(username:string, password:string):Promise<boolean> {
 async function _listFiles(username:string, password:string):Promise<string[]> {
     const {error,files} = await cmd(username, password, 'list', 'Retrieving file list');
     if (error) {
-        // TODO: Handle the error more gracefully. Explain to the user what went wrong.
-        MessageDlg.showError(error);
+        showError('Network Error', `Error encountered while retrieving file list`, error);
+        console.error(error);
     }
     return files || [];
 }

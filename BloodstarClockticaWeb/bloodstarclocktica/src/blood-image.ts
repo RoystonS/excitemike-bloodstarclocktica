@@ -2,7 +2,7 @@
  * image processing for character tokens
  * @module ImageProcessing
  */
-
+import {show as showMessage} from './dlg/blood-message-dlg';
 import { BloodTeam } from "./model/blood-team";
 import Images from "./images";
 import { getCorsProxyUrl } from "./util";
@@ -515,8 +515,8 @@ export async function imageUrlToDataUri(url:string, useCorsProxy:boolean):Promis
             signal: controller.signal
         });
         if (!response.ok) {
-            // TODO: Handle the error more gracefully. Explain to the user what went wrong.
-            console.error(`${response.status}: (${response.type}) ${response.statusText}`);
+            showMessage('Network Error', `Something went wrong while trying to reach ${url}`);
+            console.error(`TRying to reach ${proxiedUrl}\n${response.status}: (${response.type}) ${response.statusText}`);
             return '';
         }
         const buffer = await response.arrayBuffer();

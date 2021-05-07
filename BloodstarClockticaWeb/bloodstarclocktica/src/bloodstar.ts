@@ -2,7 +2,7 @@ import * as BloodBind from './bind/bindings';
 import * as BloodNewOpen from "./dlg/blood-new-open-dlg";
 import * as SpinnerDlg from './dlg/spinner-dlg';
 import * as LoginDlg from "./dlg/blood-login-dlg";
-import * as MessageDlg from "./dlg/blood-message-dlg";
+import {showError} from "./dlg/blood-message-dlg";
 import * as BloodIO from "./blood-io";
 import {Character} from "./model/character";
 import {Edition} from "./model/edition";
@@ -40,7 +40,7 @@ function addCharacterClicked(_: Event): void {
 /** clicked the help menu button */
 function showHelp() {
     // TODO: implement showHelp
-    MessageDlg.show('`showHelp` Not yet implemented');
+    showError('Not yet implemented', '`showHelp` Not yet implemented');
 }
 
 /**
@@ -112,14 +112,14 @@ export async function saveFileAsClicked():Promise<boolean> {
 /** user chose to import official character(s) */
 async function importOfficialClicked():Promise<boolean> {
     // TODO: implement importOfficialClicked
-    MessageDlg.show('`importOfficialClicked` Not yet implemented');
+    showError('Not yet implemented', '`importOfficialClicked` Not yet implemented');
     return false;
 }
 
 /** user chose to save and publish */
 async function saveAndPublishClicked():Promise<boolean> {
     // TODO: implement saveAndPublishClicked
-    MessageDlg.show('`saveAndPublishClicked` Not yet implemented');
+    showError('Not yet implemented', '`saveAndPublishClicked` Not yet implemented');
     return false;
 }
 
@@ -170,7 +170,7 @@ async function login():Promise<void> {
             }
         } catch (e) {
             console.error(e);
-            MessageDlg.showError(e);
+            showError('Error', 'Error encountered during login', e);
         }
     }
 }
@@ -262,7 +262,7 @@ async function initCustomEdition():Promise<void> {
     } catch (e) {
         console.error(e);
         edition.reset();
-        MessageDlg.showError(e);
+        showError('Error', 'Error encountered during initialization', e);
     }
 }
 

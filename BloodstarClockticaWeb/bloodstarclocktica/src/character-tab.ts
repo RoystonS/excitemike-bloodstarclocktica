@@ -3,7 +3,7 @@
  * @module CharacterTab
  */
 import {bindCheckboxById, bindComboBoxById, bindImageChooserById, bindImageDisplayById, bindSliderById, bindTextById, EnumProperty, FieldType, Property, unbindElementById} from './bind/bindings';
-import * as MessageDlg from "./dlg/blood-message-dlg";
+import {showError} from "./dlg/blood-message-dlg";
 import { ProcessImageSettings } from './blood-image';
 import { parseBloodTeam } from './model/blood-team';
 import { Character } from './model/character';
@@ -59,7 +59,10 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
     ]);
 
     // TODO: should probably have a separate developer mode where these don't show
-    if (unbindCharacterTabControls) { MessageDlg.showError(new Error('binding character tab controls without clearing previous bindings')); }
+    if (unbindCharacterTabControls) {
+        const message = 'binding character tab controls without clearing previous bindings';
+        showError('Programmer Error', message, new Error(message));
+    }
 
     return () => {
         unhookupClickEvents();
