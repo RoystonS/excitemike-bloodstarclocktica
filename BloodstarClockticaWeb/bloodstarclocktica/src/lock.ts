@@ -28,6 +28,7 @@ export default class LockSet<KeyType> {
 
     /** queue up work to be run non-simultaneously with other queued work, but still asynchronous */
     async enqueue<T>(key:KeyType, work:()=>Promise<T>|T):Promise<T> {
+
         // wait for previous work to complete
         const workCompleteFn = await this.acquire(key);
 
@@ -43,11 +44,8 @@ export default class LockSet<KeyType> {
     private runNext(key:KeyType):void {
         const queue = this.locks.get(key);
         if (!queue) {return;}
-        const startWorkFn = queue.shift();
+        const startWorkFn = queue[0];
         if (!startWorkFn) {return;}
-
-        // don't hold on to keys we aren't using
-        if (queue.length === 0) {this.locks.delete(key);}
 
         // send the callback, allowing work to start and 
         // provides the callback to be notified when it is done
@@ -55,6 +53,10 @@ export default class LockSet<KeyType> {
         startWorkFn(() => {
             if (released) {return;}
             released = true;
+
+            // remove from queue to unlock next
+            queue.shift();
+            if (queue.length === 0) {this.locks.delete(key);} // don't hold on to keys we aren't using
             this.runNext(key);
         });
     }
