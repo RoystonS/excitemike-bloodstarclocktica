@@ -105,7 +105,6 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
         const del = document.createElement("button");
         del.className = "characterListButton";
         del.innerText = "Delete";
-        // TODO: confirm delete
         del.onclick = async () => {
             if (await getConfirmation(`Are you sure you want to delete character "${character.name.get()}"?`)) {
                 collection.deleteItem(character);
