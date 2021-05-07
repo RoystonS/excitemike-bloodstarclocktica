@@ -13,7 +13,7 @@ function serializeJustIds(_:ObservableObject<any>, nightOrder:ObservableType):Fi
     if (!(nightOrder instanceof ObservableCollection)) {return [];}
     return nightOrder.map((c:Character)=>c.id.get())
 }
-function deserializeFromIds(object:ObservableObject<any>, nightOrder:ObservableType, data:FieldType):void {
+async function deserializeFromIds(object:ObservableObject<any>, nightOrder:ObservableType, data:FieldType):Promise<void> {
     if (!(nightOrder instanceof ObservableCollection)) {return;}
     if (!Array.isArray(data)){return;}
     const characterList = object.getCollection('characterList');
@@ -24,7 +24,11 @@ function deserializeFromIds(object:ObservableObject<any>, nightOrder:ObservableT
         if (!(character instanceof Character)) {return;}
         charactersById.set(character.id.get(), character);
     }
-    nightOrder.set(data.filter(id=>charactersById.has(String(id))).map(id=>charactersById.get(String(id)) || new Character()));
+    await nightOrder.set(data.filter(id=>charactersById.has(String(id))).map(id=>{
+        const character = charactersById.get(String(id));
+        if (!character) {throw new Error('Failed to get character by id when setting night order')}
+        return character;
+    }));
 }
 
 /** observable properties for a custom edition */
@@ -35,7 +39,7 @@ export class Edition extends ObservableObject<Edition> {
 
     /** characters in the edition */
     @observableCollection()
-    readonly characterList = new ObservableCollection(Character);
+    readonly characterList = new ObservableCollection(Character.asyncNew);
 
     /** true when there are unsaved changes */
     @observableProperty()
@@ -44,7 +48,7 @@ export class Edition extends ObservableObject<Edition> {
     /** contains the same Character objects as characterList, but ordered for night order */
     @customSerialize(serializeJustIds, deserializeFromIds)
     @observableCollection()
-    readonly firstNightOrder = new ObservableCollection(Character);
+    readonly firstNightOrder = new ObservableCollection(Character.asyncNew);
 
     /** data about the edition */
     @observableChild()
@@ -53,7 +57,7 @@ export class Edition extends ObservableObject<Edition> {
     /** contains the same Character objects as characterList, but ordered for night order */
     @customSerialize(serializeJustIds, deserializeFromIds)
     @observableCollection()
-    readonly otherNightOrder = new ObservableCollection(Character);
+    readonly otherNightOrder = new ObservableCollection(Character.asyncNew);
     
     /** whether to render preview on a character token background like you would see on clocktower.online */
     @observableProperty()
@@ -68,39 +72,45 @@ export class Edition extends ObservableObject<Edition> {
     readonly windowTitle = new Property<string>('Bloodstar Clocktica');
 
     /** create new edition */
-    constructor() {
+    private constructor() {
         super();
         this.init();
-        this.addNewCharacter();
+    }
+
+    static async asyncNew():Promise<Edition>
+    {
+        const edition = new Edition();
+        await edition.addNewCharacter();
 
         // set dirty flag when most things change and update window title when dirty or savename change
-        this.addPropertyChangedEventListener(propName=>{
+        edition.addPropertyChangedEventListener(async propName=>{
             switch (propName) {
                 case 'dirty':
                 case 'saveName':
-                    this.windowTitle.set(`File: ${(this.dirty.get() ? '[unsaved changes] ' : '')}${this.saveName.get() || '[unnamed]'}`);
+                    await edition.windowTitle.set(`File: ${(edition.dirty.get() ? '[unsaved changes] ' : '')}${edition.saveName.get() || '[unnamed]'}`);
                     break;
                 case 'windowTitle':
                     break;
                 default:
-                    this.dirty.set(true);
+                    await edition.dirty.set(true);
                     break;
             }
         });
+        return edition
     }
 
     /** add a new character to the set */
-    addNewCharacter():Character {
-        const character = new Character();
-        this.makeNameAndIdUnique(character);
-        this.characterList.add(character);
-        this.firstNightOrder.add(character);
-        this.otherNightOrder.add(character);
+    async addNewCharacter():Promise<Character> {
+        const character = await Character.asyncNew();
+        await this.makeNameAndIdUnique(character);
+        await this.characterList.add(character);
+        await this.firstNightOrder.add(character);
+        await this.otherNightOrder.add(character);
         return character;
     }
 
     /** make sure the name and id of a newly added character aren't taken */
-    makeNameAndIdUnique(character:Character):void {
+    async makeNameAndIdUnique(character:Character):Promise<void> {
         let i = 1;
         const originalId = character.id.get();
         const originalName = character.name.get();
@@ -110,8 +120,8 @@ export class Edition extends ObservableObject<Edition> {
             for (const existingCharacter of this.characterList) {
                 if ((existingCharacter.id.get() === character.id.get()) || (existingCharacter.name.get() === character.name.get())) {
                     matchFound = true;
-                    character.id.set(originalId + i);
-                    character.name.set(originalName + i);
+                    await character.id.set(originalId + i);
+                    await character.name.set(originalName + i);
                     i++;
                     break;
                 }
@@ -120,25 +130,19 @@ export class Edition extends ObservableObject<Edition> {
     }
 
     /** set to opened file */
-    open(saveName:string, data:{ [key: string]: FieldType; }):boolean {
-        if (!data) {this.reset(); return false;}
-        this.deserialize(data);
-        this.setSaveName(saveName);
-        this.dirty.set(false);
+    async open(saveName:string, data:{ [key: string]: FieldType; }):Promise<boolean> {
+        if (!data) {await this.reset(); return false;}
+        await this.deserialize(data);
+        await this.saveName.set(saveName);
+        await this.dirty.set(false);
 
         return true;
     }
 
     /** reset to a blank edition */
-    reset() {
-        super.reset();
-        this.addNewCharacter();
-        this.dirty.set(false);
+    async reset():Promise<void> {
+        await super.reset();
+        await this.addNewCharacter();
+        await this.dirty.set(false);
     }
-
-    /** record whether there are unsaved changes */
-    setDirty(value:boolean):void {this.dirty.set(value); }
-
-    /** set name to save as */
-    setSaveName(value:string):void { this.saveName.set(value); }
 }

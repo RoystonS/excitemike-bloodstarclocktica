@@ -3,7 +3,7 @@
  * @module NightOrder
  */
 import {bindCollectionById, bindEnumDisplay, bindText, bindStyle, unbindElement, Property} from './bind/bindings';
-import {ObservableCollection, ObservableCollectionChangedEvent} from './bind/observable-collection';
+import {ObservableCollection} from './bind/observable-collection';
 import {PropKey} from './bind/observable-object';
 import { BloodTeam } from './model/blood-team';
 import {Character} from './model/character';
@@ -11,7 +11,7 @@ import { Edition } from './model/edition';
 import {ordinal, walkHTMLElements} from './util';
 
 /** recurses though children of element cleaning up click events and bindings */
-export function cleanupNightOrderItem(element: Node, _:Character): void {
+export function cleanupNightOrderItem(element: Node): void {
     if (!(element instanceof HTMLElement)) {return;}
     walkHTMLElements(element, htmlElement=>{
         htmlElement.onclick = null;
@@ -20,7 +20,7 @@ export function cleanupNightOrderItem(element: Node, _:Character): void {
 }
 
 /** initialize listeners and data bindings */
-function initNightOrderBinding(id:string, collection:ObservableCollection<Character>, ordinalPropName:'firstNightOrdinal'|'otherNightOrdinal', reminderTextPropName:'firstNightReminder'|'otherNightReminder'):void {
+async function initNightOrderBinding(id:string, collection:ObservableCollection<Character>, ordinalPropName:'firstNightOrdinal'|'otherNightOrdinal', reminderTextPropName:'firstNightReminder'|'otherNightReminder'):Promise<void> {
     bindCollectionById(
         id,
         collection,
@@ -29,22 +29,22 @@ function initNightOrderBinding(id:string, collection:ObservableCollection<Charac
     );
 
     // update ordinals when list changes
-    collection.addCollectionChangedListener((_:ObservableCollectionChangedEvent<Character>)=>{
-        updateOrdinals(collection, ordinalPropName, reminderTextPropName);
+    collection.addCollectionChangedListener(async ()=>{
+        await updateOrdinals(collection, ordinalPropName, reminderTextPropName);
     });
-    collection.addItemChangedListener((_1:number, _2:Character, propName:PropKey<Character>) => {
+    collection.addItemChangedListener(async (_1:number, _2:Character, propName:PropKey<Character>) => {
         if ((propName === 'export') || (propName === reminderTextPropName)) {
-            updateOrdinals(collection, ordinalPropName, reminderTextPropName);
+            await updateOrdinals(collection, ordinalPropName, reminderTextPropName);
         }
     });
 
-    updateOrdinals(collection, ordinalPropName, reminderTextPropName);
+    await updateOrdinals(collection, ordinalPropName, reminderTextPropName);
 }
 
 /** initialize listeners and data bindings */
-export function initNightOrderBindings(edition:Edition):void {
-    initNightOrderBinding('firstNightOrderList', edition.firstNightOrder, 'firstNightOrdinal', 'firstNightReminder');
-    initNightOrderBinding('otherNightOrderList', edition.otherNightOrder, 'otherNightOrdinal', 'otherNightReminder');
+export async function initNightOrderBindings(edition:Edition):Promise<void> {
+    await initNightOrderBinding('firstNightOrderList', edition.firstNightOrder, 'firstNightOrdinal', 'firstNightReminder');
+    await initNightOrderBinding('otherNightOrderList', edition.otherNightOrder, 'otherNightOrdinal', 'otherNightReminder');
 }
 
 /**
@@ -104,7 +104,7 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
         const up = document.createElement("button");
         up.className = "nightOrderButton";
         up.innerText = "▲";
-        up.onclick = () => collection.moveItemUp(character);
+        up.onclick = async () => await collection.moveItemUp(character);
         row.appendChild(up);
     }
 
@@ -120,10 +120,10 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
 }
 
 /** keep ordinal fields up to date as things change */
-function updateOrdinals(collection:ObservableCollection<Character>, ordinalPropName:'firstNightOrdinal'|'otherNightOrdinal', reminderTextPropName:'firstNightReminder'|'otherNightReminder'):void {
+async function updateOrdinals(collection:ObservableCollection<Character>, ordinalPropName:'firstNightOrdinal'|'otherNightOrdinal', reminderTextPropName:'firstNightReminder'|'otherNightReminder'):Promise<void> {
     // set ordinal strings
     {
-        let ordNumber:number = 1;
+        let ordNumber = 1;
         for (const character of collection) {
             const willExport = character.export.get();
             const x = character.getProperty(reminderTextPropName).get();
@@ -132,7 +132,7 @@ function updateOrdinals(collection:ObservableCollection<Character>, ordinalPropN
 
             const place = hasReminder ? ordinal(ordNumber) : '-';
             const parenned = willExport ? place : `(${place})`;
-            character.setPropertyValue(ordinalPropName, parenned);
+            await character.setPropertyValue(ordinalPropName, parenned);
             
             if (willExport && hasReminder) {
                 ordNumber++;

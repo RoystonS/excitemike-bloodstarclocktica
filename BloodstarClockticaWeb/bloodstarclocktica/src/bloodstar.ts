@@ -24,7 +24,7 @@ import Images from './images';
 import { bindCharacterList } from './character-list';
 import { BloodTeam } from './model/blood-team';
 
-let edition = new Edition();
+let edition:Edition|null = null;
 let username = '';
 let password = '';
 const selectedCharacter = new BloodBind.Property<Character|null>(null);
@@ -32,8 +32,9 @@ const selectedCharacter = new BloodBind.Property<Character|null>(null);
 // TODO: exceptions in promises need to surface somewhere (test without internet connection!)
 
 /** add a new character to the custom edition */
-function addCharacterClicked(_: Event): void {
-    edition.addNewCharacter();
+async function addCharacterClicked():Promise<void> {
+    if (!edition) {return;}
+    await edition.addNewCharacter();
 }
 
 /** clicked the help menu button */
@@ -71,6 +72,7 @@ function updateRecentFilesMenu():void {
  * user chose to open a new file
  */
 export async function newFileClicked():Promise<boolean> {
+    if (!edition) {return false;}
     await BloodIO.newEdition(edition);
     return true;
 }
@@ -79,6 +81,7 @@ export async function newFileClicked():Promise<boolean> {
  * user chose to open a file
  */
  export async function openFileClicked():Promise<boolean> {
+    if (!edition) {return false;}
     if (await BloodIO.open(username, password, edition)) {
         addToRecentFiles(edition.saveName.get());
         return true;
@@ -90,6 +93,7 @@ export async function newFileClicked():Promise<boolean> {
  * user chose to save the current file
  */
 export async function saveFileClicked():Promise<boolean> {
+    if (!edition) {return false;}
     if (await BloodIO.save(username, password, edition)) {
         addToRecentFiles(edition.saveName.get());
         return true;
@@ -101,6 +105,7 @@ export async function saveFileClicked():Promise<boolean> {
  * user chose to save the current file under a new name
  */
 export async function saveFileAsClicked():Promise<boolean> {
+    if (!edition) {return false;}
     if (await BloodIO.saveAs(username, password, edition)) {
         addToRecentFiles(edition.saveName.get());
         return true;
@@ -156,14 +161,16 @@ function tabClicked(btnId:string, tabId:string):void {
 
 /** prompt for login information */
 async function login():Promise<void> {
-    while (true) {
+    let done = false;
+    while (done) {
         try {
             const loginInfo = await LoginDlg.show("Enter username and password");
             if (loginInfo) {
-                let {username:newUsername, password:newPassword} = loginInfo;
+                const {username:newUsername, password:newPassword} = loginInfo;
                 username = newUsername;
                 password = newPassword;
                 if (await SpinnerDlg.show('Logging in', BloodIO.login(username, password))) {
+                    done = true;
                     break;
                 }
             }
@@ -175,12 +182,15 @@ async function login():Promise<void> {
 }
 
 /** initialize listeners and data bindings */
-function initBindings():void {
+async function initBindings():Promise<void> {
+    if (!edition) {return;}
+
     window.onbeforeunload = function () {
         return "Are you sure you want to leave? Unsaved changes will be lost.";
     };
 
     document.onkeydown = (e) => {
+        if (!edition) {return;}
         if (e.ctrlKey) {
             if (e.code === "KeyS") {
                 e.preventDefault();
@@ -194,17 +204,17 @@ function initBindings():void {
         ['openfilebutton', openFileClicked],
         ['savefilebutton', saveFileClicked],
         ['savefileasbutton', saveFileAsClicked],
-        ['importBlood', ()=>BloodIO.importBlood(edition)],
+        ['importBlood', ()=>edition && BloodIO.importBlood(edition)],
         ['importOfficialButton', importOfficialClicked],
-        ['jsonFromUrlButton', ()=>BloodIO.importJsonFromUrl(edition)],
-        ['jsonFromFileButton', ()=>BloodIO.importJsonFromFile(edition)],
+        ['jsonFromUrlButton', ()=>edition && BloodIO.importJsonFromUrl(edition)],
+        ['jsonFromFileButton', ()=>edition && BloodIO.importJsonFromFile(edition)],
         ['saveAndPublishButton', saveAndPublishClicked],
         ['helpbutton', showHelp],
         ['metaTabBtn', ()=>tabClicked('metaTabBtn','metatab')],
         ['charTabBtn', ()=>tabClicked('charTabBtn','charactertab')],
         ['firstNightTabBtn', ()=>tabClicked('firstNightTabBtn','firstNightOrderTab')],
         ['otherNightTabBtn', ()=>tabClicked('otherNightTabBtn','otherNightOrderTab')],
-        ['metaLogoRemoveBtn', ()=>edition.meta.logo.set(null)]
+        ['metaLogoRemoveBtn', ()=>edition && edition.meta.logo.set(null)]
     ]);
 
     BloodBind.bindTextById('windowTitle', edition.windowTitle);
@@ -230,7 +240,7 @@ function initBindings():void {
 
     bindCharacterList('characterList', edition.characterList, selectedCharacter);
 
-    initNightOrderBindings(edition);
+    await initNightOrderBindings(edition);
     
     // tie selected character to character tab
     selectedCharacter.addListener(v=>{
@@ -239,7 +249,7 @@ function initBindings():void {
             tabClicked('charTabBtn','charactertab');
         }
     });
-    selectedCharacter.set(edition.characterList.get(0) || null);
+    await selectedCharacter.set(edition.characterList.get(0) || null);
 
     BloodBind.bindCheckboxById('previewOnToken', edition.previewOnToken);
 
@@ -254,26 +264,30 @@ function initBindings():void {
 /** initialize CustomEdition object to bind to */
 async function initCustomEdition():Promise<void> {
     try {
-        while (true) {
+        let done = false;
+        while (done) {
             if (await BloodNewOpen.show()) {
+                done = true;
                 break;
             }
         }
     } catch (e) {
         console.error(e);
-        edition.reset();
+        if (edition) { await edition.reset(); }
         showError('Error', 'Error encountered during initialization', e);
     }
 }
 
 /** prepare app */
 async function init() {
+    edition = await Edition.asyncNew();
+
     // need to get login info before we can do much of anything
     await login();
 
     await initCustomEdition();
 
-    initBindings();
+    await initBindings();
 }
 
 type StatusBarData = Map<string, {id:string,exported:number,total:number}>;
@@ -287,14 +301,16 @@ function collectStatusBarData():StatusBarData {
     data.set(BloodTeam.MINION, {id:'minionsStatus',exported:0,total:0});
     data.set(BloodTeam.DEMON, {id:'demonsStatus',exported:0,total:0});
     data.set(BloodTeam.TRAVELER, {id:'travelersStatus',exported:0,total:0});
-    for (const character of edition.characterList) {
-        const exported = character.export.get();
-        for (const teamKey of ['all', character.team.get()]) {
-            let teamData = data.get(teamKey);
-            if (!teamData) {continue;}
-            teamData.total++;
-            if (exported) {
-                teamData.exported++;
+    if (edition){
+        for (const character of edition.characterList) {
+            const exported = character.export.get();
+            for (const teamKey of ['all', character.team.get()]) {
+                const teamData = data.get(teamKey);
+                if (!teamData) {continue;}
+                teamData.total++;
+                if (exported) {
+                    teamData.exported++;
+                }
             }
         }
     }

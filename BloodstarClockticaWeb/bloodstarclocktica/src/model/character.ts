@@ -62,17 +62,21 @@ export class Character extends ObservableObject<Character> {
     @observableProperty()
     readonly unStyledImage = new Property<string|null>(null);
 
-    constructor() {
+    private constructor() {
         super();
         this.init();
-        
-        // set up auto-regen of styled images
-        // TODO: it's actually kind of a problem that this is async but never waited for
-        const regenCb = (_:any)=>this.regenerateStyledImage();
+        const regenCb = ()=>this.regenerateStyledImage();
         this.imageSettings.addPropertyChangedEventListener(regenCb);
         this.unStyledImage.addListener(regenCb);
         this.team.addListener(regenCb);
-        this.regenerateStyledImage();
+    }
+
+    static async asyncNew():Promise<Character>
+    {
+        const character = new Character();
+        // set up auto-regen of styled images
+        await character.regenerateStyledImage();
+        return character;
     }
 
     /** generate styled image from unstyled image and image settings */
@@ -80,8 +84,7 @@ export class Character extends ObservableObject<Character> {
         const unstyledImage = this.unStyledImage.get();
         const imageSettings = this.imageSettings;
         if (!unstyledImage || !imageSettings.shouldRestyle.get()) {
-            this.styledImage.set(unstyledImage);
-            return;
+            return this.styledImage.set(unstyledImage);
         }
         
         // start from the unstyled image
@@ -137,6 +140,6 @@ export class Character extends ObservableObject<Character> {
                 imageSettings.dropShadowOffsetY.get(),
                 imageSettings.dropShadowOpacity.get());
         }
-        this.styledImage.set(bloodImage.toDataUri());
+        await this.styledImage.set(bloodImage.toDataUri());
     }
 }

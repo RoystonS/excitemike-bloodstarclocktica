@@ -42,22 +42,22 @@ const MAX_CHARACTER_ICON_HEIGHT = 539;
 /** import meta information about the edition */
 async function importMeta(entry:MetaEntry, edition:Edition):Promise<boolean> {
     if (entry.name) {
-        edition.meta.name.set(entry.name);
+        await edition.meta.name.set(entry.name);
     }
     if (entry.author) {
-        edition.meta.author.set(entry.author);
+        await edition.meta.author.set(entry.author);
     }
     if (entry.logo) {
         const canvas = await urlToCanvas(entry.logo, MAX_LOGO_WIDTH, MAX_LOGO_HEIGHT, true);
-        edition.meta.logo.set(canvas.toDataURL('image/png'));
+        await edition.meta.logo.set(canvas.toDataURL('image/png'));
     }
     return true;
 }
 
 /** import a character into the edition */
 async function importCharacter(entry:CharacterEntry, edition:Edition, firstNightOrder:NightOrderTracker, otherNightOrder:NightOrderTracker):Promise<boolean> {
-    const character = edition.addNewCharacter();
-    character.id.set(entry.id);
+    const character = await edition.addNewCharacter();
+    await character.id.set(entry.id);
     {
         const nightNumber = entry.firstNight || 0;
         const fnoList = firstNightOrder.get(nightNumber) || [];
@@ -65,7 +65,7 @@ async function importCharacter(entry:CharacterEntry, edition:Edition, firstNight
         firstNightOrder.set(nightNumber, fnoList);
     }
     if (entry.firstNightReminder){
-        character.firstNightReminder.set(entry.firstNightReminder);
+        await character.firstNightReminder.set(entry.firstNightReminder);
     }
     {
         const nightNumber = entry.otherNight || 0;
@@ -74,31 +74,31 @@ async function importCharacter(entry:CharacterEntry, edition:Edition, firstNight
         otherNightOrder.set(nightNumber, onoList);
     }
     if (entry.otherNightReminder){
-        character.otherNightReminder.set(entry.otherNightReminder);
+        await character.otherNightReminder.set(entry.otherNightReminder);
     }
     if (entry.reminders){
-        character.characterReminderTokens.set(entry.reminders.join('\n'));
+        await character.characterReminderTokens.set(entry.reminders.join('\n'));
     }
     if (entry.remindersGlobal){
-        character.globalReminderTokens.set(entry.remindersGlobal.join('\n'));
+        await character.globalReminderTokens.set(entry.remindersGlobal.join('\n'));
     }
     if (entry.setup){
-        character.setup.set(entry.setup);
+        await character.setup.set(entry.setup);
     }
     if (entry.name){
-        character.name.set(entry.name);
+        await character.name.set(entry.name);
     }
     if (entry.team){
-        character.team.set(parseBloodTeam(entry.team));
+        await character.team.set(parseBloodTeam(entry.team));
     }
     if (entry.ability){
-        character.ability.set(entry.ability);
+        await character.ability.set(entry.ability);
     }
     if (entry.image){
         const canvas = await urlToCanvas(entry.image, MAX_CHARACTER_ICON_WIDTH, MAX_CHARACTER_ICON_HEIGHT, true);
         const dataUrl = canvas.toDataURL('image/png');
-        character.imageSettings.shouldRestyle.set(false);
-        character.unStyledImage.set(dataUrl);
+        await character.imageSettings.shouldRestyle.set(false);
+        await character.unStyledImage.set(dataUrl);
     }
 
     return true;
@@ -117,8 +117,8 @@ async function importEntry(entry:ScriptEntry, edition:Edition, firstNightOrder:N
 
 /** import a whole script */
 async function importEdition(json:ScriptEntry[], edition:Edition):Promise<boolean> {
-    edition.reset();
-    edition.characterList.clear();
+    await edition.reset();
+    await edition.characterList.clear();
     const firstNightOrder:NightOrderTracker = new Map<number, Character[]>();
     const otherNightOrder:NightOrderTracker = new Map<number, Character[]>();
     const promises = json.map(characterJson=>importEntry(characterJson, edition, firstNightOrder, otherNightOrder));
@@ -130,9 +130,9 @@ async function importEdition(json:ScriptEntry[], edition:Edition):Promise<boolea
     const data:[NightOrderTracker, ObservableCollection<Character>][] = [[firstNightOrder, edition.firstNightOrder],[otherNightOrder, edition.otherNightOrder]];
     for (const [nightMap, collection] of data) {
         const keys = Array.from(nightMap.keys()).sort();
-        collection.clear();
+        await collection.clear();
         for (const key of keys) {
-            collection.addMany(nightMap.get(key) || []);
+            await collection.addMany(nightMap.get(key) || []);
         }
     }
 

@@ -14,7 +14,7 @@ import { importBloodFile } from './import/blood-file';
 export function hashFunc(input:string):number {
     let hash = 0;
     input += '; So say we all.';
-    for (var i=0; i<input.length; ++i) {
+    for (let i=0; i<input.length; ++i) {
         const char = input.charCodeAt(i);
         hash = ((hash<<5)-hash) + char;
         hash = hash|0;
@@ -25,10 +25,10 @@ export function hashFunc(input:string):number {
 /// prompt for save if needed, then reset to new custom edition
 export async function newEdition(edition:Edition):Promise<boolean> {
     if (await SdcDlg.savePromptIfDirty(edition)) {
-        edition.reset();
-        return Promise.resolve(true);
+        await edition.reset();
+        return true;
     }
-    return Promise.resolve(false);
+    return false;
 }
 
 /**
@@ -46,13 +46,13 @@ export async function saveAs(username:string, password:string, edition:Edition):
     }
     const backupName = edition.saveName.get();
     try {
-        edition.setSaveName(name);
+        await edition.saveName.set(name);
         return !!(await Spinner.show(`Saving as ${name}`, _save(username, password, edition)));
     } catch (error) {
-        edition.setSaveName(backupName);
+        await edition.saveName.set(backupName);
         showError('Error', 'Error encountered while trying to save', error);
     }
-    return Promise.resolve(false);
+    return false;
 }
 
 /**
@@ -99,7 +99,7 @@ async function _save(username:string, password:string, edition:Edition):Promise<
         showError('Error', 'Error encountered while trying to save', error);
         return false;
     }
-    edition.setDirty(false);
+    await edition.dirty.set(false);
     return true;
 }
 
@@ -153,8 +153,7 @@ async function openNoPrompts(username:string, password:string, edition:Edition, 
         showError('Error', `Error encountered while trying to open file ${name}`, error);
         return false;
     }
-    const result = edition.open(name, data);
-    return Promise.resolve(result);
+    return await edition.open(name, data);
 }
 
 /**

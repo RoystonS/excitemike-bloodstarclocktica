@@ -51,9 +51,9 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     private items:ItemPlus<ItemType>[];
     private collectionChangedListeners:ObservableCollectionListener<ItemType>[];
     private itemChangedListeners:ItemPropertyChangedListener<ItemType>[];
-    private itemCtor:new ()=>ItemType;
+    private itemCtor:()=>Promise<ItemType>;
 
-    constructor(itemCtor:new ()=>ItemType) {
+    constructor(itemCtor:()=>Promise<ItemType>) {
         this.items = [];
         this.collectionChangedListeners = [];
         this.itemChangedListeners = [];
@@ -64,7 +64,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     [Symbol.iterator]():Iterator<ItemType> {
         let index = 0;
         return {
-            next:(..._):IteratorResult<ItemType> => {
+            next:():IteratorResult<ItemType> => {
                 if (index < this.items.length) {
                     return {value:this.items[index++].item, done:false};
                 } else {
@@ -75,10 +75,10 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** add an item to the end of the collection */
-    add(item:ItemType):void {
+    async add(item:ItemType):Promise<void> {
         const itemPlus:ItemPlus<ItemType> = this.makeItemPlus(this.items.length, item);
         this.items.push(itemPlus);
-        this.notifyCollectionChangedListeners({
+        await this.notifyCollectionChangedListeners({
             list: this,
             action: ObservableCollectionChangeAction.Add,
             newItems: [item],
@@ -89,12 +89,12 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** add multiple items to the end of the collection */
-    addMany(items:ReadonlyArray<ItemType>):void {
+    async addMany(items:ReadonlyArray<ItemType>):Promise<void> {
         const itemsPlus:ReadonlyArray<ItemPlus<ItemType>> = items.map(item=>this.makeItemPlus(this.items.length, item));
         const oldNumItems = this.items.length;
         this.items.push(...itemsPlus);
         this.updateIndices(oldNumItems);
-        this.notifyCollectionChangedListeners({
+        await this.notifyCollectionChangedListeners({
             list: this,
             action: ObservableCollectionChangeAction.Add,
             newItems: items,
@@ -105,13 +105,13 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** remove all items */
-    clear():void {
+    async clear():Promise<void> {
         const oldItems = this.items.map(i=>i.item);
         for (const itemPlus of this.items) {
             this.cleanupItemPlus(itemPlus);
         }
         this.items = [];
-        this.notifyCollectionChangedListeners({
+        await this.notifyCollectionChangedListeners({
             list: this,
             action: ObservableCollectionChangeAction.Remove,
             newItems: [],
@@ -122,15 +122,15 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** remove the specified item from the collection */
-    deleteItem(character:ItemType):void {
+    async deleteItem(character:ItemType):Promise<void> {
         const i = this.indexOf(character);
         if (i < 0) { return; }
-        this.remove(i);
+        await this.remove(i);
     }
 
     /** inverse of serialize */
-    deserialize(serialized:ReadonlyArray<FieldType>):void {
-        this.clear();
+    async deserialize(serialized:ReadonlyArray<FieldType>):Promise<void> {
+        await this.clear();
         const toAdd:ItemType[] = [];
         for (const itemData of serialized) {
             if ((itemData !== null) &&
@@ -138,12 +138,12 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
                 (typeof itemData !== 'number') &&
                 (typeof itemData !== 'boolean') &&
                 !Array.isArray(itemData) ) {
-                const item = new this.itemCtor();
-                item.deserialize(itemData);
+                const item = await this.itemCtor();
+                await item.deserialize(itemData);
                 toAdd.push(item);
             }
         }
-        this.addMany(toAdd);
+        await this.addMany(toAdd);
     }
 
     /** get an item in the collection */
@@ -165,11 +165,11 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** insert an item at the specified index */
-    insert(i:number, item:ItemType):void {
+    async insert(i:number, item:ItemType):Promise<void> {
         const itemPlus:ItemPlus<ItemType> = this.makeItemPlus(i, item);
         this.items.splice(i, 0, itemPlus);
         this.updateIndices(i+1);
-        this.notifyCollectionChangedListeners({
+        await this.notifyCollectionChangedListeners({
             list: this,
             action: ObservableCollectionChangeAction.Add,
             newItems: [item],
@@ -185,12 +185,12 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** move the item from one index to another */
-    move(oldIndex:number, newIndex:number):void {
+    async move(oldIndex:number, newIndex:number):Promise<void> {
         const item = this.items[oldIndex];
         this.items.splice(oldIndex, 1);
         this.items.splice(newIndex, 0, item);
         this.updateIndices(Math.min(oldIndex, newIndex));
-        this.notifyCollectionChangedListeners({
+        await this.notifyCollectionChangedListeners({
             list: this,
             action: ObservableCollectionChangeAction.Move,
             newItems: [],
@@ -201,26 +201,26 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** find value in the collection and swap it with the item after it, if any */
-    moveItemDown(value:ItemType):void {
+    async moveItemDown(value:ItemType):Promise<void> {
         const i = this.indexOf(value);
         if (i < 0) { return; }
-        this.move(i, i+1);
+        await this.move(i, i+1);
     }
 
     /** find value in the collection and swap it with the item before it, if any */
-    moveItemUp(value:ItemType):void {
+    async moveItemUp(value:ItemType):Promise<void> {
         const i = this.indexOf(value);
         if (i < 1) { return; }
-        this.move(i, i-1);
+        await this.move(i, i-1);
     }
 
     /** remove an item from the collection */
-    remove(i:number):void {
+    async remove(i:number):Promise<void> {
         const itemPlus = this.items[i];
         this.cleanupItemPlus(itemPlus);
         this.items.splice(i, 1);
         this.updateIndices(i);
-        this.notifyCollectionChangedListeners({
+        await this.notifyCollectionChangedListeners({
             list: this,
             action: ObservableCollectionChangeAction.Remove,
             newItems: [],
@@ -231,14 +231,14 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** replace an item in the collection */
-    replace(i:number, newItem:ItemType) {
+    async replace(i:number, newItem:ItemType):Promise<void> {
         const oldItem = this.items[i];
         if (newItem !== oldItem.item) {
             const oldItemPlus = this.items[i];
             this.cleanupItemPlus(oldItemPlus);
             const newItemPlus:ItemPlus<ItemType> = this.makeItemPlus(i, newItem);
             this.items[i] = newItemPlus;
-            this.notifyCollectionChangedListeners({
+            await this.notifyCollectionChangedListeners({
                 list: this,
                 action: ObservableCollectionChangeAction.Replace,
                 newItems: [newItem],
@@ -259,7 +259,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
      * @param end zero based index before which to stop
      * @param items items to insert where start was.
      */
-    replaceRange(start:number, end:number, items:ReadonlyArray<ItemType>):void {
+    async replaceRange(start:number, end:number, items:ReadonlyArray<ItemType>):Promise<void> {
         if (end < start) {return;}
 
         const removedItemsPlus = this.items.slice(start, end);
@@ -273,7 +273,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
         const numReplaces = Math.min(end - start, items.length);
         if (numReplaces) {
-            this.notifyCollectionChangedListeners({
+            await this.notifyCollectionChangedListeners({
                 list: this,
                 action: ObservableCollectionChangeAction.Replace,
                 newItems: items.slice(0, numReplaces),
@@ -285,7 +285,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
         const numRemoves = (end - start) - numReplaces;
         if (numRemoves) {
-            this.notifyCollectionChangedListeners({
+            await this.notifyCollectionChangedListeners({
                 list: this,
                 action: ObservableCollectionChangeAction.Replace,
                 newItems: [],
@@ -297,7 +297,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
         const numAdds = items.length - numReplaces;
         if (numAdds) {
-            this.notifyCollectionChangedListeners({
+            await this.notifyCollectionChangedListeners({
                 list: this,
                 action: ObservableCollectionChangeAction.Add,
                 newItems: items.slice(numReplaces),
@@ -314,8 +314,8 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** add/replace/remove to match the passed-in array */
-    set(items:ReadonlyArray<ItemType>):void {
-        this.replaceRange(0, this.items.length, items);
+    async set(items:ReadonlyArray<ItemType>):Promise<void> {
+        await this.replaceRange(0, this.items.length, items);
     }
 
     /** listen to changes */
@@ -334,10 +334,8 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** notify listeners of a change */
-    private notifyCollectionChangedListeners(event:ObservableCollectionChangedEvent<ItemType>):void {
-        const backup = this.collectionChangedListeners.concat();
-        // TODO: these can be async and should be waited for
-        backup.forEach(cb=>cb(event));
+    private async notifyCollectionChangedListeners(event:ObservableCollectionChangedEvent<ItemType>):Promise<void> {
+        return (await Promise.all(this.collectionChangedListeners.map(cb=>cb(event))))[0];
     }
 
     /**
@@ -369,16 +367,16 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** notify listeners of a change */
-    private notifyItemChangedListeners(itemPlus:ItemPlus<ItemType>, propName:PropKey<ItemType>):void {
-        const backup = this.itemChangedListeners.concat();
-        // TODO: these can be async and should be waited for
-        backup.forEach(cb=>cb(itemPlus.index, itemPlus.item, propName));
+    private async notifyItemChangedListeners(itemPlus:ItemPlus<ItemType>, propName:PropKey<ItemType>):Promise<void> {
+        return (await Promise.all(this.itemChangedListeners.map(
+            cb=>cb(itemPlus.index, itemPlus.item, propName)
+        )))[0];
     }
 
     /** wrap up an item with extra bookkeeping */
     private makeItemPlus(i:number, item:ItemType):ItemPlus<ItemType> {
         const itemPlus = {
-            listener: (propName:PropKey<ItemType>):void=>this.notifyItemChangedListeners(itemPlus, propName),
+            listener: (propName:PropKey<ItemType>)=>this.notifyItemChangedListeners(itemPlus, propName),
             index: i,
             item:item
         }

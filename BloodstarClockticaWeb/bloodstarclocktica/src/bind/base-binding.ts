@@ -18,33 +18,31 @@ export class Property<T/* extends FieldType*/> {
         this.value = value;
         this.listeners = [];
     }
-    set(value:T) {
+    async set(value:T):Promise<void> {
         if (this.value !== value) {
             this.value = value;
-            this.notifyListeners();
+            await this.notifyListeners();
         }
     }
-    get() {
+    get():T {
         return this.value;
     }
-    addListener(cb:PropertyChangeListener<T>) {
+    addListener(cb:PropertyChangeListener<T>):void {
         this.listeners.push(cb);
     }
     getDefault():T {return this.defaultValue;}
     isDefault():boolean { return this.value === this.defaultValue; }
-    removeListener(cb:PropertyChangeListener<T>) {
+    removeListener(cb:PropertyChangeListener<T>):void {
         this.listeners = this.listeners.filter(i=>i!==cb);
     }
-    removeAllListeners() {
+    removeAllListeners():void {
         this.listeners = [];
     }
-    reset():void {
+    async reset():Promise<void> {
         this.set(this.defaultValue);
     }
-    private notifyListeners() {
-        const backup = this.listeners.concat();
-        // TODO: these can be async and should be waited for
-        backup.forEach(cb=>cb(this.value));
+    private async notifyListeners():Promise<void> {
+        return (await Promise.all(this.listeners.map(cb=>cb(this.value))))[0];
     }
 }
 
@@ -79,7 +77,7 @@ export class BaseBinding<ValueType extends FieldType> {
     }
 
     /** clean up */
-    destroy() {
+    destroy():void {
         if (this.htmlElement && this.syncFromElementToProperty) {
             this.htmlElement.removeEventListener(this.eventName, this.syncFromElementToProperty);
             this.syncFromElementToProperty = null;

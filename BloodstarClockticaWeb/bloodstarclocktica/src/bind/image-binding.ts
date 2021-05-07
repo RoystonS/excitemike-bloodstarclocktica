@@ -17,13 +17,13 @@ export class ImageDisplayBinding extends BaseBinding<string|null> {
 /** used with input elem [type=file] to set a property to a data URI */
 async function syncFileElemToProperty(element:HTMLInputElement, property:Property<string|null>, maxWidth:number, maxHeight:number):Promise<void> {
     if (!element.files) {
-        property.set(null);
+        await property.set(null);
         return;
     }
     const objectURL = URL.createObjectURL(element.files[0]);
     const dataURI = await toDataUri(objectURL, maxWidth, maxHeight);
     URL.revokeObjectURL(objectURL);
-    property.set(dataURI)
+    await property.set(dataURI)
 }
 
 /** convert a url to a data uri */

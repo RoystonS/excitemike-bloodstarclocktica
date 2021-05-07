@@ -1,5 +1,5 @@
 import { bindCheckbox, bindCollectionById, bindText, Property, PropertyChangeListener, unbindElement } from "./bind/bindings";
-import { ObservableCollection, ObservableCollectionChangedEvent } from "./bind/observable-collection";
+import { ObservableCollection } from "./bind/observable-collection";
 import {show as getConfirmation} from "./dlg/yes-no-dlg";
 import { Character } from "./model/character";
 import { walkHTMLElements } from "./util";
@@ -13,22 +13,22 @@ export function bindCharacterList(id:string, characterList:ObservableCollection<
         id,
         characterList,
         (character: Character, collection:ObservableCollection<Character>)=>makeCharacterListItem(character, collection, selectedCharacterProperty),
-        (element: Node, character: Character)=>cleanupListItem(element, character, selectedCharacterProperty)
+        async (element: Node, character: Character)=>await cleanupListItem(element, character, selectedCharacterProperty)
     );
     // autoselect a character when none selected
-    characterList.addCollectionChangedListener((_:ObservableCollectionChangedEvent<Character>):void=>{
+    characterList.addCollectionChangedListener(async ():Promise<void>=>{
         if (null === selectedCharacterProperty.get()) {
             if (characterList.getLength() > 0) {
-                selectedCharacterProperty.set(characterList.get(0));
+                await selectedCharacterProperty.set(characterList.get(0));
             }
         }
     });
 }
 
 /** recurses though children of element cleaning up click events and bindings */
-function cleanupListItem(element: Node, character: Character, selectedCharacterProperty:Property<Character|null>): void {
+async function cleanupListItem(element: Node, character: Character, selectedCharacterProperty:Property<Character|null>):Promise<void> {
     if (selectedCharacterProperty.get() === character) {
-        selectedCharacterProperty.set(null);
+        await selectedCharacterProperty.set(null);
     }
 
     if (element instanceof HTMLElement) {
@@ -57,16 +57,16 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
     const row = document.createElement("div");
     row.className = "characterListItem";
     row.tabIndex = 0;
-    row.onclick = e => { 
+    row.onclick = async e => { 
         if (e.target === row) {
-            selectedCharacterProperty.set(character);
+            await selectedCharacterProperty.set(character);
         }
     }
-    row.onkeyup = e => {
+    row.onkeyup = async e => {
         switch (e.code) {
             case 'Space':
             case 'Enter':
-                selectedCharacterProperty.set(character);
+                await selectedCharacterProperty.set(character);
                 break;
         }
     }
@@ -107,7 +107,7 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
         del.innerText = "Delete";
         del.onclick = async () => {
             if (await getConfirmation(`Are you sure you want to delete character "${character.name.get()}"?`)) {
-                collection.deleteItem(character);
+                await collection.deleteItem(character);
             }
         };
         row.appendChild(del);
@@ -124,4 +124,4 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
     characterListCleanupSideTable.set(row, cb);
 
     return row;
-};
+}

@@ -131,7 +131,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     }
 
     /** react to dropping a dragged item */
-    private drop(e:DragEvent):void {
+    private async drop(e:DragEvent):Promise<void> {
         try {
             if (!this.dragVerify(e)) { return; }
             e.preventDefault();
@@ -152,7 +152,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
 
             // change the collection, our collection change listener will 
             // update the DOM to reflect the change
-            this.collection.move(fromIndex, toIndex);
+            await this.collection.move(fromIndex, toIndex);
 
         } finally {
             if (e.target instanceof Element) {
@@ -247,22 +247,22 @@ export class CollectionBinding<T extends ObservableObject<T>> {
 
     /** create DOM list item for a data item */
     private renderListItem(i:number, itemData:T):Element {
-        var li = document.createElement('li');
+        const li = document.createElement('li');
         li.draggable = true;
         li.dataset.index = String(i);
-        li.addEventListener('drag', _ => this.dragged = li);
+        li.addEventListener('drag', ()=>this.dragged = li);
         li.addEventListener('dragstart', e=>this.dragstart(e));
         li.addEventListener('dragend', e=>this.dragend(e));
         li.addEventListener('dragover', e=>this.dragover(e));
         li.addEventListener('dragleave', e=>this.dragleave(e));
-        li.addEventListener('drop', e => this.drop(e));
+        li.addEventListener('drop', async e => await this.drop(e));
         li.appendChild(this.renderFn(itemData, this.collection));
 
         return li;
     }
 
     /** keep dataset index in sync */
-    private updateIndices(startPosition:number = 0, endPosition?:number):void {
+    private updateIndices(startPosition = 0, endPosition?:number):void {
         endPosition = (endPosition === undefined) ? this.listElement.childNodes.length : endPosition;
         for (let i=startPosition; i<endPosition; ++i) {
             const child = this.listElement.childNodes[i];
@@ -273,7 +273,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     }
 
     /** cleanup */
-    destroy() {
+    destroy():void {
         this.collection.removeAllCollectionChangedListeners();
         this.clear();
         this.dragged = null;

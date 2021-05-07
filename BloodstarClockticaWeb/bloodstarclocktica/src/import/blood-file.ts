@@ -15,14 +15,16 @@ import LockSet from '../lock';
 import { parseBloodTeam } from '../model/blood-team';
 
 /** set property if the value is not undefined */
-function trySet<T>(value:T|undefined, property:Property<T>):void {
+async function trySet<T>(value:T|undefined, property:Property<T>):Promise<void> {
     if (value !== undefined) {
-        property.set(value);
+        await property.set(value);
     }
 }
 
 /** keep image work from overlapping in the same character */
 const characterLockSet = new LockSet<Character>();
+
+const ensureCharacterLock = new LockSet<0>();
 
 class BloodImporter {
     private readonly firstNightOrderTracker = new Map<number, Character[]>();
@@ -30,10 +32,15 @@ class BloodImporter {
     private readonly charactersById = new Map<string, Character>();
     private readonly edition:Edition;
 
-    constructor(edition:Edition) {
+    private constructor(edition:Edition) {
         this.edition = edition;
-        edition.reset();
-        edition.characterList.clear();
+    }
+
+    // TODO: why even have this? just only export a single importBlood function
+    static async asyncNew(edition:Edition):Promise<BloodImporter> {
+        await edition.reset();
+        await edition.characterList.clear();
+        return new BloodImporter(edition);
     }
 
     /** import a whole blood file */
@@ -52,19 +59,19 @@ class BloodImporter {
         const allImported = (await Promise.all(promises)).reduce((a,b)=>a&&b, true);
         if (!allImported) { return false; }
     
-        this.finalizeNightOrder();
+        await this.finalizeNightOrder();
 
         return true;
     }
 
     /** once all character are loaded, correct the night order */
-    private finalizeNightOrder():void {
+    private async finalizeNightOrder():Promise<void> {
         const data:[Map<number, Character[]>, ObservableCollection<Character>][] = [[this.firstNightOrderTracker, this.edition.firstNightOrder],[this.otherNightOrderTracker, this.edition.otherNightOrder]];
         for (const [nightMap, collection] of data) {
             const keys = Array.from(nightMap.keys()).sort();
-            collection.clear();
+            await collection.clear();
             for (const key of keys) {
-                collection.addMany(nightMap.get(key) || []);
+                await collection.addMany(nightMap.get(key) || []);
             }
         }
     }
@@ -73,63 +80,59 @@ class BloodImporter {
     private async importMeta(zipEntry:JSZipObject):Promise<boolean> {
         const text = await zipEntry.async('text');
         const json = JSON.parse(text);
-        trySet(json.name, this.edition.meta.name);
-        trySet(json.author, this.edition.meta.author);
-        trySet(json.synopsis, this.edition.almanac.synopsis);
-        trySet(json.overview, this.edition.almanac.overview);
+        await trySet(json.name, this.edition.meta.name);
+        await trySet(json.author, this.edition.meta.author);
+        await trySet(json.synopsis, this.edition.almanac.synopsis);
+        await trySet(json.overview, this.edition.almanac.overview);
         return true;
     }
 
     /** load a processed image from the .blood file */
     private async importProcessedImage(character:Character, zipEntry:JSZipObject):Promise<boolean> {
-console.log(`BEGIN importProcessedImage for ${character.id.get()}`);
-        // It is just barely possible for a character's source image and 
-        // processed image load to overlap. put that work in this queue 
-        // to make sure they don't run together
-
         const id = character.id.get();
         if (character.unStyledImage.get()) { return true; } // don't clobber source image
         const base64 = await zipEntry.async('base64');
-        character.unStyledImage.set(`data:image/png;base64,${base64}`);
-        character.imageSettings.shouldRestyle.set(false); // image is pre-processed
+        await character.unStyledImage.set(`data:image/png;base64,${base64}`);
+        await character.imageSettings.shouldRestyle.set(false); // image is pre-processed
         this.charactersById.set(id, character);
-console.log(`END importProcessedImage for ${character.id.get()}`);
         return true;
     }
 
     /** make sure that acharacter exists in the edition/map before continuing */
-    private ensureCharacter(id:string):Character {
-        let character = this.charactersById.get(id);
-        if (!character) {
-            character = this.edition.addNewCharacter();
-            character.id.set(id);
-            this.charactersById.set(id, character);
-        }
-        return character;
+    private async ensureCharacter(id:string):Promise<Character> {
+        return ensureCharacterLock.enqueue(0, async ()=>{
+            let character = this.charactersById.get(id);
+            if (!character) {
+                character = await this.edition.addNewCharacter();
+                await character.id.set(id);
+                this.charactersById.set(id, character);
+            }
+            return character;
+        })
     }
 
     /** import part of a .blood file */
     private async importPart(relativePath:string, zipEntry:JSZipObject):Promise<boolean> {
         if (relativePath === 'logo.png') {
             const base64 = await zipEntry.async('base64');
-            this.edition.meta.logo.set(`data:image/png;base64,${base64}`);
+            await this.edition.meta.logo.set(`data:image/png;base64,${base64}`);
             return true;
         } else if (relativePath === 'meta.json') {
             return await this.importMeta(zipEntry);
         } else if (relativePath.startsWith('roles/') && relativePath.endsWith('.json')) {
             const id = relativePath.slice(6, relativePath.length - 5);
-            const character = this.ensureCharacter(id);
+            const character = await this.ensureCharacter(id);
             return await this.importRole(character, zipEntry);
         } else if (relativePath.startsWith('src_images/') && relativePath.endsWith('.png')) {
             const id = relativePath.slice(11, relativePath.length - 4);
-            const character = this.ensureCharacter(id);
+            const character = await this.ensureCharacter(id);
             characterLockSet.enqueue(
                 character,
                 async ()=>await this.importSourceImage(character, zipEntry)
             );
         } else if (relativePath.startsWith('processed_images/') && relativePath.endsWith('.png')) {
             const id = relativePath.slice(17, relativePath.length - 4);
-            const character = this.ensureCharacter(id);
+            const character = await this.ensureCharacter(id);
             return await characterLockSet.enqueue(
                 character,
                 async ()=>await this.importProcessedImage(character, zipEntry)
@@ -144,30 +147,30 @@ console.log(`END importProcessedImage for ${character.id.get()}`);
     private async importRole(character:Character, zipEntry:JSZipObject):Promise<boolean> {
         const text = await zipEntry.async('text');
         const json = JSON.parse(text);
-        trySet(json.name, character.name);
-        trySet(json.setup, character.setup);
-        trySet(json.ability, character.ability);
-        trySet(json.firstNightReminder, character.firstNightReminder);
-        trySet(json.otherNightReminder, character.otherNightReminder);
-        trySet(json.includeInExport, character.export);
+        await trySet(json.name, character.name);
+        await trySet(json.setup, character.setup);
+        await trySet(json.ability, character.ability);
+        await trySet(json.firstNightReminder, character.firstNightReminder);
+        await trySet(json.otherNightReminder, character.otherNightReminder);
+        await trySet(json.includeInExport, character.export);
 
         const almanac = json.almanacEntry;
         if (almanac) {
-            trySet(almanac.flavor, character.almanac.flavor);
-            trySet(almanac.overview, character.almanac.overview);
-            trySet(almanac.examples, character.almanac.examples);
-            trySet(almanac.howToRun, character.almanac.howToRun);
-            trySet(almanac.tip, character.almanac.tip);
+            await trySet(almanac.flavor, character.almanac.flavor);
+            await trySet(almanac.overview, character.almanac.overview);
+            await trySet(almanac.examples, character.almanac.examples);
+            await trySet(almanac.howToRun, character.almanac.howToRun);
+            await trySet(almanac.tip, character.almanac.tip);
         }
 
         if (json.team) {
-            character.team.set(parseBloodTeam(json.team));
+            await character.team.set(parseBloodTeam(json.team));
         }
         if (json.reminders) {
-            character.characterReminderTokens.set(json.reminders.join('\n'))
+            await character.characterReminderTokens.set(json.reminders.join('\n'))
         }
         if (json.globalReminders) {
-            character.globalReminderTokens.set(json.globalReminders.join('\n'))
+            await character.globalReminderTokens.set(json.globalReminders.join('\n'))
         }
         {
             const firstNightNumber = json.firstNight || 0;
@@ -188,13 +191,11 @@ console.log(`END importProcessedImage for ${character.id.get()}`);
 
     /** load a source image from the .blood file */
     private async importSourceImage(character:Character, zipEntry:JSZipObject):Promise<boolean> {
-console.log(`BEGIN importSourceImage for ${character.id.get()}`);
         const base64 = await zipEntry.async('base64');
-        character.unStyledImage.set(`data:image/png;base64,${base64}`);
-        character.imageSettings.shouldRestyle.set(true); // restore if set by importProcessedImage
+        await character.unStyledImage.set(`data:image/png;base64,${base64}`);
+        await character.imageSettings.shouldRestyle.set(true); // restore if set by importProcessedImage
         const id = character.id.get();
         this.charactersById.set(id, character);
-console.log(`END importSourceImage for ${character.id.get()}`);
         return true;
     }
 }
@@ -235,6 +236,6 @@ export async function importBloodFile(edition:Edition):Promise<boolean> {
     if (!await savePromptIfDirty(edition)) {return false;}
     const file = await chooseBloodFile();
     if (!file){return false;}
-    const importer = new BloodImporter(edition);
+    const importer = await BloodImporter.asyncNew(edition);
     return await showSpinner('Importing .blood', importer.importBlood(file)) || false;
 }
