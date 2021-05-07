@@ -50,7 +50,11 @@ class CheckboxBinding extends BaseBinding<boolean> {
 class TextBinding extends BaseBinding<string> {
     constructor(node:Node, property:Property<string>) {
         if ((node instanceof HTMLTextAreaElement) || (node instanceof HTMLInputElement)) {
-            super(node, property, 'input', _=>property.set(node.value), v=>node.value=v);
+            super(node, property, 'input', _=>property.set(node.value), v=>{
+                node.value=v;
+                node.dispatchEvent(new Event('change'));
+                node.dispatchEvent(new Event('input'));
+            });
         } else if (node instanceof HTMLElement) {
             super(node, property, '', null, v=>node.innerText=v);
         } else {
