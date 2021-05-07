@@ -3,7 +3,7 @@
  * @module ImportJson
  */
 
-import { imageUrlToDataUri } from "../blood-image";
+import { urlToCanvas } from "../blood-image";
 import { parseBloodTeam } from "../model/blood-team";
 import { Edition } from "../model/edition";
 
@@ -31,6 +31,12 @@ type CharacterEntry = {
 type ScriptEntry = MetaEntry|CharacterEntry;
 type NightOrderTracker = Map<'first'|'other', Map<number, string[]>>;
 
+// sizes here based on what what I see clocktower.online using
+const MAX_LOGO_WIDTH = 1661;
+const MAX_LOGO_HEIGHT = 709;
+const MAX_CHARACTER_ICON_WIDTH = 539;
+const MAX_CHARACTER_ICON_HEIGHT = 539;
+
 /** import meta information about the edition */
 async function importMeta(entry:MetaEntry, edition:Edition):Promise<boolean> {
     if (entry.name) {
@@ -40,9 +46,8 @@ async function importMeta(entry:MetaEntry, edition:Edition):Promise<boolean> {
         edition.meta.author.set(entry.author);
     }
     if (entry.logo) {
-        const dataUri = await imageUrlToDataUri(entry.logo, true);
-        // TODO: limit size
-        edition.meta.logo.set(dataUri);
+        const canvas = await urlToCanvas(entry.logo, MAX_LOGO_WIDTH, MAX_LOGO_HEIGHT, true);
+        edition.meta.logo.set(canvas.toDataURL('image/png'));
     }
     return true;
 }
@@ -90,11 +95,10 @@ async function importCharacter(entry:CharacterEntry, edition:Edition, nightOrder
         character.ability.set(entry.ability);
     }
     if (entry.image){
-        const dataUri = await imageUrlToDataUri(entry.image, true);
+        const canvas = await urlToCanvas(entry.image, MAX_CHARACTER_ICON_WIDTH, MAX_CHARACTER_ICON_HEIGHT, true);
+        const dataUrl = canvas.toDataURL('image/png');
         character.imageSettings.shouldRestyle.set(false);
-        if (dataUri) {
-            character.unStyledImage.set(dataUri);
-        }
+        character.unStyledImage.set(dataUrl);
     }
 
     return true;

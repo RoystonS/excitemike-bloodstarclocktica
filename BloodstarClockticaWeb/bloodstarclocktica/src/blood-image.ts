@@ -52,6 +52,7 @@ function makeGaussianKernel(radius:number):number[][] {
     return result
 }
 
+/** wraps a canvas, providing convenient methods for customizing image */
 export default class BloodImage {
 
     private canvas:HTMLCanvasElement;
@@ -498,8 +499,8 @@ export default class BloodImage {
 }
 
 /** get BloodImage from url */
-export async function urlToBloodImage(url:string, maxWidth:number, maxHeight:number):Promise<BloodImage> {
-    const canvas = await urlToCanvas(url, maxWidth, maxHeight);
+export async function urlToBloodImage(url:string, maxWidth:number, maxHeight:number, useCorsProxy:boolean):Promise<BloodImage> {
+    const canvas = await urlToCanvas(url, maxWidth, maxHeight, useCorsProxy);
     return new BloodImage(canvas);
 }
 
@@ -520,16 +521,8 @@ export async function imageUrlToDataUri(url:string, useCorsProxy:boolean):Promis
             return '';
         }
         const buffer = await response.arrayBuffer();
-        /*const bytes = new Uint8Array(buffer);
-        const len = bytes.byteLength;
-        let binaryString = '';
-        for (let i=0;i<len;++i){
-            binaryString += String.fromCharCode(bytes[i]);
-        }
-        const base64  = btoa(binaryString);
-        return `data:image/png;base64,${base64}`;*/
+        const reader = new FileReader();
         return await new Promise((resolve)=>{
-            const reader = new FileReader();
             reader.onload = ()=>{
                 const base64 = reader.result || '';
                 resolve(base64 as string);
@@ -542,23 +535,27 @@ export async function imageUrlToDataUri(url:string, useCorsProxy:boolean):Promis
 }
 
 /** get image data from the url and put it in a new canvas */
-export async function urlToCanvas(url:string, width:number, height:number):Promise<HTMLCanvasElement> {
+export async function urlToCanvas(url:string, width:number, height:number, useCorsProxy:boolean):Promise<HTMLCanvasElement> {
+    if (useCorsProxy) {
+        url = await imageUrlToDataUri(url, useCorsProxy);
+    }
+    const image = new Image();
+    const canvas = document.createElement('canvas');
+
     return new Promise((resolve,reject)=>{
-            const image = new Image();
-            image.onload = function() {
-                const canvas = document.createElement('canvas');
-                const scale = Math.min(1.0, width / image.width, height / image.height);
-                canvas.width = (scale * image.width) | 0;
-                canvas.height = (scale * image.height) | 0;
-                const ctx = canvas.getContext('2d');
-                if (!ctx) {
-                    reject('no context 2d');
-                    return;
-                }
-                ctx.drawImage(image,0,0,canvas.width,canvas.height);
-                resolve(canvas);
-            };
-            image.src = url;
+        image.onload = function() {
+            const scale = Math.min(1.0, width / image.width, height / image.height);
+            canvas.width = (scale * image.width) | 0;
+            canvas.height = (scale * image.height) | 0;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                reject('no context 2d');
+                return;
+            }
+            ctx.drawImage(image,0,0,canvas.width,canvas.height);
+            resolve(canvas);
+        };
+        image.src = url;
     });
 }
 
@@ -583,5 +580,5 @@ export async function getGradientForTeam(team:BloodTeam, useOutsiderAndMinionCol
             url = Images.TRAVELER_GRADIENT_URL;
             break;
     }
-    return await urlToBloodImage(url, width, height);
+    return await urlToBloodImage(url, width, height, false);
 }

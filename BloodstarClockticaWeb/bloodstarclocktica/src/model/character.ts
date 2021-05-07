@@ -84,7 +84,7 @@ export class Character extends ObservableObject<Character> {
         }
         
         // start from the unstyled image
-        let bloodImage = await urlToBloodImage(unstyledImage, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
+        let bloodImage = await urlToBloodImage(unstyledImage, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, false);
 
         // crop
         if (imageSettings.shouldReposition.get()) {
@@ -119,7 +119,7 @@ export class Character extends ObservableObject<Character> {
 
         // texture
         if (imageSettings.useTexture.get()) {
-            const tokenTexture = await urlToBloodImage(Images.TEXTURE_URL, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
+            const tokenTexture = await urlToBloodImage(Images.TEXTURE_URL, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, false);
             bloodImage.multiply(tokenTexture);
         }
 
