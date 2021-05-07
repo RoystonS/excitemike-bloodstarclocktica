@@ -7,6 +7,7 @@ import * as StringDlg from './dlg/blood-string-dlg';
 import { FieldType } from './bind/base-binding';
 import {importJson} from './import/json';
 import { fetchJson } from './util';
+import { AriaDialog } from './dlg/aria-dlg';
 
 /// hash used by the server to sanity check
 export function hashFunc(input:string):number {
@@ -287,17 +288,34 @@ export async function importJsonFromUrl(edition:Edition):Promise<boolean> {
 
 /** promise for choosing a JSON file */
 async function chooseJsonFile():Promise<File|null> {
-    // TODO: I don't think this has any reason to be async
-    return new Promise<File|null>((resolve,_):void=>{
-        const fileInput = document.getElementById('jsonFileInput');
-        let file:File|null = null;
+    const fileInput = document.getElementById('jsonFileInput');
+    if (!(fileInput instanceof HTMLInputElement)) {return null;}
+    fileInput.value = '';
+    const dlg = new AriaDialog<File|null>();
+
+    async function chooseFile():Promise<void> {
         if (fileInput instanceof HTMLInputElement) {
-            fileInput.files = null; // cancelling hopefully clears this anyway, but just in case
+            fileInput.onchange=()=>{
+                dlg.close(fileInput.files && fileInput.files[0]);
+            };
             fileInput.click();
-            file = fileInput.files && fileInput.files[0];
+        } else {
+            dlg.close(null)
         }
-        resolve(file);
-    });
+    }
+    
+    return await dlg.baseOpen(
+        document.activeElement,
+        'chooseJsonFile',
+        [{
+            t:'button',
+            txt:'Choose File',
+            events:{click:()=>chooseFile()}
+        }],
+        [
+            {label:'Cancel',callback:async ()=>null}
+        ]
+    );
 }
 
 /** user chose to import character(s) from a json file */
