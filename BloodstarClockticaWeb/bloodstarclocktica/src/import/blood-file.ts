@@ -41,16 +41,36 @@ class BloodImporter {
         const zip = await loadZipAsync(file);
         const allPaths:string[] = [];
         zip.forEach(relativePath=>allPaths.push(relativePath));
+        
+        const deferred:string[] = [];
 
-        const promises:Promise<boolean>[] = [];
-        // TODO: do source images before processed images
-        for (const relativePath of allPaths) {
-            const zipEntry = zip.file(relativePath);
-            if (!zipEntry) {continue;}
-            promises.push(this.importPart(relativePath, zipEntry));
+        // do some of them now, defer others until after
+        {
+            const promises = [];
+            for (const relativePath of allPaths) {
+                if (relativePath.startsWith('processed_images/')) {
+                    deferred.push(relativePath);
+                } else {
+                    const zipEntry = zip.file(relativePath);
+                    if (!zipEntry) {return false;}
+                    promises.push(this.importPart(relativePath, zipEntry));
+                }
+            }
+            // wait for the first batch
+            if (!await Promise.all(promises)){return false;}
         }
-        const allImported = (await Promise.all(promises)).reduce((a,b)=>a&&b, true);
-        if (!allImported) { return false; }
+
+        // do deferred ones
+        {
+            const promises = [];
+            for (const relativePath of deferred) {
+                const zipEntry = zip.file(relativePath);
+                if (!zipEntry) {return false;}
+                promises.push(this.importPart(relativePath, zipEntry));
+            }
+            // await those
+            if (!await Promise.all(promises)){return false;}
+        }
     
         await this.finalizeNightOrder();
 
