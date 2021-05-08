@@ -58,12 +58,7 @@
     // encode as json and write to save directory
     function writeSaveFile($saveName, $data) {
         global $saveDir;
-
-        // don't blindly trust input
-        if (!preg_match("([^\w\s\d\-_~,;\[\]\(\).])|([\.]{2,})", '', $saveName)) {
-            echo json_encode(array('error' =>"invalid save name '$saveName'"));
-            exit();
-        }
+        validateFilename($saveName);
 
         // ensure directory exists
         if (!file_exists($saveDir)) {
@@ -89,6 +84,7 @@
     // read file in save directory and decode as json
     function readSaveFile($saveName) {
         global $saveDir;
+        validateFilename($saveName);
         $path = join_paths($saveDir, $saveName);
         return file_get_contents($path);
     }

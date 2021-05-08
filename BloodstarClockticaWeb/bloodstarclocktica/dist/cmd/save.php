@@ -4,7 +4,6 @@
     $data = getPayload();
 
     $saveName = requireField($data, 'saveName');
-    validateFilename($saveName);
 
     $check = requireField($data, 'check');
     checkHash($saveName, $check);
