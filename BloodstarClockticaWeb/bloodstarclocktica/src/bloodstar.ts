@@ -162,6 +162,7 @@ function tabClicked(btnId:string, tabId:string):void {
 
 /** prompt for login information */
 async function login():Promise<void> {
+    // eslint-disable-next-line no-constant-condition
     while (true) {
         try {
             const loginInfo = await LoginDlg.show("Enter username and password");
@@ -263,6 +264,7 @@ async function initBindings():Promise<void> {
 /** initialize CustomEdition object to bind to */
 async function initCustomEdition():Promise<void> {
     try {
+        // eslint-disable-next-line no-constant-condition
         while (true) {
             if (await BloodNewOpen.show()) {
                 break;
