@@ -5,6 +5,7 @@
 
 import { ObservableCollection } from "../bind/observable-collection";
 import { urlToCanvas } from "../blood-image";
+import {spinner} from '../dlg/spinner-dlg';
 import { parseBloodTeam } from "../model/blood-team";
 import { Character } from "../model/character";
 import { Edition } from "../model/edition";
@@ -56,7 +57,7 @@ async function importMeta(entry:MetaEntry, edition:Edition):Promise<boolean> {
 
 /** import a character into the edition */
 async function importCharacter(entry:CharacterEntry, edition:Edition, firstNightOrder:NightOrderTracker, otherNightOrder:NightOrderTracker):Promise<boolean> {
-    const character = await edition.addNewCharacter();
+    const character = await spinner(`adding ${entry.id}`, `Adding new character`, edition.addNewCharacter());
     await character.id.set(entry.id);
     {
         const nightNumber = entry.firstNight || 0;
@@ -95,10 +96,10 @@ async function importCharacter(entry:CharacterEntry, edition:Edition, firstNight
         await character.ability.set(entry.ability);
     }
     if (entry.image){
-        const canvas = await urlToCanvas(entry.image, MAX_CHARACTER_ICON_WIDTH, MAX_CHARACTER_ICON_HEIGHT, true);
+        const canvas = await spinner(`import ${entry.id}`, `Downloading image for ${entry.name}`, urlToCanvas(entry.image, MAX_CHARACTER_ICON_WIDTH, MAX_CHARACTER_ICON_HEIGHT, true));
         const dataUrl = canvas.toDataURL('image/png');
-        await character.imageSettings.shouldRestyle.set(false);
-        await character.unStyledImage.set(dataUrl);
+        await spinner(`import ${entry.id}`, `Setting character image for ${entry.name}`, character.imageSettings.shouldRestyle.set(false));
+        await spinner(`import ${entry.id}`, `Setting character image for ${entry.name}`, character.unStyledImage.set(dataUrl));
     }
 
     return true;
@@ -110,9 +111,9 @@ async function importEntry(entry:ScriptEntry, edition:Edition, firstNightOrder:N
         return false;
     }
     if (entry.id === '_meta') {
-        return await importMeta(entry as MetaEntry, edition);
+        return await spinner('importing _meta', 'Importing _meta', importMeta(entry as MetaEntry, edition));
     }
-    return await importCharacter(entry as CharacterEntry, edition, firstNightOrder, otherNightOrder);
+    return await spinner(`importing ${entry.id}`,`Importing ${entry.name}`, importCharacter(entry as CharacterEntry, edition, firstNightOrder, otherNightOrder));
 }
 
 /** import a whole script */
@@ -143,7 +144,7 @@ async function importEdition(json:ScriptEntry[], edition:Edition):Promise<boolea
 export async function importJson(fileOrStringOrArray:File|string|ScriptEntry[], edition:Edition):Promise<boolean> {
     let json:ScriptEntry[];
     if (fileOrStringOrArray instanceof File) {
-        const text = await fileOrStringOrArray.text();
+        const text = await spinner('importJson', 'Retrieving response text', fileOrStringOrArray.text());
         json = JSON.parse(text);
     } else if (typeof fileOrStringOrArray === 'string') {
         const parseResult = JSON.parse(fileOrStringOrArray);
@@ -152,5 +153,5 @@ export async function importJson(fileOrStringOrArray:File|string|ScriptEntry[], 
     } else {
         json = fileOrStringOrArray;
     }
-    return await importEdition(json, edition);
+    return await spinner('importJson', 'Importing edition', importEdition(json, edition));
 }

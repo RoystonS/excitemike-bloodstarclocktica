@@ -4,7 +4,6 @@
  */
 import {createElement, CreateElementsOptions} from '../util';
 import {AriaDialog} from './aria-dlg';
-import * as Spinner from './spinner-dlg';
 import {listFiles} from '../blood-io';
 
 class OpenDlg extends AriaDialog<string> {
@@ -15,7 +14,7 @@ class OpenDlg extends AriaDialog<string> {
             fileListDiv
         ];
 
-        const files = await Spinner.show('Retrieving file list', listFiles(username, password));
+        const files = await listFiles(username, password);
         if (!files) {return null;}
         if (files.length) {
             for (const name of files) {

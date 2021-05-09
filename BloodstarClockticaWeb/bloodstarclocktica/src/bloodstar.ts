@@ -1,6 +1,5 @@
 import * as BloodBind from './bind/bindings';
 import * as BloodNewOpen from "./dlg/blood-new-open-dlg";
-import * as SpinnerDlg from './dlg/spinner-dlg';
 import * as LoginDlg from "./dlg/blood-login-dlg";
 import {showError} from "./dlg/blood-message-dlg";
 import * as BloodIO from "./blood-io";
@@ -170,7 +169,7 @@ async function login():Promise<void> {
                 const {username:newUsername, password:newPassword} = loginInfo;
                 username = newUsername;
                 password = newPassword;
-                if (await SpinnerDlg.show('Logging in', BloodIO.login(username, password))) {
+                if (await BloodIO.login(username, password)) {
                     break;
                 }
             }

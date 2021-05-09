@@ -1,5 +1,5 @@
 import {Edition} from './model/edition';
-import * as Spinner from './dlg/spinner-dlg';
+import {spinner} from './dlg/spinner-dlg';
 import {showError} from "./dlg/blood-message-dlg";
 import * as OpenDlg from './dlg/blood-open-dlg';
 import * as SdcDlg from './dlg/blood-save-discard-cancel';
@@ -53,7 +53,7 @@ export async function saveAs(username:string, password:string, edition:Edition):
     const backupName = edition.saveName.get();
     try {
         await edition.saveName.set(name);
-        return !!(await Spinner.show(`Saving as ${name}`, _save(username, password, edition)));
+        return !!(await _save(username, password, edition));
     } catch (error) {
         await edition.saveName.set(backupName);
         showError('Error', 'Error encountered while trying to save', error);
@@ -133,7 +133,7 @@ export async function open(username:string, password:string, edition:Edition):Pr
 async function openNoSavePrompt(username:string, password:string, edition:Edition):Promise<boolean> {
     const name = await OpenDlg.show(username, password);
     if (name) {
-        return await openNoPrompts(username, password, edition, name);
+        return await spinner('open', `Opening edition file "${name}"`, openNoPrompts(username, password, edition, name));
     }
     return Promise.resolve(false);
 }
@@ -153,12 +153,12 @@ async function openNoPrompts(username:string, password:string, edition:Edition, 
         check: hashFunc(name)
     };
     const payload = JSON.stringify(openData);
-    const {error,data} = await cmd(username, password, 'open', `Opening ${name}`, payload) as OpenReturn;
+    const {error,data} = await cmd(username, password, 'open', `Retrieving ${name}`, payload) as OpenReturn;
     if (error) {
         showError('Error', `Error encountered while trying to open file ${name}`, error);
         return false;
     }
-    return await edition.open(name, data);
+    return await spinner('open', `Opening edition file "${name}"`, edition.open(name, data));
 }
 
 /**
@@ -197,7 +197,7 @@ function sanitizeSaveName(original:string):string {
  * Brings up the loading spinner during the operation
  */
 async function cmd(username:string, password:string, cmdName:string, spinnerMessage:string, body?:BodyInit|null|undefined):Promise<CmdReturn> {
-    return await Spinner.show(spinnerMessage, _cmd(username, password, cmdName, body));
+    return await spinner('command', spinnerMessage, _cmd(username, password, cmdName, body));
 }
 
 /**
@@ -261,7 +261,7 @@ export async function login(username:string, password:string):Promise<boolean> {
 }
 
 /**
- * Get a list of openable files
+ * Get a list of openable files, bringing up a spinner during the operation
  * @param username username
  * @param password password
  */
@@ -281,7 +281,7 @@ async function _listFiles(username:string, password:string):Promise<string[]> {
  * @param password password
  */
 export async function listFiles(username:string, password:string):Promise<string[]|null> {
-    return await Spinner.show('Retrieving file list', _listFiles(username, password));
+    return await _listFiles(username, password);
 }
 
 /** user chose to import character(s) from a json file */
@@ -291,7 +291,7 @@ export async function importJsonFromUrl(edition:Edition):Promise<boolean> {
     if (!url){return false;}
     const json = await fetchJson<ScriptEntry[]>(url);
     if (!json) {return false;}
-    return await Spinner.show('Importing json', importJson(json, edition)) || false;
+    return await spinner('importJsonFromUrl', 'Importing json', importJson(json, edition)) || false;
 }
 
 /** promise for choosing a JSON file */
@@ -331,7 +331,7 @@ export async function importJsonFromFile(edition:Edition):Promise<boolean> {
     if (!await SdcDlg.savePromptIfDirty(edition)) {return false;}
     const file = await chooseJsonFile();
     if (!file){return false;}
-    return await Spinner.show('Importing json', importJson(file, edition)) || false;
+    return await spinner('importJsonFromFile', 'Importing json', importJson(file, edition)) || false;
 }
 
 /** user chose to import a project form the windows version of Bloodstar Clocktica */

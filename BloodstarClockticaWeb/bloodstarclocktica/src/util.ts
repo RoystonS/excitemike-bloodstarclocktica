@@ -21,6 +21,9 @@ export type CreateElementOptions<K extends keyof HTMLElementTagNameMap> = {
     /** event listeners to add to the element */
     events?:{[key:string]:EventListenerOrEventListenerObject|undefined},
 
+    /** id to set on the element */
+    id?:string;
+
     /** inner text to set on the element */
     txt?:string,
 };
@@ -29,8 +32,12 @@ export type CreateElementsOptions = (CreateElementOptions<keyof HTMLElementTagNa
 
 /** more concise element creation. see comments on CreateElementOptions */
 export function createElement<K extends keyof HTMLElementTagNameMap>(options:CreateElementOptions<K>):HTMLElementTagNameMap[K] {
-    const {a: attributes, children, css: classes, events: eventListeners, txt: innerText, t: tag} = options;
+    const {a: attributes, children, css: classes, events: eventListeners, id, txt: innerText, t: tag} = options;
     const element = document.createElement(tag);
+
+    if (id) {
+        element.id = id;
+    }
 
     if (attributes) {
         for (const key of Object.keys(attributes)) {

@@ -5,6 +5,7 @@
  * @module AriaDialog
  */
 
+import { appear, disappear } from "../animate";
 import { createElement, CreateElementsOptions } from "../util";
 
 type ResolveFn = (value:any)=>void;
@@ -34,19 +35,6 @@ let pauseFocusTrap = false;
         pauseFocusTrap = false;
     }
     return document.activeElement === node;
-}
-
-/**
- * close the current dialog, if any.
- * @returns whether a dialog was closed
- */
-function closeCurrentDialog(value:any = null):boolean {
-    const dlg = getCurrentDialog();
-    if (dlg) {
-        dlg.close(value);
-        return true;
-    }
-    return false;
 }
 
 /**
@@ -168,7 +156,9 @@ export class AriaDialog<ResultType> {
             this.root.parentNode?.removeChild(this.postNode);
             this.postNode = null;
         }
-        document.body.removeChild(this.root);
+
+        // intentionally not awaiting promise
+        disappear(this.root as HTMLElement);
     }
 
     /**
@@ -184,6 +174,7 @@ export class AriaDialog<ResultType> {
     ):Element {
         const id = `${debugName}${unique++}`;
         const root = document.createElement('div');
+        this.root = root;
         root.id = id;
         root.setAttribute('role', 'dialog');
         root.setAttribute('aria-modal', 'true');
@@ -275,6 +266,8 @@ export class AriaDialog<ResultType> {
         focusFirstDescendant(this.root);
         this.lastFocus = document.activeElement;
 
+        appear(this.root as HTMLElement);
+
         return this.promise;
     }
 
@@ -304,6 +297,18 @@ export class AriaDialog<ResultType> {
     private trapFocus():void {
         document.addEventListener('focus', AriaDialog.staticTrapFocus, true);
     }
+    
+    /**
+     * if the dialog is cancellable, close it
+     * @returns whether it was closed
+     */
+    tryCancel():boolean {
+        if (this.canCancel()) {
+            this.close(null);
+            return true;
+        }
+        return false;
+    }
 }
 
 // escape to cancel current dialog
@@ -311,8 +316,7 @@ document.addEventListener('keyup', (event:KeyboardEvent) => {
     if (event.code !== 'Escape') {return;}
     const dlg = getCurrentDialog();
     if (!dlg) {return;}
-    if (!dlg.canCancel()) {return;}
-    if (closeCurrentDialog()) {
+    if (dlg.tryCancel()){
         event.stopPropagation();
     }
 });

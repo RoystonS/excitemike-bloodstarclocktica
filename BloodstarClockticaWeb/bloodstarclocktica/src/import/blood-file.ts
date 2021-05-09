@@ -3,7 +3,7 @@
  * @module BloodFile
  */
 import {savePromptIfDirty} from '../dlg/blood-save-discard-cancel';
-import {show as showSpinner} from '../dlg/spinner-dlg';
+import {spinner} from '../dlg/spinner-dlg';
 import {Edition} from '../model/edition';
 import { JSZipObject, loadAsync as loadZipAsync} from 'jszip';
 import { AriaDialog } from '../dlg/aria-dlg';
@@ -252,5 +252,5 @@ export async function importBloodFile(edition:Edition):Promise<boolean> {
     await edition.reset();
     await edition.characterList.clear();
     const importer = new BloodImporter(edition);
-    return await showSpinner('Importing .blood', importer.importBlood(file)) || false;
+    return await spinner('bloodfile', 'Importing .blood', importer.importBlood(file)) || false;
 }

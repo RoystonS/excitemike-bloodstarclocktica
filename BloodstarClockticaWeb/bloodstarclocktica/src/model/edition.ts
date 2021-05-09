@@ -3,6 +3,7 @@
  * @module Edition
  */
 import {FieldType, Property} from '../bind/bindings';
+import {spinner} from '../dlg/spinner-dlg';
 import {Character} from './character';
 import {EditionAlmanac} from './edition-almanac';
 import {EditionMeta} from './edition-meta';
@@ -132,7 +133,7 @@ export class Edition extends ObservableObject<Edition> {
     /** set to opened file */
     async open(saveName:string, data:{ [key: string]: FieldType; }):Promise<boolean> {
         if (!data) {await this.reset(); return false;}
-        await this.deserialize(data);
+        await spinner('edition.open', 'Deserializing edition', this.deserialize(data));
         await this.saveName.set(saveName);
         await this.dirty.set(false);
 
