@@ -82,7 +82,10 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(options:Cre
 export async function fetchJson<T>(uri:string):Promise<T|null> {
     let response:Response;
     const controller = new AbortController();
-    const timeoutId = setTimeout(()=>controller.abort(), 15*1000);
+    const timeoutId = setTimeout(()=>{
+        controller.abort();
+        showMessage('Network Error', `Request timed out trying to reach ${uri}`);
+    }, 15*1000);
     try {
         response = await fetch(uri, {
                 method: 'GET',

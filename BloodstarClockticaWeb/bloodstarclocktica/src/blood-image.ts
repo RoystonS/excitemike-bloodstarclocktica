@@ -507,7 +507,10 @@ export async function urlToBloodImage(url:string, maxWidth:number, maxHeight:num
 /** get image data from the url and convert it to a dataUri */
 export async function imageUrlToDataUri(url:string, useCorsProxy:boolean):Promise<string> {
     const controller = new AbortController();
-    const timeoutId = setTimeout(()=>controller.abort(), 15*1000);
+    const timeoutId = setTimeout(()=>{
+        controller.abort();
+        showMessage('Network Error', `Request timed out trying to reach ${url}`);
+    }, 30*1000);
     try {
         const proxiedUrl = useCorsProxy ? getCorsProxyUrl(url) : url;
         const response = await fetch(proxiedUrl, {
@@ -517,7 +520,7 @@ export async function imageUrlToDataUri(url:string, useCorsProxy:boolean):Promis
         });
         if (!response.ok) {
             showMessage('Network Error', `Something went wrong while trying to reach ${url}`);
-            console.error(`TRying to reach ${proxiedUrl}\n${response.status}: (${response.type}) ${response.statusText}`);
+            console.error(`Trying to reach ${proxiedUrl}\n${response.status}: (${response.type}) ${response.statusText}`);
             return '';
         }
         const buffer = await response.arrayBuffer();

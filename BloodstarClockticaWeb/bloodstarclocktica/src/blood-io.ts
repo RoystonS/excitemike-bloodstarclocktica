@@ -1,6 +1,6 @@
 import {Edition} from './model/edition';
 import {spinner} from './dlg/spinner-dlg';
-import {showError} from "./dlg/blood-message-dlg";
+import {show as showMessage, showError} from "./dlg/blood-message-dlg";
 import * as OpenDlg from './dlg/blood-open-dlg';
 import * as SdcDlg from './dlg/blood-save-discard-cancel';
 import * as StringDlg from './dlg/blood-string-dlg';
@@ -207,7 +207,10 @@ async function _cmd(username:string, password:string, cmdName:string, body?:Body
     let response:Response;
     const base64 = btoa(`${username}:${password}`);
     const controller = new AbortController();
-    const timeoutId = setTimeout(()=>controller.abort(), 15*1000);
+    const timeoutId = setTimeout(()=>{
+        controller.abort();
+        showMessage('Network Error', `Request timed out for command "${cmdName}"`);
+    }, 15*1000);
     try {
         response = await fetch(`https://www.bloodstar.xyz/cmd/${cmdName}.php`, {
                 method: 'POST',
@@ -331,7 +334,7 @@ export async function importJsonFromFile(edition:Edition):Promise<boolean> {
     if (!await SdcDlg.savePromptIfDirty(edition)) {return false;}
     const file = await chooseJsonFile();
     if (!file){return false;}
-    return await spinner('importJsonFromFile', 'Importing json', importJson(file, edition)) || false;
+    return await importJson(file, edition);
 }
 
 /** user chose to import a project form the windows version of Bloodstar Clocktica */
