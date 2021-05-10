@@ -37,7 +37,10 @@
             foreach ($characterList as $inCharacter) {
                 unset($outCharacter); // make sure it's a new variable each time through the loop, because we need to pass out references
 
-                // TODO: check if they are even supposed to be exported
+                // skip if not supposed to be exported
+                if (array_key_exists('export', $inCharacter)) {
+                    if (!$inCharacter['export']) {continue;}
+                }
 
                 $outCharacter = array();
                 if (array_key_exists('id', $inCharacter)) {
