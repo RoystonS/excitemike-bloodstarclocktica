@@ -176,6 +176,7 @@ export abstract class ObservableObject<T> {
     async deserialize(data:{[key:string]:FieldType}):Promise<void> {
         for (const [key, child] of this.observableChildren) {
             if (this.undeserializableFields && this.undeserializableFields.has(key)) { continue; }
+            if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
             const childData = data[String(key)];
             if ((childData !== null) &&
                 (typeof childData !== 'string') &&
