@@ -29,7 +29,7 @@ class MessageDialog extends AriaDialog<void> {
             focusAfterClose,
             'message',
             body,
-            [{label:'Ok', callback:() => Promise.resolve(null)}]
+            [{label:'OK', callback:() => Promise.resolve(null)}]
         );
     }
 }
