@@ -1,7 +1,7 @@
 [role="alertdialog"],
 [role="dialog"] {
     box-sizing: border-box;
-    background-color: rgba(0,0,0,0.4);
+    background: radial-gradient(farthest-corner at 50% 35%, black, rgba(0,0,0,0.4), black);
     position:absolute;
     left:0;
     top:0;
@@ -9,9 +9,20 @@
     min-height: 100vh;
     overflow: auto;
     display:flex;
+    flex-flow: column nowrap;
     justify-content: space-around;
     align-items: center;
     z-index:2;
+}
+[role="alertdialog"]::before,
+[role="dialog"]::before {
+    content:'';
+    flex: 1 1 0;
+}
+[role="alertdialog"]::after,
+[role="dialog"]::after {
+    content:'';
+    flex: 2 2 0;
 }
 .dialogBox {
     flex: 0 1 auto;
