@@ -2,7 +2,6 @@
  * 'please wait' style spinner popup for bloodstar clocktica
  * @module SpinnerDlg
  */
-import { appearFromLeft, disappearToRight } from '../animate';
 import { createElement, CreateElementsOptions } from '../util';
 import {AriaDialog} from './aria-dlg';
 
@@ -29,7 +28,6 @@ class SpinnerDialog extends AriaDialog<null> {
                 txt:message,
                 a:{tabindex:'0',role:'alert'}
             }));
-            appearFromLeft(listItem);
             this.messages.set(key, {listItem,stack:[message]});
         } else {
             const {listItem,stack} = entry;
@@ -52,7 +50,7 @@ class SpinnerDialog extends AriaDialog<null> {
         if (0===stack.length) {
             // no more messages for this key. remove list item and delete from map
             this.messages.delete(key);
-            await disappearToRight(listItem);
+            listItem.remove();
         } else if (i===stack.length) {
             // removed last item, change message
             listItem.innerText = stack[i-1];

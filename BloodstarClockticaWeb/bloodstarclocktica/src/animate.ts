@@ -33,8 +33,8 @@ export function appear(element:HTMLElement):void {
 }
 
 /** animate in from left */
-export function appearFromLeft(element:HTMLElement):void {
-    element.classList.add('appearFromLeft');
+export function appearGrowY(element:HTMLElement):void {
+    element.classList.add('appearGrowY');
 }
 
 /** fade ut and remove */
@@ -43,6 +43,6 @@ export function disappear(element:HTMLElement):Promise<void> {
 }
 
 /** animate element away and remove */
-export function disappearToRight(element:HTMLElement):Promise<void> {
-    return animateAndRemove(element, 'disappearToRight', 'disappearToRightAnim');
+export function disappearShrinkY(element:HTMLElement):Promise<void> {
+    return animateAndRemove(element, 'disappearShrinkY', 'disappearShrinkYAnim');
 }

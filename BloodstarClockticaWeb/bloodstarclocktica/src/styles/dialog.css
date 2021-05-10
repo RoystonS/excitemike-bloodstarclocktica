@@ -111,7 +111,6 @@ ul.spinnerMessages {
     list-style: none;
     margin: 0;
     padding: 0px;
-    min-width: 250px;
     overflow-x: hidden;
     font-size:12px;
 }

@@ -14,30 +14,24 @@
     }
 }
 
-/* appear, sliding in from left */
-.appearFromLeft {
-    animation: appearFromLeftAnim 0.2s ease-out 1;
-    -webkit-animation: appearFromLeftAnim 0.2s ease-out 1;
+/* grow vertically up to full size */
+.appearGrowY {
+    max-height: 20px;
+    overflow:hidden;
+    animation: appearGrowYAnim 0.2s linear 1;
+    -webkit-animation: appearGrowYAnim 0.2s linear 1;
 }
-@keyframes appearFromLeftAnim {
-    from { 
-        margin-top:-18px;
-        opacity: 1%;
-        transform: translateX(-100%);
-    }
+@keyframes appearGrowYAnim {
+    from {max-height:2px;}
 }
-@-webkit-keyframes appearFromLeftAnim {
-    from { 
-        margin-top:-18px;
-        opacity: 1%;
-        transform: translateX(-100%);
-    }
+@-webkit-keyframes appearGrowYAnim {
+    from {max-height:2px;}
 }
 
 /* fade opacity out */
 .disappear {
-    animation: disappearAnim 0.2s ease-out 1;
-    -webkit-animation: disappearAnim 0.2s ease-out 1;
+    animation: disappearAnim 0.2s linear 1;
+    -webkit-animation: disappearAnim 0.2s linear 1;
 }
 @keyframes disappearAnim {
     to {
@@ -50,22 +44,16 @@
     }
 }
 
-/* disappear, sliding to right */
-.disappearToRight {
-    animation: disappearToRightAnim 0.2s ease-out 1 !important;
-    -webkit-animation: disappearToRightAnim 0.2s ease-out 1 !important;
+/* shrink vertically */
+.disappearShrinkY {
+    max-height: 20px;
+    overflow: hidden;
+    animation: disappearShrinkYAnim 0.2s ease-out 1 !important;
+    -webkit-animation: disappearShrinkYAnim 0.2s ease-out 1 !important;
 }
-@keyframes disappearToRightAnim {
-    to {
-        margin-top:-18px;
-        opacity: 1%;
-        transform: translateX(100%);
-    }
+@keyframes disappearShrinkYAnim {
+    to {max-height:2px;}
 }
-@-webkit-keyframes disappearToRightAnim {
-    to {
-        margin-top:-18px;
-        opacity: 1%;
-        transform: translateX(100%);
-    }
+@-webkit-keyframes disappearShrinkYAnim {
+    to {max-height:2px;}
 }

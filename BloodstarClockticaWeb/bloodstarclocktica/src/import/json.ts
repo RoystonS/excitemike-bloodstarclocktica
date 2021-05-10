@@ -49,15 +49,15 @@ async function importMeta(entry:MetaEntry, edition:Edition):Promise<boolean> {
         await edition.meta.author.set(entry.author);
     }
     if (entry.logo) {
-        const canvas = await urlToCanvas(entry.logo, MAX_LOGO_WIDTH, MAX_LOGO_HEIGHT, true);
-        await edition.meta.logo.set(canvas.toDataURL('image/png'));
+        const canvas = await spinner(entry.id, 'Downloading edition logo', urlToCanvas(entry.logo, MAX_LOGO_WIDTH, MAX_LOGO_HEIGHT, true));
+        await spinner(entry.id, 'Setting edition logo', edition.meta.logo.set(canvas.toDataURL('image/png')));
     }
     return true;
 }
 
 /** import a character into the edition */
 async function importCharacter(entry:CharacterEntry, edition:Edition, firstNightOrder:NightOrderTracker, otherNightOrder:NightOrderTracker):Promise<boolean> {
-    const character = await spinner(`adding ${entry.id}`, `Adding new character`, edition.addNewCharacter());
+    const character = await spinner(entry.id, `Adding new character`, edition.addNewCharacter());
     await character.id.set(entry.id);
     {
         const nightNumber = entry.firstNight || 0;
@@ -96,10 +96,10 @@ async function importCharacter(entry:CharacterEntry, edition:Edition, firstNight
         await character.ability.set(entry.ability);
     }
     if (entry.image){
-        const canvas = await spinner(`import ${entry.id}`, `Downloading image for ${entry.name}`, urlToCanvas(entry.image, MAX_CHARACTER_ICON_WIDTH, MAX_CHARACTER_ICON_HEIGHT, true));
+        const canvas = await spinner(entry.id, `Downloading image for ${entry.name}`, urlToCanvas(entry.image, MAX_CHARACTER_ICON_WIDTH, MAX_CHARACTER_ICON_HEIGHT, true));
         const dataUrl = canvas.toDataURL('image/png');
-        await spinner(`import ${entry.id}`, `Setting character image for ${entry.name}`, character.imageSettings.shouldRestyle.set(false));
-        await spinner(`import ${entry.id}`, `Setting character image for ${entry.name}`, character.unStyledImage.set(dataUrl));
+        await spinner(entry.id, `Setting character image for ${entry.name}`, character.imageSettings.shouldRestyle.set(false));
+        await spinner(entry.id, `Setting character image for ${entry.name}`, character.unStyledImage.set(dataUrl));
     }
 
     return true;
@@ -111,9 +111,9 @@ async function importEntry(entry:ScriptEntry, edition:Edition, firstNightOrder:N
         return false;
     }
     if (entry.id === '_meta') {
-        return await spinner('importing _meta', 'Importing _meta', importMeta(entry as MetaEntry, edition));
+        return await spinner(entry.id, 'Importing _meta', importMeta(entry as MetaEntry, edition));
     }
-    return await spinner(`importing ${entry.id}`,`Importing ${entry.name}`, importCharacter(entry as CharacterEntry, edition, firstNightOrder, otherNightOrder));
+    return await spinner(entry.id,`Importing ${entry.name}`, importCharacter(entry as CharacterEntry, edition, firstNightOrder, otherNightOrder));
 }
 
 /** import a whole script */
