@@ -5,7 +5,6 @@ import {showError} from "./dlg/blood-message-dlg";
 import * as OpenDlg from './dlg/blood-open-dlg';
 import * as SdcDlg from './dlg/blood-save-discard-cancel';
 import * as StringDlg from './dlg/blood-string-dlg';
-import { FieldType } from './bind/base-binding';
 import {importJson, ScriptEntry} from './import/json';
 import { fetchJson } from './util';
 import { AriaDialog } from './dlg/aria-dlg';
@@ -14,7 +13,7 @@ import { importBloodFile } from './import/blood-file';
 type ListFilesReturn = {error?:string,files:string[]};
 type LoginReturn = {success:boolean};
 type SaveReturn = {error?:string};
-type OpenReturn = {error?:string,data:{[key:string]:FieldType}};
+type OpenReturn = {error?:string,data:{[key:string]:unknown}};
 
 /// hash used by the server to sanity check
 export function hashFunc(input:string):number {
@@ -91,7 +90,7 @@ async function _save(username:string, password:string, edition:Edition):Promise<
     type SaveData = {
         saveName:string,
         check:number,
-        edition:FieldType
+        edition:unknown
     };
     
     const saveName = edition.saveName.get();

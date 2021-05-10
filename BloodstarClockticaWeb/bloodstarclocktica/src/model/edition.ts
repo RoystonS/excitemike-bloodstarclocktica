@@ -2,19 +2,19 @@
  * Model for edition data
  * @module Edition
  */
-import {FieldType, Property} from '../bind/bindings';
+import {Property} from '../bind/bindings';
 import {spinner} from '../dlg/spinner-dlg';
 import {Character} from './character';
 import {EditionAlmanac} from './edition-almanac';
 import {EditionMeta} from './edition-meta';
 import {ObservableCollection} from '../bind/observable-collection';
-import {customSerialize, observableChild, observableCollection, ObservableObject, observableProperty, ObservableType} from '../bind/observable-object';
+import {observableChild, observableCollection, ObservableObject, observableProperty, ObservableType} from '../bind/observable-object';
 
-function serializeJustIds(_:ObservableObject<Edition>, nightOrder:ObservableType):FieldType {
+function serializeJustIds(_:ObservableObject<Edition>, nightOrder:ObservableType):unknown {
     if (!(nightOrder instanceof ObservableCollection)) {return [];}
     return nightOrder.map((c:Character)=>c.id.get())
 }
-async function deserializeFromIds(object:ObservableObject<Edition>, nightOrder:ObservableType, data:FieldType):Promise<void> {
+async function deserializeFromIds(object:ObservableObject<Edition>, nightOrder:ObservableType, data:unknown):Promise<void> {
     if (!(nightOrder instanceof ObservableCollection)) {return;}
     if (!Array.isArray(data)){return;}
     const characterList = object.getCollection('characterList');
@@ -35,55 +35,45 @@ async function deserializeFromIds(object:ObservableObject<Edition>, nightOrder:O
 /** observable properties for a custom edition */
 export class Edition extends ObservableObject<Edition> {
     /** almanac-specific edition data */
-    @observableChild()
-    readonly almanac = new EditionAlmanac();
+    @observableChild(EditionAlmanac)
+    readonly almanac!:EditionAlmanac;
 
     /** characters in the edition */
-    @observableCollection()
-    readonly characterList = new ObservableCollection(Character.asyncNew);
+    @observableCollection(Character.asyncNew)
+    readonly characterList!:ObservableCollection<Character>;
 
     /** true when there are unsaved changes */
-    @observableProperty('neither')
-    readonly dirty = new Property<boolean>(false);
+    @observableProperty(false, {read:false,write:false})
+    readonly dirty!:Property<boolean>;
 
     /** contains the same Character objects as characterList, but ordered for night order */
-    @customSerialize(serializeJustIds, deserializeFromIds)
-    @observableCollection()
-    readonly firstNightOrder = new ObservableCollection(Character.asyncNew);
+    @observableCollection(Character.asyncNew, {customSerialize:serializeJustIds,customDeserialize:deserializeFromIds})
+    readonly firstNightOrder!:ObservableCollection<Character>;
 
     /** data about the edition */
-    @observableChild()
-    readonly meta = new EditionMeta();
+    @observableChild(EditionMeta)
+    readonly meta!:EditionMeta;
 
     /** contains the same Character objects as characterList, but ordered for night order */
-    @customSerialize(serializeJustIds, deserializeFromIds)
-    @observableCollection()
-    readonly otherNightOrder = new ObservableCollection(Character.asyncNew);
+    @observableCollection(Character.asyncNew, {customSerialize:serializeJustIds,customDeserialize:deserializeFromIds})
+    readonly otherNightOrder!:ObservableCollection<Character>;
     
     /** whether to render preview on a character token background like you would see on clocktower.online */
-    @observableProperty('neither')
-    readonly previewOnToken = new Property<boolean>(true);
+    @observableProperty(true, {read:false,write:false})
+    readonly previewOnToken!:Property<boolean>;
 
     /** name to use when saving */
-    @observableProperty('neither')
-    readonly saveName = new Property<string>('');
+    @observableProperty('', {read:false,write:false})
+    readonly saveName!:Property<string>;
 
     /** what to show as the current file and its status */
-    @observableProperty('neither')
-    readonly windowTitle = new Property<string>('Bloodstar Clocktica');
-
-    /** create new edition */
-    private constructor() {
-        super();
-        this.init();
-    }
+    @observableProperty('Bloodstar Clocktica', {read:false,write:false})
+    readonly windowTitle!:Property<string>;
 
     static async asyncNew():Promise<Edition>
     {
         const edition = new Edition();
         await edition.addNewCharacter();
-
-        // TODO: I think generating the styled image is marking it dirty
 
         // set dirty flag when most things change and update window title when dirty or savename change
         edition.addPropertyChangedEventListener(async propName=>{
@@ -133,7 +123,7 @@ export class Edition extends ObservableObject<Edition> {
     }
 
     /** set to opened file */
-    async open(saveName:string, data:{ [key: string]: FieldType; }):Promise<boolean> {
+    async open(saveName:string, data:{ [key: string]: unknown; }):Promise<boolean> {
         if (!data) {await this.reset(); return false;}
         await spinner('edition.open', 'Deserializing edition', this.deserialize(data));
         await this.saveName.set(saveName);

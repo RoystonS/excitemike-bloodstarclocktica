@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {BaseBinding, FieldType, Property, PropertyChangeListener} from './base-binding'
+import {BaseBinding, Property, PropertyChangeListener} from './base-binding'
 import {CollectionBinding, RenderFn, CleanupFn} from './collection-binding'
 import {ImageChooserBinding, ImageDisplayBinding} from './image-binding';
 import SliderBinding from './slider-binding';
@@ -12,7 +12,7 @@ export type DisplayValuePair<ValueType> = {display:string,value:ValueType};
 export type DisplayValuePairs<ValueType> = ReadonlyArray<DisplayValuePair<ValueType>>;
 
 /** observable property for an enum/select element */
-export class EnumProperty<ValueType extends FieldType> extends Property<ValueType> {
+export class EnumProperty<ValueType> extends Property<ValueType> {
     private options:DisplayValuePairs<ValueType>;
 
     constructor(value:ValueType, displayValuePairs:DisplayValuePairs<ValueType>) {
@@ -76,7 +76,7 @@ class TextEnumBinding extends BaseBinding<any> {
 }
 
 /** bindings for a ComboBox and EnumProperty */
-class ComboBoxBinding<T extends FieldType> extends BaseBinding<T> {
+class ComboBoxBinding<T> extends BaseBinding<T> {
     constructor(element:HTMLSelectElement, property:EnumProperty<T>, stringToEnum:(s:string)=>T, enumToString:(t:T)=>string) {
         element.innerText = '';
         property.getOptions().forEach(data => {
@@ -109,12 +109,12 @@ export function bindCheckboxById(id:string, boolProperty:Property<boolean>):void
 }
 
 /** bind ComboBox to EnumProperty */
-export function bindComboBox<ValueType extends FieldType>(selectElement:HTMLSelectElement, enumProperty:EnumProperty<ValueType>, stringToEnum:(s:string)=>ValueType, enumToString:(t:ValueType)=>string):void {
+export function bindComboBox<ValueType>(selectElement:HTMLSelectElement, enumProperty:EnumProperty<ValueType>, stringToEnum:(s:string)=>ValueType, enumToString:(t:ValueType)=>string):void {
     bindings.set(selectElement, new ComboBoxBinding<ValueType>(selectElement, enumProperty, stringToEnum, enumToString));
 }
 
 /** bind ComboBox to EnumProperty */
-export function bindComboBoxById<ValueType extends FieldType>(id:string, enumProperty:EnumProperty<ValueType>, stringToEnum:(s:string)=>ValueType, enumToString:(t:ValueType)=>string):void {
+export function bindComboBoxById<ValueType>(id:string, enumProperty:EnumProperty<ValueType>, stringToEnum:(s:string)=>ValueType, enumToString:(t:ValueType)=>string):void {
     const element = document.getElementById(id);
     if (element instanceof HTMLSelectElement) {
         bindComboBox<ValueType>(element, enumProperty, stringToEnum, enumToString);
@@ -201,12 +201,12 @@ export function bindImageChooserById(id:string, property:Property<string|null>, 
 }
 
 /** one way binding. automatically add or remove a css class based on the property value and callback */
-export function bindStyle<ValueType extends FieldType>(element:HTMLElement, property:Property<ValueType>, cb:(value:ValueType, classList:DOMTokenList)=>void):void {
+export function bindStyle<ValueType>(element:HTMLElement, property:Property<ValueType>, cb:(value:ValueType, classList:DOMTokenList)=>void):void {
     bindings.set(element, new StyleBinding<ValueType>(element, property, cb));
 }
 
 /** one way binding. automatically add or remove a css class based on the property value and callback */
-export function bindStyleById<ValueType extends FieldType>(id:string, property:Property<ValueType>, cb:(value:ValueType, classList:DOMTokenList)=>void):void {
+export function bindStyleById<ValueType>(id:string, property:Property<ValueType>, cb:(value:ValueType, classList:DOMTokenList)=>void):void {
     const element = document.getElementById(id);
     if (element instanceof HTMLElement) {
         bindStyle(element, property, cb);
@@ -242,4 +242,4 @@ export function unbindElementById(id:string):void {
 }
 
 // re-export
-export {FieldType, Property, PropertyChangeListener};
+export {Property, PropertyChangeListener};

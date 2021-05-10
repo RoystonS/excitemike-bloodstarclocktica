@@ -4,67 +4,66 @@
  */
 import {CharacterAlmanac} from './character-almanac';
 import {EnumProperty, Property} from '../bind/bindings';
-import {observableChild, ObservableObject, observableProperty} from '../bind/observable-object';
+import {observableChild, observableEnumProperty, ObservableObject, observableProperty} from '../bind/observable-object';
 import {BLOODTEAM_OPTIONS, BloodTeam} from '../model/blood-team';
 import {CharacterImageSettings} from '../model/character-image-settings';
 import BloodImage, { getGradientForTeam, ProcessImageSettings, urlToBloodImage } from '../blood-image';
 import Images from '../images';
 
 export class Character extends ObservableObject<Character> {
-    @observableProperty()
-    readonly ability = new Property<string>('');
+    @observableProperty('')
+    readonly ability!: Property<string>;
 
-    @observableProperty()
-    readonly attribution = new Property<string>('');
+    @observableProperty('')
+    readonly attribution!: Property<string>;
     
-    @observableChild()
-    readonly almanac = new CharacterAlmanac();
+    @observableChild(CharacterAlmanac)
+    readonly almanac!: CharacterAlmanac;
     
-    @observableProperty()
-    readonly characterReminderTokens = new Property<string>('');
+    @observableProperty('')
+    readonly characterReminderTokens!: Property<string>;
     
-    @observableProperty()
-    readonly export = new Property<boolean>(true);
+    @observableProperty(true)
+    readonly export!: Property<boolean>;
 
-    @observableProperty('neither')
-    readonly firstNightOrdinal = new Property<string>('-');
+    @observableProperty('-', { read: false, write: false })
+    readonly firstNightOrdinal!: Property<string>;
     
-    @observableProperty()
-    readonly firstNightReminder = new Property<string>('');
+    @observableProperty('')
+    readonly firstNightReminder!:Property<string>;
     
-    @observableProperty()
-    readonly globalReminderTokens = new Property<string>('');
+    @observableProperty('')
+    readonly globalReminderTokens!:Property<string>;
     
-    @observableProperty()
-    readonly id = new Property<string>('newcharacter');
+    @observableProperty('newcharacter')
+    readonly id!: Property<string>;
     
-    @observableChild()
-    readonly imageSettings = new CharacterImageSettings();
+    @observableChild(CharacterImageSettings)
+    readonly imageSettings!: CharacterImageSettings;
 
-    @observableProperty()
-    readonly name = new Property<string>('New Character');
+    @observableProperty('New Character')
+    readonly name!: Property<string>;
 
-    @observableProperty('neither')
-    readonly otherNightOrdinal = new Property<string>('-');
+    @observableProperty('-',{read:false,write:false})
+    readonly otherNightOrdinal!:Property<string>;
     
-    @observableProperty()
-    readonly otherNightReminder = new Property<string>('');
+    @observableProperty('')
+    readonly otherNightReminder!:Property<string>;
     
-    @observableProperty()
-    readonly setup = new Property<boolean>(false);
+    @observableProperty(false)
+    readonly setup!:Property<boolean>;
     
-    @observableProperty('neither')
-    readonly styledImage = new Property<string|null>(null);
+    @observableProperty(null, { read: false, write: false, notify: false })
+    readonly styledImage!: Property<string | null>;
     
-    @observableProperty()
-    readonly team = new EnumProperty<BloodTeam>(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS);
+    @observableEnumProperty(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS)
+    readonly team!: EnumProperty<BloodTeam>;
     
-    @observableProperty()
-    readonly unStyledImage = new Property<string|null>(null);
+    @observableProperty(null)
+    readonly unStyledImage!: Property<string | null>;
 
     private constructor() {
         super();
-        this.init();
         const regenCb = ()=>this.regenerateStyledImage();
         this.imageSettings.addPropertyChangedEventListener(regenCb);
         this.unStyledImage.addListener(regenCb);

@@ -3,7 +3,6 @@
  * @module Cmd
  */
 
-import { FieldType } from "../bind/base-binding";
 import { spinner } from "../dlg/spinner-dlg";
 import {show as showMessage, showError} from "../dlg/blood-message-dlg";
 
@@ -11,14 +10,14 @@ import {show as showMessage, showError} from "../dlg/blood-message-dlg";
  * send a command to the server, await response
  * Brings up the loading spinner during the operation
  */
- export default async function cmd(username:string, password:string, cmdName:string, spinnerMessage:string, body?:BodyInit|null|undefined):Promise<FieldType> {
+ export default async function cmd(username:string, password:string, cmdName:string, spinnerMessage:string, body?:BodyInit|null|undefined):Promise<unknown> {
     return await spinner('command', spinnerMessage, _cmd(username, password, cmdName, body));
 }
 
 /**
  * send a command to the server, await response 
  */
-async function _cmd(username:string, password:string, cmdName:string, body?:BodyInit|null):Promise<FieldType> {
+async function _cmd(username:string, password:string, cmdName:string, body?:BodyInit|null):Promise<unknown> {
     let response:Response;
     const base64 = btoa(`${username}:${password}`);
     const controller = new AbortController();

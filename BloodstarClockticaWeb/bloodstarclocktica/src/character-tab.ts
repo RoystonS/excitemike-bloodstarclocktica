@@ -2,7 +2,7 @@
  * code for character tab
  * @module CharacterTab
  */
-import {bindCheckboxById, bindComboBoxById, bindImageChooserById, bindImageDisplayById, bindSliderById, bindTextById, EnumProperty, FieldType, Property, unbindElementById} from './bind/bindings';
+import {bindCheckboxById, bindComboBoxById, bindImageChooserById, bindImageDisplayById, bindSliderById, bindTextById, EnumProperty, Property, unbindElementById} from './bind/bindings';
 import {showError} from "./dlg/blood-message-dlg";
 import { ProcessImageSettings } from './blood-image';
 import { parseBloodTeam } from './model/blood-team';
@@ -79,7 +79,7 @@ function bindTrackedCheckBox(id:string, property:Property<boolean>, set:Set<stri
 }
 
 /** helper for bindCharacterTabControls */
-function bindTrackedComboBox<ValueType extends FieldType>(id:string, property:EnumProperty<ValueType>, set:Set<string>, stringToEnum:(s:string)=>ValueType, enumToString:(t:ValueType)=>string):void {
+function bindTrackedComboBox<ValueType>(id:string, property:EnumProperty<ValueType>, set:Set<string>, stringToEnum:(s:string)=>ValueType, enumToString:(t:ValueType)=>string):void {
     set.add(id);
     bindComboBoxById<ValueType>(id, property, stringToEnum, enumToString);
 }

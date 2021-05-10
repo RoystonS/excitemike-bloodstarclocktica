@@ -1,18 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FieldType, Property } from "./bindings";
+import { DisplayValuePairs, EnumProperty, Property } from "./bindings";
 import { ObservableCollection } from "./observable-collection";
-import { showError } from '../dlg/blood-message-dlg';
 
-export type Serializability = 'both'|'readonly'|'writeonly'|'neither';
-export type ObservableType = ObservableCollection<any>|ObservableObject<any>|Property<FieldType>;
-export type PropKey<T> = keyof T;
+export type PropKey<T> = keyof T & string;
+export type ObservableType = ObservableCollection<any>|ObservableObject<any>|Property<any>;
+export type CustomSerializeFn = (object:ObservableObject<any>, field:ObservableType)=>unknown;
+export type CustomDeserializeFn = (object:ObservableObject<any>, field:ObservableType, data:unknown)=>Promise<void>;
+export type PropertyCfg = {
+    /** if set to false, the field is ignored during deserialization */
+    read?:boolean,
+    /** if set to false, the field is ignored during serialization */
+    write?:boolean,
+    /** if set to false, changes to the field do not send property changed events */
+    notify?:boolean,
+    /** if set, this is used to convert the value before serializing */
+    customSerialize?:CustomSerializeFn,
+    /** if set, this is used to set the value when deserializing */
+    customDeserialize?:CustomDeserializeFn,
+};
 export type PropertyChangedListener<T> = (propName:PropKey<T>) => void;
-export type CustomSerializeFn = (object:ObservableObject<any>, field:ObservableType)=>FieldType;
-export type CustomDeserializeFn = (object:ObservableObject<any>, field:ObservableType, data:FieldType)=>Promise<void>;
-type CustomSerializeTable<T> = Map<keyof T, {s:CustomSerializeFn,d:CustomDeserializeFn}>;
-function makeCustomSerializeTable<T>():CustomSerializeTable<T> {
-    return new Map<keyof T, {s:CustomSerializeFn,d:CustomDeserializeFn}>();
-}
 
 function noSuchProperty<T>(object:any, key:PropKey<T>):never {
     const message = `no property '${String(key)}' on object (${object.constructor.name})`;
@@ -21,150 +27,183 @@ function noSuchProperty<T>(object:any, key:PropKey<T>):never {
     throw error;
 }
 
-/** decorator to customize serialization and deserialization for a field */
-export function customSerialize(
-    serializeFn:CustomSerializeFn,
-    deserializeFn:CustomDeserializeFn
-):PropertyDecorator {
-    return (target:any, propertyKey:string|symbol):void => {
-        if (!(target instanceof ObservableObject)){return;}
-        target._setCustomSerialize(propertyKey, serializeFn, deserializeFn);
-    };
+type PropertyEntry = {defaultValue:unknown}
+type EnumPropertyEntry = {
+    defaultValue:unknown,
+    displayValuePairs: DisplayValuePairs<unknown>,
+}
+type CollectionEntry = {
+    ctor:()=>Promise<unknown>,
+};
+type ChildEntry = {
+    ctor:new ()=>ObservableObject<unknown>,
+};
+
+class ObservableObjectEntry {
+    properties = new Map<string|symbol, PropertyEntry>();
+    enumProperties = new Map<string|symbol, EnumPropertyEntry>();
+    collections = new Map<string|symbol, CollectionEntry>();
+    children = new Map<string|symbol, ChildEntry>();
+    exceptions = new Map<string|symbol, PropertyCfg>();
 }
 
-/** decorator to make the ObservableObject manage the child observable */
-export function observableChild(serializable:Serializability = 'both'):PropertyDecorator {
-    return (target:any, propertyKey:string|symbol):void => {
-        if (!(target instanceof ObservableObject)){return;}
-        target._queueInitChild(propertyKey, serializable);
+const observableObjectData = new Map<any, ObservableObjectEntry>();
+
+/** decorator to make the ObservableObject manage a property */
+export function observableProperty(defaultValue:unknown, cfg?:PropertyCfg):PropertyDecorator {
+    return (prototype:any, propertyKey:string|symbol):void => {
+        let objectEntry = observableObjectData.get(prototype);
+        if (!objectEntry) {
+            objectEntry = new ObservableObjectEntry();
+            observableObjectData.set(prototype, objectEntry);
+        }
+        objectEntry.properties.set(propertyKey, {defaultValue});
+        if (cfg) { objectEntry.exceptions.set(propertyKey, cfg); }
     };
 }
-
-/** decorator to make the ObservableObject manage the collection */
-export function observableCollection(serializable:Serializability = 'both'):PropertyDecorator {
-    return (target:any, propertyKey:string|symbol):void => {
-        if (!(target instanceof ObservableObject)){return;}
-        target._queueInitCollection(propertyKey, serializable);
+/** decorator to make the ObservableObject manage a property */
+export function observableEnumProperty<T>(defaultValue:T, displayValuePairs: DisplayValuePairs<unknown>, cfg?:PropertyCfg):PropertyDecorator {
+    return (prototype:any, propertyKey:string|symbol):void => {
+        let objectEntry = observableObjectData.get(prototype);
+        if (!objectEntry) {
+            objectEntry = new ObservableObjectEntry();
+            observableObjectData.set(prototype, objectEntry);
+        }
+        objectEntry.enumProperties.set(propertyKey, {defaultValue,displayValuePairs});
+        if (cfg) { objectEntry.exceptions.set(propertyKey, cfg); }
     };
 }
-
-/** decorator to make the ObservableObject manage the property */
-export function observableProperty(serializable:Serializability = 'both'):PropertyDecorator {
-    return (target:any, propertyKey:string|symbol):void => {
-        if (!(target instanceof ObservableObject)){return;}
-        target._queueInitProperty(propertyKey, serializable);
+/** decorator to make the ObservableObject manage a property */
+export function observableCollection(ctor:()=>Promise<unknown>, cfg?:PropertyCfg):PropertyDecorator {
+    return (prototype:any, propertyKey:string|symbol):void => {
+        let objectEntry = observableObjectData.get(prototype);
+        if (!objectEntry) {
+            objectEntry = new ObservableObjectEntry();
+            observableObjectData.set(prototype, objectEntry);
+        }
+        objectEntry.collections.set(propertyKey, {ctor});
+        if (cfg) { objectEntry.exceptions.set(propertyKey, cfg); }
+    };
+}
+/** decorator to make the ObservableObject manage a property */
+export function observableChild(ctor:new ()=>ObservableObject<any>,cfg?:PropertyCfg):PropertyDecorator {
+    return (prototype:any, propertyKey:string|symbol):void => {
+        let objectEntry = observableObjectData.get(prototype);
+        if (!objectEntry) {
+            objectEntry = new ObservableObjectEntry();
+            observableObjectData.set(prototype, objectEntry);
+        }
+        objectEntry.children.set(propertyKey, {ctor});
+        if (cfg) { objectEntry.exceptions.set(propertyKey,cfg); }
     };
 }
 
 /** extend this to advertise your properties and changes to them */
 export abstract class ObservableObject<T> {
-    private ___queuedChildInit?:PropKey<T>[];
-    private ___queuedCollectionInit?:PropKey<T>[];
-    private ___queuedPropInit?:PropKey<T>[];
-    private collections = new Map<keyof T, ObservableCollection<any>>();
-    private customSerializeTable?:Map<keyof T, {s:CustomSerializeFn,d:CustomDeserializeFn}>;
-    private observableChildren = new Map<keyof T, ObservableObject<any>>();
-    private properties = new Map<keyof T, Property<FieldType>>();
+    private collections = new Map<PropKey<T>, ObservableCollection<any>>();
+    private children = new Map<PropKey<T>, ObservableObject<any>>();
+    private properties = new Map<PropKey<T>, Property<unknown>>();
+    private enumProperties = new Map<PropKey<T>, Property<unknown>>();
     private propertyChangedListeners:PropertyChangedListener<T>[] = [];
-    private undeserializableFields?:Set<PropKey<T>>;
-    private unserializableFields?:Set<PropKey<T>>;
 
-    /** trigger a reminder if a developer forgets to make the subclass call init */
+    /** set up listening */
     constructor() {
-        setTimeout(()=>{this.initCheck()}, 1);
-    }
-
-    /** update sets for fields to not read/write */
-    _trackSerializability(key:PropKey<T>, serializability:Serializability):void {
-        switch (serializability) {
-            case 'neither':
-            case 'readonly':
-                if (!this.unserializableFields) {this.unserializableFields=new Set<PropKey<T>>();}
-                this.unserializableFields.add(key);
-                break;
+        const prototype = Object.getPrototypeOf(this);
+        if (!prototype) {return;}
+        const objectEntry = observableObjectData.get(prototype);
+        if (!objectEntry) {return;}
+        // properties
+        for (const [_key,{defaultValue}] of objectEntry.properties) {
+            const key = _key as PropKey<T>;
+            const property = new Property<unknown>(defaultValue);
+            (this as any)[key] = property;
+            this.properties.set(key, property);
+            // TODO: what if listeners do async work? how do we wait for it?
+            property.addListener(()=>this.notifyPropertyChangedEventListeners(key));
         }
-        switch (serializability) {
-            case 'neither':
-            case 'writeonly':
-                if (!this.undeserializableFields) {this.undeserializableFields=new Set<PropKey<T>>();}
-                this.undeserializableFields.add(key);
-                break;
+        // enum properties
+        for (const [_key,{defaultValue,displayValuePairs}] of objectEntry.enumProperties) {
+            const key = _key as PropKey<T>;
+            const enumProperty = new EnumProperty<unknown>(defaultValue, displayValuePairs);
+            (this as any)[key] = enumProperty;
+            this.enumProperties.set(key, enumProperty);
+            // TODO: what if listeners do async work? how do we wait for it?
+            enumProperty.addListener(()=>this.notifyPropertyChangedEventListeners(key));
         }
-    }
-
-    /** called by decorator to schedule work in constructor */
-    _queueInitChild(key:PropKey<T>, serializability:Serializability):void {
-        if (!this.___queuedChildInit) {this.___queuedChildInit=[];}
-        this._trackSerializability(key, serializability);
-        this.___queuedChildInit.push(key);
-    }
-
-    /** called by decorator */
-    _queueInitCollection(key:PropKey<T>, serializability:Serializability): void {
-        if (!this.___queuedCollectionInit) {this.___queuedCollectionInit=[];}
-        this._trackSerializability(key, serializability);
-        this.___queuedCollectionInit.push(key);
-    }
-
-    /** called by decorator */
-    _queueInitProperty(key:PropKey<T>, serializability:Serializability):void {
-        if (!this.___queuedPropInit) {this.___queuedPropInit=[];}
-        this._trackSerializability(key, serializability);
-        this.___queuedPropInit.push(key);
-    }
-
-    /** called by decorator */
-    _setCustomSerialize(
-        key:PropKey<T>,
-        serializeFn:CustomSerializeFn,
-        deserializeFn:CustomDeserializeFn
-    ): void {
-        if (!this.customSerializeTable) {this.customSerializeTable=makeCustomSerializeTable();}
-        this.customSerializeTable.set(key, {s:serializeFn,d:deserializeFn});
-    }
-
-    /** base class must call this (recommmended in constructor) in order for property changed event to work */
-    protected init():void {
-        if (this.___queuedPropInit) {
-            for (const key of this.___queuedPropInit) {
-                const property = (this as any)[key];
-                if (!(property instanceof Property)) { throw new Error(`It looks like the "observableProperty" decorator was used on non-Property field "${String(key)}" of class "${this.constructor.name}"!`); }
-                this.properties.set(key, property);
-                // TODO: what if listeners do async work? how do we wait for it?
-                property.addListener(()=>this.notifyPropertyChangedEventListeners(key));
-            }
-            this.___queuedPropInit = undefined;
+        // collections
+        for (const [_key,{ctor}] of objectEntry.collections) {
+            const key = _key as PropKey<T>;
+            const collection = new ObservableCollection<any>(ctor);
+            (this as any)[key] = collection;
+            this.collections.set(key, collection);
+            // TODO: what if listeners do async work? how do we wait for it?
+            collection.addCollectionChangedListener(()=>this.notifyPropertyChangedEventListeners(key));
+            collection.addItemChangedListener(()=>this.notifyPropertyChangedEventListeners(key));
         }
-        if (this.___queuedCollectionInit) {
-            for (const key of this.___queuedCollectionInit) {
-                const collection = (this as any)[key];
-                if (!(collection instanceof ObservableCollection)) { throw new Error(`It looks like the "observableCollection" decorator was used on non-ObservableCollection field "${String(key)}" of class "${this.constructor.name}"!`); }
-                this.collections.set(key, collection);
-                // TODO: what if listeners do async work? how do we wait for it?
-                collection.addCollectionChangedListener(()=>this.notifyPropertyChangedEventListeners(key));
-                collection.addItemChangedListener(()=>this.notifyPropertyChangedEventListeners(key));
-            }
-            this.___queuedCollectionInit = undefined;
-        }
-        if (this.___queuedChildInit) {
-            for (const key of this.___queuedChildInit) {
-                const child = (this as any)[key];
-                if (!(child instanceof ObservableObject)) { throw new Error(`It looks like the "observableChild" decorator was used on non-ObservableObject field "${String(key)}" of class "${this.constructor.name}"!`); }
-                this.observableChildren.set(key, child);
-                // TODO: what if listeners do async work? how do we wait for it?
-                child.addPropertyChangedEventListener(()=>this.notifyPropertyChangedEventListeners(key));
-            }
-            this.___queuedChildInit = undefined;
+        // children
+        for (const [_key,{ctor}] of objectEntry.children) {
+            const key = _key as PropKey<T>;
+            const child = new ctor();
+            (this as any)[key] = child;
+            this.children.set(key, child as ObservableObject<any>);
+            // TODO: what if listeners do async work? how do we wait for it?
+            child.addPropertyChangedEventListener(()=>this.notifyPropertyChangedEventListeners(key));
         }
     }
 
-    /** if it doesn't look like init was called, throw an error */
-    initCheck():void|never {
-        if (this.___queuedChildInit || this.___queuedCollectionInit || this.___queuedPropInit) {
-            const error = new Error(`It appears a developer forgot to call init() after super() when ${this.constructor.name} extended ObservableObject!`);
-            showError('Programmer Error', 'Forgot to init', error);
-            throw error;
-        }
+    /** check for speical behavior for a field */
+    private _canNotifyField(key:PropKey<T>):boolean{
+        const prototype = Object.getPrototypeOf(this);
+        if (!prototype) {return true;}
+        const objectEntry = observableObjectData.get(prototype);
+        if (!objectEntry) {return true;}
+        const cfg = objectEntry.exceptions.get(key as string|symbol);
+        if (!cfg) {return true;}
+        return cfg.notify!==false;
+    }
+
+    /** check for speical behavior for a field */
+    private _canReadField(key:PropKey<T>):boolean{
+        const prototype = Object.getPrototypeOf(this);
+        if (!prototype) {return true;}
+        const objectEntry = observableObjectData.get(prototype);
+        if (!objectEntry) {return true;}
+        const cfg = objectEntry.exceptions.get(key as string|symbol);
+        if (!cfg) {return true;}
+        return cfg.read!==false;
+    }
+
+    /** check for speical behavior for a field */
+    private _canWriteField(key:PropKey<T>):boolean{
+        const prototype = Object.getPrototypeOf(this);
+        if (!prototype) {return true;}
+        const objectEntry = observableObjectData.get(prototype);
+        if (!objectEntry) {return true;}
+        const cfg = objectEntry.exceptions.get(key as string|symbol);
+        if (!cfg) {return true;}
+        return cfg.write!==false;
+    }
+
+    /** check for speical behavior for a field */
+    private _getCustomDeserialize(key:PropKey<T>):CustomDeserializeFn|undefined {
+        const prototype = Object.getPrototypeOf(this);
+        if (!prototype) {return undefined;}
+        const objectEntry = observableObjectData.get(prototype);
+        if (!objectEntry) {return undefined;}
+        const cfg = objectEntry.exceptions.get(key as string|symbol);
+        if (!cfg) {return undefined;}
+        return cfg.customDeserialize;
+    }
+
+    /** check for speical behavior for a field */
+    private _getCustomSerialize(key:PropKey<T>):CustomSerializeFn|undefined {
+        const prototype = Object.getPrototypeOf(this);
+        if (!prototype) {return undefined;}
+        const objectEntry = observableObjectData.get(prototype);
+        if (!objectEntry) {return undefined;}
+        const cfg = objectEntry.exceptions.get(key as string|symbol);
+        if (!cfg) {return undefined;}
+        return cfg.customSerialize;
     }
 
     /** register for updates when a property changes */
@@ -173,49 +212,47 @@ export abstract class ObservableObject<T> {
     }
 
     /** inverse operation from serialize */
-    async deserialize(data:{[key:string]:FieldType}):Promise<void> {
-        for (const [key, child] of this.observableChildren) {
-            if (this.undeserializableFields && this.undeserializableFields.has(key)) { continue; }
-            if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
-            const childData = data[String(key)];
+    async deserialize(data:{[key:string]:unknown}):Promise<void> {
+        for (const [key, child] of this.children) {
+            if (!this._canReadField(key)) { continue; }
+            const childData = data[String(key)] as {[key:string]:unknown};
             if ((childData !== null) &&
                 (typeof childData !== 'string') &&
                 (typeof childData !== 'number') &&
                 (typeof childData !== 'boolean') &&
                 !Array.isArray(childData) )
             {
-                await child.deserialize(childData);
+                const fn = this._getCustomDeserialize(key);
+                await (fn ? fn(this, child, childData) : child.deserialize(childData));
             }
         }
         for (const [key, collection] of this.collections) {
-            if (this.undeserializableFields && this.undeserializableFields.has(key)) { continue; }
-            if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
+            if (!this._canReadField(key)) { continue; }
             const collectionData = data[String(key)];
             if (Array.isArray(collectionData)) {
-                await collection.deserialize(collectionData);
+                const fn = this._getCustomDeserialize(key);
+                await (fn ? fn(this, collection, collectionData) : collection.deserialize(collectionData));
             }
         }
         for (const [key, property] of this.properties) {
-            if (this.undeserializableFields && this.undeserializableFields.has(key)) { continue; }
-            if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
+            if (!this._canReadField(key)) { continue; }
             const stringKey = String(key);
             const propertyData = Object.prototype.hasOwnProperty.call(data, stringKey) ? data[stringKey] : property.getDefault();
-            await property.set(propertyData);
+            const fn = this._getCustomDeserialize(key);
+            await (fn ? fn(this, property, propertyData) : property.set(propertyData));
         }
-
-        if (this.customSerializeTable) {
-            for (const [key,{d}] of this.customSerializeTable) {
-                if (this.undeserializableFields && this.undeserializableFields.has(key)) { continue; }
-                const observableField = this.properties.get(key)||this.collections.get(key)||this.observableChildren.get(key);
-                if (!observableField) {continue;}
-                await d(this, observableField, data[String(key)]);
-            }
+        for (const [key, property] of this.enumProperties) {
+            if (!this._canReadField(key)) { continue; }
+            const stringKey = String(key);
+            const propertyData = Object.prototype.hasOwnProperty.call(data, stringKey) ? data[stringKey] : property.getDefault();
+            const fn = this._getCustomDeserialize(key);
+            await (fn ? fn(this, property, propertyData) : property.set(propertyData));
         }
     }
 
     /** call callback for each child observable */
     forEachChild(cb:(key:PropKey<T>, child:ObservableObject<any>)=>any):void {
-        for (const entry of this.observableChildren) {
+        for (const entry of this.children) {
             cb(...entry);
         }
     }
@@ -228,15 +265,18 @@ export abstract class ObservableObject<T> {
     }
 
     /** call callback for each property */
-    forEachProperty(cb:(key:PropKey<T>, property:Property<FieldType>)=>any):void {
+    forEachProperty(cb:(key:PropKey<T>, property:Property<unknown>)=>any):void {
         for (const entry of this.properties) {
+            cb(...entry);
+        }
+        for (const entry of this.enumProperties) {
             cb(...entry);
         }
     }
 
     /** retrieve a child observable by name */
     getChild(key:PropKey<T>):ObservableObject<any> {
-        return this.observableChildren.get(key) || noSuchProperty(this, key);
+        return this.children.get(key) || noSuchProperty(this, key);
     }
 
     /** retrieve a collection property by name */
@@ -245,20 +285,21 @@ export abstract class ObservableObject<T> {
     }
 
     /** retrieve a property by name */
-    getProperty(key:PropKey<T>):Property<FieldType> {
-        return this.properties.get(key) || noSuchProperty(this, key);
+    getProperty(key:PropKey<T>):Property<unknown> {
+        return this.properties.get(key) || this.enumProperties.get(key) || noSuchProperty(this, key);
     }
 
     /** retrieve a property value by name */
-    getPropertyValue(propName:PropKey<T>):FieldType {
+    getPropertyValue(propName:PropKey<T>):unknown {
         return this.getProperty(propName)?.get();
     }
 
     /** send out notification of a property changing */
-    private notifyPropertyChangedEventListeners(propName:PropKey<T>):void {
+    private notifyPropertyChangedEventListeners(key:PropKey<T>):void {
+        if (!this._canNotifyField(key)) { return; }
         const backup = this.propertyChangedListeners.concat();
         // TODO: what if listeners do async work? how do we wait for it?
-        backup.forEach(cb=>cb(propName));
+        backup.forEach(cb=>cb(key));
     }
 
     /** unregister for updates when a property changes */
@@ -269,7 +310,7 @@ export abstract class ObservableObject<T> {
     /** reset all properties to default values */
     async reset():Promise<void> {
         const promises = [];
-        for (const child of this.observableChildren.values()) {
+        for (const child of this.children.values()) {
             promises.push(child.reset());
         }
         for (const collection of this.collections.values()) {
@@ -278,36 +319,38 @@ export abstract class ObservableObject<T> {
         for (const property of this.properties.values()) {
             promises.push(property.reset());
         }
+        for (const property of this.enumProperties.values()) {
+            promises.push(property.reset());
+        }
         await Promise.all(promises);
     }
 
     /** convert to an object ready for JSON conversion and that could be read back with deserialize */
-    serialize():{[key:string]:FieldType} {
-        const converted:{[key:string]:FieldType} = {};
+    serialize():{[key:string]:unknown} {
+        const converted:{[key:string]:unknown} = {};
 
-        for (const [key, child] of this.observableChildren) {
-            if (this.unserializableFields && this.unserializableFields.has(key)) { continue; }
-            if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
-            converted[String(key)] = child.serialize();
+        for (const [key, child] of this.children) {
+            if (!this._canWriteField(key)) { continue; }
+            const fn = this._getCustomSerialize(key);
+            converted[String(key)] = fn ? fn(this, child) : child.serialize();
         }
         for (const [key, collection] of this.collections) {
-            if (this.unserializableFields && this.unserializableFields.has(key)) { continue; }
-            if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
-            converted[String(key)] = collection.serialize();
+            if (!this._canWriteField(key)) { continue; }
+            const fn = this._getCustomSerialize(key);
+            converted[String(key)] = fn ? fn(this, collection) : collection.serialize();
         }
         for (const [key, property] of this.properties) {
-            if (this.unserializableFields && this.unserializableFields.has(key)) { continue; }
-            if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
+            if (!this._canWriteField(key)) { continue; }
             if (!property.isDefault()) {
-                converted[String(key)] = property.get();
+                const fn = this._getCustomSerialize(key);
+                converted[String(key)] = fn ? fn(this, property) : property.get();
             }
         }
-
-        if (this.customSerializeTable) {
-            for (const [key,{s}] of this.customSerializeTable) {
-                const observableField = this.properties.get(key)||this.collections.get(key)||this.observableChildren.get(key);
-                if (!observableField) {continue;}
-                converted[String(key)] = s(this, observableField);
+        for (const [key, property] of this.enumProperties) {
+            if (!this._canWriteField(key)) { continue; }
+            if (!property.isDefault()) {
+                const fn = this._getCustomSerialize(key);
+                converted[String(key)] = fn ? fn(this, property) : property.get();
             }
         }
 
@@ -315,7 +358,7 @@ export abstract class ObservableObject<T> {
     }
 
     /** set a property value by name */
-    async setPropertyValue(propName:PropKey<T>, value:FieldType):Promise<void> {
+    async setPropertyValue(propName:PropKey<T>, value:unknown):Promise<void> {
         await this.getProperty(propName)?.set(value);
     }
 }

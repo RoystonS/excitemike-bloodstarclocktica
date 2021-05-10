@@ -1,4 +1,3 @@
-import { FieldType } from './bindings';
 import {ObservableObject, PropKey, PropertyChangedListener} from './observable-object';
 
 export type ObservableCollectionListener<T extends ObservableObject<T>> = (value:ObservableCollectionChangedEvent<T>)=>void;
@@ -129,7 +128,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** inverse of serialize */
-    async deserialize(serialized:ReadonlyArray<FieldType>):Promise<void> {
+    async deserialize(serialized:ReadonlyArray<{[key:string]:unknown}>):Promise<void> {
         await this.clear();
         const toAdd:ItemType[] = [];
         for (const itemData of serialized) {
@@ -309,7 +308,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** convert to something that could be converted to JSON and/or read back with deserialize */
-    serialize():FieldType[] {
+    serialize():unknown[] {
         return this.items.map(i=>i.item.serialize());
     }
 

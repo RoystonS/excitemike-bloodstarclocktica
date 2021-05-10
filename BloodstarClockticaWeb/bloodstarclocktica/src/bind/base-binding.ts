@@ -4,12 +4,11 @@
  * @module BaseBinding
  */
 
-export type FieldType = null|boolean|number|string|FieldType[]|{[key:string]:FieldType};
 export type PropertyChangeListener<T> = (value:T)=>void;
 
 /** generic observable property */
-export class Property<T/* extends FieldType*/> {
-    private defaultValue:T;
+export class Property<T> {
+    private defaultValue:T;//TODO: I think this should now be tracked elsewhere
     private value:T;
     private listeners:PropertyChangeListener<T>[];
 
@@ -50,7 +49,7 @@ export type SyncFromElementToPropertyFn = ((_:Event)=>void)|null;
 export type SyncFromPropertyToElementFn<ValueType> = ((v:ValueType)=>void) | null;
 
 /** shared code between binding classes */
-export class BaseBinding<ValueType extends FieldType> {
+export class BaseBinding<ValueType> {
     private htmlElement:HTMLElement|null;
     private property:Property<ValueType>|null;
     private eventName:string;

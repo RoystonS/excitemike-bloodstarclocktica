@@ -8,55 +8,50 @@ import {ObservableObject, observableProperty} from '../bind/observable-object';
 export class CharacterImageSettings extends ObservableObject<CharacterImageSettings> {
 
     /** whether to restyle the image at all. default: true */
-    @observableProperty()
-    readonly shouldRestyle = new Property(true);
+    @observableProperty(true)
+    readonly shouldRestyle!: Property<boolean>;
 
     /** whether to crop the image to just the visible portions before processing further */
-    @observableProperty()
-    readonly shouldReposition = new Property(true);
+    @observableProperty(true)
+    readonly shouldReposition!: Property<boolean>; // TODO: make this a slider. min is like current off, max is like current on
 
     /** whether to colorize the image. default: true */
-    @observableProperty()
-    readonly shouldColorize = new Property(true);
+    @observableProperty(true)
+    readonly shouldColorize!: Property<boolean>;
 
     /** whether to use teal for outsiders instead of blue, orange for minions instead of red. default: true */
-    @observableProperty()
-    readonly useOutsiderAndMinionColors = new Property(true);
+    @observableProperty(true)
+    readonly useOutsiderAndMinionColors!: Property<boolean>;
 
     /** whether to apply the grunge texture to the character icon. default: true */
-    @observableProperty()
-    readonly useTexture = new Property(true);
+    @observableProperty(true)
+    readonly useTexture!: Property<boolean>;
 
     /** whether to add a border to the character icon. default: true */
-    @observableProperty()
-    readonly useBorder = new Property(true);
+    @observableProperty(true)
+    readonly useBorder!: Property<boolean>;
 
     /** scales the spreading of the border from where edges were detected. default: 3 */
-    @observableProperty()
-    readonly borderIntensity = new Property(3);
+    @observableProperty(3)
+    readonly borderIntensity!: Property<number>;
 
     /** whether to apply a dropshadow to the character icon. default: true */
-    @observableProperty()
-    readonly useDropshadow = new Property(true);
+    @observableProperty(true)
+    readonly useDropshadow!: Property<boolean>;
 
     /** amount of blur applied to the dropshadow. default: 16 */
-    @observableProperty()
-    readonly dropShadowSize = new Property(16);
+    @observableProperty(16)
+    readonly dropShadowSize!: Property<number>;
 
     /** horizontal offset of drop shadow. default: 0 */
-    @observableProperty()
-    readonly dropShadowOffsetX = new Property(0);
+    @observableProperty(0)
+    readonly dropShadowOffsetX!: Property<number>;
 
     /** vertical offset of drop shadow. default: 10 */
-    @observableProperty()
-    readonly dropShadowOffsetY = new Property(10);
+    @observableProperty(10)
+    readonly dropShadowOffsetY!: Property<number>;
 
     /** opacity of drop shadow. default: 0.5 */
-    @observableProperty()
-    readonly dropShadowOpacity = new Property<number>(0.5);
-
-    constructor() {
-        super();
-        this.init();
-    }
+    @observableProperty(0.5)
+    readonly dropShadowOpacity!: Property<number>;
 }
