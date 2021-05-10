@@ -87,6 +87,7 @@ export async function save(username:string, password:string, edition:Edition):Pr
  * @returns promise resolving to whether the save was successful
  */
 async function _save(username:string, password:string, edition:Edition):Promise<boolean> {
+    // TODO: images in separate requests/files
     type SaveData = {
         saveName:string,
         check:number,
@@ -148,6 +149,7 @@ async function openNoSavePrompt(username:string, password:string, edition:Editio
  * @returns promise that resolves to whether a file was successfully opened
  */
 async function openNoPrompts(username:string, password:string, edition:Edition, name:string):Promise<boolean> {
+    // TODO: images in separate requests/files
     const openData = {
         saveName: name,
         check: hashFunc(name)

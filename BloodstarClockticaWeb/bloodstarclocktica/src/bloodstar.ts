@@ -29,8 +29,6 @@ let username = '';
 let password = '';
 const selectedCharacter = new BloodBind.Property<Character|null>(null);
 
-// TODO: exceptions in promises need to surface somewhere (test without internet connection!)
-
 /** add a new character to the custom edition */
 async function addCharacterClicked():Promise<void> {
     if (!edition) {return;}

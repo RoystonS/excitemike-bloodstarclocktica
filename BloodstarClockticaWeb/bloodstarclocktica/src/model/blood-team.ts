@@ -13,6 +13,7 @@ export enum BloodTeam {
     MINION_DISPLAY = 'Minion',
     DEMON_DISPLAY = 'Demon',
     TRAVELER_DISPLAY = 'Traveler'
+    // TODO: add fabled
 }
 
 /** convert a string to a BloodTeam enum */

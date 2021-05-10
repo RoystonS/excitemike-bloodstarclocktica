@@ -83,6 +83,8 @@ export class Edition extends ObservableObject<Edition> {
         const edition = new Edition();
         await edition.addNewCharacter();
 
+        // TODO: I think generating the styled image is marking it dirty
+
         // set dirty flag when most things change and update window title when dirty or savename change
         edition.addPropertyChangedEventListener(async propName=>{
             switch (propName) {
