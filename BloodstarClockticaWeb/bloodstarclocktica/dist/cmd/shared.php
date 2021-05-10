@@ -39,7 +39,7 @@
 
     // error if field is not set in array, otherwise, return that field
     function requireField($arr, $fieldName) {
-        if (isset($arr[$fieldName]))
+        if (array_key_exists($fieldName, $arr))
         {
             return $arr[$fieldName];
         }
@@ -48,11 +48,6 @@
             echo json_encode(array("error" => "field \"$fieldName\" is missing"));
             exit();
         }
-    }
-
-    // crude filename sanitize
-    function sanitizeFilename($filename) {
-        return ;
     }
 
     // encode as json and write to save directory
