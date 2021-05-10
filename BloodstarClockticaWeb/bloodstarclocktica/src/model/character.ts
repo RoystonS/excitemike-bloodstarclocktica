@@ -26,7 +26,7 @@ export class Character extends ObservableObject<Character> {
     @observableProperty()
     readonly export = new Property<boolean>(true);
 
-    @observableProperty()
+    @observableProperty('neither')
     readonly firstNightOrdinal = new Property<string>('-');
     
     @observableProperty()
@@ -44,7 +44,7 @@ export class Character extends ObservableObject<Character> {
     @observableProperty()
     readonly name = new Property<string>('New Character');
 
-    @observableProperty()
+    @observableProperty('neither')
     readonly otherNightOrdinal = new Property<string>('-');
     
     @observableProperty()
@@ -53,7 +53,7 @@ export class Character extends ObservableObject<Character> {
     @observableProperty()
     readonly setup = new Property<boolean>(false);
     
-    @observableProperty(false)
+    @observableProperty('writeonly')
     readonly styledImage = new Property<string|null>(null);
     
     @observableProperty()

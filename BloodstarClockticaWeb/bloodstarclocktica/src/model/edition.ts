@@ -43,7 +43,7 @@ export class Edition extends ObservableObject<Edition> {
     readonly characterList = new ObservableCollection(Character.asyncNew);
 
     /** true when there are unsaved changes */
-    @observableProperty()
+    @observableProperty('neither')
     readonly dirty = new Property<boolean>(false);
 
     /** contains the same Character objects as characterList, but ordered for night order */
@@ -61,15 +61,15 @@ export class Edition extends ObservableObject<Edition> {
     readonly otherNightOrder = new ObservableCollection(Character.asyncNew);
     
     /** whether to render preview on a character token background like you would see on clocktower.online */
-    @observableProperty()
+    @observableProperty('neither')
     readonly previewOnToken = new Property<boolean>(true);
 
     /** name to use when saving */
-    @observableProperty()
+    @observableProperty('neither')
     readonly saveName = new Property<string>('');
 
     /** what to show as the current file and its status */
-    @observableProperty()
+    @observableProperty('neither')
     readonly windowTitle = new Property<string>('Bloodstar Clocktica');
 
     /** create new edition */

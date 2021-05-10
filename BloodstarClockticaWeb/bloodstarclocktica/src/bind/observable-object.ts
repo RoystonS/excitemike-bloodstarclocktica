@@ -3,6 +3,7 @@ import { FieldType, Property } from "./bindings";
 import { ObservableCollection } from "./observable-collection";
 import { showError } from '../dlg/blood-message-dlg';
 
+export type Serializability = 'both'|'readonly'|'writeonly'|'neither';
 export type ObservableType = ObservableCollection<any>|ObservableObject<any>|Property<FieldType>;
 export type PropKey<T> = keyof T;
 export type PropertyChangedListener<T> = (propName:PropKey<T>) => void;
@@ -32,25 +33,27 @@ export function customSerialize(
 }
 
 /** decorator to make the ObservableObject manage the child observable */
-export function observableChild(serializable = true):PropertyDecorator {
+export function observableChild(serializable:Serializability = 'both'):PropertyDecorator {
     return (target:any, propertyKey:string|symbol):void => {
+        if (!(target instanceof ObservableObject)){return;}
         target._queueInitChild(propertyKey, serializable);
-};
+    };
 }
 
 /** decorator to make the ObservableObject manage the collection */
-export function observableCollection(serializable = true):PropertyDecorator {
+export function observableCollection(serializable:Serializability = 'both'):PropertyDecorator {
     return (target:any, propertyKey:string|symbol):void => {
+        if (!(target instanceof ObservableObject)){return;}
         target._queueInitCollection(propertyKey, serializable);
-};
+    };
 }
 
 /** decorator to make the ObservableObject manage the property */
-export function observableProperty(serializable = true):PropertyDecorator {
+export function observableProperty(serializable:Serializability = 'both'):PropertyDecorator {
     return (target:any, propertyKey:string|symbol):void => {
-    if (!(target instanceof ObservableObject)){return;}
+        if (!(target instanceof ObservableObject)){return;}
         target._queueInitProperty(propertyKey, serializable);
-};
+    };
 }
 
 /** extend this to advertise your properties and changes to them */
@@ -63,6 +66,7 @@ export abstract class ObservableObject<T> {
     private observableChildren = new Map<keyof T, ObservableObject<any>>();
     private properties = new Map<keyof T, Property<FieldType>>();
     private propertyChangedListeners:PropertyChangedListener<T>[] = [];
+    private undeserializableFields?:Set<PropKey<T>>;
     private unserializableFields?:Set<PropKey<T>>;
 
     /** trigger a reminder if a developer forgets to make the subclass call init */
@@ -70,33 +74,42 @@ export abstract class ObservableObject<T> {
         setTimeout(()=>{this.initCheck()}, 1);
     }
 
-    /** called by decorator to schedule work in constructor */
-    _queueInitChild(key:PropKey<T>, serializable:boolean):void {
-        if (!this.___queuedChildInit) {this.___queuedChildInit=[];}
-        if (!serializable) {
-            if (!this.unserializableFields) {this.unserializableFields=new Set<PropKey<T>>();}
-            this.unserializableFields.add(key);
+    /** update sets for fields to not read/write */
+    _trackSerializability(key:PropKey<T>, serializability:Serializability):void {
+        switch (serializability) {
+            case 'neither':
+            case 'readonly':
+                if (!this.unserializableFields) {this.unserializableFields=new Set<PropKey<T>>();}
+                this.unserializableFields.add(key);
+                break;
         }
+        switch (serializability) {
+            case 'neither':
+            case 'writeonly':
+                if (!this.undeserializableFields) {this.undeserializableFields=new Set<PropKey<T>>();}
+                this.undeserializableFields.add(key);
+                break;
+        }
+    }
+
+    /** called by decorator to schedule work in constructor */
+    _queueInitChild(key:PropKey<T>, serializability:Serializability):void {
+        if (!this.___queuedChildInit) {this.___queuedChildInit=[];}
+        this._trackSerializability(key, serializability);
         this.___queuedChildInit.push(key);
     }
 
     /** called by decorator */
-    _queueInitCollection(key:PropKey<T>, serializable:boolean): void {
+    _queueInitCollection(key:PropKey<T>, serializability:Serializability): void {
         if (!this.___queuedCollectionInit) {this.___queuedCollectionInit=[];}
-        if (!serializable) {
-            if (!this.unserializableFields) {this.unserializableFields=new Set<PropKey<T>>();}
-            this.unserializableFields.add(key);
-        }
+        this._trackSerializability(key, serializability);
         this.___queuedCollectionInit.push(key);
     }
 
     /** called by decorator */
-    _queueInitProperty(key:PropKey<T>, serializable:boolean):void {
+    _queueInitProperty(key:PropKey<T>, serializability:Serializability):void {
         if (!this.___queuedPropInit) {this.___queuedPropInit=[];}
-        if (!serializable) {
-            if (!this.unserializableFields) {this.unserializableFields=new Set<PropKey<T>>();}
-            this.unserializableFields.add(key);
-        }
+        this._trackSerializability(key, serializability);
         this.___queuedPropInit.push(key);
     }
 
@@ -162,8 +175,7 @@ export abstract class ObservableObject<T> {
     /** inverse operation from serialize */
     async deserialize(data:{[key:string]:FieldType}):Promise<void> {
         for (const [key, child] of this.observableChildren) {
-            if (this.unserializableFields && this.unserializableFields.has(key)) { continue; }
-            if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
+            if (this.undeserializableFields && this.undeserializableFields.has(key)) { continue; }
             const childData = data[String(key)];
             if ((childData !== null) &&
                 (typeof childData !== 'string') &&
@@ -175,7 +187,7 @@ export abstract class ObservableObject<T> {
             }
         }
         for (const [key, collection] of this.collections) {
-            if (this.unserializableFields && this.unserializableFields.has(key)) { continue; }
+            if (this.undeserializableFields && this.undeserializableFields.has(key)) { continue; }
             if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
             const collectionData = data[String(key)];
             if (Array.isArray(collectionData)) {
@@ -183,7 +195,7 @@ export abstract class ObservableObject<T> {
             }
         }
         for (const [key, property] of this.properties) {
-            if (this.unserializableFields && this.unserializableFields.has(key)) { continue; }
+            if (this.undeserializableFields && this.undeserializableFields.has(key)) { continue; }
             if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
             const stringKey = String(key);
             const propertyData = Object.prototype.hasOwnProperty.call(data, stringKey) ? data[stringKey] : property.getDefault();
@@ -192,7 +204,7 @@ export abstract class ObservableObject<T> {
 
         if (this.customSerializeTable) {
             for (const [key,{d}] of this.customSerializeTable) {
-                if (this.unserializableFields && this.unserializableFields.has(key)) { continue; }
+                if (this.undeserializableFields && this.undeserializableFields.has(key)) { continue; }
                 const observableField = this.properties.get(key)||this.collections.get(key)||this.observableChildren.get(key);
                 if (!observableField) {continue;}
                 await d(this, observableField, data[String(key)]);
@@ -285,7 +297,9 @@ export abstract class ObservableObject<T> {
         for (const [key, property] of this.properties) {
             if (this.unserializableFields && this.unserializableFields.has(key)) { continue; }
             if (this.customSerializeTable && this.customSerializeTable.has(key)) { continue; }
-            converted[String(key)] = property.get();
+            if (!property.isDefault()) {
+                converted[String(key)] = property.get();
+            }
         }
 
         if (this.customSerializeTable) {
