@@ -4,33 +4,52 @@
  */
 
 export type WorkCompleteFn = ()=>void;
+type LockEntry = {
+    max:number,
+    queue:StartWorkFn[],
+    running:StartWorkFn[]
+};
 type StartWorkFn = ((value:WorkCompleteFn)=>void);
 
-/** Helper for making sure asynchronous work doesn't overlap */
-export default class LockSet<KeyType> {
-    private readonly locks = new Map<KeyType, StartWorkFn[]>();
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const DONOTHING = ()=>{};
 
-    /** acquire a lock */
-    private async acquire(key:KeyType):Promise<WorkCompleteFn> {
-        const queue = this.locks.get(key) || this.locks.set(key, []).get(key) || [];
-        const wasLocked = !!queue.length;
+/** Helper for making sure asynchronous work doesn't overlap, or just throttling it when there are many */
+export class LockSet<KeyType> {
+    private readonly locks = new Map<KeyType, LockEntry>();
+
+    /** acquire a lock
+     * @param key identifies the group of tasks that are limited
+     * @max maximum number of instances of running tasks in this group
+     * @returns Promise for work result
+     * */
+    private async acquire(key:KeyType, max = 1):Promise<WorkCompleteFn> {
+        const entry = this.locks.get(key) || this.locks.set(key, {running:[],queue:[],max}).get(key);
+        if (!entry) {return DONOTHING;}
+        entry.max = max;
 
         // promise to block on before work is executed. resolves when previous work in queue completes
         const promise = new Promise<WorkCompleteFn>(resolve=>{
-            queue.push(resolve);
+            entry.queue.push(resolve);
         });
 
         // if we weren't already locked, it can run immediately
-        if (!wasLocked) {this.runNext(key);}
+        if (entry.running.length < max) {this.runNext(key);}
 
         return promise;
     }
 
-    /** queue up work to be run non-simultaneously with other queued work, but still asynchronous */
-    async enqueue<T>(key:KeyType, work:()=>Promise<T>|T):Promise<T> {
+    /**
+     * queue up work to be run non-simultaneously with other queued work, but still asynchronous
+     * @param key identifies the group of tasks that are limited
+     * @param work function to call to do the work
+     * @max maximum number of simultaneous tasks in this group
+     * @returns Promise for work result
+     * */
+    async enqueue<T>(key:KeyType, work:()=>Promise<T>|T, max = 1):Promise<T> {
 
         // wait for previous work to complete
-        const workCompleteFn = await this.acquire(key);
+        const workCompleteFn = await this.acquire(key, max);
 
         // run now, making sure we signal the end of work even if something goes wrong
         try {
@@ -42,22 +61,37 @@ export default class LockSet<KeyType> {
 
     /** do blocked work */
     private runNext(key:KeyType):void {
-        const queue = this.locks.get(key);
-        if (!queue) {return;}
-        const startWorkFn = queue[0];
-        if (!startWorkFn) {return;}
-
-        // send the callback, allowing work to start and 
-        // provides the callback to be notified when it is done
-        let released = false;
-        startWorkFn(() => {
-            if (released) {return;}
-            released = true;
-
-            // remove from queue to unlock next
-            queue.shift();
-            if (queue.length === 0) {this.locks.delete(key);} // don't hold on to keys we aren't using
-            this.runNext(key);
-        });
+        const entry = this.locks.get(key);
+        if (!entry) {return;}
+        while (entry.queue.length && entry.running.length < entry.max) {
+            const startWorkFn = entry.queue.shift();
+            if (!startWorkFn) {return;}
+            entry.running.push(startWorkFn);
+    
+            // start work, get notified when it is done
+            let released = false;
+            startWorkFn(() => {
+                if (released) {return;}
+                released = true;
+    
+                // remove to unlock next
+                const index = entry.running.indexOf(startWorkFn);
+                entry.running.splice(index, 1);
+    
+                // don't hold on to keys we aren't using
+                if ((entry.running.length === 0)&&(entry.queue.length===0)) {
+                    this.locks.delete(key);
+                } else {
+                    this.runNext(key);
+                }
+            });
+        }
     }
 }
+
+/** one global set of locks should be fine most of the time */
+const locks = new LockSet<string>();
+
+/** one global set of locks should be fine most of the time */
+export default locks;
+

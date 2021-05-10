@@ -209,6 +209,7 @@ async function _cmd(username:string, password:string, cmdName:string, body?:Body
     const controller = new AbortController();
     const timeoutId = setTimeout(()=>{
         controller.abort();
+        // TODO: something to prevent getting many of these at once
         showMessage('Network Error', `Request timed out for command "${cmdName}"`);
     }, 15*1000);
     try {

@@ -84,6 +84,7 @@ export async function fetchJson<T>(uri:string):Promise<T|null> {
     const controller = new AbortController();
     const timeoutId = setTimeout(()=>{
         controller.abort();
+        // TODO: something to prevent getting many of these at once
         showMessage('Network Error', `Request timed out trying to reach ${uri}`);
     }, 15*1000);
     try {

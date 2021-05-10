@@ -6,6 +6,9 @@ import {show as showMessage} from './dlg/blood-message-dlg';
 import { BloodTeam } from "./model/blood-team";
 import Images from "./images";
 import { getCorsProxyUrl } from "./util";
+import Locks from './lock';
+
+const MAX_SIMULTANEOUS_IMAGE_REQUESTS = 5;
 
 /** data about how clocktower.online wants the images */
 export const enum ProcessImageSettings {
@@ -504,11 +507,17 @@ export async function urlToBloodImage(url:string, maxWidth:number, maxHeight:num
     return new BloodImage(canvas);
 }
 
+/** get image data from the url and convert it to a dataUri, throttled */
+export function imageUrlToDataUri(url:string, useCorsProxy:boolean):Promise<string> {
+    return Locks.enqueue('imageRequest', ()=>_imageUrlToDataUri(url,useCorsProxy), MAX_SIMULTANEOUS_IMAGE_REQUESTS);
+}
+
 /** get image data from the url and convert it to a dataUri */
-export async function imageUrlToDataUri(url:string, useCorsProxy:boolean):Promise<string> {
+export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean):Promise<string> {
     const controller = new AbortController();
     const timeoutId = setTimeout(()=>{
         controller.abort();
+        // TODO: something to prevent getting many of these at once
         showMessage('Network Error', `Request timed out trying to reach ${url}`);
     }, 30*1000);
     try {
