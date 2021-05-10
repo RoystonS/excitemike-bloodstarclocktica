@@ -22,6 +22,7 @@ import { ProcessImageSettings } from './blood-image';
 import Images from './images';
 import { bindCharacterList } from './character-list';
 import { BloodTeam } from './model/blood-team';
+import publish from './commands/publish';
 
 let edition:Edition|null = null;
 let username = '';
@@ -122,8 +123,10 @@ async function importOfficialClicked():Promise<boolean> {
 
 /** user chose to save and publish */
 async function saveAndPublishClicked():Promise<boolean> {
-    // TODO: implement saveAndPublishClicked
-    showError('Not yet implemented', '`saveAndPublishClicked` Not yet implemented');
+    if (!edition) {return false;}
+    if (!edition.dirty.get() || await saveFileClicked()) {
+        publish(username, password, edition);
+    }
     return false;
 }
 

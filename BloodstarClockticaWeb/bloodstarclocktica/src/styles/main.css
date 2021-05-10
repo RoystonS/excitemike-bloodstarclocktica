@@ -10,7 +10,12 @@ body {
 h1, h2, h3, h4, h5, h6 {
     margin:3px 0;
 }
-a, button, summary {
+a {
+    color:#eee;
+    font-weight:bold;
+    letter-spacing: +1px;
+}
+button, summary {
     color:#eee;
     text-decoration: none;
     padding:2px;
@@ -26,9 +31,7 @@ button {
     padding-left:6px;
     padding-right:6px;
 }
-a:hover
-, a:focus-visible
-, button:hover
+button:hover
 , button:focus-visible
 , summary:hover
 , summary:focus-visible
@@ -36,8 +39,7 @@ a:hover
     border: 1px solid #3977FF;
     background:#3977FF;
 }
-a:focus
-, button:focus
+button:focus
 , summary:focus
 {
     border: 1px solid #3977FF;
@@ -186,3 +188,9 @@ ul#status {
     margin-right:0;
 }
 .hidden {display:none !important;}
+
+.uploadCompleteGrid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap:6px;
+}

@@ -1,6 +1,7 @@
+import cmd from './commands/cmd';
 import {Edition} from './model/edition';
 import {spinner} from './dlg/spinner-dlg';
-import {show as showMessage, showError} from "./dlg/blood-message-dlg";
+import {showError} from "./dlg/blood-message-dlg";
 import * as OpenDlg from './dlg/blood-open-dlg';
 import * as SdcDlg from './dlg/blood-save-discard-cancel';
 import * as StringDlg from './dlg/blood-string-dlg';
@@ -14,7 +15,6 @@ type ListFilesReturn = {error?:string,files:string[]};
 type LoginReturn = {success:boolean};
 type SaveReturn = {error?:string};
 type OpenReturn = {error?:string,data:{[key:string]:FieldType}};
-type CmdReturn = ListFilesReturn|LoginReturn|SaveReturn|OpenReturn|null;
 
 /// hash used by the server to sanity check
 export function hashFunc(input:string):number {
@@ -190,63 +190,6 @@ function sanitizeSaveName(original:string):string {
         }
     }
     return corrected;
-}
-
-/**
- * send a command to the server, await response
- * Brings up the loading spinner during the operation
- */
-async function cmd(username:string, password:string, cmdName:string, spinnerMessage:string, body?:BodyInit|null|undefined):Promise<CmdReturn> {
-    return await spinner('command', spinnerMessage, _cmd(username, password, cmdName, body));
-}
-
-/**
- * send a command to the server, await response 
- */
-async function _cmd(username:string, password:string, cmdName:string, body?:BodyInit|null):Promise<CmdReturn> {
-    let response:Response;
-    const base64 = btoa(`${username}:${password}`);
-    const controller = new AbortController();
-    const timeoutId = setTimeout(()=>{
-        controller.abort();
-        // TODO: something to prevent getting many of these at once
-        showMessage('Network Error', `Request timed out for command "${cmdName}"`);
-    }, 15*1000);
-    try {
-        response = await fetch(`https://www.bloodstar.xyz/cmd/${cmdName}.php`, {
-                method: 'POST',
-                headers:{
-                    'Accept':'application/json',
-                    'Content-Type':'application/json',
-                    'Authorization': `Basic ${base64}`
-                },
-                mode: 'cors',
-                credentials: 'include',
-                signal: controller.signal,
-                body
-            });
-        
-        if (!response.ok) {
-            const error = `${response.status}: (${response.type}) ${response.statusText}`;
-            showError('Network Error', `Error encountered during command ${cmdName}`, error);
-            console.error(error);
-            return null;
-        }
-    } catch (error) {
-        showError('Network Error', `Error encountered during command ${cmdName}`, error);
-        return null;
-    } finally {
-        clearTimeout(timeoutId);
-    }
-
-    try {
-        const responseText = await response.text();
-        return JSON.parse(responseText);
-    } catch (error) {
-        showError('Error', `Error parsing server response JSON for command ${cmdName}`, error);
-        console.error(error);
-    }
-    return {};
 }
 
 /**

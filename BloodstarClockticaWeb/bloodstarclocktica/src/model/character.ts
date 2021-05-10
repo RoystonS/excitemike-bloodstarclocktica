@@ -53,7 +53,7 @@ export class Character extends ObservableObject<Character> {
     @observableProperty()
     readonly setup = new Property<boolean>(false);
     
-    @observableProperty('writeonly')
+    @observableProperty('neither')
     readonly styledImage = new Property<string|null>(null);
     
     @observableProperty()
