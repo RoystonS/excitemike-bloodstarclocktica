@@ -35,14 +35,17 @@
         if (array_key_exists('characterList', $saveData)){
             $characterList = $saveData['characterList'];
             foreach ($characterList as $inCharacter) {
-                unset($outCharacter); // make sure it's a new variable each time through the loop, because we need to pas out references
+                unset($outCharacter); // make sure it's a new variable each time through the loop, because we need to pass out references
+
+                // TODO: check if they are even supposed to be exported
+
                 $outCharacter = array();
                 if (array_key_exists('id', $inCharacter)) {
                     $id = $inCharacter['id'];
                     $outCharacter['id'] = $id;
                     $charactersById[$id] = &$outCharacter;
                 }
-                copyField($inCharacter, 'styledImage', $outCharacter, 'image');
+                copyField($inCharacter, 'unStyledImage', $outCharacter, 'image');
                 copyField($inCharacter, 'edition', $outCharacter, 'edition');
                 copyField($inCharacter, 'firstNightReminder', $outCharacter, 'firstNightReminder');
                 copyField($inCharacter, 'otherNightReminder', $outCharacter, 'otherNightReminder');
