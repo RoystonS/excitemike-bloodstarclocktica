@@ -22,7 +22,7 @@ const config = {
             use: [{
                 loader: 'file-loader',
                 options: {
-                    name: '[name].[contenthash].[ext]',
+                    name: '[name].[ext]',
                     outputPath: 'fonts/'
                 }
             }],
@@ -35,18 +35,12 @@ const config = {
             template: './src/index.html'
         }),
         new MiniCssExtractPlugin({filename:'bloodstar.css',chunkFilename:'[id].css'}),
-        /*new CopyPlugin({
-            patterns: [{
-                from: './src/index.html',
-                to: path.resolve(__dirname, 'dist')
-            }]
-        })*/
     ],
     resolve: {
         extensions: ['.ts', '.tsx', '.js']
     },
     output: {
-        filename: '[name].js',
+        filename: '[name].[contenthash].js',
         path: path.resolve(__dirname, 'dist')
     },
     optimization:{
