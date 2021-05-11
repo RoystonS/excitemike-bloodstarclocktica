@@ -12,7 +12,8 @@ obj/
 packages/
 .htpasswd
 .htaccess
-BloodstarClockticaWeb/bloodstarclocktica/dist/index.html
-BloodstarClockticaWeb/bloodstarclocktica/dist/bloodstar.css
-BloodstarClockticaWeb/bloodstarclocktica/dist/bloodstar.js
+BloodstarClockticaWeb/bloodstarclocktica/dist/*.html
+BloodstarClockticaWeb/bloodstarclocktica/dist/*.css
+BloodstarClockticaWeb/bloodstarclocktica/dist/*.js
 BloodstarClockticaWeb/bloodstarclocktica/dist/fonts/
+BloodstarClockticaWeb/bloodstarclocktica/dist/*.js.LICENSE.txt

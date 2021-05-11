@@ -18,6 +18,14 @@
 			"problemMatcher": []
 		},
 		{
+			"type": "shell",
+			"group": "build",
+			"label": "clean dist",
+			"detail": "clear generated files out of dist",
+			"command":"del \"dist/*.js\" ; del \"dist/*.js.LICENSE.txt\" ; del \"dist/*.html\" ; del \"dist/*.css\"",
+			"problemMatcher": []
+		},
+		{
 			"type": "npm",
 			"script": "watch",
 			"group": "build",
