@@ -1,5 +1,4 @@
-const HtmlMinimizerPlugin = require("html-minimizer-webpack-plugin");
-const CopyPlugin = require("copy-webpack-plugin");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const path = require('path');
@@ -19,16 +18,11 @@ const config = {
             exclude: /node_modules/
         },
         {
-            test: /\.html$/i,
-            type: "asset/resource",
-            exclude: /node_modules/
-        },
-        {
             test: /\.(png|woff|woff2|eot|ttf|svg)$/,
             use: [{
                 loader: 'file-loader',
                 options: {
-                    name: '[name].[ext]',
+                    name: '[name].[contenthash].[ext]',
                     outputPath: 'fonts/'
                 }
             }],
@@ -36,27 +30,34 @@ const config = {
         }]
     },
     plugins: [
+        new HtmlWebpackPlugin({
+            title: 'Bloodstar Clocktica',
+            template: './src/index.html'
+        }),
         new MiniCssExtractPlugin({filename:'bloodstar.css',chunkFilename:'[id].css'}),
-        new CopyPlugin({
+        /*new CopyPlugin({
             patterns: [{
                 from: './src/index.html',
                 to: path.resolve(__dirname, 'dist')
             }]
-        })
+        })*/
     ],
     resolve: {
         extensions: ['.ts', '.tsx', '.js']
     },
     output: {
-        filename: 'bloodstar.js',
+        filename: '[name].js',
         path: path.resolve(__dirname, 'dist')
     },
     optimization:{
+        runtimeChunk: 'single',
         minimizer: [
             '...',
             new CssMinimizerPlugin(),
-            new HtmlMinimizerPlugin()
-        ]
+        ],
+        splitChunks: {
+            chunks: 'all',
+        }
     }
 };
 
