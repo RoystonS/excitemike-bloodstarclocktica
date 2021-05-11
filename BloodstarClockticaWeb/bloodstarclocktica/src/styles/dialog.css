@@ -118,7 +118,7 @@ ul.spinnerMessages {
     overflow: auto;
     display:flex;
     flex-flow: column;
-    align-items: stretch;
+    align-items: center;
     list-style: none;
     margin: 0;
     padding: 0px;

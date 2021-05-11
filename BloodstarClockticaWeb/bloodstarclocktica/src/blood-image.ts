@@ -7,6 +7,7 @@ import { BloodTeam } from "./model/blood-team";
 import Images from "./images";
 import { getCorsProxyUrl } from "./util";
 import Locks from './lock';
+import { spinner } from './dlg/spinner-dlg';
 
 const MAX_SIMULTANEOUS_IMAGE_REQUESTS = 5;
 
@@ -522,11 +523,11 @@ export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean):Promi
     }, 30*1000);
     try {
         const proxiedUrl = useCorsProxy ? getCorsProxyUrl(url) : url;
-        const response = await fetch(proxiedUrl, {
+        const response = await spinner(url, `Downloading ${url}`, fetch(proxiedUrl, {
             method:'GET',
             mode: 'cors',
             signal: controller.signal
-        });
+        }));
         if (!response.ok) {
             showMessage('Network Error', `Something went wrong while trying to reach ${url}`);
             console.error(`Trying to reach ${proxiedUrl}\n${response.status}: (${response.type}) ${response.statusText}`);

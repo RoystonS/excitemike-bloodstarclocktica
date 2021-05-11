@@ -12,6 +12,16 @@ class SpinnerDialog extends AriaDialog<null> {
 
     isOpen():boolean {return !!this.listElement;}
 
+    private bumpListSize():void {
+        if (!this.listElement){return;}
+        if (!this.listElement.style.minWidth || (this.listElement.offsetWidth > Number.parseInt(this.listElement.style.minWidth))){
+            this.listElement.style.minWidth = `${this.listElement.offsetWidth}px`;
+        }
+        if (!this.listElement.style.minHeight || (this.listElement.offsetHeight > Number.parseInt(this.listElement.style.minHeight))){
+            this.listElement.style.minHeight = `${this.listElement.offsetHeight}px`;
+        }
+    }
+
     /** 
      * create or add to a spinner.
      * @returns a promise that resolves to a function for you to call when work completes */
@@ -34,6 +44,7 @@ class SpinnerDialog extends AriaDialog<null> {
             stack.push(message);
             listItem.innerText = message;
         }
+        this.bumpListSize();
     }
 
     /** undo add */
