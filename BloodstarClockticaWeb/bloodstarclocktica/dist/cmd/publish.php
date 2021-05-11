@@ -13,7 +13,7 @@
     }
 
     // build the script object to convert to json
-    function makeScript($saveData) {
+    function makeScript($saveData, $saveName) {
         $scriptData = array();
 
         if (array_key_exists('meta', $saveData)){
@@ -34,6 +34,8 @@
             foreach ($characterList as $inCharacter) {
                 unset($outCharacter); // make sure it's a new variable each time through the loop, because we need to pass out references
 
+                $id = $inCharacter['id'];
+
                 // skip if not supposed to be exported
                 if (array_key_exists('export', $inCharacter)) {
                     if (!$inCharacter['export']) {continue;}
@@ -41,11 +43,19 @@
 
                 $outCharacter = array();
                 if (array_key_exists('id', $inCharacter)) {
-                    $id = $inCharacter['id'];
                     $outCharacter['id'] = $id;
                     $charactersById[$id] = &$outCharacter;
                 }
-                copyField($inCharacter, 'unStyledImage', $outCharacter, 'image');
+
+                // copy image over to publish directory
+                if (array_key_exists('styledImage', $inCharacter)) {
+                    if (preg_match("/^data:$/", $inCharacter['styledImage'])) {
+                        $outCharacter['image'] = $inCharacter['styledImage'];
+                    } else {
+                        $outCharacter['image'] = 'https://www.bloodstar.xyz/p/'.$saveName.'/'.$id.'.png';
+                    }
+                }
+
                 copyField($inCharacter, 'edition', $outCharacter, 'edition');
                 copyField($inCharacter, 'firstNightReminder', $outCharacter, 'firstNightReminder');
                 copyField($inCharacter, 'otherNightReminder', $outCharacter, 'otherNightReminder');
@@ -62,6 +72,7 @@
 
                 $scriptData[] = &$outCharacter;
             }
+            // TODO: edition logo
         }
 
         // night order
@@ -91,7 +102,7 @@
     $data = json_decode($data, true);
 
     // build script.json from it
-    $script = makeScript($data);
+    $script = makeScript($data, $saveName);
 
     // ensure directory exists
     $publishDir = join_paths('../p', $saveName);
@@ -114,6 +125,23 @@
     } finally {
         fclose($file);
     }
+
+    // move images
+    $editionFolder = join_paths($saveDir, $saveName);
+    foreach ($script as $character) {
+        global $saveDir;
+        $id = $character['id'];
+        $filename = $id.'.png';
+        $sourcePath = join_paths($editionFolder, $filename);
+        $destinationPath = join_paths($publishDir, $filename);
+        if (is_file($sourcePath)) {
+            if (!copy($sourcePath, $destinationPath)){
+                echo json_encode(array('error' =>'error copying '.$sourcePath.' to '.$destinationPath));
+                exit();
+            }
+        }
+    }
+    // TODO: edition logo
 
     echo json_encode(array(
         'success' => true,
