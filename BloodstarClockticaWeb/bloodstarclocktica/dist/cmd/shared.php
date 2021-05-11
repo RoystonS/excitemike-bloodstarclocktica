@@ -51,7 +51,7 @@
     }
 
     // encode as json and write to save directory
-    function writeSaveFile($saveName, $data) {
+    function writeEditionFile($saveName, $data) {
         global $saveDir;
         validateFilename($saveName);
 
@@ -59,8 +59,17 @@
         if (!file_exists($saveDir)) {
             mkdir($saveDir, 0777, true);
         }
+        $editionFolder = join_paths($saveDir, $saveName);
+        if (!file_exists($editionFolder)) {
+            $success = mkdir($editionFolder, 0777, true);
+            if (!$success) {
+                echo json_encode(array('error' =>"could not make directory for '$saveName'"));
+                exit();
+            }
+        }
 
-        $file = fopen(join_paths($saveDir, $saveName), 'w');
+        $editionFile = join_paths($editionFolder, 'edition');
+        $file = fopen($editionFile, 'w');
         if (!$file) {
             echo json_encode(array('error' =>"error writing file '$saveName'"));
             exit();
@@ -77,11 +86,12 @@
     }
 
     // read file in save directory and decode as json
-    function readSaveFile($saveName) {
+    function readEditionFile($saveName) {
         global $saveDir;
         validateFilename($saveName);
-        $path = join_paths($saveDir, $saveName);
-        return file_get_contents($path);
+        $editionFolder = join_paths($saveDir, $saveName);
+        $editionFile = join_paths($editionFolder, 'edition');
+        return file_get_contents($editionFile);
     }
 
     // error out if filename invalid
@@ -97,6 +107,34 @@
         $hashResult = hashFunc($saveName);
         if ($hashResult != $checkValue) {
             echo json_encode(array('error' =>"failed hash check"));
+            exit();
+        }
+    }
+
+    // binary data to ${id}.png in save directory
+    function writeImage($saveName, $id, $binaryData) {
+        global $saveDir;
+        validateFilename($saveName);
+
+        // ensure directory exists
+        if (!file_exists($saveDir)) {
+            mkdir($saveDir, 0777, true);
+        }
+        $editionFolder = join_paths($saveDir, $saveName);
+        if (!file_exists($editionFolder)) {
+            $success = mkdir($editionFolder, 0777, true);
+            if (!$success) {
+                echo json_encode(array('error' =>"could not make directory for '$saveName'"));
+                exit();
+            }
+        }
+
+        $path = join_paths($editionFolder, $id.'.png');
+
+        try {
+            file_put_contents($path, $binaryData);
+        } catch (Exception $e) {
+            echo json_encode(array('error' =>"error writing file '$path'"));
             exit();
         }
     }

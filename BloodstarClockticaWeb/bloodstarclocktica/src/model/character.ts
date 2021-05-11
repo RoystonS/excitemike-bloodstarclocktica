@@ -4,11 +4,28 @@
  */
 import {CharacterAlmanac} from './character-almanac';
 import {EnumProperty, Property} from '../bind/bindings';
-import {observableChild, observableEnumProperty, ObservableObject, observableProperty} from '../bind/observable-object';
+import {observableChild, observableEnumProperty, ObservableObject, observableProperty, ObservableType} from '../bind/observable-object';
 import {BLOODTEAM_OPTIONS, BloodTeam} from '../model/blood-team';
 import {CharacterImageSettings} from '../model/character-image-settings';
-import BloodImage, { getGradientForTeam, ProcessImageSettings, urlToBloodImage } from '../blood-image';
+import BloodImage, { getGradientForTeam, imageUrlToDataUri, ProcessImageSettings, urlToBloodImage } from '../blood-image';
 import Images from '../images';
+import { spinner } from '../dlg/spinner-dlg';
+
+// if the browser realizes we are using an image as-is, it will not let doimage processing on those pixels
+async function safelyConvertImage(object:ObservableObject<unknown>, field:ObservableType, data:unknown):Promise<void> {
+    const character = object as unknown as Character;
+    const id = character.id.get();
+    const unstyledImageProperty = field as Property<string|null>;
+    const sourceData = data as string;
+    const sourceUrl = new URL(sourceData);
+    const isDataUri = sourceUrl.protocol === 'data:';
+    if (isDataUri) {
+        unstyledImageProperty.set(sourceData);
+    } else {
+        const useCors = sourceUrl.hostname !== window.location.hostname;
+        unstyledImageProperty.set(await spinner(`convertImage-${id}`, `Converting image for ${id}`, imageUrlToDataUri(sourceData, useCors)));
+    }
+}
 
 export class Character extends ObservableObject<Character> {
     @observableProperty('')
@@ -35,7 +52,7 @@ export class Character extends ObservableObject<Character> {
     @observableProperty('')
     readonly globalReminderTokens!:Property<string>;
     
-    @observableProperty('newcharacter')
+    @observableProperty('newcharacter',{saveDefault:true})
     readonly id!: Property<string>;
     
     @observableChild(CharacterImageSettings)
@@ -59,7 +76,7 @@ export class Character extends ObservableObject<Character> {
     @observableEnumProperty(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS)
     readonly team!: EnumProperty<BloodTeam>;
     
-    @observableProperty(null)
+    @observableProperty(null, {customDeserialize: safelyConvertImage})
     readonly unStyledImage!: Property<string | null>;
 
     private constructor() {

@@ -8,7 +8,7 @@
     $check = requireField($request, 'check');
     checkHash($saveName, $check);
     
-    $data = readSaveFile($saveName);
+    $data = readEditionFile($saveName);
     
     echo('{"data":'.$data.'}');
 ?>

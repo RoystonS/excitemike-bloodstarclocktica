@@ -12,7 +12,6 @@ import { importBloodFile } from './import/blood-file';
 
 type ListFilesReturn = {error?:string,files:string[]};
 type LoginReturn = {success:boolean};
-type SaveReturn = {error?:string};
 type OpenReturn = {error?:string,data:{[key:string]:unknown}};
 
 /// hash used by the server to sanity check
@@ -34,79 +33,6 @@ export async function newEdition(edition:Edition):Promise<boolean> {
         return true;
     }
     return false;
-}
-
-/**
- * prompt for a name, then save with that name
- * Brings up the loading spinner during the operation
- * @param username login credentials
- * @param password login credentials
- * @param edition file to save
- * @returns promise resolving to whether the save was successful
- */
-export async function saveAs(username:string, password:string, edition:Edition):Promise<boolean> {
-    const name = await promptForName(edition.saveName.get());
-    if (!name) {
-        return Promise.resolve(false);
-    }
-    const backupName = edition.saveName.get();
-    try {
-        await edition.saveName.set(name);
-        return !!(await _save(username, password, edition));
-    } catch (error) {
-        await edition.saveName.set(backupName);
-        showError('Error', 'Error encountered while trying to save', error);
-    }
-    return false;
-}
-
-/**
- * show loading dialog while saving
- * @param username login credentials
- * @param password login credentials
- * @param edition file to save
- * @returns promise resolving to whether the save was successful
- */
-export async function save(username:string, password:string, edition:Edition):Promise<boolean> {
-    const saveName = edition.saveName.get();
-    switch (saveName) {
-        case '':
-            return await saveAs(username, password, edition);
-        default:
-            return await _save(username, password, edition);
-    }
-}
-
-/**
- * Save the file under the name saved in it
- * Brings up the loading spinner during the operation
- * @param username login credentials
- * @param password login credentials
- * @param edition file to save
- * @returns promise resolving to whether the save was successful
- */
-async function _save(username:string, password:string, edition:Edition):Promise<boolean> {
-    // TODO: images in separate requests/files
-    type SaveData = {
-        saveName:string,
-        check:number,
-        edition:unknown
-    };
-    
-    const saveName = edition.saveName.get();
-    const saveData:SaveData = {
-        saveName: saveName,
-        check: hashFunc(saveName),
-        edition: edition.serialize()
-    };
-    const payload = JSON.stringify(saveData);
-    const {error} = await cmd(username, password, 'save', `Saving as ${saveName}`, payload) as SaveReturn;
-    if (error) {
-        showError('Error', 'Error encountered while trying to save', error);
-        return false;
-    }
-    await edition.dirty.set(false);
-    return true;
 }
 
 /**
@@ -160,37 +86,6 @@ async function openNoPrompts(username:string, password:string, edition:Edition, 
         return false;
     }
     return await spinner('open', `Opening edition file "${name}"`, edition.open(name, data));
-}
-
-/**
- * prompt the user to enter a name to save as
- */
-async function promptForName(defaultName:string):Promise<string|null> {
-    return await StringDlg.show(
-        'Enter name to save as. (lowercase with no spaces or special characters)',
-        defaultName,
-        {
-            pattern:'[-a-z0-9.]{1,25}',
-            hint: 'lowercase with no spaces or special characters',
-            sanitizeFn: sanitizeSaveName
-        });
-}
-
-/**
- * sanitize a save name
- */
-function sanitizeSaveName(original:string):string {
-    const re = /^[-a-z0-9.]{1,25}$/;
-    if (re.test(original)) {
-        return original;
-    }
-    let corrected = '';
-    for (const char of original) {
-        if (re.test(char) && corrected.length < 25) {
-            corrected += char;
-        }
-    }
-    return corrected;
 }
 
 /**

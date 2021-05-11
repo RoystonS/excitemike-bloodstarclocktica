@@ -22,7 +22,7 @@
         if ($value == '.') {continue;}
         if ($value == '..') {continue;}
         $filepath = join_paths($saveDir, $value);
-        if (is_file($filepath)) {
+        if (is_dir($filepath)) {
             array_push($list, $value);
         }
     }

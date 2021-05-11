@@ -125,11 +125,12 @@ foreach ($response_headers as $key => $response_header) {
 }
 
 // finally, output the content
+/*I do not understand why but this seems to only hurt!?
 if (array_key_exists('HTTP_ORIGIN', $_SERVER)) {
     header('Access-Control-Allow-Origin: '.$_SERVER['HTTP_ORIGIN'], true);
 } else {
     header('Access-Control-Allow-Origin: *', true);
-}
+}*/
 print($response_content);
 
 ?>

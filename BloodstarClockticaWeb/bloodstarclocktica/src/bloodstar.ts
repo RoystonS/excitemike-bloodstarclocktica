@@ -23,6 +23,7 @@ import Images from './images';
 import { bindCharacterList } from './character-list';
 import { BloodTeam } from './model/blood-team';
 import publish from './commands/publish';
+import {save, saveAs} from './commands/save';
 
 let edition:Edition|null = null;
 let username = '';
@@ -93,7 +94,7 @@ export async function newFileClicked():Promise<boolean> {
  */
 export async function saveFileClicked():Promise<boolean> {
     if (!edition) {return false;}
-    if (await BloodIO.save(username, password, edition)) {
+    if (await save(username, password, edition)) {
         addToRecentFiles(edition.saveName.get());
         return true;
     }
@@ -105,7 +106,7 @@ export async function saveFileClicked():Promise<boolean> {
  */
 export async function saveFileAsClicked():Promise<boolean> {
     if (!edition) {return false;}
-    if (await BloodIO.saveAs(username, password, edition)) {
+    if (await saveAs(username, password, edition)) {
         addToRecentFiles(edition.saveName.get());
         return true;
     }
@@ -194,7 +195,7 @@ async function initBindings():Promise<void> {
         if (e.ctrlKey) {
             if (e.code === "KeyS") {
                 e.preventDefault();
-                BloodIO.save(username, password, edition);
+                save(username, password, edition);
             }
         }
     };

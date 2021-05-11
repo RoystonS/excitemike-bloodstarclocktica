@@ -13,6 +13,8 @@ export type PropertyCfg = {
     write?:boolean,
     /** if set to false, changes to the field do not send property changed events */
     notify?:boolean,
+    /** if set to true, changes to the field are serialized even if it is the default value */
+    saveDefault?:boolean,
     /** if set, this is used to convert the value before serializing */
     customSerialize?:CustomSerializeFn,
     /** if set, this is used to set the value when deserializing */
@@ -184,6 +186,17 @@ export abstract class ObservableObject<T> {
         return cfg.write!==false;
     }
 
+    /** check for special behavior for a field */
+    private _saveDefault(key:PropKey<T>):boolean{
+        const prototype = Object.getPrototypeOf(this);
+        if (!prototype) {return true;}
+        const objectEntry = observableObjectData.get(prototype);
+        if (!objectEntry) {return true;}
+        const cfg = objectEntry.exceptions.get(key as string|symbol);
+        if (!cfg) {return true;}
+        return !!cfg.saveDefault;
+    }
+
     /** check for speical behavior for a field */
     private _getCustomDeserialize(key:PropKey<T>):CustomDeserializeFn|undefined {
         const prototype = Object.getPrototypeOf(this);
@@ -213,6 +226,7 @@ export abstract class ObservableObject<T> {
 
     /** inverse operation from serialize */
     async deserialize(data:{[key:string]:unknown}):Promise<void> {
+        // TODO: maybe these shouldn't all block?
         for (const [key, child] of this.children) {
             if (!this._canReadField(key)) { continue; }
             const childData = data[String(key)] as {[key:string]:unknown};
@@ -341,14 +355,14 @@ export abstract class ObservableObject<T> {
         }
         for (const [key, property] of this.properties) {
             if (!this._canWriteField(key)) { continue; }
-            if (!property.isDefault()) {
+            if (!property.isDefault() || this._saveDefault(key)) {
                 const fn = this._getCustomSerialize(key);
                 converted[String(key)] = fn ? fn(this, property) : property.get();
             }
         }
         for (const [key, property] of this.enumProperties) {
             if (!this._canWriteField(key)) { continue; }
-            if (!property.isDefault()) {
+            if (!property.isDefault() || this._saveDefault(key)) {
                 const fn = this._getCustomSerialize(key);
                 converted[String(key)] = fn ? fn(this, property) : property.get();
             }
