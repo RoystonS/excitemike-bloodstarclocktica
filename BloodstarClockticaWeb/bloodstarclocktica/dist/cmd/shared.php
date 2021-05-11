@@ -5,23 +5,6 @@
     function join_paths($a, $b) {
         return join('/', array(trim($a, '/'), trim($b, '/')));
     }
-    function truncate32bit($x) {
-        if ($x & 0x80000000) {
-            $x = ((~$x & 0xFFFFFFFF) + 1) * -1;
-        } else {
-            $x = $x & 0xFFFFFFFF;
-        }
-        return $x;
-    }
-    function hashFunc($input) {
-        $hash = 0;
-        $input .= '; So say we all.';
-        for($i=0; $i<strlen($input); $i++) {
-            $c = $input[$i];
-            $hash = truncate32bit( (($hash<<5)-$hash) + ord($c) );
-        }
-        return $hash;
-    }
 
     // error out if not POST
     function requirePost() {
@@ -102,17 +85,8 @@
         }
     }
 
-    // error out if hashes don't match
-    function checkHash($saveName, $checkValue) {
-        $hashResult = hashFunc($saveName);
-        if ($hashResult != $checkValue) {
-            echo json_encode(array('error' =>"failed hash check"));
-            exit();
-        }
-    }
-
     // binary data to ${id}.png in save directory
-    function writeImage($saveName, $id, $binaryData) {
+    function writeImage($saveName, $id, $isSource, $binaryData) {
         global $saveDir;
         validateFilename($saveName);
 
@@ -129,7 +103,9 @@
             }
         }
 
-        $path = join_paths($editionFolder, $id.'.png');
+        $suffix = '.png';
+        if ($isSource) {$suffix = '.src.png';}
+        $path = join_paths($editionFolder, $id.$suffix);
 
         try {
             file_put_contents($path, $binaryData);

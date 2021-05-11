@@ -5,9 +5,6 @@
 
     $saveName = requireField($data, 'saveName');
 
-    $check = requireField($data, 'check');
-    checkHash($saveName, $check);
-
     // copy field if it is present
     function copyField($srcArray, $srcName, &$dstArray, $dstName) {
         if (array_key_exists($srcName, $srcArray)){

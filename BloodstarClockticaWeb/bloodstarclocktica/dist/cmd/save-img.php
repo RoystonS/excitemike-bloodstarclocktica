@@ -10,13 +10,15 @@
         exit();
     }
 
-    $check = requireField($data, 'check');
-    checkHash($saveName, $check);
+    $isSource = false;
+    if (array_key_exists('isSource', $data)) {
+        $isSource = $data['isSource'];
+    }
 
     $dataUri = requireField($data, 'image');
     $base64 = preg_replace('/^.*,/', '', $dataUri);
 
-    writeImage($saveName, $id, base64_decode($base64));
+    writeImage($saveName, $id, $isSource, base64_decode($base64));
 
     echo json_encode(array('success' => true));
 ?>

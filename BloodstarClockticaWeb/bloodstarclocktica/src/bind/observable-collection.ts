@@ -1,6 +1,6 @@
 import {ObservableObject, PropKey, PropertyChangedListener} from './observable-object';
 
-export type ObservableCollectionListener<T extends ObservableObject<T>> = (value:ObservableCollectionChangedEvent<T>)=>void;
+export type ObservableCollectionListener<T extends ObservableObject<T>> = (event:ObservableCollectionChangedEvent<T>)=>void;
 export type ItemPropertyChangedListener<T> = (index:number, item:T, propName:PropKey<T>) => void;
 
 /** types of changes to ObservableCollections */

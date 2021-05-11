@@ -14,18 +14,6 @@ type ListFilesReturn = {error?:string,files:string[]};
 type LoginReturn = {success:boolean};
 type OpenReturn = {error?:string,data:{[key:string]:unknown}};
 
-/// hash used by the server to sanity check
-export function hashFunc(input:string):number {
-    let hash = 0;
-    input += '; So say we all.';
-    for (let i=0; i<input.length; ++i) {
-        const char = input.charCodeAt(i);
-        hash = ((hash<<5)-hash) + char;
-        hash = hash|0;
-    }
-    return hash;
-}
-
 /// prompt for save if needed, then reset to new custom edition
 export async function newEdition(edition:Edition):Promise<boolean> {
     if (await SdcDlg.savePromptIfDirty(edition)) {
@@ -76,8 +64,7 @@ async function openNoSavePrompt(username:string, password:string, edition:Editio
 async function openNoPrompts(username:string, password:string, edition:Edition, name:string):Promise<boolean> {
     // TODO: images in separate requests/files
     const openData = {
-        saveName: name,
-        check: hashFunc(name)
+        saveName: name
     };
     const payload = JSON.stringify(openData);
     const {error,data} = await cmd(username, password, 'open', `Retrieving ${name}`, payload) as OpenReturn;

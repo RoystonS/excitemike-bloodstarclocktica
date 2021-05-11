@@ -3,7 +3,6 @@
  * @module Publish
  */
 import cmd from './cmd';
-import {hashFunc} from '../blood-io';
 import {Edition} from '../model/edition';
 import { showError } from '../dlg/blood-message-dlg';
 import { AriaDialog } from '../dlg/aria-dlg';
@@ -13,14 +12,12 @@ type PublishReturn = {error?:string,script:string,almanac:string};
 /** publish the edition */
 export default async function publish(username:string, password:string, edition:Edition):Promise<boolean> {
     type PublishData = {
-        saveName:string,
-        check:number
+        saveName:string
     };
     
     const saveName = edition.saveName.get();
     const saveData:PublishData = {
-        saveName: saveName,
-        check: hashFunc(saveName)
+        saveName: saveName
     };
     const payload = JSON.stringify(saveData);
     const response = await cmd(username, password, 'publish', `Publishing ${edition.saveName.get()}`, payload) as PublishReturn;
