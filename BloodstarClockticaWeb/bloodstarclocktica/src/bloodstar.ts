@@ -186,9 +186,14 @@ async function login():Promise<void> {
 async function initBindings():Promise<void> {
     if (!edition) {return;}
 
-    window.onbeforeunload = function () {
-        return "Are you sure you want to leave? Unsaved changes will be lost.";
-    };
+    window.addEventListener('beforeunload',(event):string|void=>{
+        if (!edition){return;}
+        if (!edition.dirty.get()){return;}
+        event.preventDefault();
+        const message = "Are you sure you want to leave? Unsaved changes will be lost.";
+        event.returnValue = message;
+        return message;
+    });
 
     document.onkeydown = (e) => {
         if (!edition) {return;}
