@@ -90,7 +90,7 @@
     }
 
     // read save file
-    $data = readSaveFile($saveName);
+    $data = readEditionFile($saveName);
     $data = json_decode($data, true);
 
     // build script.json from it

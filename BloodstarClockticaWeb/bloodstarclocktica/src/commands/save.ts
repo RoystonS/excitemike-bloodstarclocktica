@@ -66,7 +66,7 @@ function separateImages(edition:Edition):{edition:unknown, images:Map<string, st
         if (!id) {continue;}
         const oldImageStr = character.unStyledImage;
         if (!oldImageStr) {continue;}
-        character.unStyledImage = `http://www.bloodstar.xyz/save/${saveName}/${id}.png`;
+        character.unStyledImage = `https://www.bloodstar.xyz/save/${saveName}/${id}.png`;
         characterImages.set(id, oldImageStr);
     }
     return {edition:editionSerialized, images:characterImages};
