@@ -30,8 +30,6 @@ async function _cmd(username:string, password:string, cmdName:string, body?:Body
         response = await fetch(`https://www.bloodstar.xyz/cmd/${cmdName}.php`, {
                 method: 'POST',
                 headers:{
-                    'Accept':'application/json',
-                    'Content-Type':'application/json',
                     'Authorization': `Basic ${base64}`
                 },
                 mode: 'cors',

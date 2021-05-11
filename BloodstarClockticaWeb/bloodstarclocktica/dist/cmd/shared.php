@@ -8,7 +8,12 @@
 
     // error out if not POST
     function requirePost() {
-        if (strtolower($_SERVER['REQUEST_METHOD']) != 'post')
+        if (strtolower($_SERVER['REQUEST_METHOD']) === 'options') {
+            // support options or else CORS pre-flight won't work, but don't do any work
+            echo '{}';
+            exit();
+        }
+        else if (strtolower($_SERVER['REQUEST_METHOD']) != 'post')
         {
             echo '{"error":"must use POST request method"}';
             exit();
