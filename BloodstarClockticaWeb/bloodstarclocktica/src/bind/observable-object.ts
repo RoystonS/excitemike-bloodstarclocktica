@@ -20,7 +20,7 @@ export type PropertyCfg = {
     /** if set, this is used to set the value when deserializing */
     customDeserialize?:CustomDeserializeFn,
 };
-export type PropertyChangedListener<T> = (propName:PropKey<T>) => void;
+export type PropertyChangedListener<T> = (propName:PropKey<T>) => Promise<void>|void;
 
 function noSuchProperty<T>(object:any, key:PropKey<T>):never {
     const message = `no property '${String(key)}' on object (${object.constructor.name})`;
@@ -226,7 +226,6 @@ export abstract class ObservableObject<T> {
 
     /** inverse operation from serialize */
     async deserialize(data:{[key:string]:unknown}):Promise<void> {
-        // TODO: maybe these shouldn't all block?
         for (const [key, child] of this.children) {
             if (!this._canReadField(key)) { continue; }
             const childData = data[String(key)] as {[key:string]:unknown};
@@ -309,11 +308,9 @@ export abstract class ObservableObject<T> {
     }
 
     /** send out notification of a property changing */
-    private notifyPropertyChangedEventListeners(key:PropKey<T>):void {
+    private async notifyPropertyChangedEventListeners(key:PropKey<T>):Promise<void> {
         if (!this._canNotifyField(key)) { return; }
-        const backup = this.propertyChangedListeners.concat();
-        // TODO: what if listeners do async work? how do we wait for it?
-        backup.forEach(cb=>cb(key));
+        await Promise.all(this.propertyChangedListeners.map(cb=>cb(key)));
     }
 
     /** unregister for updates when a property changes */

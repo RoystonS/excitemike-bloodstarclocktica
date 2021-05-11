@@ -160,9 +160,9 @@ export class Edition extends ObservableObject<Edition> {
         await this.saveName.set(saveName);
         
         // mark all as up to date
-        await this.dirty.set(false);
         this.dirtySourceImages.clear();
         this.dirtyFinalImages.clear();
+        await this.dirty.set(false);
 
         return true;
     }

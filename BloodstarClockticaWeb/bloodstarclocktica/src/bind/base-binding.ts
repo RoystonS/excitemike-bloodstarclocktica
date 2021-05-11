@@ -4,7 +4,7 @@
  * @module BaseBinding
  */
 
-export type PropertyChangeListener<T> = (value:T)=>void;
+export type PropertyChangeListener<T> = (value:T)=>Promise<void>|void;
 
 /** generic observable property */
 export class Property<T> {
