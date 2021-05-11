@@ -44,11 +44,13 @@ button:focus
 {
     border: 1px solid #3977FF;
 }
-input[type=text], input[type=password], textarea, select {
+input:not([type]), input[type=text], input[type=password], textarea, select {
     background-color: #222;
     color:#eee;
     border: 1px solid #666;
 }
+input:not([type]):hover,
+input:not([type]):focus-visible,
 input[type=text]:hover,
 input[type=text]:focus-visible,
 input[type=password]:hover,
