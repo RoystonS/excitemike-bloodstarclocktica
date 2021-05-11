@@ -11,7 +11,7 @@ import BloodImage, { getGradientForTeam, imageUrlToDataUri, ProcessImageSettings
 import Images from '../images';
 import { spinner } from '../dlg/spinner-dlg';
 
-// if the browser realizes we are using an image as-is, it will not let doimage processing on those pixels
+// if the browser realizes we are using a downloaded image, it will not let us do image processing on those pixels
 async function safelyConvertImage(object:ObservableObject<unknown>, field:ObservableType, data:unknown):Promise<void> {
     const character = object as unknown as Character;
     const id = character.id.get();
@@ -70,14 +70,17 @@ export class Character extends ObservableObject<Character> {
     @observableProperty(false)
     readonly setup!:Property<boolean>;
     
-    @observableProperty(null, { read: false, write: false, notify: false })
+    @observableProperty(null)
     readonly styledImage!: Property<string | null>;
     
     @observableEnumProperty(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS)
     readonly team!: EnumProperty<BloodTeam>;
     
-    @observableProperty(null, {customDeserialize: safelyConvertImage})
+    @observableProperty(null, {customDeserialize: safelyConvertImage}) // TODO: do this conversion as a separate step
     readonly unStyledImage!: Property<string | null>;
+
+    /** prevent extraneous image processing during deserialization */
+    private imageRegenSuspended = false;
 
     private constructor() {
         super();
@@ -95,8 +98,15 @@ export class Character extends ObservableObject<Character> {
         return character;
     }
 
+    async deserialize(data:{[key:string]:unknown}):Promise<void> {
+        this.imageRegenSuspended = true;
+        super.deserialize(data);
+        this.imageRegenSuspended = false;
+    }
+
     /** generate styled image from unstyled image and image settings */
     async regenerateStyledImage():Promise<void> {
+        if (this.imageRegenSuspended) {return;}
         // TODO: throbber
         const unstyledImage = this.unStyledImage.get();
         const imageSettings = this.imageSettings;

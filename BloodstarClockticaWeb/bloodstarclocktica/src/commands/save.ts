@@ -3,7 +3,6 @@
  * @module Save
  */
 import cmd from './cmd';
-import {hashFunc} from '../blood-io';
 import {show as inputDlg} from '../dlg/blood-string-dlg';
 import { Edition } from '../model/edition';
 import { showError } from '../dlg/blood-message-dlg';
@@ -55,21 +54,43 @@ export async function save(username:string, password:string, edition:Edition):Pr
     }
 }
 
+
+type Separated = {
+    edition:unknown,
+    sourceImages:Map<string,string>,
+    finalImages:Map<string,string>
+};
+
 /** separate the edition json and images for saving as separate files */
-function separateImages(edition:Edition):{edition:unknown, images:Map<string, string>} {
+function separateImages(edition:Edition):Separated {
     const saveName = edition.saveName.get();
     const editionSerialized = edition.serialize();
-    const characters = editionSerialized.characterList as {id:string, unStyledImage?:string}[];
-    const characterImages = new Map<string, string>();
+    const characters = editionSerialized.characterList as {id:string, unStyledImage?:string, styledImage?:string}[];
+    const sourceImages = new Map<string, string>();
+    const finalImages = new Map<string, string>();
     for (const character of characters) {
         const id = character.id;
         if (!id) {continue;}
-        const oldImageStr = character.unStyledImage;
-        if (!oldImageStr) {continue;}
-        character.unStyledImage = `https://www.bloodstar.xyz/save/${saveName}/${id}.png`;
-        characterImages.set(id, oldImageStr);
+        {
+            const oldImageStr = character.unStyledImage;
+            if (oldImageStr && oldImageStr.startsWith('data:')) {
+                character.unStyledImage = `https://www.bloodstar.xyz/save/${saveName}/${id}.src.png`;
+                sourceImages.set(id, oldImageStr);
+            }
+        }
+        {
+            const oldImageStr = character.styledImage;
+            if (oldImageStr && oldImageStr.startsWith('data:')) {
+                character.styledImage = `https://www.bloodstar.xyz/save/${saveName}/${id}.png`;
+                finalImages.set(id, oldImageStr);
+            }
+        }
     }
-    return {edition:editionSerialized, images:characterImages};
+    return {
+        edition:editionSerialized,
+        sourceImages,
+        finalImages
+    };
 }
 
 /**
@@ -83,9 +104,9 @@ function separateImages(edition:Edition):{edition:unknown, images:Map<string, st
 async function _save(username:string, password:string, edition:Edition):Promise<boolean> {
     type SaveData = {
         saveName:string,
-        check:number,
         edition?:unknown,
         id?:string,
+        isSource?:boolean
         image?:string
     };
     
@@ -98,19 +119,35 @@ async function _save(username:string, password:string, edition:Edition):Promise<
     {
         const saveData:SaveData = {
             saveName: saveName,
-            check: hashFunc(saveName),
             edition: toSave.edition
         };
         const payload = JSON.stringify(saveData);
         promises.push(cmd(username, password, 'save', `Saving edition data`, payload));
     }
 
-    for (const [id,imageString] of toSave.images) {
-        promises.push(Locks.enqueue(id, ()=>{
+    for (const [id,imageString] of toSave.sourceImages) {
+        if (!imageString.startsWith('data:')) {continue;}
+        if (!edition.dirtySourceImages.has(id)) {continue;}
+        promises.push(Locks.enqueue('saveImage', ()=>{
             const saveData:SaveData = {
                 saveName: saveName,
-                check: hashFunc(saveName),//TODO: I don't think the hash serves any practical purpose. remove it!
                 id: id,
+                isSource:true,
+                image: imageString
+            };
+            const payload = JSON.stringify(saveData);
+            return cmd(username, password, 'save-img', `Saving ${id}.src.png`, payload);
+        }, MAX_SIMULTANEOUS_IMAGE_UPLOADS));
+    }
+
+    for (const [id,imageString] of toSave.finalImages) {
+        if (!imageString.startsWith('data:')) {continue;}
+        if (!edition.dirtyFinalImages.has(id)) {continue;}
+        promises.push(Locks.enqueue('saveImage', ()=>{
+            const saveData:SaveData = {
+                saveName: saveName,
+                id: id,
+                isSource:false,
                 image: imageString
             };
             const payload = JSON.stringify(saveData);
@@ -127,7 +164,11 @@ async function _save(username:string, password:string, edition:Edition):Promise<
         }
     }
 
+    // mark things as up to date
+    edition.dirtySourceImages.clear();
+    edition.dirtyFinalImages.clear();
     await edition.dirty.set(false);
+    
     return true;
 }
 

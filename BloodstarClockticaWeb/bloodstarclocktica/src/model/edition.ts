@@ -7,8 +7,8 @@ import {spinner} from '../dlg/spinner-dlg';
 import {Character} from './character';
 import {EditionAlmanac} from './edition-almanac';
 import {EditionMeta} from './edition-meta';
-import {ObservableCollection} from '../bind/observable-collection';
-import {observableChild, observableCollection, ObservableObject, observableProperty, ObservableType} from '../bind/observable-object';
+import {ObservableCollection, ObservableCollectionChangeAction} from '../bind/observable-collection';
+import {observableChild, observableCollection, ObservableObject, observableProperty, ObservableType, PropKey} from '../bind/observable-object';
 
 function serializeJustIds(_:ObservableObject<Edition>, nightOrder:ObservableType):unknown {
     if (!(nightOrder instanceof ObservableCollection)) {return [];}
@@ -70,6 +70,12 @@ export class Edition extends ObservableObject<Edition> {
     @observableProperty('Bloodstar Clocktica', {read:false,write:false})
     readonly windowTitle!:Property<string>;
 
+    /** source images that need to be saved */
+    readonly dirtySourceImages = new Set<string>();
+
+    /** final images that need to be saved */
+    readonly dirtyFinalImages = new Set<string>();
+
     static async asyncNew():Promise<Edition>
     {
         const edition = new Edition();
@@ -89,6 +95,31 @@ export class Edition extends ObservableObject<Edition> {
                     break;
             }
         });
+
+        // watch for dirtying of images
+        edition.characterList.addItemChangedListener((_:number, character:Character, propName:PropKey<Character>) => {
+            switch (propName) {
+                case 'unStyledImage':
+                    edition.dirtySourceImages.add(character.id.get());
+                    break;
+                case 'styledImage':
+                    edition.dirtyFinalImages.add(character.id.get());
+                    break;
+            }
+        });
+        edition.characterList.addCollectionChangedListener(event=>{
+            switch (event.action) {
+                case ObservableCollectionChangeAction.Remove:
+                case ObservableCollectionChangeAction.Replace:
+                    for (const character of event.oldItems) {
+                        const id = character.id.get();
+                        edition.dirtySourceImages.delete(id);
+                        edition.dirtyFinalImages.delete(id);
+                    }
+                    break;
+            }
+        });
+
         return edition
     }
 
@@ -127,7 +158,11 @@ export class Edition extends ObservableObject<Edition> {
         if (!data) {await this.reset(); return false;}
         await spinner('edition.open', 'Deserializing edition', this.deserialize(data));
         await this.saveName.set(saveName);
+        
+        // mark all as up to date
         await this.dirty.set(false);
+        this.dirtySourceImages.clear();
+        this.dirtyFinalImages.clear();
 
         return true;
     }
@@ -135,6 +170,8 @@ export class Edition extends ObservableObject<Edition> {
     /** reset to a blank edition */
     async reset():Promise<void> {
         await super.reset();
+        this.dirtySourceImages.clear();
+        this.dirtyFinalImages.clear();
         await this.addNewCharacter();
         await this.dirty.set(false);
     }
