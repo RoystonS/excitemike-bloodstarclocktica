@@ -80,8 +80,11 @@
             $firstNightOrder = $saveData['firstNightOrder'];
             $i = 1;
             foreach ($firstNightOrder as $id) {
-                $charactersById[$id]['firstNight'] = $i + 1;
-                $i = $i + 1;
+                $character = &$charactersById[$id];
+                if (array_key_exists('firstNightReminder', $character) && $character['firstNightReminder']!=='') {
+                    $character['firstNight'] = $i + 1;
+                    $i = $i + 1;
+                }
             }
         }
         if (array_key_exists('otherNightOrder', $saveData)){
@@ -89,8 +92,10 @@
             $i = 1;
             foreach ($otherNightOrder as $id) {
                 $character = &$charactersById[$id];
-                $character['otherNight'] = $i + 1;
-                $i = $i + 1;
+                if (array_key_exists('otherNightReminder', $character) && $character['otherNightReminder']!=='') {
+                    $character['otherNight'] = $i + 1;
+                    $i = $i + 1;
+                }
             }
         }
 
