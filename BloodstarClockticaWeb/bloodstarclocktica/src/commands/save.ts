@@ -86,6 +86,7 @@ function separateImages(edition:Edition):Separated {
             }
         }
     }
+    // TODO: also separate the logo
     return {
         edition:editionSerialized,
         sourceImages,
@@ -113,6 +114,8 @@ async function _save(username:string, password:string, edition:Edition):Promise<
     // serialize the edition, but break images out into separate pieces to save
     const toSave = separateImages(edition);
     const promises = [];
+
+    // TODO: saving under a new name should dirty the images
 
     // save JSON
     const saveName = edition.saveName.get();

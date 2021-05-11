@@ -76,6 +76,8 @@ export class Edition extends ObservableObject<Edition> {
     /** final images that need to be saved */
     readonly dirtyFinalImages = new Set<string>();
 
+    // TODO: logo dirtiness
+
     static async asyncNew():Promise<Edition>
     {
         const edition = new Edition();
