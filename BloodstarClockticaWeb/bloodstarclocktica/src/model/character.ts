@@ -13,6 +13,7 @@ import { spinner } from '../dlg/spinner-dlg';
 
 // if the browser realizes we are using a downloaded image, it will not let us do image processing on those pixels
 async function safelyConvertImage(object:ObservableObject<unknown>, field:ObservableType, data:unknown):Promise<void> {
+    if (data === null) { return; }
     const character = object as unknown as Character;
     const id = character.id.get();
     const unstyledImageProperty = field as Property<string|null>;
@@ -100,7 +101,7 @@ export class Character extends ObservableObject<Character> {
 
     async deserialize(data:{[key:string]:unknown}):Promise<void> {
         this.imageRegenSuspended = true;
-        super.deserialize(data);
+        await super.deserialize(data);
         this.imageRegenSuspended = false;
     }
 
