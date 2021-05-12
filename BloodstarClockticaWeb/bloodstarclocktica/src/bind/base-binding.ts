@@ -8,7 +8,7 @@ export type PropertyChangeListener<T> = (value:T)=>Promise<void>|void;
 
 /** generic observable property */
 export class Property<T> {
-    private defaultValue:T;//TODO: I think this should now be tracked elsewhere
+    private defaultValue:T;
     private value:T;
     private listeners:PropertyChangeListener<T>[];
 
