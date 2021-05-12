@@ -1,5 +1,6 @@
 <?php
     include('shared.php');
+    include('almanac.php');
     requirePost();
     $data = getPayload();
 
@@ -87,10 +88,12 @@
             $firstNightOrder = $saveData['firstNightOrder'];
             $i = 1;
             foreach ($firstNightOrder as $id) {
-                $character = &$charactersById[$id];
-                if (array_key_exists('firstNightReminder', $character) && $character['firstNightReminder']!=='') {
-                    $character['firstNight'] = $i + 1;
-                    $i = $i + 1;
+                if (array_key_exists($id, $charactersById)) {
+                    $character = &$charactersById[$id];
+                    if (array_key_exists('firstNightReminder', $character) && $character['firstNightReminder']!=='') {
+                        $character['firstNight'] = $i + 1;
+                        $i = $i + 1;
+                    }
                 }
             }
         }
@@ -98,10 +101,12 @@
             $otherNightOrder = $saveData['otherNightOrder'];
             $i = 1;
             foreach ($otherNightOrder as $id) {
-                $character = &$charactersById[$id];
-                if (array_key_exists('otherNightReminder', $character) && $character['otherNightReminder']!=='') {
-                    $character['otherNight'] = $i + 1;
-                    $i = $i + 1;
+                if (array_key_exists($id, $charactersById)) {
+                    $character = &$charactersById[$id];
+                    if (array_key_exists('otherNightReminder', $character) && $character['otherNightReminder']!=='') {
+                        $character['otherNight'] = $i + 1;
+                        $i = $i + 1;
+                    }
                 }
             }
         }
@@ -164,6 +169,18 @@
                 echo json_encode(array('error' =>'error copying '.$sourcePath.' to '.$destinationPath));
                 exit();
             }
+        }
+    }
+
+    // almanac
+    {
+        $almanac = makeAlmanac($data, $saveName);
+        $almanacPath = join_paths($publishDir, 'almanac.html');
+        try {
+            file_put_contents($almanacPath, $almanac);
+        } catch (Exception $e) {
+            echo json_encode(array('error' =>"error writing almanac.html"));
+            exit();
         }
     }
 

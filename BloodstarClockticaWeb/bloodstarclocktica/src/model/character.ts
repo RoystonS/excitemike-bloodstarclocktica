@@ -59,7 +59,7 @@ export class Character extends ObservableObject<Character> {
     @observableChild(CharacterImageSettings)
     readonly imageSettings!: CharacterImageSettings;
 
-    @observableProperty('New Character')
+    @observableProperty('New Character',{saveDefault:true})
     readonly name!: Property<string>;
 
     @observableProperty('-',{read:false,write:false})

@@ -15,6 +15,6 @@ export class EditionMeta extends ObservableObject<EditionMeta> {
     readonly logo!:Property<string|null>;
 
     /** what the edition is called */
-    @observableProperty('New Edition')
+    @observableProperty('New Edition', {saveDefault:true})
     readonly name!:Property<string>;
 }
