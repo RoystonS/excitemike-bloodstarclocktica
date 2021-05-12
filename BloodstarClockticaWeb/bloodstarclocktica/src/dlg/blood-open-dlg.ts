@@ -29,7 +29,7 @@ class OpenDlg extends AriaDialog<string> {
             document.activeElement,
             'open',
             body,
-            [{label:'Cancel', callback:async()=>null}]
+            [{label:'Cancel'}]
         );
     }
 }

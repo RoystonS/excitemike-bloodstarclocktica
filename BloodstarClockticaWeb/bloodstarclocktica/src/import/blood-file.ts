@@ -115,7 +115,7 @@ class BloodImporter {
     }
 
     /** make sure that acharacter exists in the edition/map before continuing */
-    private async ensureCharacter(id:string):Promise<Character> {
+    private ensureCharacter(id:string):Promise<Character> {
         return spinAndThrottle('ensureCharacter', `Creating ${id}`, async ()=>{
             let character = this.charactersById.get(id);
             if (!character) {
@@ -226,7 +226,7 @@ async function chooseBloodFile():Promise<File|null> {
     if (!(fileInput instanceof HTMLInputElement)) {return null;}
     const dlg = new AriaDialog<File|null>();
 
-    async function chooseFile():Promise<void> {
+    function chooseFile():void {
         if (fileInput instanceof HTMLInputElement) {
             fileInput.onchange=()=>{
                 dlg.close(fileInput.files && fileInput.files[0]);
@@ -246,7 +246,7 @@ async function chooseBloodFile():Promise<File|null> {
             events:{click:()=>chooseFile()}
         }],
         [
-            {label:'Cancel',callback:async ()=>null}
+            {label:'Cancel'}
         ]
     );
 }

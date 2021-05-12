@@ -9,8 +9,8 @@ import { appear, disappear } from "../animate";
 import { createElement, CreateElementsOptions } from "../util";
 
 type ResolveFn = (value:any)=>void;
-type ButtonCb = ()=>Promise<any>;
-export type ButtonCfg = {label:string,callback:ButtonCb};
+type ButtonCb = ()=>Promise<unknown>|unknown;
+export type ButtonCfg = {label:string,callback?:ButtonCb};
 
 /** used to make each dialog definitely have a unique id */
 let unique = 1;
@@ -119,7 +119,7 @@ export class AriaDialog<ResultType> {
     canCancel():boolean{return true;}
 
     /** close the dialog early. resolve result promise with specified value */
-    close(value:ResultType|null = null):void {
+    close(value:unknown = null):void {
         if (!this.resolveFn){return;}
         this.resolveFn(value);
 
@@ -170,7 +170,7 @@ export class AriaDialog<ResultType> {
     private createDialog(
         debugName:string,
         body:CreateElementsOptions = [],
-        buttons:ButtonCfg[] = [{label:'OK',callback:async ()=>null}]
+        buttons:ButtonCfg[] = [{label:'OK'}]
     ):Element {
         const id = `${debugName}${unique++}`;
         const root = document.createElement('div');
@@ -197,7 +197,10 @@ export class AriaDialog<ResultType> {
         
             for (const {label, callback} of buttons) {
                 const btn = document.createElement('button');
-                btn.addEventListener('click', async () => this.close(await callback()));
+                btn.addEventListener('click', async () => {
+                    const result = callback ? await callback() : null;
+                    return this.close(result);
+                });
                 btn.innerText = label;
                 btnGroup.appendChild(btn);
             }
@@ -229,14 +232,14 @@ export class AriaDialog<ResultType> {
      * @param buttons buttons to add to the dialog
      * @returns promise that resolves to dialog result, or null
      */
-    async baseOpen(
+    baseOpen(
         focusAfterClose:Element|string|null,
         debugName = '',
         body:CreateElementsOptions,
-        buttons:ButtonCfg[] = [{label:'OK',callback:async ()=>null}]
+        buttons:ButtonCfg[] = [{label:'OK'}]
     ):Promise<ResultType|null> {
         this.root = this.createDialog(debugName, body, buttons);
-        if (!this.root) {return null;}
+        if (!this.root) {return Promise.resolve(null);}
 
         // we need to replace the previous dialog's listeners
         if (dialogStack.length > 0) {

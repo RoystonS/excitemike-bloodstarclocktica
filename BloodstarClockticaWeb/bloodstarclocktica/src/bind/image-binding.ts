@@ -27,7 +27,7 @@ async function syncFileElemToProperty(element:HTMLInputElement, property:Propert
 }
 
 /** convert a url to a data uri */
-async function toDataUri(url:string, maxWidth:number, maxHeight:number):Promise<string> {
+function toDataUri(url:string, maxWidth:number, maxHeight:number):Promise<string> {
     return new Promise((resolve,reject)=>{
         try {
             const image = new Image();

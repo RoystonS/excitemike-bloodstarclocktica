@@ -43,7 +43,7 @@ class LoginDlg extends AriaDialog<UserPass> {
 
         const buttons:ButtonCfg[] = [{
             label:'Ok',
-            callback:async ()=>({
+            callback:()=>({
                 username:this.username,
                 password:this.password
         })}];
@@ -62,6 +62,6 @@ class LoginDlg extends AriaDialog<UserPass> {
  * returns a promise that resolves to the entered
  * string or null if the user cancelled
  */
-export async function show(prompt:string):Promise<UserPass|null> {
+export function show(prompt:string):Promise<UserPass|null> {
     return new LoginDlg().open(prompt);
 }

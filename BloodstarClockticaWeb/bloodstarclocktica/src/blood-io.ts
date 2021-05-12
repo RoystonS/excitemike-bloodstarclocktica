@@ -62,7 +62,6 @@ async function openNoSavePrompt(username:string, password:string, edition:Editio
  * @returns promise that resolves to whether a file was successfully opened
  */
 async function openNoPrompts(username:string, password:string, edition:Edition, name:string):Promise<boolean> {
-    // TODO: images in separate requests/files
     const openData = {
         saveName: name
     };
@@ -131,7 +130,7 @@ async function chooseJsonFile():Promise<File|null> {
     fileInput.value = '';
     const dlg = new AriaDialog<File|null>();
 
-    async function chooseFile():Promise<void> {
+    function chooseFile():void {
         if (fileInput instanceof HTMLInputElement) {
             fileInput.onchange=()=>{
                 dlg.close(fileInput.files && fileInput.files[0]);
@@ -151,7 +150,7 @@ async function chooseJsonFile():Promise<File|null> {
             events:{click:()=>chooseFile()}
         }],
         [
-            {label:'Cancel',callback:async ()=>null}
+            {label:'Cancel'}
         ]
     );
 }

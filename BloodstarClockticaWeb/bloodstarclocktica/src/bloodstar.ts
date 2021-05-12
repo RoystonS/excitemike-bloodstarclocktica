@@ -114,7 +114,7 @@ export async function saveFileAsClicked():Promise<boolean> {
 }
 
 /** user chose to import official character(s) */
-async function importOfficialClicked():Promise<boolean> {
+function importOfficialClicked():boolean {
     // TODO: implement importOfficialClicked
     showError('Not yet implemented', '`importOfficialClicked` Not yet implemented');
     return false;

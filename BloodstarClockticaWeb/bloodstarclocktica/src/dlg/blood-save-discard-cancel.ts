@@ -15,8 +15,8 @@ class SaveDiscardCancelDlg extends AriaDialog<boolean> {
         }];
         const buttons:ButtonCfg[] = [
             {label:'Save', callback:async ()=>await saveFileClicked()},
-            {label:'Discard', callback:async ()=>Promise.resolve(true)},
-            {label:'Cancel', callback:async ()=>Promise.resolve(false)},
+            {label:'Discard', callback:()=>Promise.resolve(true)},
+            {label:'Cancel', callback:()=>Promise.resolve(false)},
         ];
         return !!await this.baseOpen(
             document.activeElement,

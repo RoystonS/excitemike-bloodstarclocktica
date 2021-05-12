@@ -38,7 +38,7 @@ export class Property<T> {
         this.listeners = [];
     }
     async reset():Promise<void> {
-        this.set(this.defaultValue);
+        await this.set(this.defaultValue);
     }
     private async notifyListeners():Promise<void> {
         return (await Promise.all(this.listeners.map(cb=>cb(this.value))))[0];

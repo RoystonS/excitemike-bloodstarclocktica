@@ -48,7 +48,7 @@ class SpinnerDialog extends AriaDialog<null> {
     }
 
     /** undo add */
-    async remove(key:string, message:string):Promise<void> {
+    remove(key:string, message:string):void {
         const entry = this.messages.get(key);
         if (!entry){return;}
         const {listItem,stack} = entry;

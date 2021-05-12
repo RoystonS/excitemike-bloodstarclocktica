@@ -11,9 +11,6 @@ type LockEntry = {
 };
 type StartWorkFn = ((value:WorkCompleteFn)=>void);
 
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-const DONOTHING = ()=>{};
-
 /** Helper for making sure asynchronous work doesn't overlap, or just throttling it when there are many */
 export class LockSet<KeyType> {
     private readonly locks = new Map<KeyType, LockEntry>();
@@ -23,13 +20,17 @@ export class LockSet<KeyType> {
      * @max maximum number of instances of running tasks in this group
      * @returns Promise for work result
      * */
-    private async acquire(key:KeyType, max = 1):Promise<WorkCompleteFn> {
-        const entry = this.locks.get(key) || this.locks.set(key, {running:[],queue:[],max}).get(key);
-        if (!entry) {return DONOTHING;}
+    private acquire(key:KeyType, max = 1):Promise<WorkCompleteFn> {
+        let entry = this.locks.get(key);
+        if (!entry){
+            entry = {running:[],queue:[],max};
+            this.locks.set(key, entry);
+        }
         entry.max = max;
 
         // promise to block on before work is executed. resolves when previous work in queue completes
         const promise = new Promise<WorkCompleteFn>(resolve=>{
+            if (!entry){return;}
             entry.queue.push(resolve);
         });
 
