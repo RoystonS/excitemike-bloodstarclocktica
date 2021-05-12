@@ -124,6 +124,7 @@ async function _save(username:string, password:string, edition:Edition):Promise<
     const promises = [];
 
     // TODO: saving under a new name should dirty the images
+    // TODO: renaming a character should dirty its images
 
     // save JSON
     const saveName = edition.saveName.get();
@@ -217,6 +218,7 @@ async function promptForName(defaultName:string):Promise<string|null> {
  * sanitize a save name
  */
 function sanitizeSaveName(original:string):string {
+    // TODO: be less strict
     const re = /^[-a-z0-9.]{1,25}$/;
     if (re.test(original)) {
         return original;

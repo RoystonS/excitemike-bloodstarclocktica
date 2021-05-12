@@ -31,8 +31,8 @@ export class CharacterImageSettings extends ObservableObject<CharacterImageSetti
     @observableProperty(true)
     readonly useBorder!: Property<boolean>;
 
-    /** scales the spreading of the border from where edges were detected. default: 3 */
-    @observableProperty(3)
+    /** scales the spreading of the border from where edges were detected. default: 1 */
+    @observableProperty(1)
     readonly borderIntensity!: Property<number>;
 
     /** whether to apply a dropshadow to the character icon. default: true */

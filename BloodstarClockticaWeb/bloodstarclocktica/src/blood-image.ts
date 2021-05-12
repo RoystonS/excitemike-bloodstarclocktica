@@ -590,9 +590,13 @@ export async function getGradientForTeam(team:BloodTeam, useOutsiderAndMinionCol
             url = Images.DEMON_GRADIENT_URL;
             break;
         case BloodTeam.TRAVELER:
-        default:
             url = Images.TRAVELER_GRADIENT_URL;
             break;
+        case BloodTeam.FABLED:
+            url = Images.FABLED_GRADIENT_URL;
+            break;
+        default:
+            throw new Error(`getGradientForTeam: unhandled team "${team}"`);
     }
     return await urlToBloodImage(url, width, height, false);
 }

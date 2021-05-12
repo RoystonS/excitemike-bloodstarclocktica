@@ -308,6 +308,7 @@ function collectStatusBarData():StatusBarData {
     data.set(BloodTeam.MINION, {id:'minionsStatus',exported:0,total:0});
     data.set(BloodTeam.DEMON, {id:'demonsStatus',exported:0,total:0});
     data.set(BloodTeam.TRAVELER, {id:'travelersStatus',exported:0,total:0});
+    data.set(BloodTeam.FABLED, {id:'fabledStatus',exported:0,total:0});
     if (edition){
         for (const character of edition.characterList) {
             const exported = character.export.get();

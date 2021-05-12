@@ -58,7 +58,7 @@
     padding: 2px;
 }
 .teamColorTownsfolk {
-    background-color:#3977FF;
+    background-color:#1f65ff;
 }
 .teamColorOutsider {
     background-color:#46d5ff;
@@ -70,8 +70,11 @@
     background-color:#ce0100;
 }
 .teamColorTraveler {
-    background-color:#33333380;
-    background-image: linear-gradient(to right, #3977FF 50%, #ce0100 50%);
+    background-color:#cc04ff;
+    background-image: linear-gradient(to right, #1f65ff 50%, #ce0100 50%);
+}
+.teamColorFabled {
+    background-color:#ffe91f;
 }
 .nightOrderButton {
     background:none;

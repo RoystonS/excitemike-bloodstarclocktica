@@ -11,7 +11,8 @@ enum Images {
     OUTSIDER_GRADIENT_URL = './img/outsidergradient.png',
     MINION_GRADIENT_URL = './img/miniongradient.png',
     DEMON_GRADIENT_URL = './img/demongradient.png',
-    TRAVELER_GRADIENT_URL = './img/travelergradient.png'
+    TRAVELER_GRADIENT_URL = './img/travelergradient.png',
+    FABLED_GRADIENT_URL = './img/fabledgradient.png'
 }
 
 /** images as data URIs */
