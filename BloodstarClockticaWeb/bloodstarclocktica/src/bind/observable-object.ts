@@ -41,7 +41,7 @@ type ChildEntry = {
     ctor:new ()=>ObservableObject<unknown>,
 };
 
-class ObservableObjectEntry {
+class ObservableObjectConfig {
     properties = new Map<string|symbol, PropertyEntry>();
     enumProperties = new Map<string|symbol, EnumPropertyEntry>();
     collections = new Map<string|symbol, CollectionEntry>();
@@ -49,14 +49,14 @@ class ObservableObjectEntry {
     exceptions = new Map<string|symbol, PropertyCfg>();
 }
 
-const observableObjectData = new Map<any, ObservableObjectEntry>();
+const observableObjectData = new Map<any, ObservableObjectConfig>();
 
 /** decorator to make the ObservableObject manage a property */
 export function observableProperty(defaultValue:unknown, cfg?:PropertyCfg):PropertyDecorator {
     return (prototype:any, propertyKey:string|symbol):void => {
         let objectEntry = observableObjectData.get(prototype);
         if (!objectEntry) {
-            objectEntry = new ObservableObjectEntry();
+            objectEntry = new ObservableObjectConfig();
             observableObjectData.set(prototype, objectEntry);
         }
         objectEntry.properties.set(propertyKey, {defaultValue});
@@ -68,7 +68,7 @@ export function observableEnumProperty<T>(defaultValue:T, displayValuePairs: Dis
     return (prototype:any, propertyKey:string|symbol):void => {
         let objectEntry = observableObjectData.get(prototype);
         if (!objectEntry) {
-            objectEntry = new ObservableObjectEntry();
+            objectEntry = new ObservableObjectConfig();
             observableObjectData.set(prototype, objectEntry);
         }
         objectEntry.enumProperties.set(propertyKey, {defaultValue,displayValuePairs});
@@ -80,7 +80,7 @@ export function observableCollection(ctor:()=>Promise<unknown>, cfg?:PropertyCfg
     return (prototype:any, propertyKey:string|symbol):void => {
         let objectEntry = observableObjectData.get(prototype);
         if (!objectEntry) {
-            objectEntry = new ObservableObjectEntry();
+            objectEntry = new ObservableObjectConfig();
             observableObjectData.set(prototype, objectEntry);
         }
         objectEntry.collections.set(propertyKey, {ctor});
@@ -92,7 +92,7 @@ export function observableChild(ctor:new ()=>ObservableObject<any>,cfg?:Property
     return (prototype:any, propertyKey:string|symbol):void => {
         let objectEntry = observableObjectData.get(prototype);
         if (!objectEntry) {
-            objectEntry = new ObservableObjectEntry();
+            objectEntry = new ObservableObjectConfig();
             observableObjectData.set(prototype, objectEntry);
         }
         objectEntry.children.set(propertyKey, {ctor});
@@ -107,15 +107,17 @@ export abstract class ObservableObject<T> {
     private properties = new Map<PropKey<T>, Property<unknown>>();
     private enumProperties = new Map<PropKey<T>, Property<unknown>>();
     private propertyChangedListeners:PropertyChangedListener<T>[] = [];
+    private obsObjCfg:ObservableObjectConfig|undefined;
 
     /** set up listening */
     constructor() {
         const prototype = Object.getPrototypeOf(this);
         if (!prototype) {return;}
-        const objectEntry = observableObjectData.get(prototype);
-        if (!objectEntry) {return;}
+        this.obsObjCfg = observableObjectData.get(prototype);
+        if (!this.obsObjCfg) {return;}
+        
         // properties
-        for (const [_key,{defaultValue}] of objectEntry.properties) {
+        for (const [_key,{defaultValue}] of this.obsObjCfg.properties) {
             const key = _key as PropKey<T>;
             const property = new Property<unknown>(defaultValue);
             (this as any)[key] = property;
@@ -124,7 +126,7 @@ export abstract class ObservableObject<T> {
             property.addListener(()=>this.notifyPropertyChangedEventListeners(key));
         }
         // enum properties
-        for (const [_key,{defaultValue,displayValuePairs}] of objectEntry.enumProperties) {
+        for (const [_key,{defaultValue,displayValuePairs}] of this.obsObjCfg.enumProperties) {
             const key = _key as PropKey<T>;
             const enumProperty = new EnumProperty<unknown>(defaultValue, displayValuePairs);
             (this as any)[key] = enumProperty;
@@ -133,7 +135,7 @@ export abstract class ObservableObject<T> {
             enumProperty.addListener(()=>this.notifyPropertyChangedEventListeners(key));
         }
         // collections
-        for (const [_key,{ctor}] of objectEntry.collections) {
+        for (const [_key,{ctor}] of this.obsObjCfg.collections) {
             const key = _key as PropKey<T>;
             const collection = new ObservableCollection<any>(ctor);
             (this as any)[key] = collection;
@@ -143,7 +145,7 @@ export abstract class ObservableObject<T> {
             collection.addItemChangedListener(()=>this.notifyPropertyChangedEventListeners(key));
         }
         // children
-        for (const [_key,{ctor}] of objectEntry.children) {
+        for (const [_key,{ctor}] of this.obsObjCfg.children) {
             const key = _key as PropKey<T>;
             const child = new ctor();
             (this as any)[key] = child;
@@ -155,66 +157,48 @@ export abstract class ObservableObject<T> {
 
     /** check for speical behavior for a field */
     private _canNotifyField(key:PropKey<T>):boolean{
-        const prototype = Object.getPrototypeOf(this);
-        if (!prototype) {return true;}
-        const objectEntry = observableObjectData.get(prototype);
-        if (!objectEntry) {return true;}
-        const cfg = objectEntry.exceptions.get(key as string|symbol);
+        if (!this.obsObjCfg) {return true;}
+        const cfg = this.obsObjCfg.exceptions.get(key as string|symbol);
         if (!cfg) {return true;}
         return cfg.notify!==false;
     }
 
     /** check for speical behavior for a field */
     private _canReadField(key:PropKey<T>):boolean{
-        const prototype = Object.getPrototypeOf(this);
-        if (!prototype) {return true;}
-        const objectEntry = observableObjectData.get(prototype);
-        if (!objectEntry) {return true;}
-        const cfg = objectEntry.exceptions.get(key as string|symbol);
+        if (!this.obsObjCfg) {return true;}
+        const cfg = this.obsObjCfg.exceptions.get(key as string|symbol);
         if (!cfg) {return true;}
         return cfg.read!==false;
     }
 
     /** check for speical behavior for a field */
     private _canWriteField(key:PropKey<T>):boolean{
-        const prototype = Object.getPrototypeOf(this);
-        if (!prototype) {return true;}
-        const objectEntry = observableObjectData.get(prototype);
-        if (!objectEntry) {return true;}
-        const cfg = objectEntry.exceptions.get(key as string|symbol);
+        if (!this.obsObjCfg) {return true;}
+        const cfg = this.obsObjCfg.exceptions.get(key as string|symbol);
         if (!cfg) {return true;}
         return cfg.write!==false;
     }
 
     /** check for special behavior for a field */
     private _saveDefault(key:PropKey<T>):boolean{
-        const prototype = Object.getPrototypeOf(this);
-        if (!prototype) {return true;}
-        const objectEntry = observableObjectData.get(prototype);
-        if (!objectEntry) {return true;}
-        const cfg = objectEntry.exceptions.get(key as string|symbol);
-        if (!cfg) {return true;}
+        if (!this.obsObjCfg) {return false;}
+        const cfg = this.obsObjCfg.exceptions.get(key as string|symbol);
+        if (!cfg) {return false;}
         return !!cfg.saveDefault;
     }
 
     /** check for speical behavior for a field */
     private _getCustomDeserialize(key:PropKey<T>):CustomDeserializeFn|undefined {
-        const prototype = Object.getPrototypeOf(this);
-        if (!prototype) {return undefined;}
-        const objectEntry = observableObjectData.get(prototype);
-        if (!objectEntry) {return undefined;}
-        const cfg = objectEntry.exceptions.get(key as string|symbol);
+        if (!this.obsObjCfg) {return undefined;}
+        const cfg = this.obsObjCfg.exceptions.get(key as string|symbol);
         if (!cfg) {return undefined;}
         return cfg.customDeserialize;
     }
 
     /** check for speical behavior for a field */
     private _getCustomSerialize(key:PropKey<T>):CustomSerializeFn|undefined {
-        const prototype = Object.getPrototypeOf(this);
-        if (!prototype) {return undefined;}
-        const objectEntry = observableObjectData.get(prototype);
-        if (!objectEntry) {return undefined;}
-        const cfg = objectEntry.exceptions.get(key as string|symbol);
+        if (!this.obsObjCfg) {return undefined;}
+        const cfg = this.obsObjCfg.exceptions.get(key as string|symbol);
         if (!cfg) {return undefined;}
         return cfg.customSerialize;
     }
