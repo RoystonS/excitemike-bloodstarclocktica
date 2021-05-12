@@ -39,7 +39,7 @@
     }
 
     // encode as json and write to save directory
-    function writeEditionFile($saveName, $data) {
+    function writeEditionFile($saveName, $data, $clobber) {
         global $saveDir;
         validateFilename($saveName);
 
@@ -54,6 +54,13 @@
                 echo json_encode(array('error' =>"could not make directory for '$saveName'"));
                 exit();
             }
+        }
+
+        $editionFile = join_paths($editionFolder, 'edition');
+
+        if ($clobber || !file_exists($editionFile)) {
+            echo json_encode(array('clobberWarning' => "Save file '$saveName' already exists"));
+            exit();
         }
 
         $editionFile = join_paths($editionFolder, 'edition');
@@ -84,7 +91,7 @@
 
     // error out if filename invalid
     function validateFilename($filename) {
-        if (!preg_match("/^[0-9a-zA-Z.]+$/", $filename)) {
+        if (!preg_match("/^[^\\/:\"?<>\\|]+$/", $filename)) {
             echo '{"error":"invalid saveName"}';
             exit();
         }

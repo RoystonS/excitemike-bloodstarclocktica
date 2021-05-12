@@ -21,7 +21,7 @@
 .makeNavItems($saveData)
 .'</ol><ol class="almanac-viewport">'
 .makeAlmanacItems($saveData, $saveName)
-.'<li class="generated-by">this almanac generated using <a href="http://meyermike.com/md/?botctools">Bloodstar Clocktica</a></li>' // TODO: update botctools page
+.'<li class="generated-by">this almanac generated using <a href="https://www.bloodstar.xyz">Bloodstar Clocktica</a></li>'
 .'</ol></div></body></html>';
     }
 

@@ -5,13 +5,16 @@
 import cmd from './cmd';
 import {show as inputDlg} from '../dlg/blood-string-dlg';
 import { Edition } from '../model/edition';
-import { showError } from '../dlg/blood-message-dlg';
+import { show as showMessage, showError } from '../dlg/blood-message-dlg';
 import Locks from '../lock';
 import {spinner} from '../dlg/spinner-dlg';
+import { AriaDialog } from '../dlg/aria-dlg';
 
 type SaveReturn = {error?:string};
 
 const MAX_SIMULTANEOUS_IMAGE_SAVES = 8;
+const VALID_SAVENAME_RE = /^[^\\/:"?<>|]+$/;
+const INVALID_SAVENAME_CHARACTER_RE = /[\\/:"?<>|]/;
 
 /**
  * prompt for a name, then save with that name
@@ -23,13 +26,14 @@ const MAX_SIMULTANEOUS_IMAGE_SAVES = 8;
  */
  export async function saveAs(username:string, password:string, edition:Edition):Promise<boolean> {
     const name = await promptForName(edition.saveName.get());
-    if (!name) {
+    if (!name || !validateSaveName(name)) {
+        await showMessage('Invalid File Name', `"${name}" is not a valid filename.`);
         return Promise.resolve(false);
     }
     const backupName = edition.saveName.get();
     try {
         await edition.saveName.set(name);
-        return !!(await _save(username, password, edition));
+        return !!(await _save(username, password, edition, false));
     } catch (error) {
         await edition.saveName.set(backupName);
         // intentional floating promise - TODO: something to prevent getting many of these at once
@@ -51,7 +55,7 @@ export async function save(username:string, password:string, edition:Edition):Pr
         case '':
             return await saveAs(username, password, edition);
         default:
-            return await _save(username, password, edition);
+            return await _save(username, password, edition, true);
     }
 }
 
@@ -110,32 +114,57 @@ function separateImages(edition:Edition):Separated {
  * @param edition file to save
  * @returns promise resolving to whether the save was successful
  */
-async function _save(username:string, password:string, edition:Edition):Promise<boolean> {
+async function _save(username:string, password:string, edition:Edition, clobber:boolean):Promise<boolean> {
     type SaveData = {
         saveName:string,
         edition?:unknown,
         id?:string,
         isSource?:boolean,
         image?:string,
-        clobber?:boolean // TODO: whether to intentionally clobber whatever is currently saved there
+        clobber?:boolean
     };
-    
+    type SaveResult = {
+        success?:true,
+        clobberWarning?:string,
+        error?:string,
+    };
     // serialize the edition, but break images out into separate pieces to save
     const toSave = separateImages(edition);
-    const promises = [];
-
-    // TODO: in the case of a newly-chosen name, warn if it conflicts
 
     // save JSON
     const saveName = edition.saveName.get();
     {
         const saveData:SaveData = {
             saveName: saveName,
+            clobber,
             edition: toSave.edition
         };
         const payload = JSON.stringify(saveData);
-        promises.push(cmd(username, password, 'save', `Saving edition data`, payload));
+        let {clobberWarning,error} = await cmd<SaveResult>(username, password, 'save', `Saving edition data`, payload);
+        if (clobberWarning) {
+            // confirmation dialog, then try again
+            const okToClobber = new AriaDialog<boolean>().baseOpen(
+                null,
+                'okToClobber',
+                [{t:'p',txt:`There is already a save file named ${saveName}. Would you like to replace it?`}],
+                [
+                    {label:`Yes, Replace ${saveName}`,callback:()=>true},
+                    {label:'No, Cancel Save',callback:()=>true},
+                ]
+            );
+            if (!okToClobber) {return false;}
+            ({clobberWarning,error} = await cmd<SaveResult>(username, password, 'save', `Saving edition data`, payload));
+            error = error || clobberWarning;
+        }
+        // surface error, if any
+        if (error){
+            await showError('Error', `Error encountered while trying to save ${saveName}`, error);
+            return false;
+        }
     }
+
+
+    const promises = [];
 
     for (const [id,imageString] of toSave.sourceImages) {
         if (!imageString.startsWith('data:')) {continue;}
@@ -206,7 +235,7 @@ async function _save(username:string, password:string, edition:Edition):Promise<
  */
 async function promptForName(defaultName:string):Promise<string|null> {
     return await inputDlg(
-        'Enter name to save as. (lowercase with no spaces or special characters)',
+        'Enter name to save as. Disallowed characters are these: ^\\/:"?<>|',
         defaultName,
         {
             pattern:'[-a-z0-9.]{1,25}',
@@ -216,17 +245,22 @@ async function promptForName(defaultName:string):Promise<string|null> {
 }
 
 /**
+ * validate a save name
+ */
+function validateSaveName(original:string):boolean {
+    return VALID_SAVENAME_RE.test(original);
+}
+
+/**
  * sanitize a save name
  */
 function sanitizeSaveName(original:string):string {
-    // TODO: be less strict
-    const re = /^[-a-z0-9.]{1,25}$/;
-    if (re.test(original)) {
+    if ((original === '') || validateSaveName(original)) {
         return original;
     }
     let corrected = '';
     for (const char of original) {
-        if (re.test(char) && corrected.length < 25) {
+        if (!INVALID_SAVENAME_CHARACTER_RE.test(char)) {
             corrected += char;
         }
     }
