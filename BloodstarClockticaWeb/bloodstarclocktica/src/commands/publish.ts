@@ -24,13 +24,12 @@ export default async function publish(username:string, password:string, edition:
     if (!response) {return false;}
     const {error} = response;
     if (error) {
-        showError('Error', 'Error encountered during publish', error);
+        await showError('Error', 'Error encountered during publish', error);
         return false;
     }
     const {script,almanac} = response;
 
-    // intentionally not awaiting this promise
-    new AriaDialog<void>().baseOpen(
+    await new AriaDialog<void>().baseOpen(
         null,
         'publishComplete', 
         [

@@ -39,7 +39,7 @@ async function addCharacterClicked():Promise<void> {
 /** clicked the help menu button */
 function showHelp() {
     // TODO: implement showHelp
-    showError('Not yet implemented', '`showHelp` Not yet implemented');
+    void showError('Not yet implemented', '`showHelp` Not yet implemented');
 }
 
 /**
@@ -116,7 +116,7 @@ export async function saveFileAsClicked():Promise<boolean> {
 /** user chose to import official character(s) */
 function importOfficialClicked():boolean {
     // TODO: implement importOfficialClicked
-    showError('Not yet implemented', '`importOfficialClicked` Not yet implemented');
+    void showError('Not yet implemented', '`importOfficialClicked` Not yet implemented');
     return false;
 }
 
@@ -124,7 +124,7 @@ function importOfficialClicked():boolean {
 async function saveAndPublishClicked():Promise<boolean> {
     if (!edition) {return false;}
     if (!edition.dirty.get() || await saveFileClicked()) {
-        publish(username, password, edition);
+        await publish(username, password, edition);
     }
     return false;
 }
@@ -177,7 +177,8 @@ async function login():Promise<void> {
             }
         } catch (e) {
             console.error(e);
-            showError('Error', 'Error encountered during login', e);
+            // intentional floating promise
+            void showError('Error', 'Error encountered during login', e);
         }
     }
 }
@@ -195,12 +196,13 @@ async function initBindings():Promise<void> {
         return message;
     });
 
-    document.onkeydown = (e) => {
+    // TODO: addEventListener
+    document.onkeydown = async (e) => {
         if (!edition) {return;}
         if (e.ctrlKey) {
             if (e.code === "KeyS") {
                 e.preventDefault();
-                save(username, password, edition);
+                await save(username, password, edition);
             }
         }
     };
@@ -279,7 +281,7 @@ async function initCustomEdition():Promise<void> {
     } catch (e) {
         console.error(e);
         if (edition) { await edition.reset(); }
-        showError('Error', 'Error encountered during initialization', e);
+        await showError('Error', 'Error encountered during initialization', e);
     }
 }
 
@@ -337,5 +339,7 @@ if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
 } else {
     // `DOMContentLoaded` already fired
-    init();
+    
+    // intentional floating promise
+    void init();
 }

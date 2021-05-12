@@ -23,8 +23,8 @@ async function _cmd(username:string, password:string, cmdName:string, body?:Body
     const controller = new AbortController();
     const timeoutId = setTimeout(()=>{
         controller.abort();
-        // TODO: something to prevent getting many of these at once
-        showMessage('Network Error', `Request timed out for command "${cmdName}"`);
+        // intentional floating promise - TODO: something to prevent getting many of these at once
+        void showMessage('Network Error', `Request timed out for command "${cmdName}"`);
     }, 15*1000);
     try {
         response = await fetch(`https://www.bloodstar.xyz/cmd/${cmdName}.php`, {
@@ -40,12 +40,14 @@ async function _cmd(username:string, password:string, cmdName:string, body?:Body
         
         if (!response.ok) {
             const error = `${response.status}: (${response.type}) ${response.statusText}`;
-            showError('Network Error', `Error encountered during command ${cmdName}`, error);
+            // intentional floating promise - TODO: something to prevent getting many of these at once
+            void showError('Network Error', `Error encountered during command ${cmdName}`, error);
             console.error(error);
             return null;
         }
     } catch (error) {
-        showError('Network Error', `Error encountered during command ${cmdName}`, error);
+        // intentional floating promise - TODO: something to prevent getting many of these at once
+        void showError('Network Error', `Error encountered during command ${cmdName}`, error);
         return null;
     } finally {
         clearTimeout(timeoutId);
@@ -55,7 +57,8 @@ async function _cmd(username:string, password:string, cmdName:string, body?:Body
         const responseText = await response.text();
         return JSON.parse(responseText);
     } catch (error) {
-        showError('Error', `Error parsing server response JSON for command ${cmdName}`, error);
+        // intentional floating promise - TODO: something to prevent getting many of these at once
+        void showError('Error', `Error parsing server response JSON for command ${cmdName}`, error);
         console.error(error);
     }
     return {};

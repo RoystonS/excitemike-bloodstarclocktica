@@ -88,8 +88,8 @@ class SpinnerDialog extends AriaDialog<null> {
             this.listElement
         ];
 
-        // do NOT await the dialog in this case
-        this.baseOpen(document.activeElement, 'spinner', body, []);
+        // intentional floating promise
+        void this.baseOpen(document.activeElement, 'spinner', body, []);
     }
 }
 

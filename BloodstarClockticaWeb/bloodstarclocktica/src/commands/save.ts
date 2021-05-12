@@ -32,7 +32,8 @@ const MAX_SIMULTANEOUS_IMAGE_SAVES = 8;
         return !!(await _save(username, password, edition));
     } catch (error) {
         await edition.saveName.set(backupName);
-        showError('Error', 'Error encountered while trying to save', error);
+        // intentional floating promise - TODO: something to prevent getting many of these at once
+        void showError('Error', 'Error encountered while trying to save', error);
     }
     return false;
 }
@@ -186,7 +187,8 @@ async function _save(username:string, password:string, edition:Edition):Promise<
     const results = await spinner('save', `Saving as ${saveName}`, Promise.all(promises)) as SaveReturn[];
     for (const {error} of results) {
         if (error) {
-            showError('Error', 'Error encountered while trying to save', error);
+            // intentional floating promise - TODO: something to prevent getting many of these at once
+            void showError('Error', 'Error encountered while trying to save', error);
             return false;
         }
     }

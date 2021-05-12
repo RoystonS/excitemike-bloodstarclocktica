@@ -68,7 +68,7 @@ async function openNoPrompts(username:string, password:string, edition:Edition, 
     const payload = JSON.stringify(openData);
     const {error,data} = await cmd(username, password, 'open', `Retrieving ${name}`, payload) as OpenReturn;
     if (error) {
-        showError('Error', `Error encountered while trying to open file ${name}`, error);
+        await showError('Error', `Error encountered while trying to open file ${name}`, error);
         return false;
     }
     return await spinner('open', `Opening edition file "${name}"`, edition.open(name, data));
@@ -83,8 +83,8 @@ export async function login(username:string, password:string):Promise<boolean> {
         const {success} = await cmd(username, password, 'login', `Logging in as ${username}`) as LoginReturn;
         return success;
     } catch (error) {
-        showError('Network Error', `Error encountered during login`, error);
         console.error(error);
+        await showError('Network Error', `Error encountered during login`, error);
         return false;
     }
 }
@@ -97,8 +97,8 @@ export async function login(username:string, password:string):Promise<boolean> {
 async function _listFiles(username:string, password:string):Promise<string[]> {
     const {error,files} = await cmd(username, password, 'list', 'Retrieving file list') as ListFilesReturn;
     if (error) {
-        showError('Network Error', `Error encountered while retrieving file list`, error);
         console.error(error);
+        await showError('Network Error', `Error encountered while retrieving file list`, error);
     }
     return files || [];
 }

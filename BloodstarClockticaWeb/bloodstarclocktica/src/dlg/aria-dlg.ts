@@ -157,8 +157,8 @@ export class AriaDialog<ResultType> {
             this.postNode = null;
         }
 
-        // intentionally not awaiting promise
-        disappear(this.root as HTMLElement);
+        // intentional floating promise
+        void disappear(this.root as HTMLElement);
     }
 
     /**
