@@ -71,12 +71,13 @@ export class Edition extends ObservableObject<Edition> {
     readonly windowTitle!:Property<string>;
 
     /** source images that need to be saved */
-    readonly dirtySourceImages = new Set<string>();
+    private readonly dirtySourceImages = new Set<string>();
 
     /** final images that need to be saved */
-    readonly dirtyFinalImages = new Set<string>();
+    private readonly dirtyFinalImages = new Set<string>();
 
-    // TODO: logo dirtiness
+    /** whether the logo has changed since save/open */
+    private dirtyLogo = false;
 
     static async asyncNew():Promise<Edition>
     {
@@ -122,6 +123,11 @@ export class Edition extends ObservableObject<Edition> {
             }
         });
 
+        // watch for dirtying of logo
+        edition.meta.logo.addListener(()=>{
+            edition.dirtyLogo = true;
+        });
+
         return edition
     }
 
@@ -134,6 +140,15 @@ export class Edition extends ObservableObject<Edition> {
         await this.otherNightOrder.add(character);
         return character;
     }
+
+    /** check whether image needs saving */
+    isCharacterFinalImageDirty(id:string):boolean{return this.dirtyFinalImages.has(id);}
+
+    /** check whether image needs saving */
+    isCharacterSourceImageDirty(id:string):boolean{return this.dirtySourceImages.has(id);}
+
+    /** check whether image needs saving */
+    isLogoDirty():boolean{return this.dirtyLogo;}
 
     /** make sure the name and id of a newly added character aren't taken */
     async makeNameAndIdUnique(character:Character):Promise<void> {
@@ -155,6 +170,14 @@ export class Edition extends ObservableObject<Edition> {
         } while (matchFound);
     }
 
+    /** edition was just opened or saved */
+    async markClean():Promise<void> {
+        this.dirtySourceImages.clear();
+        this.dirtyFinalImages.clear();
+        this.dirtyLogo = false;
+        await this.dirty.set(false);
+    }
+
     /** set to opened file */
     async open(saveName:string, data:{ [key: string]: unknown; }):Promise<boolean> {
         if (!data) {await this.reset(); return false;}
@@ -162,9 +185,7 @@ export class Edition extends ObservableObject<Edition> {
         await this.saveName.set(saveName);
         
         // mark all as up to date
-        this.dirtySourceImages.clear();
-        this.dirtyFinalImages.clear();
-        await this.dirty.set(false);
+        await this.markClean();
 
         return true;
     }
@@ -172,9 +193,7 @@ export class Edition extends ObservableObject<Edition> {
     /** reset to a blank edition */
     async reset():Promise<void> {
         await super.reset();
-        this.dirtySourceImages.clear();
-        this.dirtyFinalImages.clear();
         await this.addNewCharacter();
-        await this.dirty.set(false);
+        await this.markClean();
     }
 }

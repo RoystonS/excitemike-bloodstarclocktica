@@ -11,7 +11,7 @@ import {spinner} from '../dlg/spinner-dlg';
 
 type SaveReturn = {error?:string};
 
-const MAX_SIMULTANEOUS_IMAGE_UPLOADS = 5;
+const MAX_SIMULTANEOUS_IMAGE_SAVES = 8;
 
 /**
  * prompt for a name, then save with that name
@@ -57,6 +57,7 @@ export async function save(username:string, password:string, edition:Edition):Pr
 
 type Separated = {
     edition:unknown,
+    logo?:string,
     sourceImages:Map<string,string>,
     finalImages:Map<string,string>
 };
@@ -86,9 +87,15 @@ function separateImages(edition:Edition):Separated {
             }
         }
     }
-    // TODO: also separate the logo
+    const meta = editionSerialized.meta as {logo?:string};
+    const logo:string|undefined = meta.logo;
+    if (logo && logo.startsWith('data:')) {
+        meta.logo = `https://www.bloodstar.xyz/save/${saveName}/_meta.png`;
+    }
+    
     return {
         edition:editionSerialized,
+        logo,
         sourceImages,
         finalImages
     };
@@ -130,7 +137,7 @@ async function _save(username:string, password:string, edition:Edition):Promise<
 
     for (const [id,imageString] of toSave.sourceImages) {
         if (!imageString.startsWith('data:')) {continue;}
-        if (!edition.dirtySourceImages.has(id)) {continue;}
+        if (!edition.isCharacterSourceImageDirty(id)) {continue;}
         promises.push(Locks.enqueue('saveImage', ()=>{
             const saveData:SaveData = {
                 saveName: saveName,
@@ -140,12 +147,12 @@ async function _save(username:string, password:string, edition:Edition):Promise<
             };
             const payload = JSON.stringify(saveData);
             return cmd(username, password, 'save-img', `Saving ${id}.src.png`, payload);
-        }, MAX_SIMULTANEOUS_IMAGE_UPLOADS));
+        }, MAX_SIMULTANEOUS_IMAGE_SAVES));
     }
 
     for (const [id,imageString] of toSave.finalImages) {
         if (!imageString.startsWith('data:')) {continue;}
-        if (!edition.dirtyFinalImages.has(id)) {continue;}
+        if (!edition.isCharacterFinalImageDirty(id)) {continue;}
         promises.push(Locks.enqueue('saveImage', ()=>{
             const saveData:SaveData = {
                 saveName: saveName,
@@ -155,7 +162,24 @@ async function _save(username:string, password:string, edition:Edition):Promise<
             };
             const payload = JSON.stringify(saveData);
             return cmd(username, password, 'save-img', `Saving ${id}.png`, payload);
-        }, MAX_SIMULTANEOUS_IMAGE_UPLOADS));
+        }, MAX_SIMULTANEOUS_IMAGE_SAVES));
+    }
+
+
+    {
+        const logo = toSave.logo;
+        if (logo && logo.startsWith('data:') && edition.isLogoDirty()) {
+            promises.push(Locks.enqueue('saveImage', ()=>{
+                const saveData:SaveData = {
+                    saveName: saveName,
+                    id: '_meta',
+                    isSource:false,
+                    image: logo
+                };
+                const payload = JSON.stringify(saveData);
+                return cmd(username, password, 'save-img', `Saving _meta.png`, payload);
+            }, MAX_SIMULTANEOUS_IMAGE_SAVES));
+        }
     }
 
     // await results
@@ -168,9 +192,7 @@ async function _save(username:string, password:string, edition:Edition):Promise<
     }
 
     // mark things as up to date
-    edition.dirtySourceImages.clear();
-    edition.dirtyFinalImages.clear();
-    await edition.dirty.set(false);
+    await edition.markClean();
     
     return true;
 }
