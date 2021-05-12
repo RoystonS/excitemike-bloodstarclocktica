@@ -42,7 +42,7 @@ class LoginDlg extends AriaDialog<UserPass> {
         }];
 
         const buttons:ButtonCfg[] = [{
-            label:'Ok',
+            label:'OK',
             callback:()=>({
                 username:this.username,
                 password:this.password
