@@ -8,7 +8,7 @@ import {ButtonCfg, AriaDialog} from './aria-dlg';
 
 class StringDialog extends AriaDialog<string> {
     async open(prompt:string, defaultValue:string, validation?:{pattern:string,hint?:string, sanitizeFn?:(inStr:string)=>string}):Promise<string|null> {
-        let enteredString = '';
+        let enteredString = defaultValue;
         
         const body:CreateElementsOptions = [{
             t:'span',
@@ -33,7 +33,7 @@ class StringDialog extends AriaDialog<string> {
         }];
         
         const buttons:ButtonCfg[] = [
-            {label:'Ok', callback:() => Promise.resolve(enteredString)},
+            {label:'OK', callback:() => Promise.resolve(enteredString)},
             {label:'Cancel', callback:() => Promise.resolve(null)}
         ];
 
