@@ -190,8 +190,7 @@ async function _save(username:string, password:string, edition:Edition):Promise<
     const results = await spinner('save', `Saving as ${saveName}`, Promise.all(promises)) as SaveReturn[];
     for (const {error} of results) {
         if (error) {
-            // intentional floating promise - TODO: something to prevent getting many of these at once
-            void showError('Error', 'Error encountered while trying to save', error);
+            await showError('Error', `Error encountered while trying to save ${saveName}`, error);
             return false;
         }
     }
