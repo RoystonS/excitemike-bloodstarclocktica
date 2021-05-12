@@ -115,16 +115,16 @@ async function _save(username:string, password:string, edition:Edition):Promise<
         saveName:string,
         edition?:unknown,
         id?:string,
-        isSource?:boolean
-        image?:string
+        isSource?:boolean,
+        image?:string,
+        clobber?:boolean // TODO: whether to intentionally clobber whatever is currently saved there
     };
     
     // serialize the edition, but break images out into separate pieces to save
     const toSave = separateImages(edition);
     const promises = [];
 
-    // TODO: saving under a new name should dirty the images
-    // TODO: renaming a character should dirty its images
+    // TODO: in the case of a newly-chosen name, warn if it conflicts
 
     // save JSON
     const saveName = edition.saveName.get();
@@ -183,6 +183,8 @@ async function _save(username:string, password:string, edition:Edition):Promise<
             }, MAX_SIMULTANEOUS_IMAGE_SAVES));
         }
     }
+
+    // TODO: remove any now-unused images
 
     // await results
     const results = await spinner('save', `Saving as ${saveName}`, Promise.all(promises)) as SaveReturn[];

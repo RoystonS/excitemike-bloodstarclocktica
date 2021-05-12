@@ -102,6 +102,11 @@ export class Edition extends ObservableObject<Edition> {
         // watch for dirtying of images
         edition.characterList.addItemChangedListener((_:number, character:Character, propName:PropKey<Character>) => {
             switch (propName) {
+                case 'id':
+                    edition.dirtySourceImages.add(character.id.get());
+                    edition.dirtyFinalImages.add(character.id.get());
+                    // TODO: delete old id
+                    break;
                 case 'unStyledImage':
                     edition.dirtySourceImages.add(character.id.get());
                     break;
@@ -126,6 +131,16 @@ export class Edition extends ObservableObject<Edition> {
         // watch for dirtying of logo
         edition.meta.logo.addListener(()=>{
             edition.dirtyLogo = true;
+        });
+
+        // changing save name needs to mark all images as needing re-saving
+        edition.saveName.addListener(()=>{
+            edition.dirtyLogo = true;
+            for (const existingCharacter of edition.characterList) {
+                const id = existingCharacter.id.get();
+                edition.dirtySourceImages.add(id);
+                edition.dirtyFinalImages.add(id);
+            }
         });
 
         return edition

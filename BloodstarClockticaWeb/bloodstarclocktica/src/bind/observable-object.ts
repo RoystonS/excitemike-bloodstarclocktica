@@ -122,7 +122,6 @@ export abstract class ObservableObject<T> {
             const property = new Property<unknown>(defaultValue);
             (this as any)[key] = property;
             this.properties.set(key, property);
-            // TODO: what if listeners do async work? how do we wait for it?
             property.addListener(()=>this.notifyPropertyChangedEventListeners(key));
         }
         // enum properties
@@ -131,7 +130,6 @@ export abstract class ObservableObject<T> {
             const enumProperty = new EnumProperty<unknown>(defaultValue, displayValuePairs);
             (this as any)[key] = enumProperty;
             this.enumProperties.set(key, enumProperty);
-            // TODO: what if listeners do async work? how do we wait for it?
             enumProperty.addListener(()=>this.notifyPropertyChangedEventListeners(key));
         }
         // collections
@@ -140,7 +138,6 @@ export abstract class ObservableObject<T> {
             const collection = new ObservableCollection<any>(ctor);
             (this as any)[key] = collection;
             this.collections.set(key, collection);
-            // TODO: what if listeners do async work? how do we wait for it?
             collection.addCollectionChangedListener(()=>this.notifyPropertyChangedEventListeners(key));
             collection.addItemChangedListener(()=>this.notifyPropertyChangedEventListeners(key));
         }
@@ -150,7 +147,6 @@ export abstract class ObservableObject<T> {
             const child = new ctor();
             (this as any)[key] = child;
             this.children.set(key, child as ObservableObject<any>);
-            // TODO: what if listeners do async work? how do we wait for it?
             child.addPropertyChangedEventListener(()=>this.notifyPropertyChangedEventListeners(key));
         }
     }
