@@ -84,8 +84,8 @@ export async function fetchJson<T>(uri:string):Promise<T|null> {
     const controller = new AbortController();
     const timeoutId = setTimeout(()=>{
         controller.abort();
-        // TODO: something to prevent getting many of these at once
-        showMessage('Network Error', `Request timed out trying to reach ${uri}`);
+        // intentional floating promise - TODO: something to prevent getting many of these at once
+        void showMessage('Network Error', `Request timed out trying to reach ${uri}`);
     }, 15*1000);
     try {
         response = await fetch(uri, {
@@ -98,13 +98,15 @@ export async function fetchJson<T>(uri:string):Promise<T|null> {
             });
         
         if (!response.ok) {
-            showMessage('Network Error', `Something went wrong while trying to reach ${uri}`);
             console.error(`${response.status}: (${response.type}) ${response.statusText}`);
+            // intentional floating promise - TODO: something to prevent getting many of these at once
+            void showMessage('Network Error', `Something went wrong while trying to reach ${uri}`);
             return null;
         }
     } catch (error) {
-        showMessage('Network Error', `Something went wrong while trying to reach ${uri}`);
         console.error(error);
+        // intentional floating promise - TODO: something to prevent getting many of these at once
+        void showMessage('Network Error', `Something went wrong while trying to reach ${uri}`);
         return null;
     } finally {
         clearTimeout(timeoutId);

@@ -60,7 +60,8 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
 
     if (unbindCharacterTabControls) {
         const message = 'binding character tab controls without clearing previous bindings';
-        showError('Programmer Error', message, new Error(message));
+        // intentional floating promise
+        void showError('Programmer Error', message, new Error(message));
     }
 
     return () => {

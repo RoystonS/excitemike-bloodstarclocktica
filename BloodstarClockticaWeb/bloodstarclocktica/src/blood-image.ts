@@ -518,8 +518,8 @@ export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean):Promi
     const controller = new AbortController();
     const timeoutId = setTimeout(()=>{
         controller.abort();
-        // TODO: something to prevent getting many of these at once
-        showMessage('Network Error', `Request timed out trying to reach ${url}`);
+        // intentional floating promise - TODO: something to prevent getting many of these at once
+        void showMessage('Network Error', `Request timed out trying to reach ${url}`);
     }, 30*1000);
     try {
         const proxiedUrl = useCorsProxy ? getCorsProxyUrl(url) : url;
@@ -529,7 +529,8 @@ export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean):Promi
             signal: controller.signal
         }));
         if (!response.ok) {
-            showMessage('Network Error', `Something went wrong while trying to reach ${url}`);
+            // intentional floating promise - TODO: something to prevent getting many of these at once
+            void showMessage('Network Error', `Something went wrong while trying to reach ${url}`);
             console.error(`Trying to reach ${proxiedUrl}\n${response.status}: (${response.type}) ${response.statusText}`);
             return '';
         }

@@ -21,10 +21,10 @@ async function safelyConvertImage(object:ObservableObject<unknown>, field:Observ
     const sourceUrl = new URL(sourceData);
     const isDataUri = sourceUrl.protocol === 'data:';
     if (isDataUri) {
-        unstyledImageProperty.set(sourceData);
+        await unstyledImageProperty.set(sourceData);
     } else {
         const useCors = sourceUrl.hostname !== window.location.hostname;
-        unstyledImageProperty.set(await spinner(`convertImage-${id}`, `Converting image for ${id}`, imageUrlToDataUri(sourceData, useCors)));
+        await unstyledImageProperty.set(await spinner(`convertImage-${id}`, `Converting image for ${id}`, imageUrlToDataUri(sourceData, useCors)));
     }
 }
 
