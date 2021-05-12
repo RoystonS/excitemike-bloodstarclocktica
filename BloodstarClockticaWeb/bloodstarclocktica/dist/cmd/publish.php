@@ -23,16 +23,16 @@
             copyField($inMeta, 'name', $outMeta, 'name');
             copyField($inMeta, 'author', $outMeta, 'author');
 
-            $scriptData[] = &$outMeta;
-
             // edition logo
             if (array_key_exists('logo', $inMeta)){
                 if (preg_match("/^data:$/", $inMeta['logo'])) {
-                    $scriptData['logo'] = $inMeta['logo'];
+                    $outMeta['logo'] = $inMeta['logo'];
                 } else {
-                    $scriptData['logo'] = 'https://www.bloodstar.xyz/p/'.$saveName.'/_meta.png';
+                    $outMeta['logo'] = 'https://www.bloodstar.xyz/p/'.$saveName.'/_meta.png';
                 }
             }
+
+            $scriptData[] = &$outMeta;
         }
 
         $charactersById = array();
@@ -156,8 +156,7 @@
     // edition logo
     {
         global $saveDir;
-        $id = '_meta';
-        $filename = $id.'.png';
+        $filename = '_meta.png';
         $sourcePath = join_paths($editionFolder, $filename);
         $destinationPath = join_paths($publishDir, $filename);
         if (is_file($sourcePath)) {
