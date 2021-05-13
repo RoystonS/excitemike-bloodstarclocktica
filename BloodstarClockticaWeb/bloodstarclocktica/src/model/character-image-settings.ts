@@ -11,10 +11,6 @@ export class CharacterImageSettings extends ObservableObject<CharacterImageSetti
     @observableProperty(true)
     readonly shouldRestyle!: Property<boolean>;
 
-    /** whether to crop the image to just the visible portions before processing further */
-    @observableProperty(true)
-    readonly shouldReposition!: Property<boolean>; // TODO: make this a slider. min is like current off, max is like current on
-
     /** how much to shrink the image to leave room for text */
     @observableProperty(1)
     readonly shrinkToFit!: Property<number>;
