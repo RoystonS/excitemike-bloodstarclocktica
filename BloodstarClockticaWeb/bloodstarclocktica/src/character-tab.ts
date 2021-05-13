@@ -2,10 +2,10 @@
  * code for character tab
  * @module CharacterTab
  */
-import {bindCheckboxById, bindComboBoxById, bindImageChooserById, bindImageDisplayById, bindSliderById, bindTextById, EnumProperty, Property, unbindElementById} from './bind/bindings';
+import {bindCheckboxById, bindComboBoxById, bindImageChooserById, bindImageDisplayById, bindSliderById, bindStyleById, bindTextById, EnumProperty, Property, unbindElementById} from './bind/bindings';
 import {showError} from "./dlg/blood-message-dlg";
 import { ProcessImageSettings } from './blood-image';
-import { parseBloodTeam } from './model/blood-team';
+import { BloodTeam, parseBloodTeam } from './model/blood-team';
 import { Character } from './model/character';
 import {hookupClickEvents} from './util';
 
@@ -18,6 +18,7 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
     bindTrackedText('characterId', character.id, characterTabIds);
     bindTrackedText('characterName', character.name, characterTabIds);
     bindTrackedComboBox('characterTeam', character.team, characterTabIds, parseBloodTeam, x=>x);
+    bindTrackedStyle<BloodTeam>('characterTeam', character.team, setTeamColorStyle, characterTabIds);
     bindTrackedText('characterAbility', character.ability, characterTabIds);
     bindTrackedText('characterFirstNightReminder', character.firstNightReminder, characterTabIds);
     bindTrackedText('characterOtherNightReminder', character.otherNightReminder, characterTabIds);
@@ -103,6 +104,12 @@ function bindTrackedSlider(id:string, valueLabelId:string|null, property:Propert
 }
 
 /** helper for bindCharacterTabControls */
+function bindTrackedStyle<ValueType>(id:string, property:Property<ValueType>, cb:(value:ValueType, classList:DOMTokenList)=>void, set:Set<string>):void {
+    set.add(id);
+    bindStyleById<ValueType>(id, property, cb);
+}
+
+/** helper for bindCharacterTabControls */
 function bindTrackedText(id:string, property:Property<string>, set:Set<string>):void {
     set.add(id);
     bindTextById(id, property);
@@ -154,3 +161,24 @@ export function setSelectedCharacter(value:Character|null):void {
 
 /** returned by bindCharacterTabControls, used to undo what it did */
 let unbindCharacterTabControls:(()=>void)|null = null;
+
+/** map teams to css classes */
+const teamColorStyleMap = new Map<BloodTeam, string>([
+    [BloodTeam.TOWNSFOLK, 'teamColorTownsfolk'],
+    [BloodTeam.OUTSIDER, 'teamColorOutsider'],
+    [BloodTeam.MINION, 'teamColorMinion'],
+    [BloodTeam.DEMON, 'teamColorDemon'],
+    [BloodTeam.TRAVELER, 'teamColorTraveler'],
+    [BloodTeam.FABLED, 'teamColorFabled'],
+]);
+
+/** sync team color style to the actual team */
+function setTeamColorStyle(actualTeam:BloodTeam, classList:DOMTokenList):void{
+    for (const [team, style] of teamColorStyleMap) {
+        if (actualTeam === team) {
+            classList.add(style);
+        } else {
+            classList.remove(style);
+        }
+    }
+}

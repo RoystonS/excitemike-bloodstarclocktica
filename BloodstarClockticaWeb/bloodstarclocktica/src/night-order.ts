@@ -2,7 +2,7 @@
  * code related to night order lists
  * @module NightOrder
  */
-import {bindCollectionById, bindEnumDisplay, bindText, bindStyle, unbindElement, Property} from './bind/bindings';
+import {bindCollectionById, bindText, bindStyle, unbindElement, Property} from './bind/bindings';
 import {ObservableCollection} from './bind/observable-collection';
 import {PropKey} from './bind/observable-object';
 import { BloodTeam } from './model/blood-team';
@@ -54,7 +54,17 @@ export async function initNightOrderBindings(edition:Edition):Promise<void> {
  */
 export function makeNightOrderItem(character: Character, collection:ObservableCollection<Character>, ordinalPropertyName:'firstNightOrdinal'|'otherNightOrdinal', reminderPropertyName:'firstNightReminder'|'otherNightReminder'):HTMLElement {
     const row = document.createElement("div");
-    row.className = "nightOrderItem";
+    {
+        row.className = "nightOrderItem";
+        bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);
+    }
+
+    // TODO: character icon
+    // TODO: reminder as tooltip
+    // TODO: no wordwrap
+    // TODO: shrink instead of alpha out on drag
+    // TODO: grow when dropped or drag cancelled
+    // TODO: fix chrome drag flicker
 
     {
         const ordinal = document.createElement("span");
@@ -75,22 +85,6 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
         nameElement.className = "nightOrderName";
         bindText(nameElement, character.name);
         row.appendChild(nameElement);
-    }
-
-    {
-        const teamSizer = document.createElement("div");
-        teamSizer.className = "nightOrderTeamSizer";
-        row.appendChild(teamSizer);
-
-        const teamColor = document.createElement('div');
-        teamColor.className = "nightOrderTeamColor";
-        bindStyle<BloodTeam>(teamColor, character.team, setTeamColorStyle);
-        teamSizer.appendChild(teamColor);
-
-        const teamElement = document.createElement("div");
-        teamElement.className = "nightOrderTeamText";
-        bindEnumDisplay(teamElement, character.team);
-        teamColor.appendChild(teamElement);
     }
 
     {

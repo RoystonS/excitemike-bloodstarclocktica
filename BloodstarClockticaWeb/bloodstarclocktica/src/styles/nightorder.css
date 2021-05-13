@@ -10,11 +10,11 @@
     flex-flow: row nowrap;
     margin:0 3px 0 0;
     padding: 6px;
-    border:1px solid #666;
+    border:2px solid #222;
     align-items: center;
 }
 .nightOrderItem:hover, .nightOrderItem:focus {
-    border-color: #3977FF;
+    border-color: #eee;
 }
 .nightOrderItem > * {
     margin-right:12px;
@@ -39,44 +39,6 @@
 .nightOrderName {
     width:150px;
 }
-.nightOrderTeamSizer {
-    width:100px;
-    display:flex;
-    flex-flow: row nowrap;
-    justify-content: center;
-}
 .nightOrderReminder {
     flex: 1 1 auto;
-}
-.nightOrderTeamText {
-    border-radius:6px;
-    background: #222222cc;
-    padding: 0 6px;
-}
-.nightOrderTeamColor {
-    border-radius:6px;
-    padding: 2px;
-}
-.teamColorTownsfolk {
-    background-color:#1f65ff;
-}
-.teamColorOutsider {
-    background-color:#46d5ff;
-}
-.teamColorMinion {
-    background-color:#ff6900;
-}
-.teamColorDemon {
-    background-color:#ce0100;
-}
-.teamColorTraveler {
-    background-color:#cc04ff;
-    background-image: linear-gradient(to right, #1f65ff 50%, #ce0100 50%);
-}
-.teamColorFabled {
-    background-color:#ffe91f;
-}
-.nightOrderButton {
-    background:none;
-    border:none;
 }
