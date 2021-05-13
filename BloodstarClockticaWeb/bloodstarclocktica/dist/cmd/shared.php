@@ -58,7 +58,7 @@
 
         $editionFile = join_paths($editionFolder, 'edition');
 
-        if ($clobber || !file_exists($editionFile)) {
+        if (!$clobber && file_exists($editionFile)) {
             echo json_encode(array('clobberWarning' => "Save file '$saveName' already exists"));
             exit();
         }
