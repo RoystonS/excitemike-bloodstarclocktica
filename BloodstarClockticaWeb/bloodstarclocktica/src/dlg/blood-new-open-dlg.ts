@@ -15,7 +15,7 @@ class NewOpenDlg extends AriaDialog<boolean> {
             css:['title'],
             txt:'To get started, open an existing edition or create a new one.'
         }];
-        const buttons:ButtonCfg[] = [
+        const buttons:ButtonCfg<boolean>[] = [
             {label:'Open Existing', callback:openFileClicked},
             {label:'Create New', callback:newFileClicked}
         ];

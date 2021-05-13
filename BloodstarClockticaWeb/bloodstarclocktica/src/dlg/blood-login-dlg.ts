@@ -8,9 +8,6 @@ import {ButtonCfg, AriaDialog} from './aria-dlg';
 export type UserPass = {username:string,password:string};
 
 class LoginDlg extends AriaDialog<UserPass> {
-    private username = '';
-    private password = '';
-
     canCancel():boolean{return false;}
     async open(prompt:string):Promise<UserPass|null> {
         const body:CreateElementsOptions = [{
@@ -28,7 +25,6 @@ class LoginDlg extends AriaDialog<UserPass> {
                 {
                     t:'input',
                     a:{'type':'text','required':'true','id':'loginDlgUsername'},
-                    events:{'change':(event=>(this.username = (event.target as HTMLInputElement).value))},
                 },{
                     t:'label',
                     a:{'for':'loginDlgPassword'},
@@ -36,16 +32,19 @@ class LoginDlg extends AriaDialog<UserPass> {
                 },{
                     t:'input',
                     a:{'type':'password','required':'true','id':'loginDlgPassword'},
-                    events:{'change':(event=>(this.password = (event.target as HTMLInputElement).value))},
                 },
             ]
         }];
-
-        const buttons:ButtonCfg[] = [{
+        const getValue = (id:string):string=>{
+            const elem = this.getElementById(id);
+            if (!(elem instanceof HTMLInputElement)){return '';}
+            return elem.value;
+        }
+        const buttons:ButtonCfg<UserPass>[] = [{
             label:'OK',
             callback:()=>({
-                username:this.username,
-                password:this.password
+                username:getValue('loginDlgUsername'),
+                password:getValue('loginDlgPassword')
         })}];
 
         return await this.baseOpen(

@@ -9,8 +9,8 @@ import { appear, disappear } from "../animate";
 import { createElement, CreateElementsOptions } from "../util";
 
 type ResolveFn = (value:any)=>void;
-type ButtonCb = ()=>Promise<unknown>|unknown;
-export type ButtonCfg = {label:string,callback?:ButtonCb};
+type ButtonCb<T = unknown> = ()=>Promise<T>|T;
+export type ButtonCfg<T = unknown> = {label:string,callback?:ButtonCb<T>};
 
 /** used to make each dialog definitely have a unique id */
 let unique = 1;
@@ -104,6 +104,8 @@ function isFocusable(node:Node):boolean {
         return false;
     }
 }
+
+// TODO: instead of returning nulls, dialog could take a cancel value in open func
 
 /** base class for dialogs */
 export class AriaDialog<ResultType> {
@@ -236,7 +238,7 @@ export class AriaDialog<ResultType> {
         focusAfterClose:Element|string|null,
         debugName = '',
         body:CreateElementsOptions,
-        buttons:ButtonCfg[] = [{label:'OK'}]
+        buttons:ButtonCfg<ResultType|null>[] = [{label:'OK'}]
     ):Promise<ResultType|null> {
         this.root = this.createDialog(debugName, body, buttons);
         if (!this.root) {return Promise.resolve(null);}
@@ -272,6 +274,11 @@ export class AriaDialog<ResultType> {
         appear(this.root as HTMLElement);
 
         return this.promise;
+    }
+
+    /** find the first element in the dialog with the given id */
+    protected getElementById(id:string):HTMLElement|null {
+        return this.root?.querySelector(`#${id}`)||null;
     }
 
     /** clear focus trap for this dialog */
@@ -327,7 +334,7 @@ export function showDialog<ResultType = unknown>(
         focusAfterClose:Element|string|null,
         debugName = '',
         body:CreateElementsOptions,
-        buttons:ButtonCfg[] = [{label:'OK'}]
+        buttons:ButtonCfg<ResultType|null>[] = [{label:'OK'}]
     ):Promise<ResultType|null>
 {
     return new AriaDialog<ResultType>().baseOpen(focusAfterClose, debugName, body, buttons);

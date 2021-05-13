@@ -17,6 +17,7 @@ import './styles/menu.css';
 import './styles/nightorder.css';
 import './styles/slider.css';
 import './styles/tabs.css';
+import './styles/teamcolor.css';
 import * as CharacterTab from './character-tab';
 import { ProcessImageSettings } from './blood-image';
 import Images from './images';

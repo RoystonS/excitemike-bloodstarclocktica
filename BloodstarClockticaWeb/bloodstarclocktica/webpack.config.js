@@ -58,6 +58,11 @@ const config = {
 module.exports = (env, argv) => {
     if (argv.mode === 'development') {
         config.devtool = 'eval-source-map';
+        config.output.filename = '[name].js';
+        config.plugins = config.plugins.map(plugin=>{
+            if (!(plugin instanceof MiniCssExtractPlugin)) {return plugin;}
+            return new MiniCssExtractPlugin({filename:'bloodstar.css',chunkFilename:'[id].css'});
+        });
     }
 
     return config;
