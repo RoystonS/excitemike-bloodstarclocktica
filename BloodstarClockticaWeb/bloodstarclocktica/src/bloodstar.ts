@@ -289,12 +289,12 @@ async function initCustomEdition():Promise<void> {
 async function init() {
     edition = await Edition.asyncNew();
 
+    await initBindings();
+
     // need to get login info before we can do much of anything
     await login();
 
     await initCustomEdition();
-
-    await initBindings();
 }
 
 type StatusBarData = Map<string, {id:string,exported:number,total:number}>;

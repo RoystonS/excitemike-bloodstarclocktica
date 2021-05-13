@@ -200,7 +200,7 @@ export class Edition extends ObservableObject<Edition> {
         await this.saveName.set(saveName);
         
         // mark all as up to date
-        await this.markClean(); // TODO: it is ending up marked dirty despite this
+        await this.markClean();
         
 
         return true;
