@@ -146,7 +146,9 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** get an item in the collection */
-    get(i:number):ItemType {
+    get(i:number):ItemType|null {
+        const x = this.items[i];
+        if (!x) {return null;}
         return this.items[i].item;
     }
 

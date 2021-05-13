@@ -115,16 +115,40 @@ export class Edition extends ObservableObject<Edition> {
                     break;
             }
         });
-        edition.characterList.addCollectionChangedListener(event=>{
+
+        // propagate character list changes to night order lists and dirty maps
+        const propagateAdd = async (newItems:readonly Character[])=>{
+            await edition.firstNightOrder.addMany(newItems);
+            await edition.otherNightOrder.addMany(newItems);
+        };
+
+        // propagate character list changes to night order lists and dirty maps
+        const propagateRemoval = async (oldItems:readonly Character[])=>{
+            for (const character of oldItems) {
+                const id = character.id.get();
+                edition.dirtySourceImages.delete(id);
+                edition.dirtyFinalImages.delete(id);
+                await edition.firstNightOrder.deleteItem(character);
+                await edition.otherNightOrder.deleteItem(character);
+            }
+        };
+
+        edition.characterList.addCollectionChangedListener(async event=>{
             switch (event.action) {
-                case ObservableCollectionChangeAction.Remove:
-                case ObservableCollectionChangeAction.Replace:
-                    for (const character of event.oldItems) {
-                        const id = character.id.get();
-                        edition.dirtySourceImages.delete(id);
-                        edition.dirtyFinalImages.delete(id);
-                    }
+                case ObservableCollectionChangeAction.Add:
+                    await propagateAdd(event.newItems);
                     break;
+                case ObservableCollectionChangeAction.Move:
+                    break;
+                case ObservableCollectionChangeAction.Remove:
+                    await propagateRemoval(event.oldItems);
+                    break;
+                case ObservableCollectionChangeAction.Replace:
+                    await propagateRemoval(event.oldItems);
+                    await propagateAdd(event.newItems);
+                    break;
+                default:
+                    throw new Error(`Unhandled case "${event.action}" when propagating character list change to night order lists`);
             }
         });
 
@@ -151,8 +175,6 @@ export class Edition extends ObservableObject<Edition> {
         const character = await Character.asyncNew();
         await this.makeNameAndIdUnique(character);
         await this.characterList.add(character);
-        await this.firstNightOrder.add(character);
-        await this.otherNightOrder.add(character);
         return character;
     }
 
