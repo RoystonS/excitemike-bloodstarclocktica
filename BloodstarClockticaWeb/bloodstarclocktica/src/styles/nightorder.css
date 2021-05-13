@@ -5,6 +5,11 @@
     flex-flow: column nowrap;
     list-style: none;
 }
+.nightOrderList::after {
+    content:'';
+    height:12px;
+    pointer-events: none;
+}
 .nightOrderItem {
     display: flex;
     flex-flow: row nowrap;

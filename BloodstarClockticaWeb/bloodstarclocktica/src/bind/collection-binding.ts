@@ -1,3 +1,4 @@
+import * as Animate from '../animate';
 import {ObservableCollection, ObservableCollectionChangeAction, ObservableCollectionChangedEvent} from '../bind/observable-collection';
 import {ObservableObject} from '../bind/observable-object';
 
@@ -5,13 +6,9 @@ export type RenderFn<T extends ObservableObject<T>> = (itemData:T, collection:Ob
 export type CleanupFn<T> = (renderedElement:Element, itemData:T)=>void;
 
 /** get a y coordinate for the mouse relative to some element */
-function getRelativeY(event:MouseEvent, refElement:Element|null):number {
-    let refY = 0;
-    while (refElement instanceof HTMLElement) {
-        refY += refElement.offsetTop - refElement.scrollTop;
-        refElement = refElement.offsetParent;
-    }
-    return event.pageY - refY;
+function getRelativeY(event:MouseEvent, refElement:Element):number {
+    const rect = refElement.getBoundingClientRect();
+    return event.clientY - rect.y;
 }
 
 /** check whether the mouse position indicates to position the dropped item after the hovered item instead of before */
@@ -89,20 +86,6 @@ export class CollectionBinding<T extends ObservableObject<T>> {
         const overList = listItemElement.closest('ol');
         if (overList !== this.listElement) { return false; }
 
-        // dragged item must have an index
-        if (!this.dragged.dataset.index ) { return false; }
-        const fromIndex = parseInt(this.dragged.dataset.index, 10);
-
-        // hovered/dropped-onto item must have an index
-        if (!listItemElement.dataset.index ) { return false; }
-        const overIndex = parseInt(listItemElement.dataset.index, 10);
-
-        // ignore if this location means no change
-        if (listItemElement === this.dragged) { return false; }
-        const insertAfter = checkInsertAfter(e, listItemElement);
-        if (insertAfter && (fromIndex === overIndex+1)) { return false; }
-        if (!insertAfter && (fromIndex === overIndex-1)) { return false; }
-
         return true;
     }
 
@@ -172,7 +155,9 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     private dragstart(e:DragEvent):void {
         if (e.target instanceof Element) {
             const listItemElement = e.target.closest('li');
-            listItemElement?.classList.add('dragging');
+            if (!listItemElement){return;}
+            listItemElement.classList.add('dragging');
+            Animate.shrinkOutMaxHeight(listItemElement);
         }
     }
 
@@ -180,7 +165,9 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     private dragend(e:DragEvent):void {
         if (e.target instanceof Element) {
             const listItemElement = e.target.closest('li');
+            if (!listItemElement){return;}
             listItemElement?.classList.remove('dragging');
+            Animate.growInMaxHeight(listItemElement);
         }
     }
 

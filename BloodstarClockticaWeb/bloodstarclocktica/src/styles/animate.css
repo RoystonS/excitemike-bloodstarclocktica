@@ -14,20 +14,6 @@
     }
 }
 
-/* grow vertically up to full size */
-.appearGrowY {
-    max-height: 20px;
-    overflow:hidden;
-    animation: appearGrowYAnim 0.2s linear 1;
-    -webkit-animation: appearGrowYAnim 0.2s linear 1;
-}
-@keyframes appearGrowYAnim {
-    from {max-height:2px;}
-}
-@-webkit-keyframes appearGrowYAnim {
-    from {max-height:2px;}
-}
-
 /* fade opacity out */
 .disappear {
     animation: disappearAnim 0.2s linear 1;
@@ -44,16 +30,7 @@
     }
 }
 
-/* shrink vertically */
-.disappearShrinkY {
-    max-height: 20px;
-    overflow: hidden;
-    animation: disappearShrinkYAnim 0.2s ease-out 1 !important;
-    -webkit-animation: disappearShrinkYAnim 0.2s ease-out 1 !important;
-}
-@keyframes disappearShrinkYAnim {
-    to {max-height:2px;}
-}
-@-webkit-keyframes disappearShrinkYAnim {
-    to {max-height:2px;}
+.transitionMaxHeight {
+    transition: max-height 0.2s ease-in-out;
+    overflow-y: hidden;
 }

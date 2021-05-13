@@ -187,6 +187,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** move the item from one index to another */
     async move(oldIndex:number, newIndex:number):Promise<void> {
+        if (oldIndex===newIndex){return;}
         const item = this.items[oldIndex];
         this.items.splice(oldIndex, 1);
         this.items.splice(newIndex, 0, item);

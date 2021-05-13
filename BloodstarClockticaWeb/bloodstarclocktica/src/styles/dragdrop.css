@@ -26,7 +26,7 @@ li[draggable="true"]::after{
     z-index:1;
 }
 .dragging {
-    opacity: 0.35;
+    overflow:hidden;
 }
 .dropBefore {
     border-top: 12px solid #3977FF;

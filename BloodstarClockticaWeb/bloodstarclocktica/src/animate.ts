@@ -32,17 +32,34 @@ export function appear(element:HTMLElement):void {
     element.classList.add('appear');
 }
 
-/** animate in from left */
-export function appearGrowY(element:HTMLElement):void {
-    element.classList.add('appearGrowY');
-}
-
-/** fade ut and remove */
+/** fade out and remove */
 export function disappear(element:HTMLElement):Promise<void> {
     return animateAndRemove(element, 'disappear', 'disappearAnim');
 }
 
-/** animate element away and remove */
-export function disappearShrinkY(element:HTMLElement):Promise<void> {
-    return animateAndRemove(element, 'disappearShrinkY', 'disappearShrinkYAnim');
+/** animate growing up to height */
+export function growInMaxHeight(element:HTMLElement):void {
+    const desiredHeight = element.scrollHeight;
+    element.style.maxHeight = '0';
+    element.classList.add('transitionMaxHeight');
+    requestAnimationFrame(()=>{
+        element.style.maxHeight = `${desiredHeight}px`;
+        element.addEventListener('transitionend', ()=>{
+            element.classList.remove('transitionMaxHeight');
+            element.style.maxHeight = '';
+        }, {once:true})
+    });
+}
+
+/** animate shrinking down to nothing */
+export function shrinkOutMaxHeight(element:HTMLElement):void {
+    element.style.maxHeight = `${element.scrollHeight}px`;
+    element.classList.add('transitionMaxHeight');
+    requestAnimationFrame(()=>{
+        element.style.maxHeight = '0';
+        element.addEventListener('transitionend', ()=>{
+            element.classList.remove('transitionMaxHeight');
+        }, {once:true})
+    });
+    // TODO: maybe this should take a callback for when it completes?
 }

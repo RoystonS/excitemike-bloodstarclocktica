@@ -35,7 +35,7 @@
     margin-bottom:6px;
 }
 ol#characterList {
-    flex: 0 1 auto;
+    flex: 1 1 auto;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -88,6 +88,11 @@ ol#characterList {
 .characterListButton {
     background:none;
     border:none;
+}
+ol#characterList::after {
+    content:'';
+    height:12px;
+    pointer-events: none;
 }
 .characterListItem:hover > .characterListButton, .characterListItem:focus-visible > .characterListButton, .characterListItemSelected > .characterListButton {
     display: block;
