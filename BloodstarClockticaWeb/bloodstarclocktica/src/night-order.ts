@@ -64,7 +64,6 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
     // TODO: no wordwrap
     // TODO: shrink instead of alpha out on drag
     // TODO: grow when dropped or drag cancelled
-    // TODO: fix chrome drag flicker
 
     {
         const ordinal = document.createElement("span");

@@ -246,7 +246,6 @@ async function initBindings():Promise<void> {
         }
     }
 
-
     bindCharacterList('characterList', edition.characterList, selectedCharacter);
 
     await initNightOrderBindings(edition);
