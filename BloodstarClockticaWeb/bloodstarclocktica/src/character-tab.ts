@@ -41,7 +41,7 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
     };
 
     bindTrackedCheckBox('shouldRestyle', character.imageSettings.shouldRestyle, characterTabIds);
-    bindTrackedCheckBox('shouldReposition', character.imageSettings.shouldReposition, characterTabIds);
+    sliderHelper('shrinkToFit', character.imageSettings.shrinkToFit);
     bindTrackedCheckBox('shouldColorize', character.imageSettings.shouldColorize, characterTabIds);
     bindTrackedCheckBox('useOutsiderAndMinionColors', character.imageSettings.useOutsiderAndMinionColors, characterTabIds);
     bindTrackedCheckBox('useTexture', character.imageSettings.useTexture, characterTabIds);

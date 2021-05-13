@@ -28,6 +28,8 @@ async function safelyConvertImage(object:ObservableObject<unknown>, field:Observ
     }
 }
 
+function lerp(a:number, b:number, t:number):number {return a+(b-a)*t;}
+
 export class Character extends ObservableObject<Character> {
     @observableProperty('')
     readonly ability!: Property<string>;
@@ -119,9 +121,7 @@ export class Character extends ObservableObject<Character> {
         let bloodImage = await urlToBloodImage(unstyledImage, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, false);
 
         // crop
-        if (imageSettings.shouldReposition.get()) {
-            bloodImage = bloodImage.trim();
-        }
+        bloodImage = bloodImage.trim();
 
         // colorize
         if (imageSettings.shouldColorize.get()) {
@@ -136,17 +136,20 @@ export class Character extends ObservableObject<Character> {
         }
 
         // make full size image with icon pasted into the correct place
-        if (imageSettings.shouldReposition.get()) {
+        {
+            const shrinkToFitAmount = imageSettings.shrinkToFit.get();
+            if (shrinkToFitAmount > 0) {
             bloodImage = new BloodImage([ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT])
                 .pasteZoomed(
                     bloodImage,
-                    ProcessImageSettings.USABLE_REGION_X,
-                    ProcessImageSettings.USABLE_REGION_Y,
-                    ProcessImageSettings.USABLE_REGION_WIDTH,
-                    ProcessImageSettings.USABLE_REGION_HEIGHT
+                    lerp(0, ProcessImageSettings.USABLE_REGION_X, shrinkToFitAmount),
+                    lerp(0, ProcessImageSettings.USABLE_REGION_Y, shrinkToFitAmount),
+                    lerp(ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.USABLE_REGION_WIDTH, shrinkToFitAmount),
+                    lerp(ProcessImageSettings.FULL_HEIGHT, ProcessImageSettings.USABLE_REGION_HEIGHT, shrinkToFitAmount),
                 );
-        } else {
-            bloodImage = bloodImage.fit(ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
+            } else {
+                bloodImage = bloodImage.fit(ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
+            }
         }
 
         // texture
