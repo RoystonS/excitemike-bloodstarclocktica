@@ -34,7 +34,7 @@ const config = {
             title: 'Bloodstar Clocktica',
             template: './src/index.html'
         }),
-        new MiniCssExtractPlugin({filename:'bloodstar.css',chunkFilename:'[id].css'}),
+        new MiniCssExtractPlugin({filename:'bloodstar.[contenthash].css',chunkFilename:'[id].css'}),
     ],
     resolve: {
         extensions: ['.ts', '.tsx', '.js']
