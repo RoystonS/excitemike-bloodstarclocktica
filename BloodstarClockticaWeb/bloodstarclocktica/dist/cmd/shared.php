@@ -91,7 +91,11 @@
 
     // error out if filename invalid
     function validateFilename($filename) {
-        if (!preg_match("/^[^\\/:\"?<>\\|]+$/", $filename)) {
+        if (($filename==='') ||
+            ($filename==='.')  ||
+            ($filename==='..') ||
+            !preg_match("/^[^\\/:\"?<>\\|]+$/", $filename))
+        {
             echo '{"error":"invalid saveName"}';
             exit();
         }

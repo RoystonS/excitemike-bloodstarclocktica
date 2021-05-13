@@ -26,14 +26,23 @@ const INVALID_SAVENAME_CHARACTER_RE = /[\\/:"?<>|]/;
  */
  export async function saveAs(username:string, password:string, edition:Edition):Promise<boolean> {
     const name = await promptForName(edition.saveName.get());
-    if (!name || !validateSaveName(name)) {
+
+    // null means cancel
+    if (null === name) {return false;}
+    
+    if (!validateSaveName(name)) {
         await showMessage('Invalid File Name', `"${name}" is not a valid filename.`);
         return Promise.resolve(false);
     }
+
     const backupName = edition.saveName.get();
     try {
         await edition.saveName.set(name);
-        return !!(await _save(username, password, edition, false));
+        const success = !!(await _save(username, password, edition, backupName===name));
+        if (!success) {
+            await edition.saveName.set(backupName);
+        }
+        return success;
     } catch (error) {
         await edition.saveName.set(backupName);
         // intentional floating promise - TODO: something to prevent getting many of these at once
@@ -139,21 +148,21 @@ async function _save(username:string, password:string, edition:Edition, clobber:
             clobber,
             edition: toSave.edition
         };
-        const payload = JSON.stringify(saveData);
-        let {clobberWarning,error} = await cmd<SaveResult>(username, password, 'save', `Saving edition data`, payload);
+        let {clobberWarning,error} = await cmd<SaveResult>(username, password, 'save', `Saving edition data`, JSON.stringify(saveData));
         if (clobberWarning) {
             // confirmation dialog, then try again
-            const okToClobber = new AriaDialog<boolean>().baseOpen(
+            const okToClobber = await new AriaDialog<boolean>().baseOpen(
                 null,
                 'okToClobber',
                 [{t:'p',txt:`There is already a save file named ${saveName}. Would you like to replace it?`}],
                 [
                     {label:`Yes, Replace ${saveName}`,callback:()=>true},
-                    {label:'No, Cancel Save',callback:()=>true},
+                    {label:'No, Cancel Save',callback:()=>false},
                 ]
             );
             if (!okToClobber) {return false;}
-            ({clobberWarning,error} = await cmd<SaveResult>(username, password, 'save', `Saving edition data`, payload));
+            saveData.clobber = true;
+            ({clobberWarning,error} = await cmd<SaveResult>(username, password, 'save', `Saving edition data`, JSON.stringify(saveData)));
             error = error || clobberWarning;
         }
         // surface error, if any
@@ -248,7 +257,11 @@ async function promptForName(defaultName:string):Promise<string|null> {
  * validate a save name
  */
 function validateSaveName(original:string):boolean {
-    return VALID_SAVENAME_RE.test(original);
+    switch (original) {
+        case '.': return false;
+        case '..': return false;
+        default: return VALID_SAVENAME_RE.test(original);
+    }
 }
 
 /**
