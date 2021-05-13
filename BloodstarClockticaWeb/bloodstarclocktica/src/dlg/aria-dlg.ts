@@ -314,6 +314,26 @@ export class AriaDialog<ResultType> {
     }
 }
 
+    /**
+     * Open a dialog. await this.promise to get the result of the dialog.
+     *  `var x = await (new Dialog(...)).result;`
+     * @param focusAfterClose element or id of element to focus on after the dialog completes
+     * @param debugName css id prefix for the dialog
+     * @param body array of elements to append as dialog body
+     * @param buttons buttons to add to the dialog
+     * @returns promise that resolves to dialog result, or null
+     */
+export function showDialog<ResultType = unknown>(
+        focusAfterClose:Element|string|null,
+        debugName = '',
+        body:CreateElementsOptions,
+        buttons:ButtonCfg[] = [{label:'OK'}]
+    ):Promise<ResultType|null>
+{
+    return new AriaDialog<ResultType>().baseOpen(focusAfterClose, debugName, body, buttons);
+}
+
+
 // escape to cancel current dialog
 document.addEventListener('keyup', (event:KeyboardEvent) => {
     if (event.code !== 'Escape') {return;}
