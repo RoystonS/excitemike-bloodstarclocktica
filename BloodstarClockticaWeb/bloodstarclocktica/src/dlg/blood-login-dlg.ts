@@ -10,6 +10,16 @@ export type UserPass = {username:string,password:string};
 class LoginDlg extends AriaDialog<UserPass> {
     canCancel():boolean{return false;}
     async open(prompt:string):Promise<UserPass|null> {
+        const submitOnEnter = (event:KeyboardEvent):void=>{
+            switch (event.code)
+            {
+                case 'NumpadEnter':
+                case 'Enter':
+                    event.preventDefault();
+                    this.close(this.getResult());
+                    break;
+            }
+        };
         const body:CreateElementsOptions = [{
             t:'p',
             a:{role:'alert'},
@@ -20,32 +30,26 @@ class LoginDlg extends AriaDialog<UserPass> {
             children:[{
                     t:'label',
                     a:{'for':'loginDlgUsername'},
-                    txt:'Username',
+                    txt:'Username'
                 },
                 {
                     t:'input',
                     a:{'type':'text','required':'true','id':'loginDlgUsername'},
+                    events:{keyup:submitOnEnter as EventListener}
                 },{
                     t:'label',
                     a:{'for':'loginDlgPassword'},
-                    txt:'Password',
+                    txt:'Password'
                 },{
                     t:'input',
                     a:{'type':'password','required':'true','id':'loginDlgPassword'},
+                    events:{keyup:submitOnEnter as EventListener}
                 },
             ]
         }];
-        const getValue = (id:string):string=>{
-            const elem = this.getElementById(id);
-            if (!(elem instanceof HTMLInputElement)){return '';}
-            return elem.value;
-        }
         const buttons:ButtonCfg<UserPass>[] = [{
             label:'OK',
-            callback:()=>({
-                username:getValue('loginDlgUsername'),
-                password:getValue('loginDlgPassword')
-        })}];
+            callback:()=>this.getResult()}];
 
         return await this.baseOpen(
             document.activeElement,
@@ -53,6 +57,21 @@ class LoginDlg extends AriaDialog<UserPass> {
             body,
             buttons
         );
+    }
+
+    /** look at input elements to get dialog result value */
+    private getResult():UserPass {
+        return {
+            username:this.getValue('loginDlgUsername'),
+            password:this.getValue('loginDlgPassword')
+        };
+    }
+
+    /** get a value from a field by id */
+    private getValue(id:string):string {
+        const elem = this.getElementById(id);
+        if (!(elem instanceof HTMLInputElement)){return '';}
+        return elem.value;
     }
 }
 
