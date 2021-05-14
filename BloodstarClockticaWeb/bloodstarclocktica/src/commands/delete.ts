@@ -22,6 +22,7 @@ type DeleteReturn = {success:true,error?:string};
     if (!name) {return '';}
     if (!await getConfirmation('Confirm Delete', `Are you sure you'd like to delete "${name}"? This file will be lost forever!`)) {return '';}
     if (!await spinner('delete', 'Choose file to delete', deleteFile(username, password, name))){return '';}
+    await showMessage(`File "${name}" deleted`);
     return name;
 }
 
@@ -47,6 +48,5 @@ async function deleteFile(username:string, password:string, name:string):Promise
         await showError('Error', `Error encountered while trying to delete file ${name}`, error);
         return false
     }
-    await showMessage(`File "${name} deleted"`);
     return true;
 }
