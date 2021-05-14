@@ -2,22 +2,22 @@ option {
     background-color:#222 !important;
 }
 .teamColorTownsfolk {
-    background-image: linear-gradient(to right, #1f65ffff 2px, #1f65ff00 2px, #1f65ff80, #1f65ff00);
+    background-image: linear-gradient(to right, #1f65ffff 2px, #1f65ff00 2px, #1f65ff00 25%, #1f65ff40, #1f65ff00);
 }
 .teamColorOutsider {
-    background-image: linear-gradient(to right, #46d5ffff 2px, #46d5ff00 2px, #46d5ff80, #46d5ff00);
+    background-image: linear-gradient(to right, #46d5ffff 2px, #46d5ff00 2px, #46d5ff00 25%, #46d5ff40, #46d5ff00);
 }
 .teamColorMinion {
-    background-image: linear-gradient(to right, #ff6900ff 2px, #ff690000 2px, #ff690080, #ff690000);
+    background-image: linear-gradient(to right, #ff6900ff 2px, #ff690000 2px, #ff690000 25%, #ff690040, #ff690000);
 }
 .teamColorDemon {
-    background-image: linear-gradient(to right, #ce0100ff 2px, #ce010000 2px, #ce010080, #ce010000);
+    background-image: linear-gradient(to right, #ce0100ff 2px, #ce010000 2px, #ce010000 25%, #ce010040, #ce010000);
 }
 .teamColorTraveler {
-    background-image: linear-gradient(to right, #22222200 2px, #222222ff 2px, #22222280, #222222ff), linear-gradient(to bottom, #1f65ff 50%, #ce0100 50%);
+    background-image: linear-gradient(to right, #22222200 2px, #222222ff 2px, #222222ff 25%, #222222c0, #222222ff), linear-gradient(to bottom, #1f65ff 50%, #ce0100 50%);
 }
 .teamColorFabled {
-    background-image: linear-gradient(to right, #ffe91fff 2px, #ffe91f00 2px, #ffe91f60, #ffe91f00);
+    background-image: linear-gradient(to right, #ffe91fff 2px, #ffe91f00 2px, #ffe91f00 25%, #ffe91f30, #ffe91f00);
 }
 .nightOrderButton {
     background:none;
