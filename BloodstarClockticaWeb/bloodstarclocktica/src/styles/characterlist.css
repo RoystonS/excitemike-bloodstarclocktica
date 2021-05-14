@@ -49,24 +49,12 @@ ol#characterList {
     flex-flow: row nowrap;
     margin:0 3px 0 0;
     padding: 6px;
-    border:1px solid #666;
+    border:2px solid #222;
     align-items: center;
     position:relative;
 }
 .characterListItem:hover, .characterListItem:focus-visible{
-    border-color: #3977FF;
-}
-.characterListItem::before{
-    content: '';
-    position:absolute;
-    top:0;
-    bottom:0;
-    left:0;
-    right:0;
-    display:none;
-    background-image: linear-gradient(to right, #3977FF 2%, #3978ff40 2%);
-    background-color: #3978ff80;
-    z-index:-1;
+    border-color: #eee;
 }
 .characterListItem::after{
     content: '∙';
@@ -80,6 +68,10 @@ ol#characterList {
 .characterListName{
     flex: 1 1 0;
     pointer-events: none;
+    font-weight: bold;
+    transform-origin: left;
+    transition: all 0.1s ease-out;
+    letter-spacing: 1px;
 }
 .characterListButton {
     background:none;
@@ -90,12 +82,28 @@ ol#characterList::after {
     height:12px;
     pointer-events: none;
 }
-.characterListItem:hover > .characterListButton, .characterListItem:focus-visible > .characterListButton, .characterListItemSelected > .characterListButton {
+.characterListItem:hover > .characterListButton
+, .characterListItem:focus-visible > .characterListButton
+, .characterListItemSelected > .characterListButton {
     display: block;
     border:none;
 }
-.characterListItemSelected::before {
-    display:unset;
+.characterListItem > span
+,.characterListItem > button {
+    opacity:0.5;
+    transition: all 0.1s ease-out;
+}
+.characterListItem > button:hover {
+    opacity:1;
+}
+.characterListItemSelected > span
+,.characterListItemSelected > button {
+    opacity:1;
+}
+.characterListItemSelected > .characterListName {
+    transform: scale(1.15);
+    color:#eee;
+    opacity:1;
 }
 .characterListItemSelected:hover, .characterListItemSelected:focus-visible {
     border-color: #eee;
