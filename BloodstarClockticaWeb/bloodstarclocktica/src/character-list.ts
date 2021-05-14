@@ -1,7 +1,9 @@
-import { bindCheckbox, bindCollectionById, bindText, Property, PropertyChangeListener, unbindElement } from "./bind/bindings";
+import { bindCheckbox, bindCollectionById, bindStyle, bindText, Property, PropertyChangeListener, unbindElement } from "./bind/bindings";
 import { ObservableCollection } from "./bind/observable-collection";
 import {show as getConfirmation} from "./dlg/yes-no-dlg";
+import { BloodTeam } from "./model/blood-team";
 import { Character } from "./model/character";
+import { setTeamColorStyle } from "./team-color";
 import { walkHTMLElements } from "./util";
 
 /** need to track the listeners we add so that we can remove them */
@@ -55,24 +57,26 @@ async function cleanupListItem(element: Node, character: Character, selectedChar
  */
 function makeCharacterListItem(character: Character, collection:ObservableCollection<Character>, selectedCharacterProperty:Property<Character|null>):HTMLElement {
     const row = document.createElement("div");
-    row.className = "characterListItem";
-    row.tabIndex = 0;
-    row.onclick = async e => { 
-        if (e.target === row) {
-            await selectedCharacterProperty.set(character);
-        }
-    }
-    row.onkeyup = async e => {
-        switch (e.code) {
-            case 'Space':
-            case 'Enter':
-            case 'NumpadEnter':
+    {
+        row.className = "characterListItem";
+        row.tabIndex = 0;
+        row.onclick = async e => { 
+            if (e.target === row) {
                 await selectedCharacterProperty.set(character);
-                break;
+            }
         }
+        row.onkeyup = async e => {
+            switch (e.code) {
+                case 'Space':
+                case 'Enter':
+                case 'NumpadEnter':
+                    await selectedCharacterProperty.set(character);
+                    break;
+            }
+        }
+        bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);
     }
 
-    // TODO: team color
     // TODO: character image
 
     {

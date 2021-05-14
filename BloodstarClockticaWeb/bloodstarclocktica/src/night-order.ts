@@ -8,6 +8,7 @@ import {PropKey} from './bind/observable-object';
 import { BloodTeam } from './model/blood-team';
 import {Character} from './model/character';
 import { Edition } from './model/edition';
+import { setTeamColorStyle } from './team-color';
 import {ordinal, walkHTMLElements} from './util';
 
 /** recurses though children of element cleaning up click events and bindings */
@@ -128,27 +129,6 @@ async function updateOrdinals(collection:ObservableCollection<Character>, ordina
             if (willExport && hasReminder) {
                 ordNumber++;
             }
-        }
-    }
-}
-
-/** map teams to css classes */
-const teamColorStyleMap = new Map<BloodTeam, string>([
-    [BloodTeam.TOWNSFOLK, 'teamColorTownsfolk'],
-    [BloodTeam.OUTSIDER, 'teamColorOutsider'],
-    [BloodTeam.MINION, 'teamColorMinion'],
-    [BloodTeam.DEMON, 'teamColorDemon'],
-    [BloodTeam.TRAVELER, 'teamColorTraveler'],
-    [BloodTeam.FABLED, 'teamColorFabled'],
-]);
-
-/** sync team color style to the actual team */
-function setTeamColorStyle(actualTeam:BloodTeam, classList:DOMTokenList):void{
-    for (const [team, style] of teamColorStyleMap) {
-        if (actualTeam === team) {
-            classList.add(style);
-        } else {
-            classList.remove(style);
         }
     }
 }
