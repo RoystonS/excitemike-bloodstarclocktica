@@ -278,8 +278,8 @@ export abstract class ObservableObject<T> {
     }
 
     /** retrieve a property by name */
-    getProperty(key:PropKey<T>):Property<unknown> {
-        return this.properties.get(key) || this.enumProperties.get(key) || noSuchProperty(this, key);
+    getProperty<ValueType = unknown>(key:PropKey<T>):Property<ValueType> {
+        return (this.properties.get(key) || this.enumProperties.get(key) || noSuchProperty(this, key)) as Property<ValueType>;
     }
 
     /** retrieve a property value by name */

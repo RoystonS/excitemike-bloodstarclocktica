@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {BaseBinding, Property, PropertyChangeListener} from './base-binding'
+import AttributeBinding from './attribute-binding'
 import {CollectionBinding, RenderFn, CleanupFn} from './collection-binding'
 import {ImageChooserBinding, ImageDisplayBinding} from './image-binding';
 import SliderBinding from './slider-binding';
@@ -103,6 +104,11 @@ function addBinding(element:Node, binding:Binding):void {
         bindings.set(element, bindingsForElement);
     }
     bindingsForElement.push(binding);
+}
+
+/** ONE WAY. bind a string property to an element attribute */
+export function bindAttribute(element:HTMLElement, attributeName:string, property:Property<string>):void {
+    addBinding(element, new AttributeBinding(element, attributeName, property));
 }
 
 /** bind checkbox to some data */

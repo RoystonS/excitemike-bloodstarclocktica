@@ -2,7 +2,7 @@
  * code related to night order lists
  * @module NightOrder
  */
-import {bindCollectionById, bindText, bindStyle, unbindElement, Property} from './bind/bindings';
+import {bindCollectionById, bindText, bindStyle, unbindElement, Property, bindAttribute} from './bind/bindings';
 import {ObservableCollection} from './bind/observable-collection';
 import {PropKey} from './bind/observable-object';
 import { BloodTeam } from './model/blood-team';
@@ -58,10 +58,10 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
     {
         row.className = "nightOrderItem";
         bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);
+        bindAttribute(row, 'title', character.getProperty<string>(reminderPropertyName));
     }
 
     // TODO: character icon
-    // TODO: reminder as tooltip
     // TODO: no wordwrap
 
     {
