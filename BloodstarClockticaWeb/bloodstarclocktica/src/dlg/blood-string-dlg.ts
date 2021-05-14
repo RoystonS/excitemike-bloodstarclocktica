@@ -9,6 +9,17 @@ import {ButtonCfg, AriaDialog} from './aria-dlg';
 class StringDialog extends AriaDialog<string> {
     async open(prompt:string, defaultValue:string, validation?:{pattern:string,hint?:string, sanitizeFn?:(inStr:string)=>string}):Promise<string|null> {
         let enteredString = defaultValue;
+
+        const submitOnEnter = (event:KeyboardEvent):void=>{
+            switch (event.code)
+            {
+                case 'NumpadEnter':
+                case 'Enter':
+                    event.preventDefault();
+                    this.close(enteredString);
+                    break;
+            }
+        };
         
         const body:CreateElementsOptions = [{
             t:'span',
@@ -23,13 +34,15 @@ class StringDialog extends AriaDialog<string> {
                 pattern:(validation && validation.pattern) ? validation.pattern : '',
                 title:(validation && validation.hint) ? validation.hint : ''
             },
-            events: {change:((event:Event)=>{
-                if (!(event.target instanceof HTMLInputElement)){return;}
-                if (validation && validation.sanitizeFn) {
-                    event.target.value = validation.sanitizeFn(event.target.value);
-                }
-                enteredString = event.target.value;
-            })}
+            events: {
+                change:((event:Event)=>{
+                    if (!(event.target instanceof HTMLInputElement)){return;}
+                    if (validation && validation.sanitizeFn) {
+                        event.target.value = validation.sanitizeFn(event.target.value);
+                    }
+                    enteredString = event.target.value;
+                }),
+                keyup:submitOnEnter as EventListener}
         }];
         
         const buttons:ButtonCfg<string|null>[] = [
