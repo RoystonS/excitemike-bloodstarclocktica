@@ -32,6 +32,12 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     /** what is being dragged */
     private dragged:HTMLLIElement|null;
 
+    /**
+     * handling an edge case: when the user moves quickly, they might not get a dragleave/drop for every dragover that happened
+     * this tracks the dragOvers so that they can all be cleaned up
+     * */
+    private dragOvers:Set<HTMLLIElement>;
+
     /** constructor */
     constructor(listElement:HTMLOListElement, collection:ObservableCollection<T>, renderFn:RenderFn<T>, cleanupFn:CleanupFn<T>) {
         this.listElement = listElement;
@@ -39,12 +45,22 @@ export class CollectionBinding<T extends ObservableObject<T>> {
         this.renderFn = renderFn;
         this.cleanupFn = cleanupFn;
         this.dragged = null;
+        this.dragOvers = new Set();
 
         collection.addCollectionChangedListener((e)=>this.collectionChanged(e));
 
         // sync DOM to current value
         this.clear();
         this.insert(0, collection.getItems());
+    }
+
+    /** any styles added for dragover events needs to get removed */
+    cleanUpDragOverStyles():void {
+        for (const elem of this.dragOvers) {
+            elem.classList.remove('dropBefore');
+            elem.classList.remove('dropAfter');
+        }
+        this.dragOvers.clear();
     }
 
     /** keep DOM in sync with collection changes */
@@ -92,8 +108,11 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     /** event handler for dragover */
     private dragover(e:DragEvent) {
         if (!this.dragVerify(e)) { return; }
-        const listItemElement = (e.target instanceof Element) && e.target.closest('li');
+        if (!(e.target instanceof Element)) { return; }
+        const listItemElement = e.target.closest('li');
         if (!listItemElement) { return; }
+
+        this.dragOvers.add(listItemElement);
 
         e.preventDefault();
         if (checkInsertAfter(e, listItemElement)) {
@@ -107,10 +126,11 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     
     /** event handler for dragleave */
     private dragleave(e:DragEvent) {
-        const listItemElement = (e.target instanceof Element) && e.target.closest('li');
+        if (!(e.target instanceof Element)) { return; }
+        const listItemElement = e.target.closest('li');
         if (!listItemElement) { return; }
-        listItemElement.classList.remove('dropBefore');
-        listItemElement.classList.remove('dropAfter');
+
+        this.cleanUpDragOverStyles();
     }
 
     /** react to dropping a dragged item */
@@ -138,15 +158,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
             await this.collection.move(fromIndex, toIndex);
 
         } finally {
-            if (e.target instanceof Element) {
-                const listItemElement = e.target.closest('li');
-                if (listItemElement)
-                {
-                    listItemElement.classList.remove('dropBefore');
-                    listItemElement.classList.remove('dropAfter');
-                }
-            }
-
+            this.cleanUpDragOverStyles();
             this.dragged = null;
         }
     }
