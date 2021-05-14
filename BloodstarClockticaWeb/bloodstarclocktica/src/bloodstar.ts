@@ -212,8 +212,7 @@ async function initBindings():Promise<void> {
         return message;
     });
 
-    // TODO: addEventListener
-    document.onkeydown = async (e) => {
+    document.addEventListener('keydown', async (e) => {
         if (!edition) {return;}
         if (e.ctrlKey) {
             if (e.code === "KeyS") {
@@ -221,7 +220,7 @@ async function initBindings():Promise<void> {
                 await save(username, password, edition);
             }
         }
-    };
+    });
     hookupClickEvents([
         ['addCharacterButton', addCharacterClicked],
         ['newFileButton', newFileClicked],
