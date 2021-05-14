@@ -1,10 +1,9 @@
 #characterPane {
-    display:grid;
+    position:relative;
 }
 #characterPane > details {
     margin: 0;
     padding: 0;
-    position:relative;
     min-width:24px;
 }
 #characterPane > details[open] {
@@ -23,15 +22,15 @@
     flex: 0 1 0;
 }
 #characterListContainer {
-    display: flex;
-    flex-flow: column nowrap;
     position:absolute;
     left:0;
     right:0;
-    top:24px;
+    top:60px;
     bottom:0;
+    overflow-y: auto;
 }
 #addCharacterButton {
+    width:100%;
     margin-bottom:6px;
 }
 ol#characterList {
@@ -43,9 +42,6 @@ ol#characterList {
     display:flex;
     flex-flow: column;
     align-items: stretch;
-    left: 0;
-    top: 0;
-    bottom: 0;
     user-select: none;
 }
 .characterListItem{
