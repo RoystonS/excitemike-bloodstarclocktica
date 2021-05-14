@@ -105,6 +105,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** remove all items */
     async clear():Promise<void> {
+        if (!this.items.length) {return;}
         const oldItems = this.items.map(i=>i.item);
         for (const itemPlus of this.items) {
             this.cleanupItemPlus(itemPlus);
@@ -289,7 +290,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
         if (numRemoves) {
             await this.notifyCollectionChangedListeners({
                 list: this,
-                action: ObservableCollectionChangeAction.Replace,
+                action: ObservableCollectionChangeAction.Remove,
                 newItems: [],
                 newStartingIndex: start + numReplaces,
                 oldItems: removedItems.slice(numReplaces),
