@@ -25,6 +25,7 @@ import { bindCharacterList } from './character-list';
 import { BloodTeam } from './model/blood-team';
 import publish from './commands/publish';
 import {save, saveAs} from './commands/save';
+import {chooseAndDeleteFile} from './commands/delete';
 
 let edition:Edition|null = null;
 let username = '';
@@ -58,9 +59,11 @@ function addToRecentFiles(_name:string):void {
  * name from the list
  * @param name file name to remove
  */
-//function removeFromRecentFiles(_name:string):void {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function removeFromRecentFiles(_name:string):void {
     // TODO: implement removeFromRecentFiles
-//}
+    updateRecentFilesMenu();
+}
 
 /**
  * update the recent files menu based on the recent files in local storage
@@ -74,20 +77,32 @@ function updateRecentFilesMenu():void {
  */
 export async function newFileClicked():Promise<boolean> {
     if (!edition) {return false;}
-    await BloodIO.newEdition(edition);
+    try {
+        await BloodIO.newEdition(edition);
+    } catch (error) {
+        await showError('Error', 'Something went wrong when creating new file', error);
+    }
     return true;
 }
 
 /**
  * user chose to open a file
  */
- export async function openFileClicked():Promise<boolean> {
+export async function openFileClicked():Promise<boolean> {
     if (!edition) {return false;}
     if (await BloodIO.open(username, password, edition)) {
         addToRecentFiles(edition.saveName.get());
         return true;
     }
     return false;
+}
+
+/** menu item for delete clicked */
+export async function deleteFileClicked():Promise<boolean> {
+    const deleted = await chooseAndDeleteFile(username, password);
+    if (!deleted) {return false;}
+    removeFromRecentFiles(deleted);
+    return true;
 }
 
 /**
@@ -209,10 +224,11 @@ async function initBindings():Promise<void> {
     };
     hookupClickEvents([
         ['addCharacterButton', addCharacterClicked],
-        ['newfilebutton', newFileClicked],
-        ['openfilebutton', openFileClicked],
-        ['savefilebutton', saveFileClicked],
-        ['savefileasbutton', saveFileAsClicked],
+        ['newFileButton', newFileClicked],
+        ['openFileButton', openFileClicked],
+        ['deleteFileButton', deleteFileClicked],
+        ['saveFileButton', saveFileClicked],
+        ['saveFileAsButton', saveFileAsClicked],
         ['importBlood', ()=>edition && BloodIO.importBlood(edition)],
         ['importOfficialButton', importOfficialClicked],
         ['jsonFromUrlButton', ()=>edition && BloodIO.importJsonFromUrl(edition)],
