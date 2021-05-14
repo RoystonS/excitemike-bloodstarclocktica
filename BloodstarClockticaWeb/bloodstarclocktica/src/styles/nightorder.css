@@ -14,7 +14,7 @@
     display: flex;
     flex-flow: row nowrap;
     margin:0 3px 0 0;
-    padding: 6px;
+    padding: 0 6px;
     border:2px solid #222;
     align-items: center;
 }
