@@ -66,10 +66,14 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
         switch (e.code) {
             case 'Space':
             case 'Enter':
+            case 'NumpadEnter':
                 await selectedCharacterProperty.set(character);
                 break;
         }
     }
+
+    // TODO: team color
+    // TODO: character image
 
     {
         const checkbox = document.createElement("input");

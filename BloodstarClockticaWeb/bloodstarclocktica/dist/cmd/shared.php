@@ -39,6 +39,7 @@
     }
 
     // encode as json and write to save directory
+    // TODO: this function belongs in save.php
     function writeEditionFile($saveName, $data, $clobber) {
         global $saveDir;
         validateFilename($saveName);
@@ -78,6 +79,8 @@
         } finally {
             fclose($file);
         }
+
+        // TODO: look at edition data for a list of character ids(and add _meta). delete any old images that do not match one of those ids
     }
 
     // read file in save directory and decode as json

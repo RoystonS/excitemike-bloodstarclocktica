@@ -62,8 +62,6 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
     // TODO: character icon
     // TODO: reminder as tooltip
     // TODO: no wordwrap
-    // TODO: shrink instead of alpha out on drag
-    // TODO: grow when dropped or drag cancelled
 
     {
         const ordinal = document.createElement("span");

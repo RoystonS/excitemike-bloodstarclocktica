@@ -183,6 +183,7 @@
             exit();
         }
     }
+    // TODO: look at edition data for a list of character ids(and add _meta). delete any old images that do not match one of those ids
 
     echo json_encode(array(
         'success' => true,
