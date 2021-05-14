@@ -45,8 +45,7 @@ const INVALID_SAVENAME_CHARACTER_RE = /[\\/:"?<>|]/;
         return success;
     } catch (error) {
         await edition.saveName.set(backupName);
-        // intentional floating promise - TODO: something to prevent getting many of these at once
-        void showError('Error', 'Error encountered while trying to save', error);
+        await showError('Error', 'Error encountered while trying to save', error);
     }
     return false;
 }
@@ -60,11 +59,16 @@ const INVALID_SAVENAME_CHARACTER_RE = /[\\/:"?<>|]/;
  */
 export async function save(username:string, password:string, edition:Edition):Promise<boolean> {
     const saveName = edition.saveName.get();
-    switch (saveName) {
-        case '':
-            return await saveAs(username, password, edition);
-        default:
-            return await _save(username, password, edition, true);
+    try {
+        switch (saveName) {
+            case '':
+                return await saveAs(username, password, edition);
+            default:
+                return await _save(username, password, edition, true);
+        }
+    } catch (error) {
+        await showError('Error', 'Error encountered while trying to save', error);
+        return false;
     }
 }
 
@@ -172,7 +176,6 @@ async function _save(username:string, password:string, edition:Edition, clobber:
         }
     }
 
-
     const promises = [];
 
     for (const [id,imageString] of toSave.sourceImages) {
@@ -204,7 +207,6 @@ async function _save(username:string, password:string, edition:Edition, clobber:
             return cmd(username, password, 'save-img', `Saving ${id}.png`, payload);
         }, MAX_SIMULTANEOUS_IMAGE_SAVES));
     }
-
 
     {
         const logo = toSave.logo;

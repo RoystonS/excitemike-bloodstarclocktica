@@ -16,34 +16,46 @@ const MAXRETRIES = 1;
     return await spinner<ResultType>('command', spinnerMessage, _cmd<ResultType>(username, password, cmdName, body, TIMEOUT, MAXRETRIES));
 }
 
-/** wrap fetch to timeout and automatically retry */
-async function fetchWithTimeoutAndRetry(username:string, password:string, cmdName:string, body:BodyInit|undefined, timeout:number, maxRetries:number):Promise<Response> {
+/** wrap fetch with a timeout */
+async function fetchWithTimeout(username:string, password:string, cmdName:string, body:BodyInit|undefined, timeout:number):Promise<Response> {
     const base64 = btoa(`${username}:${password}`);
     const controller = new AbortController();
-    return await new Promise((resolve,reject)=>{
-        const timeoutId = setTimeout(()=>{
-            controller.abort();
-            if (maxRetries > 0) {
-                console.log(`Request timed out for command "${cmdName}. ${maxRetries} retries remaining"`);
-                resolve(fetchWithTimeoutAndRetry(username, password, cmdName, body, timeout, maxRetries - 1));
-            } else {
-                reject(`Request timed out for command "${cmdName}"`);
-            }
-        }, timeout);
+    let timedOut = false;
+    const timeoutId = setTimeout(()=>{
+        timedOut = true;
+        controller.abort();
+    }, timeout);
+    
+    try {
+        return await fetch(`https://www.bloodstar.xyz/cmd/${cmdName}.php`, {
+            method: 'POST',
+            headers:{
+                'Authorization': `Basic ${base64}`
+            },
+            mode: 'cors',
+            credentials: 'include',
+            signal: controller.signal,
+            body
+        });
+    } catch (error) {
+        if (timedOut) {throw `Command "${cmdName} timed out`;}
+        throw `Network error during command "${cmdName}"`;
+    } finally {
+        clearTimeout(timeoutId)
+    }
+}
 
-        fetch(`https://www.bloodstar.xyz/cmd/${cmdName}.php`, {
-                method: 'POST',
-                headers:{
-                    'Authorization': `Basic ${base64}`
-                },
-                mode: 'cors',
-                credentials: 'include',
-                signal: controller.signal,
-                body
-            })
-            .finally(()=>clearTimeout(timeoutId))
-            .then(resolve, reject);
-    });
+/** wrap fetch to timeout and automatically retry */
+async function fetchWithTimeoutAndRetry(username:string, password:string, cmdName:string, body:BodyInit|undefined, timeout:number, maxRetries:number):Promise<Response> {
+    while (maxRetries > 0) {
+        try {
+            return await fetchWithTimeout(username, password, cmdName, body, timeout);
+        } catch (e) {
+            if (maxRetries <= 0) {throw e;}
+            maxRetries--;
+        }
+    }
+    return await fetchWithTimeout(username, password, cmdName, body, timeout);
 }
 
 /**
@@ -63,7 +75,12 @@ async function _cmd<ResultType = unknown>(username:string, password:string, cmdN
         throw new Error(`${response.status}: (${response.type}) ${response.statusText}`);
     }
 
-    const responseText = await response.text();
+    let responseText;
+    try {
+        responseText = await response.text();
+    } catch (error) {
+        throw new Error(`Error reading server response.`);
+    }
     
     try {
         return JSON.parse(responseText);

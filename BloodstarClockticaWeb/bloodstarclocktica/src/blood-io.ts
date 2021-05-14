@@ -95,12 +95,17 @@ export async function login(username:string, password:string):Promise<boolean> {
  * @param password password
  */
 async function _listFiles(username:string, password:string):Promise<string[]> {
-    const {error,files} = await cmd(username, password, 'list', 'Retrieving file list') as ListFilesReturn;
-    if (error) {
-        console.error(error);
+    try {
+        const {error,files} = await cmd(username, password, 'list', 'Retrieving file list') as ListFilesReturn;
+        if (error) {
+            console.error(error);
+            await showError('Network Error', `Error encountered while retrieving file list`, error);
+        }
+        return files || [];
+    } catch (error) {
         await showError('Network Error', `Error encountered while retrieving file list`, error);
     }
-    return files || [];
+    return [];
 }
 
 /**

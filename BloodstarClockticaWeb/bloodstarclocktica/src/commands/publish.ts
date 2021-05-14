@@ -20,7 +20,14 @@ export default async function publish(username:string, password:string, edition:
         saveName: saveName
     };
     const payload = JSON.stringify(saveData);
-    const response = await cmd(username, password, 'publish', `Publishing ${edition.saveName.get()}`, payload) as PublishReturn;
+
+    let response:PublishReturn;
+    try {
+        response = await cmd(username, password, 'publish', `Publishing ${edition.saveName.get()}`, payload) as PublishReturn;
+    } catch (error) {
+        await showError('Error', 'Error encountered during publish', error);
+        return false;
+    }
     if (!response) {return false;}
     const {error} = response;
     if (error) {
