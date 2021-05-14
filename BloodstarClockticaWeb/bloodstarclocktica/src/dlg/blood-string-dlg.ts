@@ -33,8 +33,8 @@ class StringDialog extends AriaDialog<string> {
         }];
         
         const buttons:ButtonCfg<string|null>[] = [
-            {label:'OK', callback:() => Promise.resolve(enteredString)},
-            {label:'Cancel', callback:() => Promise.resolve(null)}
+            {label:'OK', callback:() => enteredString},
+            {label:'Cancel'}
         ];
 
         return await this.baseOpen(

@@ -234,14 +234,14 @@ export class AriaDialog<ResultType> {
      * @param buttons buttons to add to the dialog
      * @returns promise that resolves to dialog result, or null
      */
-    baseOpen(
+    async baseOpen(
         focusAfterClose:Element|string|null,
         debugName = '',
         body:CreateElementsOptions,
         buttons:ButtonCfg<ResultType|null>[] = [{label:'OK'}]
     ):Promise<ResultType|null> {
         this.root = this.createDialog(debugName, body, buttons);
-        if (!this.root) {return Promise.resolve(null);}
+        if (!this.root) {return null;}
 
         // we need to replace the previous dialog's listeners
         if (dialogStack.length > 0) {
@@ -273,7 +273,7 @@ export class AriaDialog<ResultType> {
 
         appear(this.root as HTMLElement);
 
-        return this.promise;
+        return await this.promise;
     }
 
     /** find the first element in the dialog with the given id */

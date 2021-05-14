@@ -22,8 +22,8 @@ class YesNoDialog extends AriaDialog<boolean> {
             'message',
             body,
             [
-                {label:yesLabel, callback:() => Promise.resolve(true)},
-                {label:noLabel, callback:() => Promise.resolve(false)}
+                {label:yesLabel, callback:() => true},
+                {label:noLabel, callback:() => false}
             ]
         );
     }

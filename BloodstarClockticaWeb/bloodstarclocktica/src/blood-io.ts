@@ -34,7 +34,7 @@ export async function open(username:string, password:string, edition:Edition):Pr
     if (await SdcDlg.savePromptIfDirty(edition)) {
         return await openNoSavePrompt(username, password, edition);
     }
-    return Promise.resolve(false);
+    return false;
 }
 
 /**
@@ -49,7 +49,7 @@ async function openNoSavePrompt(username:string, password:string, edition:Editio
     if (name) {
         return await spinner('open', `Opening edition file "${name}"`, openNoPrompts(username, password, edition, name));
     }
-    return Promise.resolve(false);
+    return false;
 }
 
 /**

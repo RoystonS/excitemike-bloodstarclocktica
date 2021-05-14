@@ -45,7 +45,7 @@ export default async function publish(username:string, password:string, edition:
                 ]
             }
         ],
-        [{label:'OK', callback:() => Promise.resolve(null)}]
+        [{label:'OK'}]
     );
 
     return true;

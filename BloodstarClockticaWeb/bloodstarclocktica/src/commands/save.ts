@@ -32,7 +32,7 @@ const INVALID_SAVENAME_CHARACTER_RE = /[\\/:"?<>|]/;
     
     if (!validateSaveName(name)) {
         await showMessage('Invalid File Name', `"${name}" is not a valid filename.`);
-        return Promise.resolve(false);
+        return false;
     }
 
     const backupName = edition.saveName.get();
