@@ -36,7 +36,7 @@ export class EnumProperty<ValueType> extends Property<ValueType> {
 }
 
 /** central authority on bindings */
-const bindings = new Map<Node, Binding>();
+const bindings = new Map<Node, Binding[]>();
 
 type Binding = BaseBinding<any> | CollectionBinding<any>;
 
@@ -95,9 +95,19 @@ class ComboBoxBinding<T> extends BaseBinding<T> {
     }
 }
 
+/** add a binding for the given element to be later cleaned up with unbindElement */
+function addBinding(element:Node, binding:Binding):void {
+    let bindingsForElement = bindings.get(element);
+    if (!bindingsForElement){
+        bindingsForElement = [];
+        bindings.set(element, bindingsForElement);
+    }
+    bindingsForElement.push(binding);
+}
+
 /** bind checkbox to some data */
 export function bindCheckbox(checkboxElement:HTMLInputElement, boolProperty:Property<boolean>):void {
-    bindings.set(checkboxElement, new CheckboxBinding(checkboxElement, boolProperty));
+    addBinding(checkboxElement, new CheckboxBinding(checkboxElement, boolProperty));
 }
 
 /** bind checkbox to some data */
@@ -110,7 +120,7 @@ export function bindCheckboxById(id:string, boolProperty:Property<boolean>):void
 
 /** bind ComboBox to EnumProperty */
 export function bindComboBox<ValueType>(selectElement:HTMLSelectElement, enumProperty:EnumProperty<ValueType>, stringToEnum:(s:string)=>ValueType, enumToString:(t:ValueType)=>string):void {
-    bindings.set(selectElement, new ComboBoxBinding<ValueType>(selectElement, enumProperty, stringToEnum, enumToString));
+    addBinding(selectElement, new ComboBoxBinding<ValueType>(selectElement, enumProperty, stringToEnum, enumToString));
 }
 
 /** bind ComboBox to EnumProperty */
@@ -123,7 +133,7 @@ export function bindComboBoxById<ValueType>(id:string, enumProperty:EnumProperty
 
 /** bind a string property to a label, input text, text area, or even SVG element */
 export function bindText(element:Node, property:Property<string>):void {
-    bindings.set(element, new TextBinding(element, property));
+    addBinding(element, new TextBinding(element, property));
 }
 
 /** bind a string property to a label, input text, or text area element */
@@ -136,7 +146,7 @@ export function bindTextById(id:string, property:Property<string>):void {
 
 /** bind a number property to a input[type=range] element */
 export function bindSlider(element:HTMLInputElement, valueLabel:HTMLElement|null, property:Property<number>):void {
-    bindings.set(element, new SliderBinding(element, valueLabel, property));
+    addBinding(element, new SliderBinding(element, valueLabel, property));
 }
 
 /** bind a number property to a input[type=range] element */
@@ -150,7 +160,7 @@ export function bindSliderById(id:string, valueLabelId:string|null, property:Pro
 
 /** bind an enumproperty to a label, input text, or text area element, showing the display name of the value rather than the value */
 export function bindEnumDisplay(element:HTMLElement, property:EnumProperty<any>):void {
-    bindings.set(element, new TextEnumBinding(element, property));
+    addBinding(element, new TextEnumBinding(element, property));
 }
 
 /** bind an enumproperty to a label, input text, or text area element, showing the display name of the value rather than the value */
@@ -163,7 +173,7 @@ export function bindEnumDisplayById(id:string, property:EnumProperty<string>):vo
 
 /** bind a collection of items, and callbacks to create/destroy/update items to a parent element */
 export function bindCollection<T extends ObservableObject<T>>(element:HTMLOListElement, collection:ObservableCollection<T>, renderFn:RenderFn<T>, cleanupFn:CleanupFn<T>):void {
-    bindings.set(element, new CollectionBinding(element, collection, renderFn, cleanupFn));
+    addBinding(element, new CollectionBinding(element, collection, renderFn, cleanupFn));
 }
 
 /** bind a collection of items, and callbacks to create/destroy/update items to a parent element */
@@ -176,7 +186,7 @@ export function bindCollectionById<T extends ObservableObject<T>>(id:string, col
 
 /** bind an image to a `string|null` property that stores an object url */
 export function bindImageDisplay(element:HTMLImageElement, property:Property<string|null>):void {
-    bindings.set(element, new ImageDisplayBinding(element, property));
+    addBinding(element, new ImageDisplayBinding(element, property));
 }
 
 /** bind an image to a `string|null` property that stores an object url */
@@ -189,7 +199,7 @@ export function bindImageDisplayById(id:string, property:Property<string|null>):
 
 /** bind an `input[type=file]` element to a `string|null` property that stores an object url */
 export function bindImageChooser(element:HTMLInputElement, property:Property<string|null>, maxWidth:number, maxHeight:number):void {
-    bindings.set(element, new ImageChooserBinding(element, property, maxWidth, maxHeight));
+    addBinding(element, new ImageChooserBinding(element, property, maxWidth, maxHeight));
 }
 
 /** bind an `input[type=file] to a `string|null` property that stores an object url */
@@ -202,7 +212,7 @@ export function bindImageChooserById(id:string, property:Property<string|null>, 
 
 /** one way binding. automatically add or remove a css class based on the property value and callback */
 export function bindStyle<ValueType>(element:HTMLElement, property:Property<ValueType>, cb:(value:ValueType, classList:DOMTokenList)=>void):void {
-    bindings.set(element, new StyleBinding<ValueType>(element, property, cb));
+    addBinding(element, new StyleBinding<ValueType>(element, property, cb));
 }
 
 /** one way binding. automatically add or remove a css class based on the property value and callback */
@@ -215,7 +225,7 @@ export function bindStyleById<ValueType>(id:string, property:Property<ValueType>
 
 /** one-way binding. make the element visible or not based on a boolean property */
 export function bindVisibility(element:HTMLElement, property:Property<boolean>):void {
-    bindings.set(element, new VisibilityBinding(element, property));
+    addBinding(element, new VisibilityBinding(element, property));
 }
 
 /** one-way binding. make the element visible or not based on a boolean property */
@@ -228,8 +238,10 @@ export function bindVisibilityById(id:string, property:Property<boolean>):void {
 
 /** clear element's current binding, if any */
 export function unbindElement(element:Node):void {
-    if (bindings.has(element)) {
-        bindings.get(element)?.destroy();
+    const bindingsForElement = bindings.get(element);
+    if (!bindingsForElement){return;}
+    for (const binding of bindingsForElement) {
+        binding.destroy();
     }
     bindings.delete(element);
 }
