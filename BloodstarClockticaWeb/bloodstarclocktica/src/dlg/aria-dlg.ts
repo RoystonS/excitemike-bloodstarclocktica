@@ -10,7 +10,7 @@ import { createElement, CreateElementsOptions } from "../util";
 
 type ResolveFn = (value:any)=>void;
 type ButtonCb<T = unknown> = ()=>Promise<T>|T;
-export type ButtonCfg<T = unknown> = {label:string,callback?:ButtonCb<T>};
+export type ButtonCfg<T = unknown> = {label:string,id?:string,callback?:ButtonCb<T>,disabled?:boolean};
 
 /** used to make each dialog definitely have a unique id */
 let unique = 1;
@@ -197,13 +197,15 @@ export class AriaDialog<ResultType> {
             const btnGroup = document.createElement('div');
             btnGroup.className = 'dialogBtnGroup';
         
-            for (const {label, callback} of buttons) {
+            for (const {label, id, callback, disabled} of buttons) {
                 const btn = document.createElement('button');
                 btn.addEventListener('click', async () => {
                     const result = callback ? await callback() : null;
                     return this.close(result);
                 });
                 btn.innerText = label;
+                if (id) {btn.id=id;}
+                btn.disabled = !!disabled;
                 btnGroup.appendChild(btn);
             }
             box.appendChild(btnGroup);
@@ -279,6 +281,12 @@ export class AriaDialog<ResultType> {
     /** find the first element in the dialog with the given id */
     protected getElementById(id:string):HTMLElement|null {
         return this.root?.querySelector(`#${id}`)||null;
+    }
+
+    /** find an element within the popup */
+    public querySelector<E extends Element = Element>(selector:string):E|null {
+        if (!this.root){return null;}
+        return this.root.querySelector<E>(selector);
     }
 
     /** clear focus trap for this dialog */

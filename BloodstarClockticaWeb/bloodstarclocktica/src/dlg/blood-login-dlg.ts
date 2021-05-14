@@ -69,9 +69,8 @@ class LoginDlg extends AriaDialog<UserPass> {
 
     /** get a value from a field by id */
     private getValue(id:string):string {
-        const elem = this.getElementById(id);
-        if (!(elem instanceof HTMLInputElement)){return '';}
-        return elem.value;
+        const inputElement = this.querySelector<HTMLInputElement>(`#${id}`);
+        return inputElement ? inputElement.value : '';
     }
 }
 
