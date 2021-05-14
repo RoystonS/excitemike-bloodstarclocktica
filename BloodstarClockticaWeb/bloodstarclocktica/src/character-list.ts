@@ -1,4 +1,4 @@
-import { bindCheckbox, bindCollectionById, bindStyle, bindText, Property, PropertyChangeListener, unbindElement } from "./bind/bindings";
+import { bindAttribute, bindCheckbox, bindCollectionById, bindStyle, bindText, Property, PropertyChangeListener, unbindElement } from "./bind/bindings";
 import { ObservableCollection } from "./bind/observable-collection";
 import {show as getConfirmation} from "./dlg/yes-no-dlg";
 import { BloodTeam } from "./model/blood-team";
@@ -75,6 +75,7 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
             }
         }
         bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);
+        bindAttribute(row, 'title', character.ability);
     }
 
     // TODO: character image
