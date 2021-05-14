@@ -25,11 +25,30 @@ async function deserializeFromIds(object:ObservableObject<Edition>, nightOrder:O
         if (!(character instanceof Character)) {return;}
         charactersById.set(character.id.get(), character);
     }
+
+{
+    const missingCharacters = new Set<Character>(characterList);
+    const orderedCharacters = [];
+    for (const id of data) {
+        const character = charactersById.get(String(id));
+        if (character===undefined){
+            console.error(`deserializeFromIds: no character found for id ${id}`);
+        } else {
+            missingCharacters.delete(character);
+            orderedCharacters.push(character);
+        }
+    }
+    // characters left out. probably due to duplicate ids. stick them at the end
+    orderedCharacters.splice(orderedCharacters.length, 0, ...missingCharacters);
+    await nightOrder.set(orderedCharacters);
+}
+
     await nightOrder.set(data.filter(id=>charactersById.has(String(id))).map(id=>{
         const character = charactersById.get(String(id));
         if (!character) {throw new Error('Failed to get character by id when setting night order')}
         return character;
     }));
+    
 }
 
 /** observable properties for a custom edition */
@@ -224,6 +243,8 @@ export class Edition extends ObservableObject<Edition> {
         // mark all as up to date
         await this.markClean();
         
+        // THEN fix any ids that need it
+        // TODO: fix duplicate ids
 
         return true;
     }
@@ -233,5 +254,11 @@ export class Edition extends ObservableObject<Edition> {
         await super.reset();
         await this.addNewCharacter();
         await this.markClean();
+    }
+
+    /** overriding to do a last-minute id uniqification */
+    serialize():{[key:string]:unknown} {
+        // TODO: fix duplicate ids
+        return super.serialize();
     }
 }
