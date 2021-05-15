@@ -65,7 +65,7 @@
                 }
 
                 $id = $character['id'] ?? 'newcharacter';
-                $team = $character['team'] ?? '';
+                $team = $character['team'] ?? 'townsfolk';
                 $teamDisplay = ucfirst($team);
                 $name = $character['name'] ?? 'New Character';
                 

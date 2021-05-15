@@ -76,7 +76,7 @@ export class Character extends ObservableObject<Character> {
     @observableProperty(null)
     readonly styledImage!: Property<string | null>;
     
-    @observableEnumProperty(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS)
+    @observableEnumProperty(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS, {saveDefault:true})
     readonly team!: EnumProperty<BloodTeam>;
     
     @observableProperty(null, {customDeserialize: safelyConvertImage}) // TODO: do this conversion as a separate step
