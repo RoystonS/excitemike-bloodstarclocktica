@@ -29,6 +29,7 @@ import './styles/tabs.css';
 import './styles/teamcolor.css';
 
 let edition:Edition|null = null;
+// TODO: store combined+base64ed userpass instead of storing them directly
 let username = '';
 let password = '';
 const selectedCharacter = new BloodBind.Property<Character|null>(null);
@@ -180,6 +181,8 @@ function tabClicked(btnId:string, tabId:string):void {
 
 /** prompt for login information */
 async function login():Promise<void> {
+    // TODO: check for stored userpass. try to login with that if present
+    // TODO: if login from stored fails, remove from storage
     // eslint-disable-next-line no-constant-condition
     while (true) {
         try {
@@ -197,6 +200,7 @@ async function login():Promise<void> {
             // intentional floating promise
             void showError('Error', 'Error encountered during login', e);
         }
+        // TODO: once login succeeds store base64d userpass for next time
     }
 }
 
