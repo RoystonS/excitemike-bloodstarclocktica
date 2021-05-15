@@ -79,25 +79,19 @@
         'almanac'=>'https://www.bloodstar.xyz/p/'.$saveName.'/almanac.html')
     );
 
-    // split a url or path to a file and return just the filename part
-    function getFilename($path){
-        $parts = explode('/', $path);
-        return array_pop($parts);
-    }
-
     // examine script to see what images are used. delete any that are unused
     function deleteUnusedImages($script, $publishDir){
-        $usedIds = array();
+        $usedImages = array();
 
         // collect set of used images
         foreach ($script as $character) {
             if (array_key_exists('logo', $character)) {
                 $filename = getFilename($character['logo']);
-                $usedIds[$filename] = true;
+                $usedImages[$filename] = true;
             }
             if (array_key_exists('image', $character)) {
                 $filename = getFilename($character['image']);
-                $usedIds[$filename] = true;
+                $usedImages[$filename] = true;
             }
         }
 
@@ -105,7 +99,7 @@
         if (is_dir($publishDir)) {
             $subPaths = glob(join_paths($publishDir, '*.png'));
             foreach ($subPaths as $subPath) {
-                if (!array_key_exists(getFilename($subPath), $usedIds)) {
+                if (!array_key_exists(getFilename($subPath), $usedImages)) {
                     unlink($subPath);
                 }
             }

@@ -38,51 +38,6 @@
         }
     }
 
-    // encode as json and write to save directory
-    // TODO: this function belongs in save.php
-    function writeEditionFile($saveName, $data, $clobber) {
-        global $saveDir;
-        validateFilename($saveName);
-
-        // ensure directory exists
-        if (!file_exists($saveDir)) {
-            mkdir($saveDir, 0777, true);
-        }
-        $editionFolder = join_paths($saveDir, $saveName);
-        if (!file_exists($editionFolder)) {
-            $success = mkdir($editionFolder, 0777, true);
-            if (!$success) {
-                echo json_encode(array('error' =>"could not make directory for '$saveName'"));
-                exit();
-            }
-        }
-
-        $editionFile = join_paths($editionFolder, 'edition');
-
-        if (!$clobber && file_exists($editionFile)) {
-            echo json_encode(array('clobberWarning' => "Save file '$saveName' already exists"));
-            exit();
-        }
-
-        $editionFile = join_paths($editionFolder, 'edition');
-        $file = fopen($editionFile, 'w');
-        if (!$file) {
-            echo json_encode(array('error' =>"error writing file '$saveName'"));
-            exit();
-        }
-
-        try {
-            fwrite($file, json_encode($data));
-        } catch (Exception $e) {
-            echo json_encode(array('error' =>"error writing file '$saveName'"));
-            exit();
-        } finally {
-            fclose($file);
-        }
-
-        // TODO: look at edition data for a list of character ids(and add _meta). delete any old images that do not match one of those ids
-    }
-
     // read file in save directory and decode as json
     function readEditionFile($saveName) {
         global $saveDir;
@@ -132,5 +87,15 @@
             echo json_encode(array('error' =>"error writing file '$path'"));
             exit();
         }
+    }
+
+    function startsWith($haystack, $needle) {
+        return strncmp($haystack, $needle, strlen($needle)) === 0;
+    }
+
+    // split a url or path to a file and return just the filename part
+    function getFilename($path){
+        $parts = explode('/', $path);
+        return array_pop($parts);
     }
 ?>
