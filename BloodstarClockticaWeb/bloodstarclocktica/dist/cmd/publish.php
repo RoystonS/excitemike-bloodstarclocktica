@@ -6,6 +6,112 @@
 
     $saveName = requireField($data, 'saveName');
 
+    // read save file
+    $data = readEditionFile($saveName);
+    $data = json_decode($data, true);
+
+    // build script.json from it
+    $script = makeScript($data, $saveName);
+
+    // ensure directory exists
+    $publishDir = join_paths('../p', $saveName);
+    if (!file_exists($publishDir)) {
+        mkdir($publishDir, 0777, true);
+    }
+
+    // write file
+    try {
+        file_put_contents(
+            join_paths($publishDir, 'script.json'),
+            json_encode($script)
+        );
+    } catch (Exception $e) {
+        echo json_encode(array('error' =>"error writing script.json"));
+        exit();
+    }
+
+    // move images
+    $editionFolder = join_paths($saveDir, $saveName);
+    foreach ($script as $character) {
+        $id = $character['id'];
+        $filename = $id.'.png';
+        $sourcePath = join_paths($editionFolder, $filename);
+        $destinationPath = join_paths($publishDir, $filename);
+        if (is_file($sourcePath)) {
+            if (!copy($sourcePath, $destinationPath)){
+                echo json_encode(array('error' =>'error copying '.$sourcePath.' to '.$destinationPath));
+                exit();
+            }
+        }
+    }
+    // edition logo
+    {
+        $filename = '_meta.png';
+        $sourcePath = join_paths($editionFolder, $filename);
+        $destinationPath = join_paths($publishDir, $filename);
+        if (is_file($sourcePath)) {
+            if (!copy($sourcePath, $destinationPath)){
+                echo json_encode(array('error' =>'error copying '.$sourcePath.' to '.$destinationPath));
+                exit();
+            }
+        }
+    }
+
+    // almanac
+    try {
+        $almanac = makeAlmanac($data, $saveName);
+        file_put_contents(join_paths($publishDir, 'almanac.html'), $almanac);
+    } catch (Exception $e) {
+        echo json_encode(array('error' =>"error writing almanac.html"));
+        exit();
+    }
+
+    // cleanup unused
+    try {
+        deleteUnusedImages($script, $publishDir);
+    } catch (Exception $e) {
+        // ignoring errors in deleting unused images
+    }
+
+    echo json_encode(array(
+        'success' => true,
+        'script'=>'https://www.bloodstar.xyz/p/'.$saveName.'/script.json',
+        'almanac'=>'https://www.bloodstar.xyz/p/'.$saveName.'/almanac.html')
+    );
+
+    // split a url or path to a file and return just the filename part
+    function getFilename($path){
+        $parts = explode('/', $path);
+        return array_pop($parts);
+    }
+
+    // examine script to see what images are used. delete any that are unused
+    function deleteUnusedImages($script, $publishDir){
+        $usedIds = array();
+
+        // collect set of used images
+        foreach ($script as $character) {
+            if (array_key_exists('logo', $character)) {
+                $filename = getFilename($character['logo']);
+                $usedIds[$filename] = true;
+            }
+            if (array_key_exists('image', $character)) {
+                $filename = getFilename($character['image']);
+                $usedIds[$filename] = true;
+            }
+        }
+
+        // delete any that don't match
+        if (is_dir($publishDir)) {
+            $subPaths = glob(join_paths($publishDir, '*.png'));
+            foreach ($subPaths as $subPath) {
+                if (!array_key_exists(getFilename($subPath), $usedIds)) {
+                    unlink($subPath);
+                }
+            }
+        }
+    }
+
     // copy field if it is present
     function copyField($srcArray, $srcName, &$dstArray, $dstName) {
         if (array_key_exists($srcName, $srcArray)){
@@ -113,81 +219,4 @@
 
         return $scriptData;
     }
-
-    // read save file
-    $data = readEditionFile($saveName);
-    $data = json_decode($data, true);
-
-    // build script.json from it
-    $script = makeScript($data, $saveName);
-
-    // ensure directory exists
-    $publishDir = join_paths('../p', $saveName);
-    if (!file_exists($publishDir)) {
-        mkdir($publishDir, 0777, true);
-    }
-
-    // write file
-    $scriptJsonPath = join_paths($publishDir, 'script.json');
-    $file = fopen($scriptJsonPath, 'w');
-    if (!$file) {
-        echo json_encode(array('error' =>"error writing file '$saveName'"));
-        exit();
-    }
-    try {
-        fwrite($file, json_encode($script));
-    } catch (Exception $e) {
-        echo json_encode(array('error' =>"error writing script.json"));
-        exit();
-    } finally {
-        fclose($file);
-    }
-
-    // move images
-    $editionFolder = join_paths($saveDir, $saveName);
-    foreach ($script as $character) {
-        global $saveDir;
-        $id = $character['id'];
-        $filename = $id.'.png';
-        $sourcePath = join_paths($editionFolder, $filename);
-        $destinationPath = join_paths($publishDir, $filename);
-        if (is_file($sourcePath)) {
-            if (!copy($sourcePath, $destinationPath)){
-                echo json_encode(array('error' =>'error copying '.$sourcePath.' to '.$destinationPath));
-                exit();
-            }
-        }
-    }
-    // edition logo
-    {
-        global $saveDir;
-        $filename = '_meta.png';
-        $sourcePath = join_paths($editionFolder, $filename);
-        $destinationPath = join_paths($publishDir, $filename);
-        if (is_file($sourcePath)) {
-            if (!copy($sourcePath, $destinationPath)){
-                echo json_encode(array('error' =>'error copying '.$sourcePath.' to '.$destinationPath));
-                exit();
-            }
-        }
-    }
-
-    // almanac
-    {
-        $almanac = makeAlmanac($data, $saveName);
-        $almanacPath = join_paths($publishDir, 'almanac.html');
-        try {
-            file_put_contents($almanacPath, $almanac);
-        } catch (Exception $e) {
-            echo json_encode(array('error' =>"error writing almanac.html"));
-            exit();
-        }
-    }
-    // TODO: look at edition data for a list of character ids(and add _meta). delete any old images that do not match one of those ids
-
-    echo json_encode(array(
-        'success' => true,
-        'script'=>'https://www.bloodstar.xyz/p/'.$saveName.'/script.json',
-        'almanac'=>'https://www.bloodstar.xyz/p/'.$saveName.'/almanac.html')
-    );
 ?>
