@@ -122,5 +122,5 @@ ol#characterList::after {
     opacity: 0.5;
 }
 .characterListItemSelected > .characterListThumbnail {
-    opacity: 1;
+    opacity: 1 !important;
 }
