@@ -2,7 +2,9 @@
     flex: 4;
     display: flex;
     flex-flow: column nowrap;
+    overflow:hidden;
 }
+/*div that scrolls for tab content*/
 #tabHolder {
     flex: 1 1 0;
     overflow:auto;
@@ -42,7 +44,8 @@
 .tab {
     display:none;
     margin-right: 6px;
+    flex-flow: column nowrap;
 }
 .activeTab {
-    display:grid;
+    display:flex;
 }

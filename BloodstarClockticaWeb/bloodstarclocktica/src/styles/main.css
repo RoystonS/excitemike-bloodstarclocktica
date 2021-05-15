@@ -191,3 +191,4 @@ ul#status {
     grid-template-columns: auto 1fr;
     gap:6px;
 }
+.nowrap {white-space: nowrap;text-overflow:ellipsis;overflow:hidden;}
