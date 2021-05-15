@@ -9,7 +9,7 @@ import { BloodTeam } from './model/blood-team';
 import {Character} from './model/character';
 import { Edition } from './model/edition';
 import { setTeamColorStyle } from './team-color';
-import {ordinal, walkHTMLElements} from './util';
+import {createElement, ordinal, walkHTMLElements} from './util';
 
 /** recurses though children of element cleaning up click events and bindings */
 export function cleanupNightOrderItem(element: Node): void {
@@ -54,19 +54,14 @@ export async function initNightOrderBindings(edition:Edition):Promise<void> {
  * @returns HTMLElement to represent that character
  */
 export function makeNightOrderItem(character: Character, collection:ObservableCollection<Character>, ordinalPropertyName:'firstNightOrdinal'|'otherNightOrdinal', reminderPropertyName:'firstNightReminder'|'otherNightReminder'):HTMLElement {
-    const row = document.createElement("div");
-    {
-        row.className = "nightOrderItem";
-        bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);
-        bindAttribute(row, 'title', character.getProperty<string>(reminderPropertyName));
-    }
+    const row = createElement({t:'div',css:['nightOrderItem']});
+    bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);
+    bindAttribute(row, 'title', character.getProperty<string>(reminderPropertyName));
 
     // TODO: character icon
-    // TODO: no wordwrap
 
     {
-        const ordinal = document.createElement("span");
-        ordinal.classList.add('ordinal');
+        const ordinal = createElement({t:'span',css:['ordinal']});
         bindText(ordinal, character.getProperty(ordinalPropertyName) as Property<string>);
         bindStyle<boolean>(ordinal, character.export, (willExport:boolean, classList:DOMTokenList)=>{
             if (willExport) {
@@ -79,32 +74,26 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
     }
 
     {
-        const nameElement = document.createElement("span");
-        nameElement.className = "nightOrderName";
+        const nameElement = createElement({t:'span',css:['nightOrderName']});
         bindText(nameElement, character.name);
         row.appendChild(nameElement);
     }
 
     {
-        const reminderElement = document.createElement("span");
-        reminderElement.className = "nightOrderReminder";
+        const reminderElement = createElement({t:'span',css:['nightOrderReminder','nowrap']});
         bindText(reminderElement, character.getProperty(reminderPropertyName) as Property<string>);
         row.appendChild(reminderElement);
     }
 
     {
-        const up = document.createElement("button");
-        up.className = "nightOrderButton";
-        up.innerText = "▲";
-        up.onclick = async () => await collection.moveItemUp(character);
+        const moveItemUp = async () => await collection.moveItemUp(character);
+        const up = createElement({t:'button',css:['nightOrderButton'],txt:'▲',events:{click:moveItemUp}});
         row.appendChild(up);
     }
 
     {
-        const down = document.createElement("button");
-        down.className = "nightOrderButton";
-        down.innerText = "▼";
-        down.onclick = () => collection.moveItemDown(character);
+        const moveItemDown = async () => await collection.moveItemDown(character);
+        const down = createElement({t:'button',css:['nightOrderButton'],txt:'▼',events:{click:moveItemDown}});
         row.appendChild(down);
     }
 
