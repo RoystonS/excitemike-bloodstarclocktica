@@ -58,8 +58,6 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
     bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);
     bindAttribute(row, 'title', character.getProperty<string>(reminderPropertyName));
 
-    // TODO: character icon
-
     {
         const ordinal = createElement({t:'span',css:['ordinal']});
         bindText(ordinal, character.getProperty(ordinalPropertyName) as Property<string>);
