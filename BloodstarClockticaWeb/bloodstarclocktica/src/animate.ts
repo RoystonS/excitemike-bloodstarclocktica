@@ -61,5 +61,4 @@ export function shrinkOutMaxHeight(element:HTMLElement):void {
             element.classList.remove('transitionMaxHeight');
         }, {once:true})
     });
-    // TODO: maybe this should take a callback for when it completes?
 }

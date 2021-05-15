@@ -224,8 +224,6 @@ async function _save(username:string, password:string, edition:Edition, clobber:
         }
     }
 
-    // TODO: remove any now-unused images
-
     // await results
     const results = await spinner('save', `Saving as ${saveName}`, Promise.all(promises)) as SaveReturn[];
     for (const {error} of results) {
