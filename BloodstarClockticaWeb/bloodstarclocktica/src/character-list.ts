@@ -1,10 +1,10 @@
-import { bindAttribute, bindCheckbox, bindCollectionById, bindStyle, bindText, Property, PropertyChangeListener, unbindElement } from "./bind/bindings";
+import { bindAttribute, bindCheckbox, bindCollectionById, bindImageDisplay, bindStyle, bindText, Property, PropertyChangeListener, unbindElement } from "./bind/bindings";
 import { ObservableCollection } from "./bind/observable-collection";
 import {show as getConfirmation} from "./dlg/yes-no-dlg";
 import { BloodTeam } from "./model/blood-team";
 import { Character } from "./model/character";
 import { setTeamColorStyle } from "./team-color";
-import { walkHTMLElements } from "./util";
+import { createElement, walkHTMLElements } from "./util";
 
 /** need to track the listeners we add so that we can remove them */
 const characterListCleanupSideTable = new Map<HTMLElement, PropertyChangeListener<Character|null>>();
@@ -78,7 +78,11 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
         bindAttribute(row, 'title', character.ability);
     }
 
-    // TODO: character image
+    {
+        const icon = createElement({t:'img',css:['characterListThumbnail']});
+        bindImageDisplay(icon, character.styledImage);
+        row.appendChild(icon);
+    }
 
     {
         const checkbox = document.createElement("input");
@@ -88,8 +92,7 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
     }
 
     {
-        const nameElement = document.createElement("span");
-        nameElement.className = "characterListName";
+        const nameElement = createElement({t:'span',css:['characterListName','nowrap']});
         bindText(nameElement, character.name);
         row.appendChild(nameElement);
     }

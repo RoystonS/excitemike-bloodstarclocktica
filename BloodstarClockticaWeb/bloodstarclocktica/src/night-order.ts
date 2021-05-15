@@ -2,7 +2,7 @@
  * code related to night order lists
  * @module NightOrder
  */
-import {bindCollectionById, bindText, bindStyle, unbindElement, Property, bindAttribute} from './bind/bindings';
+import {bindCollectionById, bindText, bindStyle, unbindElement, Property, bindAttribute, bindImageDisplay} from './bind/bindings';
 import {ObservableCollection} from './bind/observable-collection';
 import {PropKey} from './bind/observable-object';
 import { BloodTeam } from './model/blood-team';
@@ -74,7 +74,14 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
     }
 
     {
-        const nameElement = createElement({t:'span',css:['nightOrderName']});
+        const icon = createElement({t:'img',css:['nightOrderThumbnail']});
+        bindImageDisplay(icon, character.styledImage);
+        const crop = createElement({t:'div',css:['nightOrderThumbnailCrop'],children:[icon]});
+        row.appendChild(crop);
+    }
+
+    {
+        const nameElement = createElement({t:'span',css:['nightOrderName','nowrap']});
         bindText(nameElement, character.name);
         row.appendChild(nameElement);
     }

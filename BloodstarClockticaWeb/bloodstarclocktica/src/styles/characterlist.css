@@ -7,8 +7,7 @@
     min-width:24px;
 }
 #characterPane > details[open] {
-    width: 20vw;
-    min-width:300px;
+    width:400px;
 }
 #characterPane > details > summary {
     text-orientation: mixed;
@@ -52,6 +51,7 @@ ol#characterList {
     border:2px solid #222;
     align-items: center;
     position:relative;
+    overflow:hidden;
 }
 .characterListItem:hover, .characterListItem:focus-visible{
     border-color: #eee;
@@ -107,4 +107,20 @@ ol#characterList::after {
 }
 .characterListItemSelected:hover, .characterListItemSelected:focus-visible {
     border-color: #eee;
+}
+.characterListThumbnail{
+    position:absolute;
+    max-width: 150px;
+    max-height: 150px;
+    top: calc(50% - 54px);
+    left: calc(50% - 75px);
+    opacity: 0.25;
+    pointer-events: none;
+}
+.characterListItem:hover > .characterListThumbnail
+, .characterListItem:focus-visible > .characterListThumbnail {
+    opacity: 0.5;
+}
+.characterListItemSelected > .characterListThumbnail {
+    opacity: 1;
 }
