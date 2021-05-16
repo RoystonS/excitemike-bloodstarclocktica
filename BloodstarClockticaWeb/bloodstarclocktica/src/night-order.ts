@@ -59,6 +59,12 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
     bindAttribute(row, 'title', character.getProperty<string>(reminderPropertyName));
 
     {
+        const icon = createElement({t:'img',css:['nightOrderThumbnail']});
+        bindImageDisplay(icon, character.styledImage);
+        row.appendChild(icon);
+    }
+
+    {
         const ordinal = createElement({t:'span',css:['ordinal']});
         bindText(ordinal, character.getProperty(ordinalPropertyName) as Property<string>);
         bindStyle<boolean>(ordinal, character.export, (willExport:boolean, classList:DOMTokenList)=>{
@@ -72,10 +78,8 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
     }
 
     {
-        const icon = createElement({t:'img',css:['nightOrderThumbnail']});
-        bindImageDisplay(icon, character.styledImage);
-        const crop = createElement({t:'div',css:['nightOrderThumbnailCrop'],children:[icon]});
-        row.appendChild(crop);
+        const spacer = createElement({t:'div',a:{style:'width:6px;'}});
+        row.appendChild(spacer);
     }
 
     {

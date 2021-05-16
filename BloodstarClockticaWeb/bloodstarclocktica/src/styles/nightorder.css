@@ -16,12 +16,14 @@
     padding: 0 0 0 6px;
     border:2px solid #222;
     align-items: center;
+    overflow:hidden;
+    position: relative;
 }
 .nightOrderItem:hover, .nightOrderItem:focus {
     border-color: #eee;
 }
 .nightOrderItem > * {
-    margin-right:12px;
+    margin-right:14px;
     flex: 0 0 auto;
 }
 .nightOrderItem > *:last-child {
@@ -46,13 +48,10 @@
 .nightOrderReminder {
     flex: 1 1 auto;
 }
-.nightOrderThumbnailCrop{
-    width:27px;
-    height:27px;
-    overflow:hidden;
-}
 .nightOrderThumbnail{
-    max-width:48px;
-    max-height:48px;
-    margin:-4px 0 0 -11px;
+    max-width:31px;
+    max-height:31px;
+    position:absolute;
+    top:0px;
+    left:62px;
 }
