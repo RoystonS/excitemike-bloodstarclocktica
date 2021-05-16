@@ -25,29 +25,27 @@ export async function newEdition(edition:Edition):Promise<boolean> {
 
 /**
  * Open a file
- * @param username login credentials
- * @param password login credentials
+ * @param auth base64'd `${username}:${password}`
  * @param edition Edition instance with which to open a file
  * @returns whether a file was successfully opened
  */
-export async function open(username:string, password:string, edition:Edition):Promise<boolean> {
+export async function open(auth:string, edition:Edition):Promise<boolean> {
     if (await SdcDlg.savePromptIfDirty(edition)) {
-        return await openNoSavePrompt(username, password, edition);
+        return await openNoSavePrompt(auth, edition);
     }
     return false;
 }
 
 /**
  * Prompt for the file to open and open it, skipping the save prompt
- * @param username login credentials
- * @param password login credentials
+ * @param auth base64'd `${username}:${password}`
  * @param edition Edition instance with which to open a file
  * @returns whether a file was successfully opened
  */
-async function openNoSavePrompt(username:string, password:string, edition:Edition):Promise<boolean> {
-    const name = await OpenDlg.show(username, password);
+async function openNoSavePrompt(auth:string, edition:Edition):Promise<boolean> {
+    const name = await OpenDlg.show(auth);
     if (name) {
-        return await spinner('open', `Opening edition file "${name}"`, openNoPrompts(username, password, edition, name));
+        return await spinner('open', `Opening edition file "${name}"`, openNoPrompts(auth, edition, name));
     }
     return false;
 }
@@ -55,18 +53,17 @@ async function openNoSavePrompt(username:string, password:string, edition:Editio
 /**
  * Open a file by name (no save prompts!)
  * Brings up the loading spinner during the operation
- * @param username login credentials
- * @param password login credentials
+ * @param auth base64'd `${username}:${password}`
  * @param edition Edition instance with which to open a file
  * @param name name of the file to open
  * @returns promise that resolves to whether a file was successfully opened
  */
-async function openNoPrompts(username:string, password:string, edition:Edition, name:string):Promise<boolean> {
+async function openNoPrompts(auth:string, edition:Edition, name:string):Promise<boolean> {
     const openData = {
         saveName: name
     };
     const payload = JSON.stringify(openData);
-    const {error,data} = await cmd(username, password, 'open', `Retrieving ${name}`, payload) as OpenReturn;
+    const {error,data} = await cmd(auth, 'open', `Retrieving ${name}`, payload) as OpenReturn;
     if (error) {
         await showError('Error', `Error encountered while trying to open file ${name}`, error);
         return false;
@@ -77,10 +74,11 @@ async function openNoPrompts(username:string, password:string, edition:Edition, 
 /**
  * attempt to log in
  * Brings up the loading spinner during the operation
+ * @param auth base64'd `${username}:${password}`
  */
-export async function login(username:string, password:string):Promise<boolean> {
+export async function login(auth:string):Promise<boolean> {
     try {
-        const {success} = await cmd(username, password, 'login', `Logging in as ${username}`) as LoginReturn;
+        const {success} = await cmd(auth, 'login', `Logging in`) as LoginReturn;
         return success;
     } catch (error) {
         console.error(error);
@@ -90,13 +88,13 @@ export async function login(username:string, password:string):Promise<boolean> {
 }
 
 /**
- * Get a list of openable files, bringing up a spinner during the operation
- * @param username username
- * @param password password
+ * Get a list of openable files
+ * Brings up the loading spinner during the operation
+ * @param auth base64'd `${username}:${password}`
  */
-async function _listFiles(username:string, password:string):Promise<string[]> {
+export async function listFiles(auth:string):Promise<string[]> {
     try {
-        const {error,files} = await cmd(username, password, 'list', 'Retrieving file list') as ListFilesReturn;
+        const {error,files} = await cmd(auth, 'list', 'Retrieving file list') as ListFilesReturn;
         if (error) {
             console.error(error);
             await showError('Network Error', `Error encountered while retrieving file list`, error);
@@ -106,16 +104,6 @@ async function _listFiles(username:string, password:string):Promise<string[]> {
         await showError('Network Error', `Error encountered while retrieving file list`, error);
     }
     return [];
-}
-
-/**
- * Get a list of openable files
- * Brings up the loading spinner during the operation
- * @param username username
- * @param password password
- */
-export async function listFiles(username:string, password:string):Promise<string[]|null> {
-    return await _listFiles(username, password);
 }
 
 /** user chose to import character(s) from a json file */

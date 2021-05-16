@@ -7,14 +7,17 @@ import {AriaDialog} from './aria-dlg';
 import {listFiles} from '../blood-io';
 
 class OpenDlg extends AriaDialog<string> {
-    async open(username:string, password:string):Promise<string|null> {
+    /**
+     * @param auth base64'd `${username}:${password}`
+     */
+    async open(auth:string):Promise<string|null> {
         const fileListDiv = createElement({t:'div',css:['openDlgList']});
         const body:CreateElementsOptions = [
             {t:'p',txt:'Choose an existing file to open:'},
             fileListDiv
         ];
 
-        const files = await listFiles(username, password);
+        const files = await listFiles(auth);
         if (!files) {return null;}
         if (files.length) {
             for (const name of files) {
@@ -37,7 +40,8 @@ class OpenDlg extends AriaDialog<string> {
 /**
  * bring up dialog for picking whether to open an existing file or start a new one
  * returns a promise that resolves to a name, or null if the dialog was cancelled
+ * @param auth base64'd `${username}:${password}`
  */
-export async function show(username:string, password:string):Promise<string|null> {
-    return await new OpenDlg().open(username, password);
+export async function show(auth:string):Promise<string|null> {
+    return await new OpenDlg().open(auth);
 }

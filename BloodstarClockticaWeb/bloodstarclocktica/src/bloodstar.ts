@@ -29,9 +29,7 @@ import './styles/tabs.css';
 import './styles/teamcolor.css';
 
 let edition:Edition|null = null;
-// TODO: store combined+base64ed userpass instead of storing them directly
-let username = '';
-let password = '';
+let auth = '';
 const selectedCharacter = new BloodBind.Property<Character|null>(null);
 
 /** add a new character to the custom edition */
@@ -92,7 +90,7 @@ export async function newFileClicked():Promise<boolean> {
  */
 export async function openFileClicked():Promise<boolean> {
     if (!edition) {return false;}
-    if (await BloodIO.open(username, password, edition)) {
+    if (await BloodIO.open(auth, edition)) {
         addToRecentFiles(edition.saveName.get());
         return true;
     }
@@ -101,7 +99,7 @@ export async function openFileClicked():Promise<boolean> {
 
 /** menu item for delete clicked */
 export async function deleteFileClicked():Promise<boolean> {
-    const deleted = await chooseAndDeleteFile(username, password);
+    const deleted = await chooseAndDeleteFile(auth);
     if (!deleted) {return false;}
     removeFromRecentFiles(deleted);
     return true;
@@ -112,7 +110,7 @@ export async function deleteFileClicked():Promise<boolean> {
  */
 export async function saveFileClicked():Promise<boolean> {
     if (!edition) {return false;}
-    if (await save(username, password, edition)) {
+    if (await save(auth, edition)) {
         addToRecentFiles(edition.saveName.get());
         return true;
     }
@@ -124,7 +122,7 @@ export async function saveFileClicked():Promise<boolean> {
  */
 export async function saveFileAsClicked():Promise<boolean> {
     if (!edition) {return false;}
-    if (await saveAs(username, password, edition)) {
+    if (await saveAs(auth, edition)) {
         addToRecentFiles(edition.saveName.get());
         return true;
     }
@@ -142,7 +140,7 @@ function importOfficialClicked():boolean {
 async function saveAndPublishClicked():Promise<boolean> {
     if (!edition) {return false;}
     if (!edition.dirty.get() || await saveFileClicked()) {
-        await publish(username, password, edition);
+        await publish(auth, edition);
     }
     return false;
 }
@@ -188,10 +186,9 @@ async function login():Promise<void> {
         try {
             const loginInfo = await LoginDlg.show("Enter username and password");
             if (loginInfo) {
-                const {username:newUsername, password:newPassword} = loginInfo;
-                username = newUsername;
-                password = newPassword;
-                if (await BloodIO.login(username, password)) {
+                const {username,password} = loginInfo;
+                auth = btoa(`${username}:${password}`);
+                if (await BloodIO.login(auth)) {
                     break;
                 }
             }
@@ -222,7 +219,7 @@ async function initBindings():Promise<void> {
         if (e.ctrlKey) {
             if (e.code === "KeyS") {
                 e.preventDefault();
-                await save(username, password, edition);
+                await save(auth, edition);
             }
         }
     });

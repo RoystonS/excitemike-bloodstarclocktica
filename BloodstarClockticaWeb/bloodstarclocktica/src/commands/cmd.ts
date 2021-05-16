@@ -11,14 +11,17 @@ const MAXRETRIES = 1;
 /**
  * send a command to the server, await response
  * Brings up the loading spinner during the operation
+ * @param auth base64'd `${username}:${password}`
  */
- export default async function cmd<ResultType = unknown>(username:string, password:string, cmdName:string, spinnerMessage:string, body?:BodyInit):Promise<ResultType> {
-    return await spinner<ResultType>('command', spinnerMessage, _cmd<ResultType>(username, password, cmdName, body, TIMEOUT, MAXRETRIES));
+ export default async function cmd<ResultType = unknown>(auth:string, cmdName:string, spinnerMessage:string, body?:BodyInit):Promise<ResultType> {
+    return await spinner<ResultType>('command', spinnerMessage, _cmd<ResultType>(auth, cmdName, body, TIMEOUT, MAXRETRIES));
 }
 
-/** wrap fetch with a timeout */
-async function fetchWithTimeout(username:string, password:string, cmdName:string, body:BodyInit|undefined, timeout:number):Promise<Response> {
-    const base64 = btoa(`${username}:${password}`);
+/**
+ * wrap fetch with a timeout
+ * @param auth base64'd `${username}:${password}`
+ */
+async function fetchWithTimeout(auth:string, cmdName:string, body:BodyInit|undefined, timeout:number):Promise<Response> {
     const controller = new AbortController();
     let timedOut = false;
     const timeoutId = setTimeout(()=>{
@@ -30,7 +33,7 @@ async function fetchWithTimeout(username:string, password:string, cmdName:string
         return await fetch(`https://www.bloodstar.xyz/cmd/${cmdName}.php`, {
             method: 'POST',
             headers:{
-                'Authorization': `Basic ${base64}`
+                'Authorization': `Basic ${auth}`
             },
             mode: 'cors',
             credentials: 'include',
@@ -45,26 +48,29 @@ async function fetchWithTimeout(username:string, password:string, cmdName:string
     }
 }
 
-/** wrap fetch to timeout and automatically retry */
-async function fetchWithTimeoutAndRetry(username:string, password:string, cmdName:string, body:BodyInit|undefined, timeout:number, maxRetries:number):Promise<Response> {
+/**
+ * wrap fetch to timeout and automatically retry
+ * @param auth base64'd `${username}:${password}`
+ */
+async function fetchWithTimeoutAndRetry(auth:string, cmdName:string, body:BodyInit|undefined, timeout:number, maxRetries:number):Promise<Response> {
     while (maxRetries > 0) {
         try {
-            return await fetchWithTimeout(username, password, cmdName, body, timeout);
+            return await fetchWithTimeout(auth, cmdName, body, timeout);
         } catch (e) {
             if (maxRetries <= 0) {throw e;}
             maxRetries--;
         }
     }
-    return await fetchWithTimeout(username, password, cmdName, body, timeout);
+    return await fetchWithTimeout(auth, cmdName, body, timeout);
 }
 
 /**
  * send a command to the server, await response 
+ * @param auth base64'd `${username}:${password}`
  */
-async function _cmd<ResultType = unknown>(username:string, password:string, cmdName:string, body:BodyInit|undefined, timeout:number, maxRetries:number):Promise<ResultType> {
+async function _cmd<ResultType = unknown>(auth:string, cmdName:string, body:BodyInit|undefined, timeout:number, maxRetries:number):Promise<ResultType> {
     const response = await fetchWithTimeoutAndRetry(
-        username,
-        password,
+        auth,
         cmdName,
         body,
         timeout,

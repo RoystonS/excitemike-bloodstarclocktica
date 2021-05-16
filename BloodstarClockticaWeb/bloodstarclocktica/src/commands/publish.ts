@@ -9,8 +9,11 @@ import { AriaDialog } from '../dlg/aria-dlg';
 
 type PublishReturn = {error?:string,script:string,almanac:string};
 
-/** publish the edition */
-export default async function publish(username:string, password:string, edition:Edition):Promise<boolean> {
+/**
+ * publish the edition
+ * @param auth base64'd `${username}:${password}`
+ */
+export default async function publish(auth:string, edition:Edition):Promise<boolean> {
     type PublishData = {
         saveName:string
     };
@@ -23,7 +26,7 @@ export default async function publish(username:string, password:string, edition:
 
     let response:PublishReturn;
     try {
-        response = await cmd(username, password, 'publish', `Publishing ${edition.saveName.get()}`, payload) as PublishReturn;
+        response = await cmd(auth, 'publish', `Publishing ${edition.saveName.get()}`, payload) as PublishReturn;
     } catch (error) {
         await showError('Error', 'Error encountered during publish', error);
         return false;

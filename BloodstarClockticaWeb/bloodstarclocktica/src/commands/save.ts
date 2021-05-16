@@ -19,12 +19,11 @@ const INVALID_SAVENAME_CHARACTER_RE = /[\\/:"?<>|]/;
 /**
  * prompt for a name, then save with that name
  * Brings up the loading spinner during the operation
- * @param username login credentials
- * @param password login credentials
+ * @param auth base64'd `${username}:${password}`
  * @param edition file to save
  * @returns promise resolving to whether the save was successful
  */
- export async function saveAs(username:string, password:string, edition:Edition):Promise<boolean> {
+ export async function saveAs(auth:string, edition:Edition):Promise<boolean> {
     const name = await promptForName(edition.saveName.get());
 
     // null means cancel
@@ -38,7 +37,7 @@ const INVALID_SAVENAME_CHARACTER_RE = /[\\/:"?<>|]/;
     const backupName = edition.saveName.get();
     try {
         await edition.saveName.set(name);
-        const success = !!(await _save(username, password, edition, backupName===name));
+        const success = !!(await _save(auth, edition, backupName===name));
         if (!success) {
             await edition.saveName.set(backupName);
         }
@@ -52,19 +51,18 @@ const INVALID_SAVENAME_CHARACTER_RE = /[\\/:"?<>|]/;
 
 /**
  * show loading dialog while saving
- * @param username login credentials
- * @param password login credentials
+ * @param auth base64'd `${username}:${password}`
  * @param edition file to save
  * @returns promise resolving to whether the save was successful
  */
-export async function save(username:string, password:string, edition:Edition):Promise<boolean> {
+export async function save(auth:string, edition:Edition):Promise<boolean> {
     const saveName = edition.saveName.get();
     try {
         switch (saveName) {
             case '':
-                return await saveAs(username, password, edition);
+                return await saveAs(auth, edition);
             default:
-                return await _save(username, password, edition, true);
+                return await _save(auth, edition, true);
         }
     } catch (error) {
         await showError('Error', 'Error encountered while trying to save', error);
@@ -122,12 +120,11 @@ function separateImages(edition:Edition):Separated {
 /**
  * Save the file under the name saved in it
  * Brings up the loading spinner during the operation
- * @param username login credentials
- * @param password login credentials
+ * @param auth base64'd `${username}:${password}`
  * @param edition file to save
  * @returns promise resolving to whether the save was successful
  */
-async function _save(username:string, password:string, edition:Edition, clobber:boolean):Promise<boolean> {
+async function _save(auth:string, edition:Edition, clobber:boolean):Promise<boolean> {
     type SaveData = {
         saveName:string,
         edition?:unknown,
@@ -152,7 +149,7 @@ async function _save(username:string, password:string, edition:Edition, clobber:
             clobber,
             edition: toSave.edition
         };
-        let {clobberWarning,error} = await cmd<SaveResult>(username, password, 'save', `Saving edition data`, JSON.stringify(saveData));
+        let {clobberWarning,error} = await cmd<SaveResult>(auth, 'save', `Saving edition data`, JSON.stringify(saveData));
         if (clobberWarning) {
             // confirmation dialog, then try again
             const okToClobber = await new AriaDialog<boolean>().baseOpen(
@@ -166,7 +163,7 @@ async function _save(username:string, password:string, edition:Edition, clobber:
             );
             if (!okToClobber) {return false;}
             saveData.clobber = true;
-            ({clobberWarning,error} = await cmd<SaveResult>(username, password, 'save', `Saving edition data`, JSON.stringify(saveData)));
+            ({clobberWarning,error} = await cmd<SaveResult>(auth, 'save', `Saving edition data`, JSON.stringify(saveData)));
             error = error || clobberWarning;
         }
         // surface error, if any
@@ -189,7 +186,7 @@ async function _save(username:string, password:string, edition:Edition, clobber:
                 image: imageString
             };
             const payload = JSON.stringify(saveData);
-            return cmd(username, password, 'save-img', `Saving ${id}.src.png`, payload);
+            return cmd(auth, 'save-img', `Saving ${id}.src.png`, payload);
         }, MAX_SIMULTANEOUS_IMAGE_SAVES));
     }
 
@@ -204,7 +201,7 @@ async function _save(username:string, password:string, edition:Edition, clobber:
                 image: imageString
             };
             const payload = JSON.stringify(saveData);
-            return cmd(username, password, 'save-img', `Saving ${id}.png`, payload);
+            return cmd(auth, 'save-img', `Saving ${id}.png`, payload);
         }, MAX_SIMULTANEOUS_IMAGE_SAVES));
     }
 
@@ -219,7 +216,7 @@ async function _save(username:string, password:string, edition:Edition, clobber:
                     image: logo
                 };
                 const payload = JSON.stringify(saveData);
-                return cmd(username, password, 'save-img', `Saving _meta.png`, payload);
+                return cmd(auth, 'save-img', `Saving _meta.png`, payload);
             }, MAX_SIMULTANEOUS_IMAGE_SAVES));
         }
     }
