@@ -11,7 +11,6 @@ import { AriaDialog } from './dlg/aria-dlg';
 import { importBloodFile } from './import/blood-file';
 
 type ListFilesReturn = {error?:string,files:string[]};
-type LoginReturn = {success:boolean};
 type OpenReturn = {error?:string,data:{[key:string]:unknown}};
 
 /// prompt for save if needed, then reset to new custom edition
@@ -69,22 +68,6 @@ async function openNoPrompts(auth:string, edition:Edition, name:string):Promise<
         return false;
     }
     return await spinner('open', `Opening edition file "${name}"`, edition.open(name, data));
-}
-
-/**
- * attempt to log in
- * Brings up the loading spinner during the operation
- * @param auth base64'd `${username}:${password}`
- */
-export async function login(auth:string):Promise<boolean> {
-    try {
-        const {success} = await cmd(auth, 'login', `Logging in`) as LoginReturn;
-        return success;
-    } catch (error) {
-        console.error(error);
-        await showError('Network Error', `Error encountered during login`, error);
-        return false;
-    }
 }
 
 /**

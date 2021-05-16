@@ -1,6 +1,5 @@
 import * as BloodBind from './bind/bindings';
 import * as BloodNewOpen from "./dlg/blood-new-open-dlg";
-import * as LoginDlg from "./dlg/blood-login-dlg";
 import {showError} from "./dlg/blood-message-dlg";
 import * as BloodIO from "./blood-io";
 import {Character} from "./model/character";
@@ -15,6 +14,7 @@ import { BloodTeam } from './model/blood-team';
 import publish from './commands/publish';
 import {save, saveAs} from './commands/save';
 import {chooseAndDeleteFile} from './commands/delete';
+import login from './commands/login';
 import './styles/autogrowtextarea.css';
 import './styles/characterlist.css';
 import './styles/charactertab.css';
@@ -177,30 +177,6 @@ function tabClicked(btnId:string, tabId:string):void {
     }
 }
 
-/** prompt for login information */
-async function login():Promise<void> {
-    // TODO: check for stored userpass. try to login with that if present
-    // TODO: if login from stored fails, remove from storage
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-        try {
-            const loginInfo = await LoginDlg.show("Enter username and password");
-            if (loginInfo) {
-                const {username,password} = loginInfo;
-                auth = btoa(`${username}:${password}`);
-                if (await BloodIO.login(auth)) {
-                    break;
-                }
-            }
-        } catch (e) {
-            console.error(e);
-            // intentional floating promise
-            void showError('Error', 'Error encountered during login', e);
-        }
-        // TODO: once login succeeds store base64d userpass for next time
-    }
-}
-
 /** initialize listeners and data bindings */
 async function initBindings():Promise<void> {
     if (!edition) {return;}
@@ -309,7 +285,7 @@ async function init() {
     await initBindings();
 
     // need to get login info before we can do much of anything
-    await login();
+    auth = await login();
 
     await initCustomEdition();
 }
