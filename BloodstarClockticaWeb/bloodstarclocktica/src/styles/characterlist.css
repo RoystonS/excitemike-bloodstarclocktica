@@ -116,6 +116,7 @@ ol#characterList::after {
     left: calc(50% - 75px);
     opacity: 0.25;
     pointer-events: none;
+    transition: all 0.2s ease-out;
 }
 .characterListItem:hover > .characterListThumbnail
 , .characterListItem:focus-visible > .characterListThumbnail {
