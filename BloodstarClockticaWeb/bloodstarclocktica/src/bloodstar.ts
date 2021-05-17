@@ -121,7 +121,7 @@ export async function deleteFileClicked():Promise<boolean> {
 
     // if you deleted the current edition, you must mark all its images as dirty!
     if (deleted === edition.saveName.get()) {
-        edition.markDirty();
+        await edition.markDirty();
     }
 
     return true;

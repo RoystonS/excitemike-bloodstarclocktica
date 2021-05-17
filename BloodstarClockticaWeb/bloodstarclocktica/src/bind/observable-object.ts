@@ -377,7 +377,8 @@ export abstract class ObservableObject<T> {
     }
 
     /** convert to an object ready for JSON conversion and that could be read back with deserialize */
-    serialize():{[key:string]:unknown} {
+    // eslint-disable-next-line require-await
+    async serialize():Promise<{[key:string]:unknown}> {
         const converted:{[key:string]:unknown} = {};
 
         for (const [key, child] of this.children) {

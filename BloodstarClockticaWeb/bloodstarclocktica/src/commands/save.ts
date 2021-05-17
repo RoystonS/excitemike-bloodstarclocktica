@@ -79,9 +79,9 @@ type Separated = {
 };
 
 /** separate the edition json and images for saving as separate files */
-function separateImages(edition:Edition):Separated {
+async function separateImages(edition:Edition):Promise<Separated> {
     const saveName = edition.saveName.get();
-    const editionSerialized = edition.serialize();
+    const editionSerialized = await edition.serialize();
     const characters = editionSerialized.characterList as {id:string, unStyledImage?:string, styledImage?:string}[];
     const sourceImages = new Map<string, string>();
     const finalImages = new Map<string, string>();
@@ -139,7 +139,7 @@ async function _save(auth:string, edition:Edition, clobber:boolean):Promise<bool
         error?:string,
     };
     // serialize the edition, but break images out into separate pieces to save
-    const toSave = separateImages(edition);
+    const toSave = await separateImages(edition);
 
     // save JSON
     const saveName = edition.saveName.get();

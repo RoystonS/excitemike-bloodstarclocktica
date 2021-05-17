@@ -196,6 +196,21 @@ export class Edition extends ObservableObject<Edition> {
         return character;
     }
 
+    /** make sure there are no duplicate ids */
+    private async fixDuplicateIds():Promise<void> {
+        const ids = new Set<string>();
+        for (const character of this.characterList) {
+            let id = character.id.get();
+            if (ids.has(id)){
+                while (ids.has(id)){
+                    id = `${id}${(Math.random()*10)|0}`;
+                }
+                await character.id.set(id);
+            }
+            ids.add(id);
+        }
+    }
+
     /** check whether image needs saving */
     isCharacterFinalImageDirty(id:string):boolean{return this.dirtyFinalImages.has(id);}
 
@@ -254,7 +269,7 @@ export class Edition extends ObservableObject<Edition> {
         await this.markClean();
         
         // THEN fix any ids that need it
-        // TODO: fix duplicate ids
+        await this.fixDuplicateIds();
 
         return true;
     }
@@ -267,8 +282,8 @@ export class Edition extends ObservableObject<Edition> {
     }
 
     /** overriding to do a last-minute id uniqification */
-    serialize():{[key:string]:unknown} {
-        // TODO: fix duplicate ids
-        return super.serialize();
+    async serialize():Promise<{[key:string]:unknown}> {
+        await this.fixDuplicateIds();
+        return await super.serialize();
     }
 }

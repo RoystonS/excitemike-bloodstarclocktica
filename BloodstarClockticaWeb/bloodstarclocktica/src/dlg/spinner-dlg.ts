@@ -105,9 +105,9 @@ export async function spinner<T>(key:string, message:string, somePromise:Promise
     _spinner.add(key, message);
     try {
         const result = await somePromise;
-        await _spinner.remove(key, message);
+        _spinner.remove(key, message);
         return result;
     } finally {
-        await _spinner.remove(key, message);
+        _spinner.remove(key, message);
     }
 }
