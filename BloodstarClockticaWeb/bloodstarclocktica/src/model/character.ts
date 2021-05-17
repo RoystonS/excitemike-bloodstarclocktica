@@ -9,13 +9,13 @@ import {BLOODTEAM_OPTIONS, BloodTeam} from '../model/blood-team';
 import {CharacterImageSettings} from '../model/character-image-settings';
 import BloodImage, { getGradientForTeam, imageUrlToDataUri, ProcessImageSettings, urlToBloodImage } from '../blood-image';
 import Images from '../images';
-import { spinner } from '../dlg/spinner-dlg';
 
-// if the browser realizes we are using a downloaded image, it will not let us do image processing on those pixels
-async function safelyConvertImage(object:ObservableObject<unknown>, field:ObservableType, data:unknown):Promise<void> {
+/**
+ * if the browser realizes we are using a downloaded image, it will not let us do image processing on those pixels
+ * this tries to trick it by making a data uri first
+ */
+async function safelyConvertImage(_object:ObservableObject<unknown>, field:ObservableType, data:unknown):Promise<void> {
     if (data === null) { return; }
-    const character = object as unknown as Character;
-    const id = character.id.get();
     const unstyledImageProperty = field as Property<string|null>;
     const sourceData = data as string;
     const sourceUrl = new URL(sourceData);
@@ -24,7 +24,8 @@ async function safelyConvertImage(object:ObservableObject<unknown>, field:Observ
         await unstyledImageProperty.set(sourceData);
     } else {
         const useCors = sourceUrl.hostname !== window.location.hostname;
-        await unstyledImageProperty.set(await spinner(`convertImage-${id}`, `Converting image for ${id}`, imageUrlToDataUri(sourceData, useCors)));
+        const dataUri = await imageUrlToDataUri(sourceData, useCors);
+        await unstyledImageProperty.set(dataUri);
     }
 }
 
@@ -79,7 +80,7 @@ export class Character extends ObservableObject<Character> {
     @observableEnumProperty(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS, {saveDefault:true})
     readonly team!: EnumProperty<BloodTeam>;
     
-    @observableProperty(null, {customDeserialize: safelyConvertImage}) // TODO: do this conversion as a separate step
+    @observableProperty(null, {customDeserialize: safelyConvertImage})
     readonly unStyledImage!: Property<string | null>;
 
     /** prevent extraneous image processing during deserialization */

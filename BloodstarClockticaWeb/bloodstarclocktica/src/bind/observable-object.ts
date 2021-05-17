@@ -183,7 +183,7 @@ export abstract class ObservableObject<T> {
         return !!cfg.saveDefault;
     }
 
-    /** check for speical behavior for a field */
+    /** check for special behavior for a field */
     private _getCustomDeserialize(key:PropKey<T>):CustomDeserializeFn|undefined {
         if (!this.obsObjCfg) {return undefined;}
         const cfg = this.obsObjCfg.exceptions.get(key as string|symbol);
@@ -206,6 +206,57 @@ export abstract class ObservableObject<T> {
 
     /** inverse operation from serialize */
     async deserialize(data:{[key:string]:unknown}):Promise<void> {
+        await this.deserializeNonCustom(data);
+        await this.deserializeCustom(data);
+    }
+
+    /** first pass of deserialization */
+    async deserializeNonCustom(data:{[key:string]:unknown}):Promise<void> {
+        const promises = [];
+        for (const [key, child] of this.children) {
+            if (!this._canReadField(key)) { continue; }
+            const childData = data[String(key)] as {[key:string]:unknown};
+            if ((childData !== null) &&
+                (typeof childData !== 'string') &&
+                (typeof childData !== 'number') &&
+                (typeof childData !== 'boolean') &&
+                !Array.isArray(childData) )
+            {
+                if (!this._getCustomDeserialize(key)) {
+                    promises.push(child.deserialize(childData));
+                }
+            }
+        }
+        for (const [key, collection] of this.collections) {
+            if (!this._canReadField(key)) { continue; }
+            const collectionData = data[String(key)];
+            if (Array.isArray(collectionData)) {
+                if (!this._getCustomDeserialize(key)){
+                    promises.push(collection.deserialize(collectionData));
+                }
+            }
+        }
+        for (const [key, property] of this.properties) {
+            if (!this._canReadField(key)) { continue; }
+            const stringKey = String(key);
+            const propertyData = Object.prototype.hasOwnProperty.call(data, stringKey) ? data[stringKey] : property.getDefault();
+            if (!this._getCustomDeserialize(key)){
+                promises.push(property.set(propertyData));
+            }
+        }
+        for (const [key, property] of this.enumProperties) {
+            if (!this._canReadField(key)) { continue; }
+            const stringKey = String(key);
+            const propertyData = Object.prototype.hasOwnProperty.call(data, stringKey) ? data[stringKey] : property.getDefault();
+            if (!this._getCustomDeserialize(key)){
+                promises.push(property.set(propertyData));
+            }
+        }
+        await Promise.all(promises);
+    }
+    /** second pass of deserialization */
+    async deserializeCustom(data:{[key:string]:unknown}):Promise<void> {
+        const promises = [];
         for (const [key, child] of this.children) {
             if (!this._canReadField(key)) { continue; }
             const childData = data[String(key)] as {[key:string]:unknown};
@@ -216,7 +267,9 @@ export abstract class ObservableObject<T> {
                 !Array.isArray(childData) )
             {
                 const fn = this._getCustomDeserialize(key);
-                await (fn ? fn(this, child, childData) : child.deserialize(childData));
+                if (fn) {
+                    promises.push(fn(this, child, childData));
+                }
             }
         }
         for (const [key, collection] of this.collections) {
@@ -224,7 +277,9 @@ export abstract class ObservableObject<T> {
             const collectionData = data[String(key)];
             if (Array.isArray(collectionData)) {
                 const fn = this._getCustomDeserialize(key);
-                await (fn ? fn(this, collection, collectionData) : collection.deserialize(collectionData));
+                if (fn) {
+                    promises.push(fn(this, collection, collectionData));
+                }
             }
         }
         for (const [key, property] of this.properties) {
@@ -232,15 +287,20 @@ export abstract class ObservableObject<T> {
             const stringKey = String(key);
             const propertyData = Object.prototype.hasOwnProperty.call(data, stringKey) ? data[stringKey] : property.getDefault();
             const fn = this._getCustomDeserialize(key);
-            await (fn ? fn(this, property, propertyData) : property.set(propertyData));
+            if (fn) {
+                promises.push(fn(this, property, propertyData));
+            }
         }
         for (const [key, property] of this.enumProperties) {
             if (!this._canReadField(key)) { continue; }
             const stringKey = String(key);
             const propertyData = Object.prototype.hasOwnProperty.call(data, stringKey) ? data[stringKey] : property.getDefault();
             const fn = this._getCustomDeserialize(key);
-            await (fn ? fn(this, property, propertyData) : property.set(propertyData));
+            if (fn) {
+                promises.push(fn(this, property, propertyData));
+            }
         }
+        await Promise.all(promises);
     }
 
     /** call callback for each child observable */
