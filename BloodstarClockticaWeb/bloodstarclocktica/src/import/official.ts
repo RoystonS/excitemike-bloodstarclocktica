@@ -102,7 +102,7 @@ export default async function importOfficial(edition:Edition):Promise<boolean> {
     if (!json) {return false;}
     const choice = await new ChooseOfficialCharDlg().open(json);
     if (!choice) {return false;}
-    // TODO: on error, remove character
+    
     const character = await edition.addNewCharacter();
     try {
         return await _importOfficial(choice, character);
