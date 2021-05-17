@@ -6,6 +6,17 @@
 #characterImagePreview > * {
     position:absolute;
 }
+#characterImagePreviewSpinner {
+    top: 25px;
+    left: 50px;
+    bottom: 75px;
+    right: 50px;
+    border: 6px solid #666;
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 2.618s linear infinite;
+    -webkit-animation: spin 2.618s linear infinite;
+}
 .curvedCharacterNameSvg {
     pointer-events: none;
     font-size:20px;

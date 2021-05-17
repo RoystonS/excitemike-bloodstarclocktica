@@ -82,6 +82,9 @@ export class Character extends ObservableObject<Character> {
     
     @observableProperty(null, {customDeserialize: safelyConvertImage})
     readonly unStyledImage!: Property<string | null>;
+    
+    @observableProperty(false, {read:false,write:false})
+    readonly isLoading!: Property<boolean>;
 
     /** prevent extraneous image processing during deserialization */
     private imageRegenSuspended = false;
@@ -111,6 +114,19 @@ export class Character extends ObservableObject<Character> {
     /** generate styled image from unstyled image and image settings */
     async regenerateStyledImage():Promise<void> {
         if (this.imageRegenSuspended) {return;}
+        try {
+            await this.isLoading.set(true);
+            return await this._regenerateStyledImage();
+        } catch (error) {
+            await this.styledImage.set('');
+            throw error;
+        } finally {
+            await this.isLoading.set(false);
+        }
+    }
+
+    /** generate styled image from unstyled image and image settings */
+    async _regenerateStyledImage():Promise<void> {
         // TODO: throbber
         const unstyledImage = this.unStyledImage.get();
         const imageSettings = this.imageSettings;

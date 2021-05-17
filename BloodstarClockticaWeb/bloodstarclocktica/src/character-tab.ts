@@ -2,7 +2,7 @@
  * code for character tab
  * @module CharacterTab
  */
-import {bindCheckboxById, bindComboBoxById, bindImageChooserById, bindImageDisplayById, bindSliderById, bindStyleById, bindTextById, EnumProperty, Property, unbindElementById} from './bind/bindings';
+import {bindCheckboxById, bindComboBoxById, bindImageChooserById, bindImageDisplayById, bindSliderById, bindStyleById, bindTextById, bindVisibilityById, EnumProperty, Property, unbindElementById} from './bind/bindings';
 import {showError} from "./dlg/blood-message-dlg";
 import { ProcessImageSettings } from './blood-image';
 import { BloodTeam, parseBloodTeam } from './model/blood-team';
@@ -33,6 +33,7 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
     bindTrackedText('characterAlmanacHowToRun', character.almanac.howToRun, characterTabIds);
     bindTrackedText('characterAlmanacTip', character.almanac.tip, characterTabIds);
     bindTrackedImageChooser('characterUnstyledImageInput', character.unStyledImage, characterTabIds);
+    bindTrackedVisibility('characterImagePreviewSpinner', character.isLoading, characterTabIds);
     bindTrackedImageDisplay('characterStyledImageDisplay', character.styledImage, characterTabIds);
 
     bindTrackedText('curvedCharacterNameTextPath', character.name, characterTabIds);
@@ -113,6 +114,12 @@ function bindTrackedStyle<ValueType>(id:string, property:Property<ValueType>, cb
 function bindTrackedText(id:string, property:Property<string>, set:Set<string>):void {
     set.add(id);
     bindTextById(id, property);
+}
+
+/** helper for bindCharacterTabControls */
+function bindTrackedVisibility(id:string, property:Property<boolean>, set:Set<string>):void {
+    set.add(id);
+    bindVisibilityById(id, property);
 }
 
 /** make the entire character tab disabled */
