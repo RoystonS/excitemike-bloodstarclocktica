@@ -127,7 +127,6 @@ export class Character extends ObservableObject<Character> {
 
     /** generate styled image from unstyled image and image settings */
     async _regenerateStyledImage():Promise<void> {
-        // TODO: throbber
         const unstyledImage = this.unStyledImage.get();
         const imageSettings = this.imageSettings;
         if (!unstyledImage || !imageSettings.shouldRestyle.get()) {
