@@ -11,6 +11,7 @@ import { CharacterEntry } from "./json";
 import { urlToCanvas } from "../blood-image";
 import { parseBloodTeam } from "../model/blood-team";
 import { setTeamColorStyle } from "../team-color";
+import { Character } from "../model/character";
 
 const MAX_CHARACTER_ICON_WIDTH = 539;
 const MAX_CHARACTER_ICON_HEIGHT = 539;
@@ -103,39 +104,49 @@ export default async function importOfficial(edition:Edition):Promise<boolean> {
     if (!choice) {return false;}
     // TODO: on error, remove character
     const character = await edition.addNewCharacter();
-    if (choice.ability) {
-        await character.ability.set(choice.ability);
+    try {
+        return await _importOfficial(choice, character);
+    } catch (error) {
+        await edition.characterList.deleteItem(character);
+        throw error;
     }
-    if (choice.firstNightReminder) {
-        await character.firstNightReminder.set(choice.firstNightReminder);
+}
+
+/** load from the character entry to the character object */
+async function _importOfficial(fromCharacter:CharacterEntry, toCharacter:Character):Promise<boolean> {
+    if (fromCharacter.ability) {
+        await toCharacter.ability.set(fromCharacter.ability);
     }
-    if (choice.id) {
-        await character.id.set(choice.id);
+    if (fromCharacter.firstNightReminder) {
+        await toCharacter.firstNightReminder.set(fromCharacter.firstNightReminder);
+    }
+    if (fromCharacter.id) {
+        await toCharacter.id.set(fromCharacter.id);
     }
     {
-        const url = `https://github.com/bra1n/townsquare/raw/main/src/assets/icons/${choice.id}.png`;
-        const canvas = await spinner(choice.id, `Downloading image for ${choice.name}`, urlToCanvas(url, MAX_CHARACTER_ICON_WIDTH, MAX_CHARACTER_ICON_HEIGHT, true));
+        const url = `https://github.com/bra1n/townsquare/raw/main/src/assets/icons/${fromCharacter.id}.png`;
+        const canvas = await spinner(fromCharacter.id, `Downloading image for ${fromCharacter.name}`, urlToCanvas(url, MAX_CHARACTER_ICON_WIDTH, MAX_CHARACTER_ICON_HEIGHT, true));
         const dataUrl = canvas.toDataURL('image/png');
-        await character.imageSettings.shouldRestyle.set(false);
-        await spinner(choice.id, `Setting character image for ${choice.name}`, character.unStyledImage.set(dataUrl));
+        await toCharacter.imageSettings.shouldRestyle.set(false);
+        await spinner(fromCharacter.id, `Setting character image for ${fromCharacter.name}`, toCharacter.unStyledImage.set(dataUrl));
     }
-    if (choice.name) {
-        await character.name.set(choice.name);
+    if (fromCharacter.name) {
+        await toCharacter.name.set(fromCharacter.name);
     }
-    if (choice.otherNightReminder) {
-        await character.otherNightReminder.set(choice.otherNightReminder);
+    if (fromCharacter.otherNightReminder) {
+        await toCharacter.otherNightReminder.set(fromCharacter.otherNightReminder);
     }
-    if (choice.reminders) {
-        await character.characterReminderTokens.set(choice.reminders.join('\n'));
+    if (fromCharacter.reminders) {
+        await toCharacter.characterReminderTokens.set(fromCharacter.reminders.join('\n'));
     }
-    if (choice.remindersGlobal) {
-        await character.globalReminderTokens.set(choice.remindersGlobal.join('\n'));
+    if (fromCharacter.remindersGlobal) {
+        await toCharacter.globalReminderTokens.set(fromCharacter.remindersGlobal.join('\n'));
     }
-    if (choice.setup) {
-        await character.setup.set(choice.setup);
+    if (fromCharacter.setup) {
+        await toCharacter.setup.set(fromCharacter.setup);
     }
-    if (choice.team) {
-        await character.team.set(parseBloodTeam(choice.team));
+    if (fromCharacter.team) {
+        await toCharacter.team.set(parseBloodTeam(fromCharacter.team));
     }
     return true;
 }
