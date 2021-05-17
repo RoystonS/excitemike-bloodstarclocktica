@@ -10,33 +10,88 @@ import { createElement, fetchJson } from "../util";
 import { CharacterEntry } from "./json";
 import { urlToCanvas } from "../blood-image";
 import { parseBloodTeam } from "../model/blood-team";
+import { setTeamColorStyle } from "../team-color";
 
 const MAX_CHARACTER_ICON_WIDTH = 539;
 const MAX_CHARACTER_ICON_HEIGHT = 539;
 
+/** dialog subclass for choosing an official character to clone */
 class ChooseOfficialCharDlg extends AriaDialog<CharacterEntry> {
     async open(json:CharacterEntry[]):Promise<CharacterEntry|null> {
-        const characterListDiv = createElement({t:'div',css:['importOfficialList']});
-        // TODO: filterable list and/or sort by edition and put into <details> tags
+        const entriesById = toMap(json);
+        const troubleBrewing = createElement({t:'details',children:[{t:'summary',txt:'Trouble Brewing'}],a:{open:''}});
+        const badMoonRising = createElement({t:'details',children:[{t:'summary',txt:'Bad Moon Rising'}],a:{open:''}});
+        const sectsAndViolets = createElement({t:'details',children:[{t:'summary',txt:'Sects and Violets'}],a:{open:''}});
+        const otherEditions = createElement({t:'details',children:[{t:'summary',txt:'Other'}],a:{open:''}});
+        const container = createElement({t:'div',css:['importOfficialList'],children:[troubleBrewing, badMoonRising, sectsAndViolets, otherEditions]});
+        const onFilterChange=(e:Event)=>{
+            if (e.target instanceof HTMLInputElement) {
+                const filterString = e.target.value;
+                for (const section of [troubleBrewing, badMoonRising, sectsAndViolets, otherEditions]) {
+                    doFilter(filterString, entriesById, section);
+                }
+            }
+        };
+        const filterRow = createElement({
+            t:'div',
+            css:['row'],
+            children:[
+                {t:'label',a:{'for':'chooseOfficialFilter'},txt:'Filter'},
+                {
+                    t:'input',id:'chooseOfficialFilter',a:{name:'chooseOfficialFilter'},
+                    events:{change:onFilterChange,input:onFilterChange}
+                }
+            ]});
+
+
+        // TODO: sort by edition and put into <details> tags
         for (const character of json) {
             if (!character.name) {continue;}
             const button = createElement({
                 t:'button',
                 txt:character.name,
                 events:{click:()=>this.close(character)},
-                a:{title:character.ability||''}
+                a:{title:character.ability||'','data-id':character.id}
             });
-            characterListDiv.appendChild(button);
+            setTeamColorStyle(parseBloodTeam(character.team || ''), button.classList);
+            switch (character.edition) {
+                case 'tb': troubleBrewing.appendChild(button); break;
+                case 'bmr': badMoonRising.appendChild(button); break;
+                case 'snv': sectsAndViolets.appendChild(button); break;
+                default: otherEditions.appendChild(button); break;
+            }
         }
         return await this.baseOpen(
             document.activeElement,
             'importOfficial',
             [
                 {t:'p',txt:'Choose a character to import:'},
-                characterListDiv
+                filterRow,
+                container
             ],
             [{label:'Cancel'}]
         );
+    }
+}
+
+/**
+ * hide characters who don't pass the filter
+ */
+function doFilter(filterString:string, characters:Map<string, CharacterEntry>, parentElement:Element):void {
+    const childElements = parentElement.children;
+    const numChildren = childElements.length;
+    for (let i=0; i<numChildren; ++i) {
+        const child = childElements[i];
+        if (!(child instanceof HTMLElement)) {continue;}
+        const id = child.dataset.id;
+        if (!id) {continue;}
+        const character = characters.get(id);
+        if (!character) {continue;}
+        if (passesFilter(filterString, character)) {
+            child.classList.remove('hidden');
+        } else {
+            child.classList.add('hidden');
+        }
     }
 }
 
@@ -85,4 +140,25 @@ export default async function importOfficial(edition:Edition):Promise<boolean> {
         await character.team.set(parseBloodTeam(choice.team));
     }
     return true;
+}
+
+/** test a character against the filter */
+function passesFilter(filterString:string, entry:CharacterEntry):boolean {
+    if (!filterString) {return true;}
+    filterString = filterString.toLowerCase();
+    for (const haystack of Object.values(entry)){
+        if (typeof haystack === 'string') {
+            if (-1 !== haystack.toLowerCase().indexOf(filterString)) {return true;}
+        }
+    }
+    return false;
+}
+
+/** convert list of entries to map by id */
+function toMap(entries:CharacterEntry[]):Map<string, CharacterEntry> {
+    const map = new Map<string, CharacterEntry>();
+    for (const entry of entries){
+        map.set(entry.id, entry);
+    }
+    return map;
 }

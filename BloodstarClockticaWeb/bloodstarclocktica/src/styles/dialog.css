@@ -135,28 +135,22 @@ ul.spinnerMessages > li {
 }
 
 
-.importOfficialList{
-    display: flex;
-    flex-flow: column nowrap;
+.importOfficialList {
     overflow-x:hidden;
     overflow-y:auto;
-    align-content: stretch;
-    border: 1px solid #333;
+    border: 1px solid #666;
     padding:6px;
+    width:50vw;
 }
-.importOfficialList > button {
-    text-align: left;
-    padding: 2px 6px;
+.importOfficialList button {
     font-weight: normal;
-    min-height: 24px;
-    overflow:hidden;
-    white-space: nowrap;
+    margin: 0 6px 6px 0;
 }
-.importOfficialList > button:focus {
-    border: 1px solid #3977FF;  
+.importOfficialList button:focus {
+    border: 1px solid #3977FF;
 }
-.importOfficialList > button:hover,
-.importOfficialList > button:focus-visible
+.importOfficialList button:hover,
+.importOfficialList button:focus-visible
  {
     border: 1px solid #3977FF;
     background:#3977FF;
