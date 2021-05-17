@@ -44,7 +44,15 @@
         validateFilename($saveName);
         $editionFolder = join_paths($saveDir, $saveName);
         $editionFile = join_paths($editionFolder, 'edition');
-        return file_get_contents($editionFile);
+        try {
+            $data = file_get_contents($editionFile);
+            if ($data !== false) {
+                return $data;
+            }
+        } catch (Exception $e) {
+        }
+        echo json_encode(array('error' =>"file '$saveName' not found"));
+        exit();
     }
 
     // error out if filename invalid
@@ -84,7 +92,7 @@
         try {
             file_put_contents($path, $binaryData);
         } catch (Exception $e) {
-            echo json_encode(array('error' =>"error writing file '$path'"));
+            echo json_encode(array('error' =>"error writing file '$saveName'"));
             exit();
         }
     }

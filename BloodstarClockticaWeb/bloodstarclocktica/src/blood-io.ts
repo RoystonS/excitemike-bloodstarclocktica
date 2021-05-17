@@ -26,11 +26,13 @@ export async function newEdition(edition:Edition):Promise<boolean> {
  * Open a file
  * @param auth base64'd `${username}:${password}`
  * @param edition Edition instance with which to open a file
+ * @param name Optional already-chosen file
+ * @param suppressErrorMessage if true, no error message appears when soemthing goes wrong
  * @returns whether a file was successfully opened
  */
-export async function open(auth:string, edition:Edition):Promise<boolean> {
+export async function open(auth:string, edition:Edition, name='', suppressErrorMessage=false):Promise<boolean> {
     if (await SdcDlg.savePromptIfDirty(edition)) {
-        return await openNoSavePrompt(auth, edition);
+        return await openNoSavePrompt(auth, edition, name, suppressErrorMessage);
     }
     return false;
 }
@@ -39,12 +41,14 @@ export async function open(auth:string, edition:Edition):Promise<boolean> {
  * Prompt for the file to open and open it, skipping the save prompt
  * @param auth base64'd `${username}:${password}`
  * @param edition Edition instance with which to open a file
+ * @param name Optional already-chosen file
+ * @param suppressErrorMessage if true, no error message appears when soemthing goes wrong
  * @returns whether a file was successfully opened
  */
-async function openNoSavePrompt(auth:string, edition:Edition):Promise<boolean> {
-    const name = await OpenDlg.show(auth);
-    if (name) {
-        return await spinner('open', `Opening edition file "${name}"`, openNoPrompts(auth, edition, name));
+async function openNoSavePrompt(auth:string, edition:Edition, name='', suppressErrorMessage=false):Promise<boolean> {
+    const finalName = name || await OpenDlg.show(auth);
+    if (finalName) {
+        return await spinner('open', `Opening edition file "${name}"`, openNoPrompts(auth, edition, finalName, suppressErrorMessage));
     }
     return false;
 }
@@ -55,16 +59,19 @@ async function openNoSavePrompt(auth:string, edition:Edition):Promise<boolean> {
  * @param auth base64'd `${username}:${password}`
  * @param edition Edition instance with which to open a file
  * @param name name of the file to open
+ * @param suppressErrorMessage if true, no error message appears when soemthing goes wrong
  * @returns promise that resolves to whether a file was successfully opened
  */
-async function openNoPrompts(auth:string, edition:Edition, name:string):Promise<boolean> {
+async function openNoPrompts(auth:string, edition:Edition, name:string, suppressErrorMessage=false):Promise<boolean> {
     const openData = {
         saveName: name
     };
     const payload = JSON.stringify(openData);
     const {error,data} = await cmd(auth, 'open', `Retrieving ${name}`, payload) as OpenReturn;
     if (error) {
-        await showError('Error', `Error encountered while trying to open file ${name}`, error);
+        if (!suppressErrorMessage) {
+            await showError('Error', `Error encountered while trying to open file ${name}`, error);
+        }
         return false;
     }
     return await spinner('open', `Opening edition file "${name}"`, edition.open(name, data));

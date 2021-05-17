@@ -28,13 +28,12 @@ import './styles/slider.css';
 import './styles/tabs.css';
 import './styles/teamcolor.css';
 
-let edition:Edition|null = null;
+let edition:Edition = new Edition();
 let auth = '';
 const selectedCharacter = new BloodBind.Property<Character|null>(null);
 
 /** add a new character to the custom edition */
 async function addCharacterClicked():Promise<void> {
-    if (!edition) {return;}
     await edition.addNewCharacter();
 }
 
@@ -48,10 +47,14 @@ function showHelp() {
  * maintain a list of recent files - both in the menu and in local storage
  * @param name file name
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function addToRecentFiles(_name:string):void {
-    // TODO: implement addToRecentFiles
-    updateRecentFilesMenu();
+function setRecentFile(name:string):void {
+    try {
+        const localStorage = window.localStorage;
+        if (!localStorage) {return;}
+        localStorage.setItem('recentFile',name);
+    } catch {
+        // ignore
+    }
 }
 
 /**
@@ -59,24 +62,37 @@ function addToRecentFiles(_name:string):void {
  * name from the list
  * @param name file name to remove
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function removeFromRecentFiles(_name:string):void {
-    // TODO: implement removeFromRecentFiles
-    updateRecentFilesMenu();
+function clearRecentFile(name:string):void {
+    try {
+        const localStorage = window.localStorage;
+        if (!localStorage) {return;}
+        const file = localStorage.getItem('recentFile');
+        if (file!==name) {return;}
+        localStorage.removeItem('recentFile');
+    } catch {
+        // ignore
+    }
 }
 
 /**
- * update the recent files menu based on the recent files in local storage
+ * if a last-opened file is remembered, get its name
+ * otherwise, return the empty string
  */
-function updateRecentFilesMenu():void {
-    // TODO: implement updateRecentFilesMenu
+function getRecentFile():string {
+    try {
+        const localStorage = window.localStorage;
+        if (!localStorage) {return '';}
+        return localStorage.getItem('recentFile') || '';
+    } catch {
+        // ignore
+    }
+    return '';
 }
 
 /**
  * user chose to open a new file
  */
 export async function newFileClicked():Promise<boolean> {
-    if (!edition) {return false;}
     try {
         await BloodIO.newEdition(edition);
     } catch (error) {
@@ -89,9 +105,8 @@ export async function newFileClicked():Promise<boolean> {
  * user chose to open a file
  */
 export async function openFileClicked():Promise<boolean> {
-    if (!edition) {return false;}
     if (await BloodIO.open(auth, edition)) {
-        addToRecentFiles(edition.saveName.get());
+        setRecentFile(edition.saveName.get());
         return true;
     }
     return false;
@@ -101,7 +116,7 @@ export async function openFileClicked():Promise<boolean> {
 export async function deleteFileClicked():Promise<boolean> {
     const deleted = await chooseAndDeleteFile(auth);
     if (!deleted) {return false;}
-    removeFromRecentFiles(deleted);
+    clearRecentFile(deleted);
     return true;
 }
 
@@ -109,9 +124,8 @@ export async function deleteFileClicked():Promise<boolean> {
  * user chose to save the current file
  */
 export async function saveFileClicked():Promise<boolean> {
-    if (!edition) {return false;}
     if (await save(auth, edition)) {
-        addToRecentFiles(edition.saveName.get());
+        setRecentFile(edition.saveName.get());
         return true;
     }
     return false;
@@ -121,9 +135,8 @@ export async function saveFileClicked():Promise<boolean> {
  * user chose to save the current file under a new name
  */
 export async function saveFileAsClicked():Promise<boolean> {
-    if (!edition) {return false;}
     if (await saveAs(auth, edition)) {
-        addToRecentFiles(edition.saveName.get());
+        setRecentFile(edition.saveName.get());
         return true;
     }
     return false;
@@ -138,7 +151,6 @@ function importOfficialClicked():boolean {
 
 /** user chose to save and publish */
 async function saveAndPublishClicked():Promise<boolean> {
-    if (!edition) {return false;}
     if (!edition.dirty.get() || await saveFileClicked()) {
         await publish(auth, edition);
     }
@@ -179,10 +191,7 @@ function tabClicked(btnId:string, tabId:string):void {
 
 /** initialize listeners and data bindings */
 async function initBindings():Promise<void> {
-    if (!edition) {return;}
-
     window.addEventListener('beforeunload',(event):string|void=>{
-        if (!edition){return;}
         if (!edition.dirty.get()){return;}
         event.preventDefault();
         const message = "Are you sure you want to leave? Unsaved changes will be lost.";
@@ -191,7 +200,6 @@ async function initBindings():Promise<void> {
     });
 
     document.addEventListener('keydown', async (e) => {
-        if (!edition) {return;}
         if (e.ctrlKey) {
             if (e.code === "KeyS") {
                 e.preventDefault();
@@ -265,11 +273,16 @@ async function initBindings():Promise<void> {
 /** initialize CustomEdition object to bind to */
 async function initCustomEdition():Promise<void> {
     try {
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
-            if (await BloodNewOpen.show()) {
-                break;
+        const rememberedFile = getRecentFile();
+        if (rememberedFile) {
+            if (await BloodIO.open(auth, edition, rememberedFile, true)) {
+                return;
             }
+            clearRecentFile(rememberedFile);
+        }
+
+        // eslint-disable-next-line no-empty
+        while (!await BloodNewOpen.show()) {
         }
     } catch (e) {
         console.error(e);
