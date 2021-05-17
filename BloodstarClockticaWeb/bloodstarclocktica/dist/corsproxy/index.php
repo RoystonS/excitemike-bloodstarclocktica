@@ -119,18 +119,13 @@ foreach ($response_headers as $key => $response_header) {
         $response_header = 'location: ' . $new_location;
         header($response_header, true);
     }
-    if (!preg_match('/^(Transfer-Encoding):/', $response_header)) {
+    // don't copy an Access-Control-Allow-Origin header -- we'd have two
+    if (preg_match('/^Access-Control-Allow-Origin:\s*/i', $response_header)) {
+    } else if (!preg_match('/^(Transfer-Encoding):/', $response_header)) {
         header($response_header, false);
     }
 }
 
-// finally, output the content
-/*I do not understand why but this seems to only hurt!?
-if (array_key_exists('HTTP_ORIGIN', $_SERVER)) {
-    header('Access-Control-Allow-Origin: '.$_SERVER['HTTP_ORIGIN'], true);
-} else {
-    header('Access-Control-Allow-Origin: *', true);
-}*/
 print($response_content);
 
 ?>
