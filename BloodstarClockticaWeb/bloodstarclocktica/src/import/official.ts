@@ -43,8 +43,6 @@ class ChooseOfficialCharDlg extends AriaDialog<CharacterEntry> {
                 }
             ]});
 
-
-        // TODO: sort by edition and put into <details> tags
         for (const character of json) {
             if (!character.name) {continue;}
             const button = createElement({
