@@ -223,7 +223,7 @@ async function initBindings():Promise<void> {
         ['jsonFromUrlButton', ()=>edition && BloodIO.importJsonFromUrl(edition)],
         ['jsonFromFileButton', ()=>edition && BloodIO.importJsonFromFile(edition)],
         ['saveAndPublishButton', saveAndPublishClicked],
-        ['helpbutton', showHelp],
+        ['helpButton', showHelp],
         ['metaTabBtn', ()=>tabClicked('metaTabBtn','metatab')],
         ['charTabBtn', ()=>tabClicked('charTabBtn','charactertab')],
         ['firstNightTabBtn', ()=>tabClicked('firstNightTabBtn','firstNightOrderTab')],
