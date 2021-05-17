@@ -80,11 +80,11 @@ class BloodImporter {
         return true;
     }
 
-    /** once all character are loaded, correct the night order */
+    /** once all characters are loaded, correct the night order */
     private async finalizeNightOrder():Promise<void> {
         const data:[Map<number, Character[]>, ObservableCollection<Character>][] = [[this.firstNightOrderTracker, this.edition.firstNightOrder],[this.otherNightOrderTracker, this.edition.otherNightOrder]];
         for (const [nightMap, collection] of data) {
-            const keys = Array.from(nightMap.keys()).sort();
+            const keys = Array.from(nightMap.keys()).sort((a, b) => a - b);
             await collection.clear();
             for (const key of keys) {
                 await collection.addMany(nightMap.get(key) || []);

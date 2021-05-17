@@ -130,7 +130,7 @@ async function importEdition(json:ScriptEntry[], edition:Edition):Promise<boolea
     // set night order
     const data:[NightOrderTracker, ObservableCollection<Character>][] = [[firstNightOrder, edition.firstNightOrder],[otherNightOrder, edition.otherNightOrder]];
     for (const [nightMap, collection] of data) {
-        const keys = Array.from(nightMap.keys()).sort();
+        const keys = Array.from(nightMap.keys()).sort((a, b) => a - b);
         await collection.clear();
         for (const key of keys) {
             await collection.addMany(nightMap.get(key) || []);
