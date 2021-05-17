@@ -329,7 +329,7 @@ export class AriaDialog<ResultType> {
 
     /**
      * Open a dialog. await this.promise to get the result of the dialog.
-     *  `var x = await (new Dialog(...)).result;`
+     *  `var x:Type = await showDialog<Type>(...));`
      * @param focusAfterClose element or id of element to focus on after the dialog completes
      * @param debugName css id prefix for the dialog
      * @param body array of elements to append as dialog body

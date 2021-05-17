@@ -15,6 +15,7 @@ import publish from './commands/publish';
 import {save, saveAs} from './commands/save';
 import {chooseAndDeleteFile} from './commands/delete';
 import login from './commands/login';
+import importOfficial from './import/official';
 import './styles/autogrowtextarea.css';
 import './styles/characterlist.css';
 import './styles/charactertab.css';
@@ -143,10 +144,13 @@ export async function saveFileAsClicked():Promise<boolean> {
 }
 
 /** user chose to import official character(s) */
-function importOfficialClicked():boolean {
-    // TODO: implement importOfficialClicked
-    void showError('Not yet implemented', '`importOfficialClicked` Not yet implemented');
-    return false;
+async function importOfficialClicked():Promise<boolean> {
+    try {
+        return await importOfficial(edition);
+    } catch (error) {
+        await showError('Error', 'Something went wrong when trying to clone official character', error);
+        throw error;
+    }
 }
 
 /** user chose to save and publish */

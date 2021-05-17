@@ -133,3 +133,31 @@ ul.spinnerMessages > li {
 .hasDialog {
     overflow:hidden;
 }
+
+
+.importOfficialList{
+    display: flex;
+    flex-flow: column nowrap;
+    overflow-x:hidden;
+    overflow-y:auto;
+    align-content: stretch;
+    border: 1px solid #333;
+    padding:6px;
+}
+.importOfficialList > button {
+    text-align: left;
+    padding: 2px 6px;
+    font-weight: normal;
+    min-height: 24px;
+    overflow:hidden;
+    white-space: nowrap;
+}
+.importOfficialList > button:focus {
+    border: 1px solid #3977FF;  
+}
+.importOfficialList > button:hover,
+.importOfficialList > button:focus-visible
+ {
+    border: 1px solid #3977FF;
+    background:#3977FF;
+}
