@@ -105,8 +105,6 @@ function isFocusable(node:Node):boolean {
     }
 }
 
-// TODO: instead of returning nulls, dialog could take a cancel value in open func
-
 /** base class for dialogs */
 export class AriaDialog<ResultType> {
     private root:Element|null = null;
