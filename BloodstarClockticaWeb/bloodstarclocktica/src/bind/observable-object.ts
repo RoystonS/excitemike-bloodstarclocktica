@@ -384,12 +384,12 @@ export abstract class ObservableObject<T> {
         for (const [key, child] of this.children) {
             if (!this._canWriteField(key)) { continue; }
             const fn = this._getCustomSerialize(key);
-            converted[String(key)] = fn ? fn(this, child) : child.serialize();
+            converted[String(key)] = fn ? fn(this, child) : await child.serialize();
         }
         for (const [key, collection] of this.collections) {
             if (!this._canWriteField(key)) { continue; }
             const fn = this._getCustomSerialize(key);
-            converted[String(key)] = fn ? fn(this, collection) : collection.serialize();
+            converted[String(key)] = fn ? fn(this, collection) : await collection.serialize();
         }
         for (const [key, property] of this.properties) {
             if (!this._canWriteField(key)) { continue; }
