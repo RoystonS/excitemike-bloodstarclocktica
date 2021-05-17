@@ -17,6 +17,7 @@ const MAX_CHARACTER_ICON_HEIGHT = 539;
 class ChooseOfficialCharDlg extends AriaDialog<CharacterEntry> {
     async open(json:CharacterEntry[]):Promise<CharacterEntry|null> {
         const characterListDiv = createElement({t:'div',css:['importOfficialList']});
+        // TODO: filterable list and/or sort by edition and put into <details> tags
         for (const character of json) {
             if (!character.name) {continue;}
             const button = createElement({
@@ -47,6 +48,7 @@ export default async function importOfficial(edition:Edition):Promise<boolean> {
     if (!json) {return false;}
     const choice = await new ChooseOfficialCharDlg().open(json);
     if (!choice) {return false;}
+    // TODO: on error, remove character
     const character = await edition.addNewCharacter();
     if (choice.ability) {
         await character.ability.set(choice.ability);
