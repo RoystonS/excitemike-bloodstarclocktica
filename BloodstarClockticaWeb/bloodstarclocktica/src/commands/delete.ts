@@ -44,7 +44,6 @@ async function confirmDelete(name:string):Promise<boolean> {
  * @returns true if nothing went terribly wrong
  */
 async function deleteFile(auth:string, name:string):Promise<boolean>{
-    // TODO: if you delete the current edition, you must mark all its images as dirty!
     const deleteData:SaveData = {
         saveName: name
     };
@@ -59,5 +58,6 @@ async function deleteFile(auth:string, name:string):Promise<boolean>{
         await showError('Error', `Error encountered while trying to delete file ${name}`, error);
         return false
     }
+
     return true;
 }

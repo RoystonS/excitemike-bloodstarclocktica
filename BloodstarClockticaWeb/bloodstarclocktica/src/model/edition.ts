@@ -124,7 +124,6 @@ export class Edition extends ObservableObject<Edition> {
                 case 'id':
                     edition.dirtySourceImages.add(character.id.get());
                     edition.dirtyFinalImages.add(character.id.get());
-                    // TODO: delete old id
                     break;
                 case 'unStyledImage':
                     edition.dirtySourceImages.add(character.id.get());
@@ -232,6 +231,17 @@ export class Edition extends ObservableObject<Edition> {
         this.dirtyFinalImages.clear();
         this.dirtyLogo = false;
         await this.dirty.set(false);
+    }
+
+    /** mark every part of the edition as needing a save */
+    async markDirty():Promise<void> {
+        for (const character of this.characterList) {
+            const id = character.id.get();
+            this.dirtySourceImages.add(id);
+            this.dirtyFinalImages.add(id);
+        }
+        this.dirtyLogo = true;
+        await this.dirty.set(true);
     }
 
     /** set to opened file */
