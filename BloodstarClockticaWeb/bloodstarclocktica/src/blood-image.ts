@@ -16,7 +16,7 @@ export const enum ProcessImageSettings {
     FULL_WIDTH = 540,
     FULL_HEIGHT = 540,
     USABLE_REGION_X = 120,
-    USABLE_REGION_Y = 50,
+    USABLE_REGION_Y = 34,
     USABLE_REGION_WIDTH = 300,
     USABLE_REGION_HEIGHT = 300,
 }
