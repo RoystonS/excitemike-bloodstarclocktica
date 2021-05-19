@@ -34,6 +34,7 @@
     flex-flow:column;
     max-width:90vw;
     max-height: 70vh;
+    overflow:auto;
 }
 .dialogBox > * {
     margin-block-end: 1em;
