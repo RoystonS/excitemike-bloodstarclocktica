@@ -24,5 +24,9 @@ Initial setup was done like this. **(DO NOT do this with an already set-up proje
 1. install npm
 2. on the command line in project directory:
 
-    1. > `npm init -y`
-    2. > `npm install --save-dev typescript eslint  @typescript-eslint/parser @typescript-eslint/eslint-plugin webpack webpack-cli ts-loader style-loader css-loader live-server npm-run-all mini-css-extract-plugin css-minimizer-webpack-plugin html-webpack-plugin file-loader jszip`
+    1. create the project
+        > `npm init -y`
+    2. typescript and webpack stuff
+        > `npm install --save-dev typescript eslint  @typescript-eslint/parser @typescript-eslint/eslint-plugin webpack webpack-cli ts-loader style-loader css-loader live-server npm-run-all mini-css-extract-plugin css-minimizer-webpack-plugin html-webpack-plugin file-loader`
+    3. because I'm using jszip:
+        > `npm install --save-dev jszip`
