@@ -14,7 +14,7 @@ import { BloodTeam } from './model/blood-team';
 import publish from './commands/publish';
 import {save, saveAs} from './commands/save';
 import {chooseAndDeleteFile} from './commands/delete';
-import login from './commands/login';
+import signIn from './sign-in';
 import importOfficial from './import/official';
 import './styles/autogrowtextarea.css';
 import './styles/characterlist.css';
@@ -30,7 +30,6 @@ import './styles/tabs.css';
 import './styles/teamcolor.css';
 
 let edition:Edition = new Edition();
-let auth = '';
 const selectedCharacter = new BloodBind.Property<Character|null>(null);
 
 /** add a new character to the custom edition */
@@ -106,7 +105,7 @@ export async function newFileClicked():Promise<boolean> {
  * user chose to open a file
  */
 export async function openFileClicked():Promise<boolean> {
-    if (await BloodIO.open(auth, edition)) {
+    if (await BloodIO.open(edition)) {
         setRecentFile(edition.saveName.get());
         return true;
     }
@@ -115,7 +114,7 @@ export async function openFileClicked():Promise<boolean> {
 
 /** menu item for delete clicked */
 export async function deleteFileClicked():Promise<boolean> {
-    const deleted = await chooseAndDeleteFile(auth);
+    const deleted = await chooseAndDeleteFile();
     if (!deleted) {return false;}
     clearRecentFile(deleted);
 
@@ -131,7 +130,7 @@ export async function deleteFileClicked():Promise<boolean> {
  * user chose to save the current file
  */
 export async function saveFileClicked():Promise<boolean> {
-    if (await save(auth, edition)) {
+    if (await save(edition)) {
         setRecentFile(edition.saveName.get());
         return true;
     }
@@ -142,7 +141,7 @@ export async function saveFileClicked():Promise<boolean> {
  * user chose to save the current file under a new name
  */
 export async function saveFileAsClicked():Promise<boolean> {
-    if (await saveAs(auth, edition)) {
+    if (await saveAs(edition)) {
         setRecentFile(edition.saveName.get());
         return true;
     }
@@ -162,7 +161,7 @@ async function importOfficialClicked():Promise<boolean> {
 /** user chose to save and publish */
 async function saveAndPublishClicked():Promise<boolean> {
     if (!edition.dirty.get() || await saveFileClicked()) {
-        await publish(auth, edition);
+        await publish(edition);
     }
     return false;
 }
@@ -213,7 +212,7 @@ async function initBindings():Promise<void> {
         if (e.ctrlKey) {
             if (e.code === "KeyS") {
                 e.preventDefault();
-                await save(auth, edition);
+                await save(edition);
             }
         }
     });
@@ -285,7 +284,7 @@ async function initCustomEdition():Promise<void> {
     try {
         const rememberedFile = getRecentFile();
         if (rememberedFile) {
-            if (await BloodIO.open(auth, edition, rememberedFile, true)) {
+            if (await BloodIO.open(edition, rememberedFile, true)) {
                 return;
             }
             clearRecentFile(rememberedFile);
@@ -307,8 +306,8 @@ async function init() {
 
     await initBindings();
 
-    // need to get login info before we can do much of anything
-    auth = await login();
+    // need to sign in before we can do much of anything
+    await signIn();
 
     await initCustomEdition();
 }

@@ -1,6 +1,11 @@
 <?php
     header('Content-Type: application/json;');
     include('jwt.php');
+    $saveDir = '../save';
+    
+    function join_paths($a, $b) {
+        return join('/', array(trim($a, '/'), trim($b, '/')));
+    }
 
     // error out if not POST
     function requirePost() {

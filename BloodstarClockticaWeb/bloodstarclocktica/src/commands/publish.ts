@@ -11,9 +11,8 @@ type PublishReturn = {error?:string,script:string,almanac:string};
 
 /**
  * publish the edition
- * @param auth base64'd `${username}:${password}`
  */
-export default async function publish(auth:string, edition:Edition):Promise<boolean> {
+export default async function publish(edition:Edition):Promise<boolean> {
     type PublishData = {
         saveName:string
     };
@@ -26,7 +25,7 @@ export default async function publish(auth:string, edition:Edition):Promise<bool
 
     let response:PublishReturn;
     try {
-        response = await cmd(auth, 'publish', `Publishing ${edition.saveName.get()}`, payload) as PublishReturn;
+        response = await cmd('publish', `Publishing ${edition.saveName.get()}`, payload) as PublishReturn;
     } catch (error) {
         await showError('Error', 'Error encountered during publish', error);
         return false;

@@ -7,6 +7,7 @@
 
 import { appear, disappear } from "../animate";
 import { createElement, CreateElementsOptions } from "../util";
+import { showError } from "./blood-message-dlg";
 
 type ResolveFn = (value:any)=>void;
 type ButtonCb<T = unknown> = ()=>Promise<T>|T;
@@ -119,7 +120,7 @@ export class AriaDialog<ResultType> {
     canCancel():boolean{return true;}
 
     /** close the dialog early. resolve result promise with specified value */
-    close(value:unknown = null):void {
+    close(value:ResultType|null = null):void {
         if (!this.resolveFn){return;}
         this.resolveFn(value);
 
@@ -198,8 +199,14 @@ export class AriaDialog<ResultType> {
             for (const {label, id, callback, disabled} of buttons) {
                 const btn = document.createElement('button');
                 btn.addEventListener('click', async () => {
-                    const result = callback ? await callback() : null;
-                    return this.close(result);
+                    try {
+                        const result = callback ? await callback() : null;
+                        return this.close(result as any);
+                    } catch (error) {
+                        console.error(error);
+                        await showError('Error', `Error when handling ${label}`, error);
+                        return this.close();
+                    }
                 });
                 btn.innerText = label;
                 if (id) {btn.id=id;}

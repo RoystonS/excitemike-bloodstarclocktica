@@ -16,8 +16,7 @@ const config = {
                 'css-loader'
             ],
             exclude: /node_modules/
-        },
-        {
+        }, {
             test: /\.(png|woff|woff2|eot|ttf|svg)$/,
             use: [{
                 loader: 'file-loader',
