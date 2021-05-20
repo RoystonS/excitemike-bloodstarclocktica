@@ -69,13 +69,13 @@ async function showConfirmStep(email:string):Promise<boolean>{
  */
 async function showSignUpStep():Promise<string>{
     // TODO: check availability
-    const usernameField = createElement({t:'input',a:{type:'text',required:'true',placeholder:'Username'},id:'signUpDlgUsername'});
+    const usernameField = createElement({t:'input',a:{type:'text',required:'true',placeholder:'Username',autocomplete:'username'},id:'signUpDlgUsername'});
     const usernameWarnings = createElement({t:'div',css:['column'],a:{style:'color:red;grid-column-start:span 2'}});
-    const emailField = createElement({t:'input',a:{type:'text',required:'true',placeholder:'name@host.com'},id:'signUpDlgEmail'});
+    const emailField = createElement({t:'input',a:{type:'text',required:'true',placeholder:'name@host.com',autocomplete:'email'},id:'signUpDlgEmail'});
     const emailWarnings = createElement({t:'div',css:['column'],a:{style:'color:red;grid-column-start:span 2'}});
-    const passwordField = createElement({t:'input',a:{type:'password',required:'true',placeholder:'Password'},'id':'signInDlgPassword'});
+    const passwordField = createElement({t:'input',a:{type:'password',required:'true',placeholder:'Password',autocomplete:'new-password'},'id':'signInDlgPassword'});
     const passwordWarnings = createElement({t:'div',css:['column'],a:{style:'color:red;grid-column-start:span 2'}});
-    const confirmField = createElement({t:'input',a:{type:'password',required:'true',placeholder:'Password'},'id':'signInDlgPasswordConfirm'});
+    const confirmField = createElement({t:'input',a:{type:'password',required:'true',placeholder:'Password',autocomplete:'new-password'},'id':'signInDlgPasswordConfirm'});
     const body:CreateElementsOptions = [
         {t:'h1',a:{role:'alert'},txt:'Create an Account'},
         {t:'div',css:['twoColumnGrid'],children:[

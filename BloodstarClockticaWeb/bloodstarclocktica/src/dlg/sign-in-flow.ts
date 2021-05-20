@@ -52,7 +52,7 @@ class SignInDlg extends AriaDialog<UserPass> {
             },
             {
                 t:'input',
-                a:{'type':'text','required':'true','id':'signInDlgUsername',placeholder:'Username or email'},
+                a:{type:'text',required:'true',id:'signInDlgUsername',placeholder:'Username or email',autocomplete:'username'},
                 events:{keyup:submitOnEnter as EventListener}
             },{
                 t:'label',
@@ -60,7 +60,7 @@ class SignInDlg extends AriaDialog<UserPass> {
                 txt:'Password'
             },{
                 t:'input',
-                a:{'type':'password','required':'true','id':'signInDlgPassword'},
+                a:{type:'password',required:'true',id:'signInDlgPassword',autocomplete:'current-password'},
                 events:{keyup:submitOnEnter as EventListener}
             }]
         },{
