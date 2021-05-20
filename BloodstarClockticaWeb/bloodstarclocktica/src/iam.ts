@@ -4,7 +4,7 @@
  */
 
 import cmd from "./commands/cmd";
-import { showError } from "./dlg/blood-message-dlg";
+import { show as showMessage, showError } from "./dlg/blood-message-dlg";
 
 export type AccessToken = {token:string,expiration:number};
 type CheckSignUpConfirmedData = {usernameOrEmail:string};
@@ -13,6 +13,7 @@ type ResendSignUpConfirmationData = {usernameOrEmail:string};
 type ResetPasswordData = {usernameOrEmail:string};
 type ConfirmResponse = {error?:string,confirmed?:boolean};
 type EmailResponse = {error?:string,email?:string};
+type SignUpResponse = {error:string}|'usernameTaken'|'emailTaken'|true;
 type SignInData = {
     usernameOrEmail:string,
     password:string
@@ -21,7 +22,7 @@ type SignInResponse = {error?:string,token?:string,expiration?:number};
 type SignUpData = {
     username:string,
     password:string,
-    emailAddress:string
+    email:string
 };
 
 /**
@@ -112,18 +113,27 @@ export async function signIn(usernameOrEmail:string, password:string):Promise<Ac
 export async function signUp(
     username:string,
     password:string,
-    emailAddress:string
+    email:string
 ):Promise<string>{
     const signUpData:SignUpData = {
         username,
         password,
-        emailAddress
+        email
     };
     const payload = JSON.stringify(signUpData);
-    const {error,email} = await cmd('signup', 'Signing up', payload) as EmailResponse;
-    if (error) {
-        await showError('Error', `Error encountered while trying to sign up ${username} / ${emailAddress}`, error);
+    const response = await cmd('signup', 'Signing up', payload) as SignUpResponse;
+    if (true === response) {
+        return email||'';
+    }
+    if (response === 'usernameTaken') {
+        await showMessage('Try Again', `Username ${username} is already taken.`);
         return '';
     }
-    return email||'';
+    if (response === 'emailTaken') {
+        await showMessage('Try Again', `Email address ${email} is already in use.`);
+        return '';
+    }
+    const {error} = response;
+    await showError('Error', `Error encountered while trying to sign up ${username} / ${email}`, error);
+    return '';
 }

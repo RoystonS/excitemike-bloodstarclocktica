@@ -1,5 +1,4 @@
 <?php
-    header('Content-Type: application/json;');
     include('jwt.php');
     $saveDir = '../save';
     
@@ -22,6 +21,16 @@
     // decode payload as json
     function getPayload() {
         return json_decode(file_get_contents('php://input'), true);
+    }
+
+    // look up database info and connect
+    function makeMysqli() {
+        $dbInfo = json_decode(file_get_contents('../../protected/db'),true);
+        $mysqlHost = requireField($dbInfo, 'host');
+        $mysqlUsername = requireField($dbInfo, 'username');
+        $mysqlPassword = requireField($dbInfo, 'password');
+        $mysqlDb = requireField($dbInfo, 'db');
+        return new mysqli($mysqlHost,$mysqlUsername,$mysqlPassword,$mysqlDb);
     }
 
     // error if field is not set in array, otherwise, return that field

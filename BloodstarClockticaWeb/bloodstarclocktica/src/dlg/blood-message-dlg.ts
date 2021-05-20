@@ -12,7 +12,7 @@ interface ToStringable {
 class MessageDialog extends AriaDialog<void> {
     async open(focusAfterClose:Element|string|null, titleText:string, messageText?:string, errorMessage?:string):Promise<void|null> {
         const body:CreateElementsOptions = [{
-            t:'p',
+            t:'h1',
             css:['title'],
             txt:titleText
         }];

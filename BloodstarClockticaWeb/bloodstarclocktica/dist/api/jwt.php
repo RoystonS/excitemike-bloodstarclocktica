@@ -1,5 +1,4 @@
 <?php
-
 // bail because the session token didn't check out
 function rejectSession($message){
     header('HTTP/1.0 400 Bad Request');
@@ -13,7 +12,7 @@ function rejectSession($message){
 }
 
 // decode strings that are url-safe base64 encoded
-function urlsafeB64Decode($input){
+function base64urlDecode($input){
     $remainder = strlen($input) % 4;
     if ($remainder) {
         $padlen = 4 - $remainder;
@@ -21,20 +20,28 @@ function urlsafeB64Decode($input){
     }
     return base64_decode(strtr($input, '-_', '+/'));
 }
+// encode using base64url encoding
+function base64urlEncode($input){
+    return rtrim(strtr(base64_encode($input), '+/', '-+'), '=');
+}
 
 // verify a session token - returns username when successful
 function verifySession($token){
     try {
-        $secretKey = file_get_contents('../../protected/secretkey');
+        $secretKey = file_get_contents('../../protected/jwtRS256.key');
+        if (false === $secretKey){
+            echo json_encode(array('error' =>'could not open key file'));
+            exit();
+        }
 
         $parts = explode('.',$token);
         if (3 !== count($parts)) {
             return rejectSession('Token not formatted correctly');
         }
         list($header, $payload, $signature) = $parts;
-        $decodedHeader = json_decode(urlsafeB64Decode($header));
-        $decodedPayload = json_decode(urlsafeB64Decode($payload), true);
-        $decodedSignature = json_decode(urlsafeB64Decode($signature));
+        $decodedHeader = json_decode(base64urlDecode($header));
+        $decodedPayload = json_decode(base64urlDecode($payload), true);
+        $decodedSignature = base64urlDecode($signature);
         $alg = $supported_algs[$header->alg];
 
         // weird wrinkle for ES256
@@ -42,19 +49,12 @@ function verifySession($token){
             return rejectSession('ES256 not supported');
         }
 
-        $jwks = json_decode(file_get_contents('../../protected/jwks.json'),true);
-
-        $jwtKey = $decodedHeader->kid;
-
         if (!verifySig("$header.$payload", $decodedSignature, $secretKey, $header->alg)){
             return rejectSession('Signature verification failed');
         }
 
         $timestamp = time();
         $leeway = 60;
-        if (array_key_exists('iss', $decodedPayload) && $decodedPayload['iss'] !== 'https://cognito-idp.us-east-1.amazonaws.com/us-east-1_sjVd8VWL9'){
-            return rejectSession('Token not valid until '.date(DateTime::ISO8601, $decodedPayload->nbf));
-        }
         if (array_key_exists('nbf',$decodedPayload) && $decodedPayload['nbf'] > ($timestamp + $leeway)){
             return rejectSession('Token not valid until '.date(DateTime::ISO8601, $decodedPayload->nbf));
         }
@@ -64,10 +64,10 @@ function verifySession($token){
         if (array_key_exists('exp', $decodedPayload) && ($timestamp - $leeway) >= $decodedPayload['exp']) {
             return rejectSession('Token expired');
         }
-        if (!array_key_exists('cognito:username', $decodedPayload)){
+        if (!array_key_exists('username', $decodedPayload)){
             return rejectSession('No username specified');
         }
-        return $decodedPayload['cognito:username'];
+        return $decodedPayload['username'];
     } catch (Exception $e) {
         return rejectSession('Error: '.$e->getMessage());
     }
@@ -75,20 +75,34 @@ function verifySession($token){
 }
 
 function verifySig($headerAndPayloadStr, $signatureStr, $secretKey, $alg) {
-    $algMap = array(
-        'RS256' => 'SHA256',
-        'RS384' => 'SHA384',
-        'RS512' => 'SHA512',
-    );
-    if (!array_key_exists($alg, $algMap)){
-        return rejectSession('Unsupported crypto algorithm: '.$alg);
-    }
-    $success = openssl_verify($headerAndPayloadStr, $signatureStr, $secretKey, $algMap[$alg]);
+    $success = openssl_verify($headerAndPayloadStr, $signatureStr, $secretKey, 'SHA256');
     if ($success === 1) {
         return true;
     } elseif ($success === 0) {
         return false;
     }
     return rejectSession('OpenSSL error: '.openssl_error_string());
+}
+
+// create a token for user session
+function createToken($username, $expiration) {
+    $header = ['alg'=>'RS256','typ'=>'JWT'];
+    $encodedHeader = base64urlEncode(json_encode($header));
+
+    $payload = ['iat'=>time(),'username'=>$username, 'exp'=>$expiration];
+    $encodedPayload = base64urlEncode(json_encode($payload));
+
+    $secretKey = file_get_contents('../../protected/jwtRS256.key');
+    if (false === $secretKey){
+        echo json_encode(array('error' =>'could not open key file'));
+        exit();
+    }
+    if (!openssl_sign("$encodedHeader.$encodedPayload", $signature, $secretKey, 'SHA256')){
+        echo json_encode(array('error' =>'signing token failed: '.openssl_error_string()));
+        exit();
+    }
+    $encodedSignature = base64urlEncode($signature);
+
+    return implode('.',[$encodedHeader, $encodedPayload, $encodedSignature]);
 }
 ?>

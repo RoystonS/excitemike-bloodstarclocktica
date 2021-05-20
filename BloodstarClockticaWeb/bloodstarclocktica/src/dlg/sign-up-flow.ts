@@ -2,8 +2,8 @@
  * sign up as a Bloodstar Clocktica user
  * @module SignUpDlg
  */
-import { createElement, CreateElementOptions, CreateElementsOptions } from '../util';
-import {ButtonCfg, showDialog} from './aria-dlg';
+import { createElement, CreateElementsOptions } from '../util';
+import {AriaDialog, ButtonCfg, showDialog} from './aria-dlg';
 import {show as showMessage, showError} from './blood-message-dlg';
 import {checkSignUpConfirmed, resendSignUpConfirmation, signUp} from '../iam';
 
@@ -24,21 +24,34 @@ async function show():Promise<boolean>{
     return await showConfirmStep(email);
 }
 
+class ConfirmSignUpDlg extends AriaDialog<boolean> {
+    async open(email:string,doWarning:boolean):Promise<boolean>{
+        const body:CreateElementsOptions = [];
+        if (doWarning) {
+            body.push({t:'p',a:{style:'color:red;max-width:400px'},txt:'Your account must be confirmed before you can continue. Please check your email and follow the instructions.'});
+        }
+        body.splice(1,0,...[
+            {t:'p',txt:`We have sent an email to "${email}".`},
+            {t:'p',a:{style:'max-width:400px'},txt:'Please check your email and follow the instructions to verify your email address, then click the button below to continue.'},
+            {t:'div',css:['dialogBtnGroup'],children:[
+                {t:'button',txt:'Continue',events:{click:()=>this.close(true)}},
+                {t:'button',txt:'Cancel',events:{click:()=>this.close(false)}}
+            ]},
+            {t:'p',txt:"Didn't receive a link? ",a:{style:'align-self:center;'},children:[
+                {t:'a',a:{href:'#'},txt:'Resend it',events:{click:async ()=>await resendSignUpConfirmation(email)}}
+            ]}
+        ] as CreateElementsOptions);
+        return await this.baseOpen(null,'confirm-sign-up',body,[])||false;
+    }
+}
+
 /** show dialog for confirm step */
 async function showConfirmStep(email:string):Promise<boolean>{
     let confirmed = false;
+    let cancelled = false;
     let warn = false;
-    const bodyText:CreateElementOptions<'p'> = {t:'p',txt:`We have sent an email to "${email}". Please check your email and follow the instructions to verify your email address, then click the button below to continue`};
-    const warning:CreateElementOptions<'p'> = {t:'p',a:{style:'color:red;'},txt:'Your account must be confirmed before you can continue. Please check your email and follow the instructions.'};
-    const resend:CreateElementOptions<'p'> = {t:'p',txt:"Didn't receive a link? ",children:[
-        {t:'a',txt:'Resend it',events:{click:async ()=>await resendSignUpConfirmation(email)}}]};
-    while (!confirmed) {
-        await showDialog<void>(
-            null,
-            'sign-up-confirm-dlg',
-            warn?[warning,bodyText,resend]:[bodyText,resend],
-            [{label:'Continue'}]
-        )
+    while (!confirmed && !cancelled) {
+        cancelled = !await new ConfirmSignUpDlg().open(email,warn);
         warn = true;
         try {
             confirmed = await checkSignUpConfirmed(email);
@@ -55,6 +68,7 @@ async function showConfirmStep(email:string):Promise<boolean>{
  * @returns email address to which a confirmation email was sent, or the empty string
  */
 async function showSignUpStep():Promise<string>{
+    // TODO: check availability
     const usernameField = createElement({t:'input',a:{type:'text',required:'true',placeholder:'Username'},id:'signUpDlgUsername'});
     const usernameWarnings = createElement({t:'div',css:['column'],a:{style:'color:red;grid-column-start:span 2'}});
     const emailField = createElement({t:'input',a:{type:'text',required:'true',placeholder:'name@host.com'},id:'signUpDlgEmail'});
