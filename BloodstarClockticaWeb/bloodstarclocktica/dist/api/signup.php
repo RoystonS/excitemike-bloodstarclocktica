@@ -9,7 +9,7 @@
 
     $mysqli = makeMysqli();
 
-    // TODO: clear expired password confirmations on a cron job or something
+    // TODO: validate
 
     // verify name & email not taken
     $escapedUsername = $mysqli->real_escape_string($username);
@@ -34,10 +34,9 @@
     $confirmCode = sprintf('%06d', random_int(0,999999));
     $confirmHash = password_hash("$confirmCode:$email", PASSWORD_BCRYPT, ['cost'=>10]);
     $mysqli->query("INSERT INTO `users` (`email`, `name`) VALUES ('$escapedEmail', '$escapedUsername');");
-    $escapedExp = $mysqli->real_escape_string($expiration);
     $escapedHash = $mysqli->real_escape_string($hash);
     $escapedConfirmHash = $mysqli->real_escape_string($confirmHash);
-    $mysqli->query("INSERT INTO `unconfirmed` (`email`, `expiration`, `hash`, `confirmHash`) VALUES ('$escapedEmail', '$escapedExp', '$escapedHash', '$escapedConfirmHash');");
+    $mysqli->query("INSERT INTO `unconfirmed` (`email`, `expiration`, `hash`, `confirmHash`) VALUES ('$escapedEmail', $expiration, '$escapedHash', '$escapedConfirmHash');");
 
     $escapeEmail = urlencode($email);
     $link = "https://www.bloodstar.xyz/api/confirm.php?code=$confirmCode&email=$escapeEmail";
@@ -56,4 +55,13 @@
     }
 
     echo json_encode(true);
+
+    // TODO: test clearing expired
+    $leeway = 60;
+    $killTime = time() + $leeway;
+    try {
+        $result = $mysqli->query("DELETE FROM `unconfirmed` WHERE `unconfirmed`.`expiration` < $killTime;");
+    } catch (Exception $e) {
+        // ignore
+    }
 ?>

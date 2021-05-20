@@ -6,12 +6,14 @@ import { createElement } from "../util";
 import {showDialog} from './aria-dlg';
 import {confirmPasswordReset, sendPasswordReset} from '../iam';
 
+// TODO: enter code rather than click link
+
 /**
  * bring up forgot-password dialogs
  * @returns promise that resolves to true if the password was successfully reset
  */
 async function show():Promise<boolean> {
-    const usernameField = createElement({t:'input',a:{type:'text',required:'true',placeholder:'Username'},id:'requestResetDlgUsername'});
+    const usernameField = createElement({t:'input',a:{type:'text',required:'true',placeholder:'Username or email',autocomplete:'email'},id:'requestResetDlgUsername'});
     const email = await showDialog<string>(
         null,
         'reset-password',

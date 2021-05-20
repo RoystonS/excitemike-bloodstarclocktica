@@ -77,7 +77,7 @@ export async function resendSignUpConfirmation(usernameOrEmail:string):Promise<s
 export async function sendPasswordReset(usernameOrEmail:string):Promise<string>{
     const passwordResetData:ResetPasswordData = {usernameOrEmail};
     const payload = JSON.stringify(passwordResetData);
-    const {error,email} = await cmd('resetpwd', 'Requesting password reset', payload) as EmailResponse;
+    const {error,email} = await cmd('requestreset', 'Requesting password reset', payload) as EmailResponse;
     if (error) {
         await showError('Error', `Error encountered while trying to reset password for ${usernameOrEmail}`, error);
         return '';

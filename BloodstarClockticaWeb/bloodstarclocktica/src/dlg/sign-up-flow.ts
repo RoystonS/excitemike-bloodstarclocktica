@@ -47,6 +47,7 @@ class ConfirmSignUpDlg extends AriaDialog<boolean> {
 
 /** show dialog for confirm step */
 async function showConfirmStep(email:string):Promise<boolean>{
+    // TODO: enter code rather than click link
     let confirmed = false;
     let cancelled = false;
     let warn = false;
