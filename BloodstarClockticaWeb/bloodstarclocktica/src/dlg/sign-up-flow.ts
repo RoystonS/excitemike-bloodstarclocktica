@@ -5,7 +5,7 @@
 import { createElement, CreateElementsOptions } from '../util';
 import {AriaDialog, ButtonCfg, showDialog} from './aria-dlg';
 import {show as showMessage, showError} from './blood-message-dlg';
-import {checkSignUpConfirmed, resendSignUpConfirmation, signUp} from '../iam';
+import {confirmEmail, resendSignUpConfirmation, SessionInfo, signUp} from '../iam';
 
 export type UserPass = {username:string,password:string};
 const VALID_USERNAME_RE = /^[^.\\/:"?<>|][^\\/:"?<>|]+$/;
@@ -16,52 +16,64 @@ const VALID_EMAIL_RE = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0
 
 /**
  * do the sign-up flow
- * @returns Promise that resolves to true if sign-up is confirmed
+ * @returns Promise that resolves to SessionInfo if sign-up completes
  */
-async function show():Promise<boolean>{
+async function show():Promise<SessionInfo|null>{
     const email = await showSignUpStep();
-    if (!email) {return false;}
+    if (!email) {return null;}
     return await showConfirmStep(email);
 }
 
-class ConfirmSignUpDlg extends AriaDialog<boolean> {
-    async open(email:string,doWarning:boolean):Promise<boolean>{
-        const body:CreateElementsOptions = [];
+class ConfirmSignUpDlg extends AriaDialog<string> {
+    async open(email:string,doWarning:boolean):Promise<string>{
+        const body:CreateElementsOptions = [{t:'h1',txt:'Confirm email address'}];
         if (doWarning) {
-            body.push({t:'p',a:{style:'color:red;max-width:400px'},txt:'Your account must be confirmed before you can continue. Please check your email and follow the instructions.'});
+            body.push({t:'p',a:{style:'color:red;max-width:400px'},txt:'Your account must be confirmed before you can continue. Please check your email for the six-digit code.'});
         }
-        body.splice(1,0,...[
-            {t:'p',txt:`We have sent an email to "${email}".`},
-            {t:'p',a:{style:'max-width:400px'},txt:'Please check your email and follow the instructions to verify your email address, then click the button below to continue.'},
+        const syncButton = ()=>{
+            const inputElement = document.getElementById('codeFromEmail');
+            if (!(inputElement instanceof HTMLInputElement)){return;}
+            const buttonElement = document.getElementById('continueBtn');
+            if (!(buttonElement instanceof HTMLButtonElement)){return;}
+            const codeValue = parseInt(inputElement.value);
+            buttonElement.disabled = isNaN(codeValue);
+        };
+        body.splice(body.length,0,...[
+            {t:'p',a:{style:'max-width:400px'},txt:`We have sent an email to "${email}" containing a 6-digit code. Please enter the code below, then click the button below to continue.`},
+            {t:'input',a:{type:'text',minlength:'6',maxlength:'6',autocomplete:'off',required:'',pattern:'[0-9]{6}',title:'six-digit code from your email'},id:'codeFromEmail',events:{input:syncButton,change:syncButton}},
             {t:'div',css:['dialogBtnGroup'],children:[
-                {t:'button',txt:'Continue',events:{click:()=>this.close(true)}},
-                {t:'button',txt:'Cancel',events:{click:()=>this.close(false)}}
+                {t:'button',id:'continueBtn',txt:'Continue',a:{disabled:true},events:{click:()=>{
+                    const inputElement = document.getElementById('codeFromEmail');
+                    if (!(inputElement instanceof HTMLInputElement)){this.close(); return;}
+                    this.close(inputElement.value);
+                }}},
+                {t:'button',txt:'Cancel',events:{click:()=>this.close('')}}
             ]},
             {t:'p',txt:"Didn't receive a link? ",a:{style:'align-self:center;'},children:[
-                {t:'a',a:{href:'#'},txt:'Resend it',events:{click:async ()=>await resendSignUpConfirmation(email)}}
+                {t:'a',a:{href:'#'},txt:'Send a new one',events:{click:async ()=>await resendSignUpConfirmation(email)}}
             ]}
         ] as CreateElementsOptions);
-        return await this.baseOpen(null,'confirm-sign-up',body,[])||false;
+        return await this.baseOpen(null,'confirm-sign-up',body,[])||'';
     }
 }
 
 /** show dialog for confirm step */
-async function showConfirmStep(email:string):Promise<boolean>{
+async function showConfirmStep(email:string):Promise<SessionInfo|null>{
     // TODO: enter code rather than click link
-    let confirmed = false;
-    let cancelled = false;
     let warn = false;
-    while (!confirmed && !cancelled) {
-        cancelled = !await new ConfirmSignUpDlg().open(email,warn);
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+        const code = await new ConfirmSignUpDlg().open(email,warn);
+        if (!code){return null;}
         warn = true;
         try {
-            confirmed = await checkSignUpConfirmed(email);
+            const sessionInfo = await confirmEmail(email, code);
+            if (!sessionInfo){continue;}
+            return sessionInfo;
         } catch (error) {
-            console.error(error);
-            // ignore
+            await showError('Error', 'Error confirming email address', error);
         }
     }
-    return confirmed;
 }
 
 /**
@@ -72,7 +84,7 @@ async function showSignUpStep():Promise<string>{
     // TODO: check availability
     const usernameField = createElement({t:'input',a:{type:'text',required:'true',placeholder:'Username',autocomplete:'username'},id:'signUpDlgUsername'});
     const usernameWarnings = createElement({t:'div',css:['column'],a:{style:'color:red;grid-column-start:span 2'}});
-    const emailField = createElement({t:'input',a:{type:'text',required:'true',placeholder:'name@host.com',autocomplete:'email'},id:'signUpDlgEmail'});
+    const emailField = createElement({t:'input',a:{type:'email',required:'true',placeholder:'name@host.com',autocomplete:'email'},id:'signUpDlgEmail'});
     const emailWarnings = createElement({t:'div',css:['column'],a:{style:'color:red;grid-column-start:span 2'}});
     const passwordField = createElement({t:'input',a:{type:'password',required:'true',placeholder:'Password',autocomplete:'new-password'},'id':'signInDlgPassword'});
     const passwordWarnings = createElement({t:'div',css:['column'],a:{style:'color:red;grid-column-start:span 2'}});

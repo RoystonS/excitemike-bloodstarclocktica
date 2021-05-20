@@ -7,12 +7,13 @@ import cmd from "./commands/cmd";
 import { show as showMessage, showError } from "./dlg/blood-message-dlg";
 
 export type SessionInfo = {token:string,expiration:number,username:string,email:string};
-type CheckSignUpConfirmedData = {usernameOrEmail:string};
+type ConfirmEmailData = {code:string,email:string};
 type ConfirmPasswordResetData = {usernameOrEmail:string};
 type ResendSignUpConfirmationData = {usernameOrEmail:string};
 type ResetPasswordData = {usernameOrEmail:string};
-type ConfirmResponse = {error?:string,confirmed?:boolean};
-type EmailResponse = {error?:string,email?:string};
+type ConfirmEmailResponse = {error:string}|{token:string,expiration:number,username:string,email:string}|'alreadyConfirmed'|'notSignedUp'|'expired'|'badCode';
+type ResetPasswordResponse = {error:string}|true;
+type EmailResponse = {error:string}|{email:string};
 type SignUpResponse = {error:string}|'usernameTaken'|'emailTaken'|true;
 type SignInData = {
     usernameOrEmail:string,
@@ -26,18 +27,34 @@ type SignUpData = {
 };
 
 /**
- * Check whether the user has confirmed sign up
- * @returns Promise that resolves to true if sign-up for the specified user was confirmed
+ * last step of creating an account
+ * @returns Promise that resolves to session information if sign-up for the specified user completes
  */
-export async function checkSignUpConfirmed(usernameOrEmail:string):Promise<boolean>{
-    const data:CheckSignUpConfirmedData = {usernameOrEmail};
+export async function confirmEmail(email:string, code:string):Promise<SessionInfo|null>{
+    const data:ConfirmEmailData = {code, email};
     const payload = JSON.stringify(data);
-    const {error,confirmed} = await cmd('issignupconfirmed', 'Checking sign up confirmation', payload) as ConfirmResponse;
-    if (error) {
-        await showError('Error', `Error encountered while checking sign-up confirmation for ${usernameOrEmail}`, error);
-        return false;
+    const response = await cmd('confirm', 'Checking sign up confirmation', payload) as ConfirmEmailResponse;
+    if (typeof response === 'string'){
+        switch (response) {
+            // treat like success
+            case 'alreadyConfirmed':
+                return null;
+            case 'badCode':
+                await showMessage('Error', 'Confirmation code was not correct.');
+                return null;
+            case 'expired':
+                await showMessage('Error', 'Confirmation code is expired.');
+                return null;
+            case 'notSignedUp':
+                await showMessage('Error', 'User not found.');
+                return null;
+        }
     }
-    return !!confirmed;
+    if ('error' in response) {
+        await showError('Error', `Error encountered while confirming ${email}`, response.error);
+        return null;
+    }
+    return response;
 }
 
 /**
@@ -47,12 +64,11 @@ export async function checkSignUpConfirmed(usernameOrEmail:string):Promise<boole
 export async function confirmPasswordReset(usernameOrEmail:string):Promise<boolean>{
     const data:ConfirmPasswordResetData = {usernameOrEmail};
     const payload = JSON.stringify(data);
-    const {error,confirmed} = await cmd('confirmpassreset', 'Confirming password reset', payload) as ConfirmResponse;
-    if (error) {
-        await showError('Error', `Error encountered while confirming password reset for ${usernameOrEmail}`, error);
-        return false;
-    }
-    return !!confirmed;
+    const response = await cmd('confirmpassreset', 'Confirming password reset', payload) as ResetPasswordResponse;
+    if (true===response){return true;}
+    const {error} = response;
+    await showError('Error', `Error encountered while confirming password reset for ${usernameOrEmail}`, error);
+    return false;
 }
 
 /**
@@ -60,14 +76,15 @@ export async function confirmPasswordReset(usernameOrEmail:string):Promise<boole
  * @returns email address to which a confirmation email was sent, or the empty string
  */
 export async function resendSignUpConfirmation(usernameOrEmail:string):Promise<string>{
+    // TODO: implement server side
     const data:ResendSignUpConfirmationData = {usernameOrEmail};
     const payload = JSON.stringify(data);
-    const {error,email} = await cmd('resendconf', 'Requesting signup confirmation email', payload) as EmailResponse;
-    if (error) {
-        await showError('Error', `Error encountered while requesting signup confirmation email for ${usernameOrEmail}`, error);
+    const response = await cmd('resendconf', 'Requesting signup confirmation email', payload) as EmailResponse;
+    if ('error' in response) {
+        await showError('Error', `Error encountered while requesting signup confirmation email for ${usernameOrEmail}`, response.error);
         return '';
     }
-    return email||'';
+    return response.email;
 }
 
 /**
@@ -77,19 +94,19 @@ export async function resendSignUpConfirmation(usernameOrEmail:string):Promise<s
 export async function sendPasswordReset(usernameOrEmail:string):Promise<string>{
     const passwordResetData:ResetPasswordData = {usernameOrEmail};
     const payload = JSON.stringify(passwordResetData);
-    const {error,email} = await cmd('requestreset', 'Requesting password reset', payload) as EmailResponse;
-    if (error) {
-        await showError('Error', `Error encountered while trying to reset password for ${usernameOrEmail}`, error);
+    const response = await cmd('requestreset', 'Requesting password reset', payload) as EmailResponse;
+    if ('error' in response) {
+        await showError('Error', `Error encountered while trying to reset password for ${usernameOrEmail}`, response.error);
         return '';
     }
-    return email||'';
+    return response.email;
 }
 
 /**
  * do sign in
  * @param username 
  * @param password 
- * @returns Promise that resolves to an access token
+ * @returns Promise that resolves to session information
  */
 export async function signIn(usernameOrEmail:string, password:string):Promise<SessionInfo|null>{
     const signInData:SignInData = {

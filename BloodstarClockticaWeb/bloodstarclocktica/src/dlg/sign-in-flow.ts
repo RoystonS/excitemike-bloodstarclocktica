@@ -8,18 +8,8 @@ import showSignUpFlow from './sign-up-flow';
 import showForgotPasswordFlow from './forgot-password-flow';
 import { SessionInfo, signIn } from '../iam';
 
-export type UserPass = {username:string,password:string};
-
-class SignInDlg extends AriaDialog<UserPass> {
+class SignInDlg extends AriaDialog<SessionInfo> {
     canCancel():boolean{return false;}
-
-    /** look at input elements to get dialog result value */
-    private getResult():UserPass {
-        return {
-            username:this.getValue('signInDlgUsername'),
-            password:this.getValue('signInDlgPassword')
-        };
-    }
 
     /** get a value from a field by id */
     private getValue(id:string):string {
@@ -27,14 +17,14 @@ class SignInDlg extends AriaDialog<UserPass> {
         return inputElement ? inputElement.value : '';
     }
 
-    async open(prompt:string):Promise<UserPass|null> {
-        const submitOnEnter = (event:KeyboardEvent):void=>{
+    async open(prompt:string):Promise<SessionInfo|null> {
+        const submitOnEnter = async (event:KeyboardEvent):Promise<void>=>{
             switch (event.code)
             {
                 case 'NumpadEnter':
                 case 'Enter':
                     event.preventDefault();
-                    this.close(this.getResult());
+                    this.close(await this.signIn());
                     break;
             }
         };
@@ -52,16 +42,16 @@ class SignInDlg extends AriaDialog<UserPass> {
             },
             {
                 t:'input',
-                a:{type:'text',required:'true',id:'signInDlgUsername',placeholder:'Username or email',autocomplete:'username'},
-                events:{keyup:submitOnEnter as EventListener}
+                a:{type:'text',required:'true',id:'signInDlgUsername',placeholder:'Username or email',autocomplete:'username',autofocus:'true'},// TODO: pattern
+                events:{keyup:submitOnEnter as unknown as EventListener}
             },{
                 t:'label',
                 a:{'for':'signInDlgPassword'},
                 txt:'Password'
             },{
                 t:'input',
-                a:{type:'password',required:'true',id:'signInDlgPassword',autocomplete:'current-password'},
-                events:{keyup:submitOnEnter as EventListener}
+                a:{type:'password',required:'true',id:'signInDlgPassword',autocomplete:'current-password'},// TODO: pattern
+                events:{keyup:submitOnEnter as unknown as EventListener}
             }]
         },{
             t:'a',
@@ -71,7 +61,7 @@ class SignInDlg extends AriaDialog<UserPass> {
         },{
             t:'button',
             txt:'Sign in',
-            events:{click:()=>this.close(this.getResult())}
+            events:{click:async ()=>this.close(await this.signIn())}
         },{
             t:'div',
             txt:'Need an account? ',
@@ -80,7 +70,7 @@ class SignInDlg extends AriaDialog<UserPass> {
                 t:'a',
                 a:{href:'#'},
                 txt:'Sign Up',
-                events:{click:async ()=>await showSignUpFlow()}
+                events:{click:async ()=>this.close(await showSignUpFlow())}
             }]
         }];
 
@@ -91,6 +81,13 @@ class SignInDlg extends AriaDialog<UserPass> {
             []
         );
     }
+
+    /** look at input elements to get dialog result value */
+    private async signIn():Promise<SessionInfo|null> {
+        const username = this.getValue('signInDlgUsername');
+        const password = this.getValue('signInDlgPassword');
+        return await signIn(username, password)
+    }
 }
 
 /**
@@ -99,8 +96,5 @@ class SignInDlg extends AriaDialog<UserPass> {
  * string or null if the user cancelled
  */
 export async function show(prompt:string):Promise<SessionInfo|null> {
-    const signInResult = await new SignInDlg().open(prompt);
-    if (!signInResult){return null;}
-    const {username,password} = signInResult;
-    return await signIn(username, password);
+    return await new SignInDlg().open(prompt);
 }
