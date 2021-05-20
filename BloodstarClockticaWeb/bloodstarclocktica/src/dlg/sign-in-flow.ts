@@ -6,7 +6,7 @@ import { CreateElementsOptions } from '../util';
 import {AriaDialog} from './aria-dlg';
 import showSignUpFlow from './sign-up-flow';
 import showForgotPasswordFlow from './forgot-password-flow';
-import { AccessToken, signIn } from '../iam';
+import { SessionInfo, signIn } from '../iam';
 
 export type UserPass = {username:string,password:string};
 
@@ -98,7 +98,7 @@ class SignInDlg extends AriaDialog<UserPass> {
  * returns a promise that resolves to the entered
  * string or null if the user cancelled
  */
-export async function show(prompt:string):Promise<AccessToken|null> {
+export async function show(prompt:string):Promise<SessionInfo|null> {
     const signInResult = await new SignInDlg().open(prompt);
     if (!signInResult){return null;}
     const {username,password} = signInResult;

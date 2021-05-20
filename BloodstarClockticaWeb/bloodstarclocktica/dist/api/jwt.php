@@ -25,7 +25,7 @@ function base64urlEncode($input){
     return rtrim(strtr(base64_encode($input), '+/', '-+'), '=');
 }
 
-// verify a session token - returns username when successful
+// verify a session token - returns decoded payload when successful. notably containing the string keys 'username' and 'email'
 function verifySession($token){
     try {
         $secretKey = file_get_contents('../../protected/jwtRS256.key');
@@ -67,7 +67,7 @@ function verifySession($token){
         if (!array_key_exists('username', $decodedPayload)){
             return rejectSession('No username specified');
         }
-        return $decodedPayload['username'];
+        return $decodedPayload;
     } catch (Exception $e) {
         return rejectSession('Error: '.$e->getMessage());
     }
@@ -85,11 +85,11 @@ function verifySig($headerAndPayloadStr, $signatureStr, $secretKey, $alg) {
 }
 
 // create a token for user session
-function createToken($username, $expiration) {
+function createToken($email, $username, $expiration) {
     $header = ['alg'=>'RS256','typ'=>'JWT'];
     $encodedHeader = base64urlEncode(json_encode($header));
 
-    $payload = ['iat'=>time(),'username'=>$username, 'exp'=>$expiration];
+    $payload = ['iat'=>time(), 'email'=>$email, 'username'=>$username, 'exp'=>$expiration];
     $encodedPayload = base64urlEncode(json_encode($payload));
 
     $secretKey = file_get_contents('../../protected/jwtRS256.key');

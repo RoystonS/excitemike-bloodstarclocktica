@@ -6,7 +6,7 @@
 import cmd from "./commands/cmd";
 import { show as showMessage, showError } from "./dlg/blood-message-dlg";
 
-export type AccessToken = {token:string,expiration:number};
+export type SessionInfo = {token:string,expiration:number,username:string,email:string};
 type CheckSignUpConfirmedData = {usernameOrEmail:string};
 type ConfirmPasswordResetData = {usernameOrEmail:string};
 type ResendSignUpConfirmationData = {usernameOrEmail:string};
@@ -18,7 +18,7 @@ type SignInData = {
     usernameOrEmail:string,
     password:string
 };
-type SignInResponse = {error?:string,token?:string,expiration?:number};
+type SignInResponse = {error?:string,token?:string,expiration?:number,username?:string,email?:string};
 type SignUpData = {
     username:string,
     password:string,
@@ -91,19 +91,19 @@ export async function sendPasswordReset(usernameOrEmail:string):Promise<string>{
  * @param password 
  * @returns Promise that resolves to an access token
  */
-export async function signIn(usernameOrEmail:string, password:string):Promise<AccessToken|null>{
+export async function signIn(usernameOrEmail:string, password:string):Promise<SessionInfo|null>{
     const signInData:SignInData = {
         usernameOrEmail,
         password
     };
     const payload = JSON.stringify(signInData);
-    const {error,token,expiration} = await cmd('signin', 'Signing in', payload) as SignInResponse;
+    const {error,token,expiration,username,email} = await cmd('signin', 'Signing in', payload) as SignInResponse;
     if (error) {
         await showError('Error', `Error encountered while trying to sign in ${usernameOrEmail}`, error);
         return null;
     }
-    if (!token || !expiration) {return null;}
-    return {token,expiration};
+    if (!token || !expiration || !username || !email) {return null;}
+    return {token,expiration,username,email};
 }
 
 /**

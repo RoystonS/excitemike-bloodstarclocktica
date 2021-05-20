@@ -1,4 +1,8 @@
 <?php
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
+
     header('Content-Type: application/json;');
     include('shared.php');
     requirePost();
@@ -8,18 +12,22 @@
 
     $mysqli = makeMysqli();
     if (false === strpos($usernameOrEmail, '@')) {
-        $escapedEmail = $mysqli->real_escape_string($usernameOrEmail);
-        $result = $mysqli->query("SELECT `hash`,`name` FROM `hash` INNER JOIN `users` ON `users`.`email` = `hash`.`email` WHERE `users`.`name` = \"$escapedEmail\" LIMIT 1;");
-    } else {
         $escapedUsername = $mysqli->real_escape_string($usernameOrEmail);
-        $result = $mysqli->query("SELECT `hash`,`name` FROM `hash` WHERE `hash`.`email` = \"$escapedUsername\" LIMIT 1;");
+        $result = $mysqli->query("SELECT `hash`,`users`.`email`,`users`.`name` FROM `hash` INNER JOIN `users` ON `users`.`email` = `hash`.`email` WHERE `users`.`name` = '$escapedUsername' LIMIT 1;");
+    } else {
+        $escapedEmail = $mysqli->real_escape_string($usernameOrEmail);
+        $result = $mysqli->query("SELECT `hash`,`users`.`email`,`users`.`name` FROM `hash` INNER JOIN `users` ON `users`.`email` = `hash`.`email` WHERE `hash`.`email` = '$escapedEmail' LIMIT 1;");
+    }
+    if (false===$result){
+        echo json_encode(array("error" => 'sql error '.$mysqli->error));
+        exit();
     }
     if (0===$result->num_rows){
         echo json_encode(array("error" => "no such username or email \"$usernameOrEmail\""));
         exit();
     }
     $results = $result->fetch_all();
-    list($hash, $username) = $results[0];
+    list($hash, $email, $username) = $results[0];
     if (!password_verify($password, $hash)) {
         echo json_encode(array("error" => "password did not match"));
         exit();
@@ -29,7 +37,7 @@
     $tokenDuration = 1 * $secondsPerDay;
     $expiration = time() + $tokenDuration;
 
-    $token = createToken($username, $expiration);
+    $token = createToken($email, $username, $expiration);
 
-    echo json_encode(array('token' => $token,'expiration' => $expiration));
+    echo json_encode(array('token' => $token,'expiration' => $expiration,'email'=>$email,'username'=>$username));
 ?>

@@ -4,16 +4,21 @@
  */
 import {showError} from "./dlg/blood-message-dlg";
 import {show as doSignInFlow} from "./dlg/sign-in-flow";
-import { AccessToken } from "./iam";
+import { SessionInfo } from "./iam";
 
-let accessToken:AccessToken|null = null;
+export interface UserInfo {
+    username:string,
+    email:string
+}
+
+let sessionInfo:SessionInfo|null = null;
 
 /** true when we have don't have an accesstoken or it is expired */
 function accessTokenExpired():boolean{
-    if (!accessToken){return true;}
+    if (!sessionInfo){return true;}
     const timestamp = Date.now() / 1000 | 0;
     const leeway = 60;
-    if ((timestamp - leeway) >= accessToken.expiration){return false;}
+    if ((timestamp - leeway) >= sessionInfo.expiration){return false;}
     return true;
 }
 
@@ -28,7 +33,7 @@ function clearStoredToken():void{
     }
 }
 
-function getStoredToken():AccessToken|null{
+function getStoredToken():SessionInfo|null{
     const localStorage = window.localStorage;
     if (localStorage) {
         try{
@@ -43,32 +48,10 @@ function getStoredToken():AccessToken|null{
 }
 
 /**
- * sign in using saved info or prompting for user+pass if necessary
- * Loops until a valid sign-in occurs.
- * @returns promise that resolves to true
- */
-export default async function signIn(force=false):Promise<boolean> {
-    accessToken = accessToken || getStoredToken();
-    if (!force && !accessTokenExpired()){return true;}
-    clearStoredToken();
-    accessToken = null;
-
-    while (!accessToken) {
-        try {
-            accessToken = await promptAndSignIn();
-        } catch (error) {
-            await showError('Error', 'Error while signing in', error);
-        }
-    }
-    storeToken(accessToken);
-    return true;
-}
-
-/**
  * prompt the user for a user+pass to sign in with
  * @returns Promise that resolves to auth info that worked or the null if user did not successfully sign in
  */
-async function promptAndSignIn():Promise<AccessToken|null>{
+async function promptAndSignIn():Promise<SessionInfo|null>{
     const accessToken = await doSignInFlow("Sign in");
     if (!accessToken) {
         await showError('Error', 'Error encountered during sign-in', 'Network error or incorrect username or password.');
@@ -78,10 +61,38 @@ async function promptAndSignIn():Promise<AccessToken|null>{
 }
 
 /**
+ * sign in using saved info or prompting for user+pass if necessary
+ * Loops until a valid sign-in occurs.
+ * @returns promise that resolves to user info
+ */
+export async function signIn(force=false):Promise<UserInfo> {
+    sessionInfo = sessionInfo || getStoredToken();
+    if (!force && sessionInfo && !accessTokenExpired()){return sessionInfo;}
+    clearStoredToken();
+    sessionInfo = null;
+
+    while (!sessionInfo) {
+        try {
+            sessionInfo = await promptAndSignIn();
+        } catch (error) {
+            await showError('Error', 'Error while signing in', error);
+        }
+    }
+    storeToken(sessionInfo);
+    return sessionInfo;
+}
+
+/** clear session info */
+export function signOut():void{
+    sessionInfo = null;
+    clearStoredToken();
+}
+
+/**
  * store auth info for next time
  * TODO: this should probably store a session token instead
  */
-function storeToken(accessToken:AccessToken):void {
+function storeToken(accessToken:SessionInfo):void {
     const localStorage = window.localStorage;
     if (localStorage) {
         try{
@@ -91,3 +102,5 @@ function storeToken(accessToken:AccessToken):void {
         }
     }
 }
+
+export default signIn;

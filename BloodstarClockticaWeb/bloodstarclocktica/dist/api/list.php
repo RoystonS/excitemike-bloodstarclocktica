@@ -4,7 +4,8 @@
     requirePost();
     $request = getPayload();
     $token = requireField($request, 'token');
-    $userName = verifySession($token);
+    $tokenPayload = verifySession($token);
+    $username = $tokenPayload['username'];
     $userSaveDir = join_paths('../usersave', $userName);
     
     if (!file_exists($userSaveDir)) {

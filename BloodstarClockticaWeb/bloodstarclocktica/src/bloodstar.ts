@@ -14,8 +14,9 @@ import { BloodTeam } from './model/blood-team';
 import publish from './commands/publish';
 import {save, saveAs} from './commands/save';
 import {chooseAndDeleteFile} from './commands/delete';
-import signIn from './sign-in';
+import {signIn, signOut, UserInfo} from './sign-in';
 import importOfficial from './import/official';
+import * as SdcDlg from './dlg/blood-save-discard-cancel';
 import './styles/autogrowtextarea.css';
 import './styles/characterlist.css';
 import './styles/charactertab.css';
@@ -233,7 +234,8 @@ async function initBindings():Promise<void> {
         ['charTabBtn', ()=>tabClicked('charTabBtn','charactertab')],
         ['firstNightTabBtn', ()=>tabClicked('firstNightTabBtn','firstNightOrderTab')],
         ['otherNightTabBtn', ()=>tabClicked('otherNightTabBtn','otherNightOrderTab')],
-        ['metaLogoRemoveBtn', ()=>edition && edition.meta.logo.set(null)]
+        ['metaLogoRemoveBtn', ()=>edition && edition.meta.logo.set(null)],
+        ['signOutBtn', signOutClicked]
     ]);
 
     BloodBind.bindTextById('windowTitle', edition.windowTitle);
@@ -307,7 +309,8 @@ async function init() {
     await initBindings();
 
     // need to sign in before we can do much of anything
-    await signIn();
+    const session = await signIn();
+    updateUserCorner(session);
 
     await initCustomEdition();
 }
@@ -340,6 +343,16 @@ function collectStatusBarData():StatusBarData {
     return data;
 }
 
+/** forget session info */
+async function signOutClicked():Promise<boolean> {
+    if (!await SdcDlg.savePromptIfDirty(edition)) {return false;}
+    signOut();
+    updateUserCorner(null);
+    const session = await signIn();
+    updateUserCorner(session);
+    return true;
+}
+
 /** update status bar text */
 function updateStatusbar():void {
     for (const {id,exported,total} of collectStatusBarData().values()) {
@@ -348,6 +361,13 @@ function updateStatusbar():void {
             element.innerText = `${exported}/${total}`;
         }
     }
+}
+
+/** show who is signed in and a sign out button */
+function updateUserCorner(session:UserInfo|null):void {
+    const username = document.getElementById('userName');
+    if (!(username instanceof HTMLSpanElement)){return;}
+    username.innerText = session ? session.username : '';
 }
 
 // wait for dom to load
@@ -359,3 +379,4 @@ if (document.readyState === "loading") {
     // intentional floating promise
     void init();
 }
+
