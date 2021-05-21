@@ -124,6 +124,7 @@ export function getCorsProxyUrl(url:string):string {
 
 /** set event listeners for clicks, return a function you can call to undo it */
 export function hookupClickEvents(data: [string, (e: Event) => void][]):()=>void {
+    // TODO: catch and surface errors in callbacks
     for (const [id, cb] of data) {
         const element = document.getElementById(id);
         if (element) {

@@ -2,19 +2,19 @@
  * dialog for initial new/open prompt
  * @module SaveDiscardCancelDlg
  */
+import { save } from '../commands/save';
 import { Edition } from '../model/edition';
 import {CreateElementsOptions} from '../util';
 import {AriaDialog, ButtonCfg} from './aria-dlg';
-import {saveFileClicked} from '../bloodstar';
 
 class SaveDiscardCancelDlg extends AriaDialog<boolean> {
-    async open():Promise<boolean>{
+    async open(edition:Edition):Promise<boolean>{
         const body:CreateElementsOptions = [{
             t:'p',
             txt:'You have unsaved changes! Would you like to save now or discard them?'
         }];
         const buttons:ButtonCfg<boolean>[] = [
-            {label:'Save', callback:async ()=>await saveFileClicked()},
+            {label:'Save', callback:async ()=>await save(edition)},
             {label:'Discard', callback:()=>true},
             {label:'Cancel', callback:()=>false},
         ];
@@ -34,7 +34,7 @@ class SaveDiscardCancelDlg extends AriaDialog<boolean> {
  */
 export async function savePromptIfDirty(edition:Edition):Promise<boolean> {
     if (edition.dirty.get()) {
-        return !!await new SaveDiscardCancelDlg().open();
+        return !!await new SaveDiscardCancelDlg().open(edition);
     }
     return true;
 }

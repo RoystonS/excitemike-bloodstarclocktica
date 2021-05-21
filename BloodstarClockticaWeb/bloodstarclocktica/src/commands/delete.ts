@@ -3,9 +3,9 @@
  * @module Delete
  */
 import { show as showMessage, showError } from '../dlg/blood-message-dlg';
-import {show as showOpenDlg} from '../dlg/blood-open-dlg';
 import {spinner} from '../dlg/spinner-dlg';
 import {show as getConfirmation} from "../dlg/yes-no-dlg";
+import {chooseFile} from "../dlg/open-flow";
 import cmd from './cmd';
 
 type SaveData = {saveName:string};
@@ -28,7 +28,7 @@ async function confirmDelete(name:string):Promise<boolean> {
  * @returns promise that resolves to the name of the deleted file, or empty string if nothing was deleted
  */
  export async function chooseAndDeleteFile():Promise<string> {
-    const name = await showOpenDlg();
+    const name = await chooseFile();
     if (!name) {return '';}
     if (!await confirmDelete(name)) {return '';}
     if (!await spinner('delete', 'Choose file to delete', deleteFile(name))){return '';}

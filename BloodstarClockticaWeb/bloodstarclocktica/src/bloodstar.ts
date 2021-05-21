@@ -1,7 +1,6 @@
 import * as BloodBind from './bind/bindings';
 import * as BloodNewOpen from "./dlg/blood-new-open-dlg";
-import {show as showMessage, showError} from "./dlg/blood-message-dlg";
-import * as BloodIO from "./blood-io";
+import {showError} from "./dlg/blood-message-dlg";
 import {Character} from "./model/character";
 import {Edition} from "./model/edition";
 import {initNightOrderBindings} from './night-order';
@@ -11,12 +10,11 @@ import { ProcessImageSettings } from './blood-image';
 import Images from './images';
 import { bindCharacterList } from './character-list';
 import { BloodTeam } from './model/blood-team';
-import publish from './commands/publish';
-import {save, saveAs} from './commands/save';
-import {chooseAndDeleteFile} from './commands/delete';
-import {signIn, signOut, UserInfo} from './sign-in';
-import importOfficial from './import/official';
-import * as SdcDlg from './dlg/blood-save-discard-cancel';
+import {signIn} from './sign-in';
+import menuInit, { updateUserDisplay } from './menu';
+import {save} from './commands/save';
+import {clearRecentFile, getRecentFile} from './recent-file';
+import {show as showOpenFlow} from './dlg/open-flow';
 import './styles/autogrowtextarea.css';
 import './styles/characterlist.css';
 import './styles/charactertab.css';
@@ -32,152 +30,6 @@ import './styles/teamcolor.css';
 
 let edition:Edition = new Edition();
 const selectedCharacter = new BloodBind.Property<Character|null>(null);
-
-/** add a new character to the custom edition */
-async function addCharacterClicked():Promise<void> {
-    await edition.addNewCharacter();
-}
-
-/** clicked the help menu button */
-function showHelp() {
-    // TODO: implement showHelp
-    void showError('Not yet implemented', '`showHelp` Not yet implemented');
-}
-
-/**
- * maintain a list of recent files - both in the menu and in local storage
- * @param name file name
- */
-function setRecentFile(name:string):void {
-    try {
-        const localStorage = window.localStorage;
-        if (!localStorage) {return;}
-        localStorage.setItem('recentFile',name);
-    } catch {
-        // ignore
-    }
-}
-
-/** user chose to change their password */
-async function changePasswordClicked():Promise<void> {
-    // TODO: implement changePasswordClicked
-    await showMessage('Not implemented', 'This feature is not yet implemented');
-}
-
-/**
- * If a file turns out to be deleted or renamed or something, delete the old
- * name from the list
- * @param name file name to remove
- */
-function clearRecentFile(name:string):void {
-    try {
-        const localStorage = window.localStorage;
-        if (!localStorage) {return;}
-        const file = localStorage.getItem('recentFile');
-        if (file!==name) {return;}
-        localStorage.removeItem('recentFile');
-    } catch {
-        // ignore
-    }
-}
-
-/** user chose to delete their account */
-async function deleteAccountClicked():Promise<void> {
-    // TODO: implement deleteAccountClicked
-    await showMessage('Not implemented', 'This feature is not yet implemented');
-}
-
-/**
- * if a last-opened file is remembered, get its name
- * otherwise, return the empty string
- */
-function getRecentFile():string {
-    try {
-        const localStorage = window.localStorage;
-        if (!localStorage) {return '';}
-        return localStorage.getItem('recentFile') || '';
-    } catch {
-        // ignore
-    }
-    return '';
-}
-
-/**
- * user chose to open a new file
- */
-export async function newFileClicked():Promise<boolean> {
-    try {
-        await BloodIO.newEdition(edition);
-    } catch (error) {
-        await showError('Error', 'Something went wrong when creating new file', error);
-    }
-    return true;
-}
-
-/**
- * user chose to open a file
- */
-export async function openFileClicked():Promise<boolean> {
-    if (await BloodIO.open(edition)) {
-        setRecentFile(edition.saveName.get());
-        return true;
-    }
-    return false;
-}
-
-/** menu item for delete clicked */
-export async function deleteFileClicked():Promise<boolean> {
-    const deleted = await chooseAndDeleteFile();
-    if (!deleted) {return false;}
-    clearRecentFile(deleted);
-
-    // if you deleted the current edition, you must mark all its images as dirty!
-    if (deleted === edition.saveName.get()) {
-        await edition.markDirty();
-    }
-
-    return true;
-}
-
-/**
- * user chose to save the current file
- */
-export async function saveFileClicked():Promise<boolean> {
-    if (await save(edition)) {
-        setRecentFile(edition.saveName.get());
-        return true;
-    }
-    return false;
-}
-
-/**
- * user chose to save the current file under a new name
- */
-export async function saveFileAsClicked():Promise<boolean> {
-    if (await saveAs(edition)) {
-        setRecentFile(edition.saveName.get());
-        return true;
-    }
-    return false;
-}
-
-/** user chose to import official character(s) */
-async function importOfficialClicked():Promise<boolean> {
-    try {
-        return await importOfficial(edition);
-    } catch (error) {
-        await showError('Error', 'Something went wrong when trying to clone official character', error);
-        throw error;
-    }
-}
-
-/** user chose to save and publish */
-async function saveAndPublishClicked():Promise<boolean> {
-    if (!edition.dirty.get() || await saveFileClicked()) {
-        await publish(edition);
-    }
-    return false;
-}
 
 /**
  * switch to a tab
@@ -230,26 +82,11 @@ async function initBindings():Promise<void> {
         }
     });
     hookupClickEvents([
-        ['addCharacterButton', addCharacterClicked],
-        ['newFileButton', newFileClicked],
-        ['openFileButton', openFileClicked],
-        ['deleteFileButton', deleteFileClicked],
-        ['saveFileButton', saveFileClicked],
-        ['saveFileAsButton', saveFileAsClicked],
-        ['importBlood', ()=>edition && BloodIO.importBlood(edition)],
-        ['importOfficialButton', importOfficialClicked],
-        ['jsonFromUrlButton', ()=>edition && BloodIO.importJsonFromUrl(edition)],
-        ['jsonFromFileButton', ()=>edition && BloodIO.importJsonFromFile(edition)],
-        ['saveAndPublishButton', saveAndPublishClicked],
-        ['helpButton', showHelp],
         ['metaTabBtn', ()=>tabClicked('metaTabBtn','metatab')],
         ['charTabBtn', ()=>tabClicked('charTabBtn','charactertab')],
         ['firstNightTabBtn', ()=>tabClicked('firstNightTabBtn','firstNightOrderTab')],
         ['otherNightTabBtn', ()=>tabClicked('otherNightTabBtn','otherNightOrderTab')],
         ['metaLogoRemoveBtn', ()=>edition && edition.meta.logo.set(null)],
-        ['signOutBtn', signOutClicked],
-        ['changePasswordBtn', changePasswordClicked],
-        ['deleteAccountBtn', deleteAccountClicked]
     ]);
 
     BloodBind.bindTextById('windowTitle', edition.windowTitle);
@@ -300,14 +137,14 @@ async function initCustomEdition():Promise<void> {
     try {
         const rememberedFile = getRecentFile();
         if (rememberedFile) {
-            if (await BloodIO.open(edition, rememberedFile, true)) {
+            if (await showOpenFlow(edition, rememberedFile, true)) {
                 return;
             }
             clearRecentFile(rememberedFile);
         }
 
         // eslint-disable-next-line no-empty
-        while (!await BloodNewOpen.show()) {
+        while (!await BloodNewOpen.show(edition)) {
         }
     } catch (e) {
         console.error(e);
@@ -322,9 +159,11 @@ async function init() {
 
     await initBindings();
 
+    menuInit(edition);
+
     // need to sign in before we can do much of anything
     const session = await signIn();
-    updateUserCorner(session);
+    updateUserDisplay(session);
 
     await initCustomEdition();
 }
@@ -357,16 +196,6 @@ function collectStatusBarData():StatusBarData {
     return data;
 }
 
-/** forget session info */
-async function signOutClicked():Promise<boolean> {
-    if (!await SdcDlg.savePromptIfDirty(edition)) {return false;}
-    signOut();
-    updateUserCorner(null);
-    const session = await signIn();
-    updateUserCorner(session);
-    return true;
-}
-
 /** update status bar text */
 function updateStatusbar():void {
     for (const {id,exported,total} of collectStatusBarData().values()) {
@@ -375,13 +204,6 @@ function updateStatusbar():void {
             element.innerText = `${exported}/${total}`;
         }
     }
-}
-
-/** show who is signed in and a sign out button */
-function updateUserCorner(session:UserInfo|null):void {
-    const username = document.getElementById('userName');
-    if (!(username instanceof HTMLSpanElement)){return;}
-    username.innerText = session ? session.username : '';
 }
 
 // wait for dom to load

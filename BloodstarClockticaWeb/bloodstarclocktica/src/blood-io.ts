@@ -1,17 +1,12 @@
-import cmd from './commands/cmd';
+// TODO: phase out this whole module
 import {Edition} from './model/edition';
 import {spinner} from './dlg/spinner-dlg';
-import {showError} from "./dlg/blood-message-dlg";
-import * as OpenDlg from './dlg/blood-open-dlg';
 import * as SdcDlg from './dlg/blood-save-discard-cancel';
 import * as StringDlg from './dlg/blood-string-dlg';
 import {importJson, ScriptEntry} from './import/json';
 import { fetchJson } from './util';
 import { AriaDialog } from './dlg/aria-dlg';
 import { importBloodFile } from './import/blood-file';
-
-type ListFilesReturn = {error?:string,files:string[]};
-type OpenReturn = {error?:string,data:{[key:string]:unknown}};
 
 /// prompt for save if needed, then reset to new custom edition
 export async function newEdition(edition:Edition):Promise<boolean> {
@@ -20,76 +15,6 @@ export async function newEdition(edition:Edition):Promise<boolean> {
         return true;
     }
     return false;
-}
-
-/**
- * Open a file
- * @param edition Edition instance with which to open a file
- * @param name Optional already-chosen file
- * @param suppressErrorMessage if true, no error message appears when soemthing goes wrong
- * @returns whether a file was successfully opened
- */
-export async function open(edition:Edition, name='', suppressErrorMessage=false):Promise<boolean> {
-    if (await SdcDlg.savePromptIfDirty(edition)) {
-        return await openNoSavePrompt(edition, name, suppressErrorMessage);
-    }
-    return false;
-}
-
-/**
- * Prompt for the file to open and open it, skipping the save prompt
- * @param edition Edition instance with which to open a file
- * @param name Optional already-chosen file
- * @param suppressErrorMessage if true, no error message appears when soemthing goes wrong
- * @returns whether a file was successfully opened
- */
-async function openNoSavePrompt(edition:Edition, name='', suppressErrorMessage=false):Promise<boolean> {
-    const finalName = name || await OpenDlg.show();
-    if (finalName) {
-        return await spinner('open', `Opening edition file "${name}"`, openNoPrompts(edition, finalName, suppressErrorMessage));
-    }
-    return false;
-}
-
-/**
- * Open a file by name (no save prompts!)
- * Brings up the loading spinner during the operation
- * @param edition Edition instance with which to open a file
- * @param name name of the file to open
- * @param suppressErrorMessage if true, no error message appears when soemthing goes wrong
- * @returns promise that resolves to whether a file was successfully opened
- */
-async function openNoPrompts(edition:Edition, name:string, suppressErrorMessage=false):Promise<boolean> {
-    const openData = {
-        saveName: name
-    };
-    const payload = JSON.stringify(openData);
-    const {error,data} = await cmd('open', `Retrieving ${name}`, payload) as OpenReturn;
-    if (error) {
-        if (!suppressErrorMessage) {
-            await showError('Error', `Error encountered while trying to open file ${name}`, error);
-        }
-        return false;
-    }
-    return await spinner('open', `Opening edition file "${name}"`, edition.open(name, data));
-}
-
-/**
- * Get a list of openable files
- * Brings up the loading spinner during the operation
- */
-export async function listFiles():Promise<string[]> {
-    try {
-        const {error,files} = await cmd('list', 'Retrieving file list') as ListFilesReturn;
-        if (error) {
-            console.error(error);
-            await showError('Network Error', `Error encountered while retrieving file list`, error);
-        }
-        return files || [];
-    } catch (error) {
-        await showError('Network Error', `Error encountered while retrieving file list`, error);
-    }
-    return [];
 }
 
 /** user chose to import character(s) from a json file */

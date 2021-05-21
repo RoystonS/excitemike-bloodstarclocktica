@@ -9,6 +9,7 @@ import { show as showMessage, showError } from '../dlg/blood-message-dlg';
 import Locks from '../lock';
 import {spinner} from '../dlg/spinner-dlg';
 import { AriaDialog } from '../dlg/aria-dlg';
+import { setRecentFile } from '../recent-file';
 
 type SaveReturn = {error?:string};
 
@@ -230,6 +231,8 @@ async function _save(edition:Edition, clobber:boolean):Promise<boolean> {
     // mark things as up to date
     await edition.markClean();
     
+    // update recent file
+    setRecentFile(saveName);
     return true;
 }
 

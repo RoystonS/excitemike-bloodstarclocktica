@@ -17,9 +17,9 @@
             <div class="dropdown" tabindex="0">
                 User
                 <div class="dropdownContent">
+                    <button id="signOutBtn">Sign out</button>
                     <button id="changePasswordBtn">Change password</button>
                     <button id="deleteAccountBtn">Delete account</button>
-                    <button id="signOutBtn">Sign out</button>
                 </div>
             </div>
             <div class="dropdown" tabindex="0">
@@ -30,7 +30,6 @@
                     <button id="deleteFileButton" title="Choose and delete a file.">Delete</button>
                     <button id="saveFileButton" title="Save this custom edition.">Save <span class="dim">ctrl+S</span></button>
                     <button id="saveFileAsButton" title="Save this custom edition under a new name.">Save As</button>
-                    <!-- TODO: uncomment and implement <button id="helpButton" title="How to use this website.">Help</button> -->
                 </div>
             </div>
             <div class="dropdown" tabindex="0">
@@ -44,7 +43,7 @@
                             <input type="file" accept=".json" name="jsonFileInput" id="jsonFileInput" style="display:none">
                         </div>
                     </div>
-                    <button id="importBlood" title="Import a .blood file.">From *.blood File</button>
+                    <button id="importBloodButton" title="Import a .blood file.">From *.blood File</button>
                     <button id="importOfficialButton" title="Import official character.">Official Character</button>
                 </div>
             </div>
@@ -52,6 +51,12 @@
                 Publish
                 <div class="dropdownContent">
                     <button id="saveAndPublishButton" title="Save changes, then create json and almanac links.">Save and Publish</button>
+                </div>
+            </div>
+            <div class="dropdown" tabindex="0">
+                Help
+                <div class="dropdownContent">
+                    <button id="helpButton" title="How to use this website.">View Help</button>
                 </div>
             </div>
             <div id="windowTitle"></div>
