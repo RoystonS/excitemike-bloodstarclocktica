@@ -162,9 +162,6 @@ ul#status {
     border-left: 4px solid #666;
     padding-left: 6px;
 }
-.userImage {
-    border: 1px solid #666;
-}
 .row {
     display:flex;
     flex-flow: row;

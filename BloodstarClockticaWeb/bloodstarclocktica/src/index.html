@@ -92,7 +92,7 @@
                                 <input type="text" name="metaAuthor" id="metaAuthor" title="This edition's author.">
                                 <label>Logo</label>
                                 <div>
-                                    <img class="userImage" id="metaLogoDisplay" height="200px"/>
+                                    <img id="metaLogoDisplay" height="200px"/>
                                     <div class="row">
                                         <button onclick="document.getElementById('metaLogoInput').click()">Choose Image</button>
                                         <input type="file" accept="image/*" name="metaLogoInput" id="metaLogoInput" style="display:none">
@@ -200,8 +200,8 @@
                                     </details>
                                 </div>
                                 <div id="characterImagePreview">
-                                    <img class="userImage" id="tokenBackground" style="max-height:200px;max-width: 200px;"/>
-                                    <img class="userImage" id="characterStyledImageDisplay" style="max-height:200px;max-width: 200px;"/>
+                                    <img id="tokenBackground" style="max-height:200px;max-width: 200px;"/>
+                                    <img id="characterStyledImageDisplay" style="max-height:200px;max-width: 200px;"/>
                                     <div id="curvedCharacterNameHolder">
                                         <svg class="curvedCharacterNameSvg" viewBox="0 0 150 150">
                                             <path d="M 13 75 C 13 160, 138 160, 138 75" id="characterNameCurvePath" fill="transparent"></path>

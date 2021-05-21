@@ -70,7 +70,6 @@ export async function save(edition:Edition):Promise<boolean> {
     }
 }
 
-
 type Separated = {
     edition:unknown,
     logo?:string,
