@@ -15,14 +15,6 @@
     <div id="app">
         <div id="menu">
             <div class="dropdown" tabindex="0">
-                User
-                <div class="dropdownContent">
-                    <button id="signOutBtn">Sign out</button>
-                    <button id="changePasswordBtn">Change password</button>
-                    <button id="deleteAccountBtn">Delete account</button>
-                </div>
-            </div>
-            <div class="dropdown" tabindex="0">
                 File
                 <div class="dropdownContent">
                     <button id="newFileButton" title="Begin making a new custom edition.">New</button>
@@ -60,7 +52,14 @@
                 </div>
             </div>
             <div id="windowTitle"></div>
-            <div id=userCorner>signed in as: <span id="userName"></span></div>
+            <div class="dropdown" tabindex="0">
+                signed in as: <span id="userName"></span>
+                <div class="dropdownContent toLeft">
+                    <button id="signOutBtn">Sign out</button>
+                    <button id="changePasswordBtn">Change password</button>
+                    <button id="deleteAccountBtn">Delete account</button>
+                </div>
+            </div>
         </div>
         <div id="main-row">
             <div id="characterPane">
