@@ -2,5 +2,8 @@
     "eslint.format.enable": true,
     "eslint.lintTask.enable": true,
     "eslint.options": {
+    },
+    "files.exclude": {
+        "**/node-modules/": true
     }
 }
