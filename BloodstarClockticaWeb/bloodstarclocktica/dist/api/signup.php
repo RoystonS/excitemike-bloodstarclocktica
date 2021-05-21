@@ -29,7 +29,7 @@
         }
     }
 
-    // insert
+    // insert into unconfirmed table for the next step to see
     $secondsPerDay = 60 * 60 * 24;
     $reservationDuration = 1 * $secondsPerDay;
     $expiration = time() + $reservationDuration;
@@ -37,6 +37,7 @@
     $confirmCode = sprintf('%06d', random_int(0,999999));
     $confirmHash = password_hash("$confirmCode:$email", PASSWORD_BCRYPT, ['cost'=>10]);
     if (false===$mysqli->query("INSERT IGNORE INTO `users` (`email`, `name`) VALUES ('$escapedEmail', '$escapedUsername');")){
+        //TODO: don't output the error
         $error = $mysqli->error;
         echo json_encode(['error'=>"Error creating user: $error"]);
         exit();
@@ -45,16 +46,18 @@
     $escapedConfirmHash = $mysqli->real_escape_string($confirmHash);
     if (false === $mysqli->query('INSERT INTO `unconfirmed` (`email`, `expiration`, `hash`, `confirmHash`) '
                                 ."VALUES ('$escapedEmail', $expiration, '$escapedHash', '$escapedConfirmHash') "
-                                .'ON DUPLICATE KEY UPDATE'
-                                .'`expiration`=VALUES(`expiration`),'
-                                .'`hash`=VALUES(`hash`),'
-                                .'`confirmHash`=VALUES(`confirmHash`)'
+                                .'ON DUPLICATE KEY UPDATE '
+                                .'`expiration`=VALUES(`expiration`), '
+                                .'`hash`=VALUES(`hash`), '
+                                .'`confirmHash`=VALUES(`confirmHash`) '
                                 .';')){
+        //TODO: don't output the error
         $error = $mysqli->error;
         echo json_encode(['error'=>"Error storing confirmation code hash: $error"]);
         exit();
     }
 
+    // send email with the code
     $escapeEmail = urlencode($email);
     $headers = "MIME-Version: 1.0\r\n"
              . "Content-type: text/html; charset=iso-8859-1\r\n"

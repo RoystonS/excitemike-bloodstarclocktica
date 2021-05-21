@@ -8,11 +8,15 @@ import { show as showMessage, showError } from "./dlg/blood-message-dlg";
 
 export type SessionInfo = {token:string,expiration:number,username:string,email:string};
 type ConfirmEmailData = {code:string,email:string};
-type ConfirmPasswordResetData = {usernameOrEmail:string};
+type RequestResetData = {usernameOrEmail:string};
 type ResendSignUpConfirmationData = {usernameOrEmail:string};
-type ResetPasswordData = {usernameOrEmail:string};
+type ResetPasswordData = {
+    code:string,
+    email:string,
+    password:string
+};
 type ConfirmEmailResponse = {error:string}|{token:string,expiration:number,username:string,email:string}|'alreadyConfirmed'|'notSignedUp'|'expired'|'badCode';
-type ResetPasswordResponse = {error:string}|true;
+type ResetPasswordResponse = {error:string}|{token:string,expiration:number,username:string,email:string}|'badCode'|'expired';
 type EmailResponse = {error:string}|{email:string};
 type SignUpResponse = {error:string}|'usernameTaken'|'emailTaken'|true;
 type SignInData = {
@@ -58,17 +62,27 @@ export async function confirmEmail(email:string, code:string):Promise<SessionInf
 }
 
 /**
- * Check whether the user is still marked as needing a password reset
+ * Do the password reseting
  * @returns Promise that resolves to true if the user's password is ok
  */
-export async function confirmPasswordReset(usernameOrEmail:string):Promise<boolean>{
-    const data:ConfirmPasswordResetData = {usernameOrEmail};
-    const payload = JSON.stringify(data);
-    const response = await cmd('confirmpassreset', 'Confirming password reset', payload) as ResetPasswordResponse;
-    if (true===response){return true;}
-    const {error} = response;
-    await showError('Error', `Error encountered while confirming password reset for ${usernameOrEmail}`, error);
-    return false;
+export async function resetPassword(resetData:ResetPasswordData):Promise<SessionInfo|null>{
+    const payload = JSON.stringify(resetData);
+    const response = await cmd('reset', 'Confirming password reset', payload) as ResetPasswordResponse;
+    if (typeof response === 'string') {
+        switch (response) {
+            case 'badCode':
+                await showMessage('Error', 'Confirmation code was not correct.');
+                return null;
+            case 'expired':
+                await showMessage('Error', 'Confirmation code is expired.');
+                return null;
+        }
+    }
+    if ('error' in response) {
+        await showError('Error', `Error encountered while resetting password ${resetData.email}`, response.error);
+        return null;
+    }
+    return response;
 }
 
 /**
@@ -91,8 +105,8 @@ export async function resendSignUpConfirmation(usernameOrEmail:string):Promise<s
  * send the reset message
  * @returns promise that resolves to the email address to which the password reset message was sent, or the empty string
  */
-export async function sendPasswordReset(usernameOrEmail:string):Promise<string>{
-    const passwordResetData:ResetPasswordData = {usernameOrEmail};
+export async function sendPasswordResetCode(usernameOrEmail:string):Promise<string>{
+    const passwordResetData:RequestResetData = {usernameOrEmail};
     const payload = JSON.stringify(passwordResetData);
     const response = await cmd('requestreset', 'Requesting password reset', payload) as EmailResponse;
     if ('error' in response) {

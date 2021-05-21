@@ -5,7 +5,7 @@
 import { CreateElementsOptions } from '../util';
 import {AriaDialog} from './aria-dlg';
 import showSignUpFlow from './sign-up-flow';
-import showForgotPasswordFlow from './forgot-password-flow';
+import showResetPasswordFlow from './reset-password-flow';
 import { SessionInfo, signIn } from '../iam';
 
 class SignInDlg extends AriaDialog<SessionInfo> {
@@ -57,7 +57,7 @@ class SignInDlg extends AriaDialog<SessionInfo> {
             t:'a',
             a:{href:'#',style:'align-self:center'},
             txt:'Forgot your password?',
-            events:{click:async()=>await showForgotPasswordFlow()}
+            events:{click:async()=>this.close(await showResetPasswordFlow())}
         },{
             t:'button',
             txt:'Sign in',

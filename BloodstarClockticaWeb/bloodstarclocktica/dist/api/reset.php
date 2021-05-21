@@ -3,29 +3,33 @@
     include('shared.php');
     requirePost();
     $request = getPayload();
+    $code = requireField($request, 'code');
     $email = requireField($request, 'email');
-    $confirmCode = requireField($request, 'code');
+    $password = requireField($request, 'password');
 
     // TODO: validate email and code
-    
-    // get signup data
+
     $mysqli = makeMysqli();
+
+    // get code hash to validate
     $escapedEmail = $mysqli->real_escape_string($email);
-    $result = $mysqli->query("SELECT `expiration`,`hash`,`confirmHash` FROM `unconfirmed` WHERE `unconfirmed`.`email` = '$escapedEmail' LIMIT 1;");
-    if (0===$result->num_rows){
-        $result = $mysqli->query("SELECT 1 FROM `hash` WHERE `hash`.`email` = '$escapedEmail' LIMIT 1;");
-        if (0!==$result->num_rows){
-            echo json_encode('alreadyConfirmed');
-            exit();
-        }
-        echo json_encode('notSignedUp');
+    $result = $mysqli->query("SELECT `expiration`,`confirmHash` FROM `reset` WHERE `reset`.`email` = '$escapedEmail' LIMIT 1;");
+    if (false === $result) {
+        //TODO: don't output the error
+        $error = $mysqli->error;
+        echo json_encode(['error'=>"Error retrieving code hash: $error"]);
         exit();
     }
-    list($expiration,$hash,$confirmHash) = $result->fetch_all()[0];
+    if (0===$result->num_rows){
+        echo json_encode(['error'=>'Reset request missing or expired']);
+        exit();
+    }
+    list($expiration,$confirmHash) = $result->fetch_all()[0];
 
     // verify code
-    if (!password_verify("$confirmCode:$email", $confirmHash)){
-        echo json_encode('badCode');
+    if (!password_verify("$code:$email", $confirmHash)){
+        echo json_encode(['error'=>"$code:$email"]);
+        //echo json_encode('badCode');
         exit();
     }
 
@@ -34,15 +38,22 @@
     $timestamp = time();
     $leeway = 60;
     if (($timestamp - $leeway) >= $expiration) {
-        $mysqli->query("DELETE FROM `users` WHERE `users`.`email` = \'$escapedEmail\';");
+        $mysqli->query("DELETE FROM `reset` WHERE `reset`.`email` = \'$escapedEmail\';");
         echo json_encode('expired');
         exit();
     }
 
-    // looks good. move to confirmed
+    // looks good. store new password hash
+    $hash = password_hash($password, PASSWORD_BCRYPT, ['cost'=>10]);
     $escapedHash = $mysqli->real_escape_string($hash);
-    $mysqli->query("INSERT INTO `hash` (`email`,`hash`) VALUES ('$escapedEmail', '$escapedHash');");
-    if (!$mysqli->query("DELETE FROM `unconfirmed` WHERE `unconfirmed`.`email` = '$escapedEmail';")){
+    if (false===$mysqli->query("UPDATE `hash` SET `hash`.`hash`='$escapedHash' WHERE `hash`.`email`='$escapedEmail' LIMIT 1;")){
+        //TODO: don't output the error
+        $error = $mysqli->error;
+        echo json_encode(['error'=>"Could not store password hash: $error"]);
+        exit();
+    }
+
+    if (!$mysqli->query("DELETE FROM `reset` WHERE `reset`.`email` = '$escapedEmail';")){
         //TODO: don't output the error
         $error = $mysqli->error;
         echo json_encode(['error'=>"Could not delete record: $error"]);

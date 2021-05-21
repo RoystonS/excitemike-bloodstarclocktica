@@ -22,8 +22,6 @@ ol#menu > li {
 }
 .dropdown{
     cursor:pointer;
-    display: flex;
-    flex-flow: column;
     border: 1px solid transparent;
     padding: 3px 6px;
     position:relative;

@@ -1,6 +1,6 @@
 import * as BloodBind from './bind/bindings';
 import * as BloodNewOpen from "./dlg/blood-new-open-dlg";
-import {showError} from "./dlg/blood-message-dlg";
+import {show as showMessage, showError} from "./dlg/blood-message-dlg";
 import * as BloodIO from "./blood-io";
 import {Character} from "./model/character";
 import {Edition} from "./model/edition";
@@ -58,6 +58,12 @@ function setRecentFile(name:string):void {
     }
 }
 
+/** user chose to change their password */
+async function changePasswordClicked():Promise<void> {
+    // TODO: implement changePasswordClicked
+    await showMessage('Not implemented', 'This feature is not yet implemented');
+}
+
 /**
  * If a file turns out to be deleted or renamed or something, delete the old
  * name from the list
@@ -73,6 +79,12 @@ function clearRecentFile(name:string):void {
     } catch {
         // ignore
     }
+}
+
+/** user chose to delete their account */
+async function deleteAccountClicked():Promise<void> {
+    // TODO: implement deleteAccountClicked
+    await showMessage('Not implemented', 'This feature is not yet implemented');
 }
 
 /**
@@ -235,7 +247,9 @@ async function initBindings():Promise<void> {
         ['firstNightTabBtn', ()=>tabClicked('firstNightTabBtn','firstNightOrderTab')],
         ['otherNightTabBtn', ()=>tabClicked('otherNightTabBtn','otherNightOrderTab')],
         ['metaLogoRemoveBtn', ()=>edition && edition.meta.logo.set(null)],
-        ['signOutBtn', signOutClicked]
+        ['signOutBtn', signOutClicked],
+        ['changePasswordBtn', changePasswordClicked],
+        ['deleteAccountBtn', deleteAccountClicked]
     ]);
 
     BloodBind.bindTextById('windowTitle', edition.windowTitle);

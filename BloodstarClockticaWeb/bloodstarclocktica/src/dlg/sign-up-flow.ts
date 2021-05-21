@@ -6,13 +6,9 @@ import { createElement, CreateElementsOptions } from '../util';
 import {AriaDialog, ButtonCfg, showDialog} from './aria-dlg';
 import {show as showMessage, showError} from './blood-message-dlg';
 import {confirmEmail, resendSignUpConfirmation, SessionInfo, signUp} from '../iam';
+import { updateEmailWarnings, updatePasswordWarnings, updateUsernameWarnings, validateEmail, validatePassword, validateUsername } from '../validate';
 
 export type UserPass = {username:string,password:string};
-const VALID_USERNAME_RE = /^[^.\\/:"?<>|][^\\/:"?<>|]+$/;
-
-// this regex comes from the HTML5 spec https://html.spec.whatwg.org/multipage/input.html#e-mail-state-(type%3Demail)
-// this does reject technically-valid email addresses but it handles the sort I care to support with this app
-const VALID_EMAIL_RE = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 /**
  * do the sign-up flow
@@ -49,7 +45,7 @@ class ConfirmSignUpDlg extends AriaDialog<string> {
                 }}},
                 {t:'button',txt:'Cancel',events:{click:()=>this.close('')}}
             ]},
-            {t:'p',txt:"Didn't receive a link? ",a:{style:'align-self:center;'},children:[
+            {t:'p',txt:"Didn't receive a code? ",a:{style:'align-self:center;'},children:[
                 {t:'a',a:{href:'#'},txt:'Send a new one',events:{click:async ()=>await resendSignUpConfirmation(email)}}
             ]}
         ] as CreateElementsOptions);
@@ -59,7 +55,6 @@ class ConfirmSignUpDlg extends AriaDialog<string> {
 
 /** show dialog for confirm step */
 async function showConfirmStep(email:string):Promise<SessionInfo|null>{
-    // TODO: enter code rather than click link
     let warn = false;
     // eslint-disable-next-line no-constant-condition
     while (true) {
@@ -155,52 +150,6 @@ async function showSignUpStep():Promise<string>{
         body,
         buttons
     ) || '';
-}
-
-/** warn if email does not look valid */
-function updateEmailWarnings(email:string, container:HTMLElement):void{
-    container.innerText = '';
-    if (!validateEmail(email)) {
-        container.appendChild(createElement({t:'span',txt:`× Invalid email`}));
-    }
-}
-
-/** check each password requirement and add a warning if any aren't met */
-function updatePasswordWarnings(password:string, passwordConfirm:string, container:HTMLElement):void {
-    container.innerText = '';
-    function warn(txt:string){container.appendChild(createElement({t:'span',txt:`× ${txt}`}));}
-    if (password.length < 8) {warn('Password must contain at least 8 characters');}
-    if (!/[a-z]/.test(password)) {warn('Password must contain a lower case letter');}
-    if (!/[A-Z]/.test(password)) {warn('Password must contain an upper case letter');}
-    if (!/[0-9]/.test(password)) {warn('Password must contain a number');}
-    if (password !== passwordConfirm) {warn(`Passwords must match`)}
-}
-
-/** warn if username does not look valid */
-function updateUsernameWarnings(username:string, container:HTMLElement):void {
-    container.innerText = '';
-    if (!validateUsername(username)){
-        container.appendChild(createElement({t:'span',txt:`× Invalid username`}));
-    }
-}
-
-/** test email */
-function validateEmail(email:string):boolean {
-    return VALID_EMAIL_RE.test(email);
-}
-
-/** test all the password requirements */
-function validatePassword(password:string):boolean {
-    if (password.length < 8) {return false;}
-    if (!/[a-z]/.test(password)) {return false;}
-    if (!/[A-Z]/.test(password)) {return false;}
-    if (!/[0-9]/.test(password)) {return false;}
-    return true;
-}
-
-/** check that the username looks valid */
-function validateUsername(username:string):boolean {
-    return VALID_USERNAME_RE.test(username);
 }
 
 export default show;
