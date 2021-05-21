@@ -6,11 +6,6 @@ import {showError} from "./dlg/blood-message-dlg";
 import {show as doSignInFlow} from "./dlg/sign-in-flow";
 import { SessionInfo } from "./iam";
 
-export interface UserInfo {
-    username:string,
-    email:string
-}
-
 let sessionInfo:SessionInfo|null = null;
 
 /** true when we have don't have an accesstoken or it is expired */
@@ -65,7 +60,7 @@ async function promptAndSignIn():Promise<SessionInfo|null>{
  * Loops until a valid sign-in occurs.
  * @returns promise that resolves to user info
  */
-export async function signIn(force=false):Promise<UserInfo> {
+export async function signIn(force=false):Promise<SessionInfo> {
     sessionInfo = sessionInfo || getStoredToken();
     if (!force && sessionInfo && !accessTokenExpired()){return sessionInfo;}
     clearStoredToken();

@@ -15,6 +15,7 @@ export type UserPass = {username:string,password:string};
  * Brings up the loading spinner during the operation
  */
 export default async function cmd<ResultType = unknown>(cmdName:string, spinnerMessage:string, body?:BodyInit):Promise<ResultType> {
+    // TODO: flow for when token is expired
     return await spinner<ResultType>('command', spinnerMessage, _cmd<ResultType>(cmdName, body, TIMEOUT, MAXRETRIES));
 }
 

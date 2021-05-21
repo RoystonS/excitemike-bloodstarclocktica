@@ -11,6 +11,7 @@ import {spinner} from '../dlg/spinner-dlg';
 import { AriaDialog } from '../dlg/aria-dlg';
 import { setRecentFile } from '../recent-file';
 import { updateSaveNameWarnings, validateSaveName } from '../validate';
+import signIn from '../sign-in';
 
 type SaveReturn = {error?:string};
 
@@ -24,6 +25,7 @@ const MAX_SIMULTANEOUS_IMAGE_SAVES = 8;
  */
  export async function saveAs(edition:Edition):Promise<boolean> {
     const name = await promptForName(edition.saveName.get());
+    const authToken = (await signIn()).token;
 
     // null means cancel
     if (null === name) {return false;}
@@ -36,7 +38,7 @@ const MAX_SIMULTANEOUS_IMAGE_SAVES = 8;
     const backupName = edition.saveName.get();
     try {
         await edition.saveName.set(name);
-        const success = !!(await _save(edition, backupName===name));
+        const success = await _save(authToken, edition, backupName===name);
         if (!success) {
             await edition.saveName.set(backupName);
         }
@@ -60,7 +62,7 @@ export async function save(edition:Edition):Promise<boolean> {
             case '':
                 return await saveAs(edition);
             default:
-                return await _save(edition, true);
+                return await _save((await signIn()).token, edition, true);
         }
     } catch (error) {
         await showError('Error', 'Error encountered while trying to save', error);
@@ -118,11 +120,14 @@ async function separateImages(edition:Edition):Promise<Separated> {
 /**
  * Save the file under the name saved in it
  * Brings up the loading spinner during the operation
+ * @param authToken user authorization
  * @param edition file to save
+ * @param clobber true if you want it to replace any file found with the same name
  * @returns promise resolving to whether the save was successful
  */
-async function _save(edition:Edition, clobber:boolean):Promise<boolean> {
+async function _save(authToken:string, edition:Edition, clobber:boolean):Promise<boolean> {
     type SaveData = {
+        token:string,
         saveName:string,
         edition?:unknown,
         id?:string,
@@ -142,6 +147,7 @@ async function _save(edition:Edition, clobber:boolean):Promise<boolean> {
     const saveName = edition.saveName.get();
     {
         const saveData:SaveData = {
+            token: authToken,
             saveName: saveName,
             clobber,
             edition: toSave.edition
@@ -177,6 +183,7 @@ async function _save(edition:Edition, clobber:boolean):Promise<boolean> {
         if (!edition.isCharacterSourceImageDirty(id)) {continue;}
         promises.push(Locks.enqueue('saveImage', ()=>{
             const saveData:SaveData = {
+                token: authToken,
                 saveName: saveName,
                 id: id,
                 isSource:true,
@@ -192,6 +199,7 @@ async function _save(edition:Edition, clobber:boolean):Promise<boolean> {
         if (!edition.isCharacterFinalImageDirty(id)) {continue;}
         promises.push(Locks.enqueue('saveImage', ()=>{
             const saveData:SaveData = {
+                token: authToken,
                 saveName: saveName,
                 id: id,
                 isSource:false,
@@ -207,6 +215,7 @@ async function _save(edition:Edition, clobber:boolean):Promise<boolean> {
         if (logo && logo.startsWith('data:') && edition.isLogoDirty()) {
             promises.push(Locks.enqueue('saveImage', ()=>{
                 const saveData:SaveData = {
+                    token: authToken,
                     saveName: saveName,
                     id: '_meta',
                     isSource:false,

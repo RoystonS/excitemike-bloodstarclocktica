@@ -11,10 +11,11 @@ import publish from './commands/publish';
 import {save, saveAs} from './commands/save';
 import {chooseAndDeleteFile} from './commands/delete';
 import * as SdcDlg from './dlg/blood-save-discard-cancel';
-import {signIn, signOut, UserInfo} from './sign-in';
+import {signIn, signOut} from './sign-in';
 import { clearRecentFile, setRecentFile } from "./recent-file";
 import { show as showOpenFlow } from "./dlg/open-flow";
 import * as BloodIO from './blood-io';
+import { SessionInfo } from "./iam";
 
 /** add a new character to the custom edition */
 async function addCharacterClicked(edition:Edition):Promise<boolean> {
@@ -136,7 +137,7 @@ async function signOutClicked(edition:Edition):Promise<boolean> {
 }
 
 /** show who is signed in and a sign out button */
-export function updateUserDisplay(session:UserInfo|null):void {
+export function updateUserDisplay(session:SessionInfo|null):void {
     const username = document.getElementById('userName');
     if (!(username instanceof HTMLSpanElement)){return;}
     username.innerText = session ? session.username : '';
