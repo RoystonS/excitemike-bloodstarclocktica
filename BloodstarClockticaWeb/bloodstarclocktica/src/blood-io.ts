@@ -20,7 +20,7 @@ export async function newEdition(edition:Edition):Promise<boolean> {
 /** user chose to import character(s) from a json file */
 export async function importJsonFromUrl(edition:Edition):Promise<boolean> {
     if (!await SdcDlg.savePromptIfDirty(edition)) {return false;}
-    const url = await StringDlg.show('Enter URL to a custom-script.json file.');
+    const url = await StringDlg.show('Enter URL', 'Enter URL to a custom-script.json file.');
     if (!url){return false;}
     const json = await fetchJson<ScriptEntry[]>(url);
     if (!json) {return false;}

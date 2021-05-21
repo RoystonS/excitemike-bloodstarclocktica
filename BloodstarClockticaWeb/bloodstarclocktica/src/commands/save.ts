@@ -10,12 +10,11 @@ import Locks from '../lock';
 import {spinner} from '../dlg/spinner-dlg';
 import { AriaDialog } from '../dlg/aria-dlg';
 import { setRecentFile } from '../recent-file';
+import { updateSaveNameWarnings, validateSaveName } from '../validate';
 
 type SaveReturn = {error?:string};
 
 const MAX_SIMULTANEOUS_IMAGE_SAVES = 8;
-const VALID_SAVENAME_RE = /^[^\\/:"?<>|]+$/;
-const INVALID_SAVENAME_CHARACTER_RE = /[\\/:"?<>|]/;
 
 /**
  * prompt for a name, then save with that name
@@ -241,38 +240,13 @@ async function _save(edition:Edition, clobber:boolean):Promise<boolean> {
  */
 async function promptForName(defaultName:string):Promise<string|null> {
     return await inputDlg(
-        'Enter name to save as. Disallowed characters are these: ^\\/:"?<>|',
+        'Save',
+        'Enter name to save as.',
         defaultName,
         {
-            pattern:'[-a-z0-9.]{1,25}',
-            hint: 'lowercase with no spaces or special characters',
-            sanitizeFn: sanitizeSaveName
+            pattern:'[A-Za-z0-9\\-_]{1,25}',
+            hint: 'Name should contain only letters, numbers, hyphens (-), and underscores (_)',
+            validateFn: validateSaveName,
+            warningsFn: updateSaveNameWarnings
         });
-}
-
-/**
- * validate a save name
- */
-function validateSaveName(original:string):boolean {
-    switch (original) {
-        case '.': return false;
-        case '..': return false;
-        default: return VALID_SAVENAME_RE.test(original);
-    }
-}
-
-/**
- * sanitize a save name
- */
-function sanitizeSaveName(original:string):string {
-    if ((original === '') || validateSaveName(original)) {
-        return original;
-    }
-    let corrected = '';
-    for (const char of original) {
-        if (!INVALID_SAVENAME_CHARACTER_RE.test(char)) {
-            corrected += char;
-        }
-    }
-    return corrected;
 }
