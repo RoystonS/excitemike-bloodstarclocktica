@@ -18,8 +18,8 @@ function accessTokenExpired():boolean{
     if (!sessionInfo){return true;}
     const timestamp = Date.now() / 1000 | 0;
     const leeway = 60;
-    if ((timestamp - leeway) >= sessionInfo.expiration){return false;}
-    return true;
+    if ((timestamp - leeway) >= sessionInfo.expiration){return true;}
+    return false;
 }
 
 function clearStoredToken():void{
