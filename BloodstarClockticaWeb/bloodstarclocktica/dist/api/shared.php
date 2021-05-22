@@ -1,6 +1,6 @@
 <?php
     include('jwt.php');
-    $saveDir = '../save';
+    include('validate.php');
     
     function join_paths($a, $b) {
         return join('/', array(trim($a, '/'), trim($b, '/')));
@@ -33,17 +33,9 @@
         return new mysqli($mysqlHost,$mysqlUsername,$mysqlPassword,$mysqlDb);
     }
 
-    // error if field is not set in array, otherwise, return that field
-    function requireField($arr, $fieldName) {
-        if (array_key_exists($fieldName, $arr))
-        {
-            return $arr[$fieldName];
-        }
-        else
-        {
-            echo json_encode(array("error" => "field \"$fieldName\" is missing"));
-            exit();
-        }
+    // get field if it exists, otherwise use default value
+    function optionalField($arr, $fieldName, $defaultValue) {
+        return array_key_exists($fieldName, $arr) ? $arr[$fieldName] : $defaultValue;
     }
 
     // read file in save directory and decode as json
@@ -63,14 +55,15 @@
         exit();
     }
 
-    // error out if filename invalid
-    function validateFilename($filename) {
-        if (($filename==='') ||
-            ($filename==='.')  ||
-            ($filename==='..') ||
-            !preg_match("/^[^\\/:\"?<>\\|]+$/", $filename))
+    // error if field is not set in array, otherwise, return that field
+    function requireField($arr, $fieldName) {
+        if (array_key_exists($fieldName, $arr))
         {
-            echo '{"error":"invalid saveName"}';
+            return $arr[$fieldName];
+        }
+        else
+        {
+            echo json_encode(array("error" => "field \"$fieldName\" is missing"));
             exit();
         }
     }

@@ -13,9 +13,40 @@ import { setRecentFile } from '../recent-file';
 import { updateSaveNameWarnings, validateSaveName } from '../validate';
 import signIn from '../sign-in';
 
-type SaveReturn = {error?:string};
+type SaveData = {
+    clobber?:boolean,
+    edition:unknown,
+    saveName:string,
+    token:string,
+};
+type SaveImgData = {
+    token:string,
+    saveName:string,
+    id:string,
+    isSource:boolean,
+    image:string
+};
+type SaveResult = {error:string}|{success:true}|'clobber'|'cancel';
+type SaveImgResult = {error:string}|{success:true};
 
 const MAX_SIMULTANEOUS_IMAGE_SAVES = 8;
+
+/** got a clobber warning. have the user confirm, then maybe continue */
+async function confirmClobber(saveData:SaveData):Promise<SaveResult> {
+    // confirmation dialog, then try again
+    const okToClobber = await new AriaDialog<boolean>().baseOpen(
+        null,
+        'okToClobber',
+        [{t:'p',txt:`There is already a save file named ${saveData.saveName}. Would you like to replace it?`}],
+        [
+            {label:`Yes, Replace ${saveData.saveName}`,callback:()=>true},
+            {label:'No, Cancel Save',callback:()=>false},
+        ]
+    );
+    if (!okToClobber) {return 'cancel';}
+    saveData.clobber = true;
+    return await cmd<SaveResult>('save', `Saving edition data`, JSON.stringify(saveData));
+}
 
 /**
  * prompt for a name, then save with that name
@@ -125,20 +156,6 @@ async function separateImages(edition:Edition):Promise<Separated> {
  * @returns promise resolving to whether the save was successful
  */
 async function _save(authToken:string, edition:Edition, clobber:boolean):Promise<boolean> {
-    type SaveData = {
-        token:string,
-        saveName:string,
-        edition?:unknown,
-        id?:string,
-        isSource?:boolean,
-        image?:string,
-        clobber?:boolean
-    };
-    type SaveResult = {
-        success?:true,
-        clobberWarning?:string,
-        error?:string,
-    };
     // serialize the edition, but break images out into separate pieces to save
     const toSave = await separateImages(edition);
 
@@ -151,28 +168,20 @@ async function _save(authToken:string, edition:Edition, clobber:boolean):Promise
             clobber,
             edition: toSave.edition
         };
-        let {clobberWarning,error} = await cmd<SaveResult>('save', `Saving edition data`, JSON.stringify(saveData));
-        if (clobberWarning) {
-            // confirmation dialog, then try again
-            const okToClobber = await new AriaDialog<boolean>().baseOpen(
-                null,
-                'okToClobber',
-                [{t:'p',txt:`There is already a save file named ${saveName}. Would you like to replace it?`}],
-                [
-                    {label:`Yes, Replace ${saveName}`,callback:()=>true},
-                    {label:'No, Cancel Save',callback:()=>false},
-                ]
-            );
-            if (!okToClobber) {return false;}
-            saveData.clobber = true;
-            ({clobberWarning,error} = await cmd<SaveResult>('save', `Saving edition data`, JSON.stringify(saveData)));
-            error = error || clobberWarning;
+        let response = await cmd<SaveResult>('save', `Saving edition data`, JSON.stringify(saveData));
+        if (response==='clobber'){
+            response = await confirmClobber(saveData);
         }
-        // surface error, if any
-        if (error){
-            await showError('Error', `Error encountered while trying to save ${saveName}`, error);
+        
+        // surface the error, if any
+        if (response==='cancel'){return false;}
+        if (response==='clobber'){return false;}
+        if ('error' in response){
+            await showError('Error', `Error encountered while trying to save ${saveName}`, response.error);
             return false;
         }
+        const {success} = response;
+        if (!success) {return false;}
     }
 
     const promises = [];
@@ -181,7 +190,7 @@ async function _save(authToken:string, edition:Edition, clobber:boolean):Promise
         if (!imageString.startsWith('data:')) {continue;}
         if (!edition.isCharacterSourceImageDirty(id)) {continue;}
         promises.push(Locks.enqueue('saveImage', ()=>{
-            const saveData:SaveData = {
+            const saveData:SaveImgData = {
                 token: authToken,
                 saveName: saveName,
                 id: id,
@@ -197,7 +206,7 @@ async function _save(authToken:string, edition:Edition, clobber:boolean):Promise
         if (!imageString.startsWith('data:')) {continue;}
         if (!edition.isCharacterFinalImageDirty(id)) {continue;}
         promises.push(Locks.enqueue('saveImage', ()=>{
-            const saveData:SaveData = {
+            const saveData:SaveImgData = {
                 token: authToken,
                 saveName: saveName,
                 id: id,
@@ -213,7 +222,7 @@ async function _save(authToken:string, edition:Edition, clobber:boolean):Promise
         const logo = toSave.logo;
         if (logo && logo.startsWith('data:') && edition.isLogoDirty()) {
             promises.push(Locks.enqueue('saveImage', ()=>{
-                const saveData:SaveData = {
+                const saveData:SaveImgData = {
                     token: authToken,
                     saveName: saveName,
                     id: '_meta',
@@ -227,10 +236,10 @@ async function _save(authToken:string, edition:Edition, clobber:boolean):Promise
     }
 
     // await results
-    const results = await spinner('save', `Saving as ${saveName}`, Promise.all(promises)) as SaveReturn[];
-    for (const {error} of results) {
-        if (error) {
-            await showError('Error', `Error encountered while trying to save ${saveName}`, error);
+    const results = await spinner('save', `Saving as ${saveName}`, Promise.all(promises)) as SaveImgResult[];
+    for (const response of results) {
+        if ('error' in response) {
+            await showError('Error', `Error encountered while trying to save ${saveName}`, response.error);
             return false;
         }
     }
