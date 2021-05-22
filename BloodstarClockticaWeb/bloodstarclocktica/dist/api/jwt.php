@@ -22,13 +22,13 @@ function base64urlDecode($input){
 }
 // encode using base64url encoding
 function base64urlEncode($input){
-    return rtrim(strtr(base64_encode($input), '+/', '-+'), '=');
+    return rtrim(strtr(base64_encode($input), '+/', '-_'), '=');
 }
 
 // verify a session token - returns decoded payload when successful. notably containing the string keys 'username' and 'email'
 function verifySession($token){
     try {
-        $secretKey = file_get_contents('../../protected/jwtRS256.key');
+        $secretKey = file_get_contents('../../protected/jwtRS256.key.pub');
         if (false === $secretKey){
             echo json_encode(array('error' =>'could not open key file'));
             exit();
@@ -42,14 +42,14 @@ function verifySession($token){
         $decodedHeader = json_decode(base64urlDecode($header));
         $decodedPayload = json_decode(base64urlDecode($payload), true);
         $decodedSignature = base64urlDecode($signature);
-        $alg = $supported_algs[$header->alg];
+        $alg = $supported_algs[$decodedHeader->alg];
 
         // weird wrinkle for ES256
-        if ($header->alg === 'ES256') {
+        if ($decodedHeader->alg === 'ES256') {
             return rejectSession('ES256 not supported');
         }
 
-        if (!verifySig("$header.$payload", $decodedSignature, $secretKey, $header->alg)){
+        if (!verifySig("$header.$payload", $decodedSignature, $secretKey, $decodedHeader->alg)){
             return rejectSession('Signature verification failed');
         }
 
