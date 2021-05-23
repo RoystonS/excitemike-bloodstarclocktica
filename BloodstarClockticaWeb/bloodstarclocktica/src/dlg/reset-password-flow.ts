@@ -113,8 +113,27 @@ async function showCodeAndNewPasswordStep(email:string):Promise<SessionInfo|null
  * @returns promise that resolves to email address or username if the email was successfully sent
  */
 async function showEnterEmailStep():Promise<string> {
-    // TODO: submit on enter
-    const usernameField = createElement({t:'input',a:{type:'text',required:'true',placeholder:'Username or email',autocomplete:'email'},id:'requestResetDlgUsername'});
+    const submitOnEnter = async (event:KeyboardEvent):Promise<void>=>{
+        switch (event.code)
+        {
+            case 'NumpadEnter':
+            case 'Enter':
+                {
+                    event.preventDefault();
+                    await sendPasswordResetCode(usernameField.value);
+                    const element = document.getElementById('idSubmitRequest');
+                    if (!(element instanceof HTMLButtonElement)){return;}
+                    element.click();
+                }
+                break;
+        }
+    };
+    const usernameField = createElement({
+        t:'input',
+        a:{type:'text',required:'true',placeholder:'Username or email',autocomplete:'email'},
+        id:'requestResetDlgUsername',
+        events:{keyup:submitOnEnter as unknown as EventListener}
+    });
     const email = await showDialog<string>(
         null,
         'requestReset',
@@ -124,7 +143,7 @@ async function showEnterEmailStep():Promise<string> {
             usernameField
         ],
         [
-            {label:'Reset my password',callback:()=>sendPasswordResetCode(usernameField.value)},
+            {label:'Reset my password',id:'idSubmitRequest',callback:()=>sendPasswordResetCode(usernameField.value)},
             {label:'Cancel'}
         ]
     );
