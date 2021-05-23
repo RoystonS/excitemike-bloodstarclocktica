@@ -2,7 +2,7 @@
  * Miscellaneous useful things
  * @module Util
  */
-import {show as showMessage} from './dlg/blood-message-dlg';
+import {show as showMessage, showError} from './dlg/blood-message-dlg';
 
 /** configuration used to create DOM elements */
 export type CreateElementOptions<K extends keyof HTMLElementTagNameMap> = {
@@ -124,11 +124,19 @@ export function getCorsProxyUrl(url:string):string {
 
 /** set event listeners for clicks, return a function you can call to undo it */
 export function hookupClickEvents(data: [string, (e: Event) => void][]):()=>void {
-    // TODO: catch and surface errors in callbacks
+    function wrapCb(cb:(e: Event) => void):(e: Event) => void {
+        return async (e: Event)=>{
+            try{cb(e);}
+            catch(error){
+                await showError('Error', 'Something went wrong', error);
+            }
+        };
+    }
+
     for (const [id, cb] of data) {
         const element = document.getElementById(id);
         if (element) {
-            element.addEventListener("click", cb);
+            element.addEventListener("click", wrapCb(cb));
         }
     }
 
@@ -137,7 +145,7 @@ export function hookupClickEvents(data: [string, (e: Event) => void][]):()=>void
         for (const [id, cb] of backupData) {
             const element = document.getElementById(id);
             if (element) {
-                element.removeEventListener("click", cb);
+                element.removeEventListener("click", wrapCb(cb));
             }
         }
     }
