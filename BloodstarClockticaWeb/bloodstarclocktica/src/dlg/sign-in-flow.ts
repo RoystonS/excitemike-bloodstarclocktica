@@ -50,7 +50,7 @@ class SignInDlg extends AriaDialog<SessionInfo> {
                 txt:'Password'
             },{
                 t:'input',
-                a:{type:'password',required:'true',id:'signInDlgPassword',autocomplete:'current-password'},// TODO: pattern
+                a:{type:'password',required:'true',id:'signInDlgPassword',placeholder:'Password',autocomplete:'current-password'},// TODO: pattern
                 events:{keyup:submitOnEnter as unknown as EventListener}
             }]
         },{
@@ -70,7 +70,12 @@ class SignInDlg extends AriaDialog<SessionInfo> {
                 t:'a',
                 a:{href:'#'},
                 txt:'Sign Up',
-                events:{click:async ()=>this.close(await showSignUpFlow())}
+                events:{click:async ()=>{
+                    const signUpResult = await showSignUpFlow();
+                    if (signUpResult) {
+                        this.close(signUpResult);
+                    }
+                }}
             }]
         }];
 

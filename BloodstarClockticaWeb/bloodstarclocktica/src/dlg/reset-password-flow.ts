@@ -18,9 +18,9 @@ type ResetPasswordData = {
 class ConfirmAndChoosePasswordDlg extends AriaDialog<ResetPasswordData|null> {
     async open(email:string,doWarning:boolean):Promise<ResetPasswordData|null>{
         const codeField = createElement({t:'input',a:{type:'text',minlength:'6',maxlength:'6',autocomplete:'off',required:'',pattern:'[0-9]{6}',title:'six-digit code from your email'},id:'codeFromEmail'});
-        const passwordField = createElement({t:'input',a:{type:'password',required:'true',placeholder:'Password',autocomplete:'new-password'},'id':'passwordInput'});
+        const passwordField = createElement({t:'input',a:{type:'password',required:'true',placeholder:'New Password',autocomplete:'new-password'},'id':'passwordInput'});
         const passwordWarnings = createElement({t:'div',css:['column'],a:{style:'color:red;grid-column-start:span 2'}});
-        const confirmField = createElement({t:'input',a:{type:'password',required:'true',placeholder:'Password',autocomplete:'new-password'},'id':'resetPasswordConfirm'});
+        const confirmField = createElement({t:'input',a:{type:'password',required:'true',placeholder:'Confirm Password',autocomplete:'new-password'},'id':'resetPasswordConfirm'});
 
         const body:CreateElementsOptions = [{t:'h1',txt:'Choose new password'}];
         if (doWarning) {

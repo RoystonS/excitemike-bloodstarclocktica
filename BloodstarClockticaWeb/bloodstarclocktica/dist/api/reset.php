@@ -28,8 +28,7 @@
 
     // verify code
     if (!password_verify("$code:$email", $confirmHash)){
-        echo json_encode(['error'=>"$code:$email"]);
-        //echo json_encode('badCode');
+        echo json_encode('badCode');
         exit();
     }
 
