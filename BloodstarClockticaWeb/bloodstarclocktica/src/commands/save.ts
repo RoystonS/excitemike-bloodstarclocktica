@@ -2,7 +2,6 @@
  * code related to save commands
  * @module Save
  */
-import cmd from './cmd';
 import {show as inputDlg} from '../dlg/blood-string-dlg';
 import { Edition } from '../model/edition';
 import { show as showMessage, showError } from '../dlg/blood-message-dlg';
@@ -11,7 +10,8 @@ import {spinner} from '../dlg/spinner-dlg';
 import { AriaDialog } from '../dlg/aria-dlg';
 import { setRecentFile } from '../recent-file';
 import { updateSaveNameWarnings, validateSaveName } from '../validate';
-import signIn from '../sign-in';
+import {signedInCmd, signIn} from '../sign-in';
+import { SessionInfo } from '../iam';
 
 type SaveData = {
     clobber?:boolean,
@@ -45,7 +45,7 @@ async function confirmClobber(saveData:SaveData):Promise<SaveResult> {
     );
     if (!okToClobber) {return 'cancel';}
     saveData.clobber = true;
-    return await cmd<SaveResult>('save', `Saving edition data`, JSON.stringify(saveData));
+    return await signedInCmd<SaveResult>('save', `Saving edition data`, saveData);
 }
 
 /**
@@ -56,7 +56,7 @@ async function confirmClobber(saveData:SaveData):Promise<SaveResult> {
  */
  export async function saveAs(edition:Edition):Promise<boolean> {
     const name = await promptForName(edition.saveName.get());
-    const authToken = (await signIn()).token;
+    const sessionInfo = await signIn();
 
     // null means cancel
     if (null === name) {return false;}
@@ -69,7 +69,7 @@ async function confirmClobber(saveData:SaveData):Promise<SaveResult> {
     const backupName = edition.saveName.get();
     try {
         await edition.saveName.set(name);
-        const success = await _save(authToken, edition, backupName===name);
+        const success = await _save(sessionInfo, edition, backupName===name);
         if (!success) {
             await edition.saveName.set(backupName);
         }
@@ -93,7 +93,7 @@ export async function save(edition:Edition):Promise<boolean> {
             case '':
                 return await saveAs(edition);
             default:
-                return await _save((await signIn()).token, edition, true);
+                return await _save(await signIn(), edition, true);
         }
     } catch (error) {
         await showError('Error', 'Error encountered while trying to save', error);
@@ -150,12 +150,12 @@ async function separateImages(edition:Edition):Promise<Separated> {
 /**
  * Save the file under the name saved in it
  * Brings up the loading spinner during the operation
- * @param authToken user authorization
+ * @param sessionInfo current user session
  * @param edition file to save
  * @param clobber true if you want it to replace any file found with the same name
  * @returns promise resolving to whether the save was successful
  */
-async function _save(authToken:string, edition:Edition, clobber:boolean):Promise<boolean> {
+async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):Promise<boolean> {
     // serialize the edition, but break images out into separate pieces to save
     const toSave = await separateImages(edition);
 
@@ -163,12 +163,12 @@ async function _save(authToken:string, edition:Edition, clobber:boolean):Promise
     const saveName = edition.saveName.get();
     {
         const saveData:SaveData = {
-            token: authToken,
+            token: sessionInfo.token,
             saveName: saveName,
             clobber,
             edition: toSave.edition
         };
-        let response = await cmd<SaveResult>('save', `Saving edition data`, JSON.stringify(saveData));
+        let response = await signedInCmd<SaveResult>('save', `Saving edition data`, saveData);
         if (response==='clobber'){
             response = await confirmClobber(saveData);
         }
@@ -191,14 +191,13 @@ async function _save(authToken:string, edition:Edition, clobber:boolean):Promise
         if (!edition.isCharacterSourceImageDirty(id)) {continue;}
         promises.push(Locks.enqueue('saveImage', ()=>{
             const saveData:SaveImgData = {
-                token: authToken,
+                token: sessionInfo.token,
                 saveName: saveName,
                 id: id,
                 isSource:true,
                 image: imageString
             };
-            const payload = JSON.stringify(saveData);
-            return cmd('save-img', `Saving ${id}.src.png`, payload);
+            return signedInCmd('save-img', `Saving ${id}.src.png`, saveData);
         }, MAX_SIMULTANEOUS_IMAGE_SAVES));
     }
 
@@ -207,14 +206,13 @@ async function _save(authToken:string, edition:Edition, clobber:boolean):Promise
         if (!edition.isCharacterFinalImageDirty(id)) {continue;}
         promises.push(Locks.enqueue('saveImage', ()=>{
             const saveData:SaveImgData = {
-                token: authToken,
+                token: sessionInfo.token,
                 saveName: saveName,
                 id: id,
                 isSource:false,
                 image: imageString
             };
-            const payload = JSON.stringify(saveData);
-            return cmd('save-img', `Saving ${id}.png`, payload);
+            return signedInCmd('save-img', `Saving ${id}.png`, saveData);
         }, MAX_SIMULTANEOUS_IMAGE_SAVES));
     }
 
@@ -223,14 +221,13 @@ async function _save(authToken:string, edition:Edition, clobber:boolean):Promise
         if (logo && logo.startsWith('data:') && edition.isLogoDirty()) {
             promises.push(Locks.enqueue('saveImage', ()=>{
                 const saveData:SaveImgData = {
-                    token: authToken,
+                    token: sessionInfo.token,
                     saveName: saveName,
                     id: '_meta',
                     isSource:false,
                     image: logo
                 };
-                const payload = JSON.stringify(saveData);
-                return cmd('save-img', `Saving _meta.png`, payload);
+                return signedInCmd('save-img', `Saving _meta.png`, saveData);
             }, MAX_SIMULTANEOUS_IMAGE_SAVES));
         }
     }
@@ -248,7 +245,7 @@ async function _save(authToken:string, edition:Edition, clobber:boolean):Promise
     await edition.markClean();
     
     // update recent file
-    setRecentFile(saveName);
+    setRecentFile(saveName, sessionInfo.email);
     return true;
 }
 

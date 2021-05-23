@@ -10,6 +10,7 @@ import { showError } from './blood-message-dlg';
 import { createElement, CreateElementsOptions } from '../util';
 import { AriaDialog } from './aria-dlg';
 import { setRecentFile } from '../recent-file';
+import signIn from '../sign-in';
 
 type ListFilesReturn = {error?:string,files:string[]};
 type OpenReturn = {error?:string,data:{[key:string]:unknown}};
@@ -76,6 +77,7 @@ async function listFiles():Promise<string[]> {
  * @returns promise that resolves to whether a file was successfully opened
  */
  async function openNoPrompts(edition:Edition, name:string, suppressErrorMessage=false):Promise<boolean> {
+    const sessionInfo = await signIn();
     const openData = {
         saveName: name
     };
@@ -89,7 +91,7 @@ async function listFiles():Promise<string[]> {
     }
     const success = await spinner('open', `Opening edition file "${name}"`, edition.open(name, data));
     if (success) {
-        setRecentFile(edition.saveName.get());
+        setRecentFile(edition.saveName.get(), sessionInfo.email);
     }
     return success;
 }

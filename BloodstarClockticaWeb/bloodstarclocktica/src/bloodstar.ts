@@ -133,9 +133,9 @@ async function initBindings():Promise<void> {
 }
 
 /** initialize CustomEdition object to bind to */
-async function initCustomEdition():Promise<void> {
+async function initCustomEdition(email:string):Promise<void> {
     try {
-        const rememberedFile = getRecentFile();
+        const rememberedFile = getRecentFile(email);
         if (rememberedFile) {
             if (await showOpenFlow(edition, rememberedFile, true)) {
                 return;
@@ -165,7 +165,7 @@ async function init() {
     const session = await signIn();
     updateUserDisplay(session);
 
-    await initCustomEdition();
+    await initCustomEdition(session.email);
 }
 
 type StatusBarData = Map<string, {id:string,exported:number,total:number}>;

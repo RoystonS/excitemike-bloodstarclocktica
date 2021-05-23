@@ -112,8 +112,9 @@ async function saveAndPublishClicked(edition:Edition):Promise<boolean> {
  * user chose to save the current file under a new name
  */
 export async function saveFileAsClicked(edition:Edition):Promise<boolean> {
+    const sessionInfo = await signIn();
     if (await saveAs(edition)) {
-        setRecentFile(edition.saveName.get());
+        setRecentFile(edition.saveName.get(), sessionInfo.email);
         return true;
     }
     return false;

@@ -2,6 +2,7 @@
  * sign in to bloodstar clocktica
  * @module SignIn
  */
+import cmd from "./commands/cmd";
 import {showError} from "./dlg/blood-message-dlg";
 import {show as doSignInFlow} from "./dlg/sign-in-flow";
 import { SessionInfo } from "./iam";
@@ -56,6 +57,31 @@ async function promptAndSignIn():Promise<SessionInfo|null>{
 }
 
 /**
+ * execute a command, signing in first if that looks necessary
+ * Note that body is not pre-stringified like it is with cmd()
+ * @returns promise that resolves to user info
+ */
+export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:string, body:{token:string}):Promise<ResultType> {
+    sessionInfo = sessionInfo || getStoredToken();
+    while (!sessionInfo || accessTokenExpired()) {
+        await signIn(true);
+        if (sessionInfo){
+            body.token = sessionInfo.token;
+        }
+    }
+
+    let result = await cmd<ResultType|'signInRequired'>(cmdName, spinnerMessage, JSON.stringify(body));
+    while (result==='signInRequired') {
+        await signIn(true);
+        if (sessionInfo){
+            body.token = sessionInfo.token;
+        }
+        result = await cmd<ResultType|'signInRequired'>(cmdName, spinnerMessage, JSON.stringify(body));
+    }
+    return result;
+}
+
+/**
  * sign in using saved info or prompting for user+pass if necessary
  * Loops until a valid sign-in occurs.
  * @returns promise that resolves to user info
@@ -86,7 +112,6 @@ export function signOut():void{
 
 /**
  * store auth info for next time
- * TODO: this should probably store a session token instead
  */
 function storeToken(accessToken:SessionInfo):void {
     const localStorage = window.localStorage;

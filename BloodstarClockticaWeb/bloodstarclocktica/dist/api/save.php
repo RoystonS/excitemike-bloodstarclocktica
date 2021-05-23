@@ -3,6 +3,8 @@
     include('shared.php');
     requirePost();
     $request = getPayload();
+    $token = requireField($request, 'token');
+    $tokenPayload = verifySession($token);
 
     $clobber = optionalField($request, 'clobber', false);
     validateBoolean($clobber);
@@ -10,9 +12,6 @@
     validateEdition($customEdition);
     $saveName = requireField($request, 'saveName');
     validateFilename($saveName);
-    $token = requireField($request, 'token');
-
-    $tokenPayload = verifySession($token);
     $username = $tokenPayload['username'];
 
     writeEditionFile($username, $saveName, $customEdition, $clobber);

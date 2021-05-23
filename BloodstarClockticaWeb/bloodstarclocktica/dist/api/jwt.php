@@ -2,11 +2,12 @@
 // bail because the session token didn't check out
 function rejectSession($message){
     header('HTTP/1.0 400 Bad Request');
-    if (empty($message)){
-        echo json_encode(array('error' =>'log in required'));
-    } else {
-        echo json_encode(array('error' =>'log in required', 'message'=>$message));
-    }
+    //if (empty($message)){
+    //    echo json_encode(array('error' =>'sign in required'));
+    //} else {
+    //    echo json_encode(array('error' =>'sign in required', 'message'=>$message));
+    //}
+    echo '"signInRequired"';
     exit();
     return false;
 }
@@ -45,8 +46,8 @@ function verifySession($token){
         $alg = $supported_algs[$decodedHeader->alg];
 
         // weird wrinkle for ES256
-        if ($decodedHeader->alg === 'ES256') {
-            return rejectSession('ES256 not supported');
+        if ($decodedHeader->alg !== 'RS256') {
+            return rejectSession('hash algorithm not supported');
         }
 
         if (!verifySig("$header.$payload", $decodedSignature, $secretKey, $decodedHeader->alg)){
@@ -65,7 +66,7 @@ function verifySession($token){
             return rejectSession('Token expired');
         }
         if (!array_key_exists('username', $decodedPayload)){
-            return rejectSession('No username specified');
+            return rejectSession('No username specified in token');
         }
         return $decodedPayload;
     } catch (Exception $e) {
@@ -74,7 +75,7 @@ function verifySession($token){
     return false;
 }
 
-function verifySig($headerAndPayloadStr, $signatureStr, $secretKey, $alg) {
+function verifySig($headerAndPayloadStr, $signatureStr, $secretKey) {
     $success = openssl_verify($headerAndPayloadStr, $signatureStr, $secretKey, 'SHA256');
     if ($success === 1) {
         return true;
