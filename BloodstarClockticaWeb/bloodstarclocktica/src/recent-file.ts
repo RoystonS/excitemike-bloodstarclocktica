@@ -3,8 +3,6 @@
  * @module RecentFile
  */
 
-// TODO: make sure recent file is only used if the user matches
-
 /**
  * If a file turns out to be deleted or renamed or something, delete the old
  * name from the list
@@ -26,7 +24,10 @@ export function clearRecentFile(name:string):void {
  * if a last-opened file is remembered, get its name
  * otherwise, return the empty string
  */
-export function getRecentFile():string {
+export function getRecentFile(userEmail:string):string {
+    if (userEmail !== localStorage.getItem('recentFileUser')){
+        return '';
+    }
     try {
         const localStorage = window.localStorage;
         if (!localStorage) {return '';}
@@ -41,11 +42,12 @@ export function getRecentFile():string {
  * maintain a list of recent files - both in the menu and in local storage
  * @param name file name
  */
-export function setRecentFile(name:string):void {
+export function setRecentFile(name:string,userEmail:string):void {
     try {
         const localStorage = window.localStorage;
         if (!localStorage) {return;}
         localStorage.setItem('recentFile',name);
+        localStorage.setItem('recentFileUser',userEmail);
     } catch {
         // ignore
     }
