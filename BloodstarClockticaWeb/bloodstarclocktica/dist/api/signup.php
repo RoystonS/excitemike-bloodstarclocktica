@@ -9,7 +9,8 @@
 
     $mysqli = makeMysqli();
 
-    // TODO: validate
+    validateUsername($username);
+    validateEmail($email);
 
     // verify name & email not taken
     $escapedUsername = $mysqli->real_escape_string($username);
@@ -37,9 +38,8 @@
     $confirmCode = sprintf('%06d', random_int(0,999999));
     $confirmHash = password_hash("$confirmCode:$email", PASSWORD_BCRYPT, ['cost'=>10]);
     if (false===$mysqli->query("INSERT IGNORE INTO `users` (`email`, `name`) VALUES ('$escapedEmail', '$escapedUsername');")){
-        //TODO: don't output the error
         $error = $mysqli->error;
-        echo json_encode(['error'=>"Error creating user: $error"]);
+        echo json_encode(['error'=>'Error creating user']);
         exit();
     }
     $escapedHash = $mysqli->real_escape_string($hash);
@@ -51,9 +51,8 @@
                                 .'`hash`=VALUES(`hash`), '
                                 .'`confirmHash`=VALUES(`confirmHash`) '
                                 .';')){
-        //TODO: don't output the error
         $error = $mysqli->error;
-        echo json_encode(['error'=>"Error storing confirmation code hash: $error"]);
+        echo json_encode(['error'=>'Error storing confirmation code hash']);
         exit();
     }
 

@@ -12,8 +12,7 @@
         $escapedUsername = $mysqli->real_escape_string($usernameOrEmail);
         $result = $mysqli->query("SELECT `email` FROM `users` WHERE `users`.`name` = '$escapedUsername' LIMIT 1;");
         if (false===$result){
-            //TODO: don't output the error
-            echo json_encode(array("error" => 'sql error '.$mysqli->error));
+            echo json_encode(array("error" => 'error looking up email'));
             exit();
         }
         if (0===$result->num_rows){
@@ -43,8 +42,7 @@
         .';');
     if (false===$result){
         $error = $mysqli->error;
-        //TODO: don't output the error
-        echo json_encode(array('error' => "Could not reset password: $error"));
+        echo json_encode(array('error' => 'Could not reset password'));
         exit();
     }
 

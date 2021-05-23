@@ -6,7 +6,8 @@
     $email = requireField($request, 'email');
     $confirmCode = requireField($request, 'code');
 
-    // TODO: validate email and code
+    validateConfirmCode($code);
+    validateEmail($email);
     
     // get signup data
     $mysqli = makeMysqli();
@@ -43,24 +44,12 @@
     $escapedHash = $mysqli->real_escape_string($hash);
     $mysqli->query("INSERT INTO `hash` (`email`,`hash`) VALUES ('$escapedEmail', '$escapedHash');");
     if (!$mysqli->query("DELETE FROM `unconfirmed` WHERE `unconfirmed`.`email` = '$escapedEmail';")){
-        //TODO: don't output the error
         $error = $mysqli->error;
-        echo json_encode(['error'=>"Could not delete record: $error"]);
+        echo json_encode(['error'=>'Could not delete record']);
         exit();
     }
     
-    // TODO: this code is duped in signin. extract to shared.php
-    $secondsPerDay = 60 * 60 * 24;
-    $tokenDuration = 1 * $secondsPerDay;
-    $expiration = time() + $tokenDuration;
-    $response = $mysqli->query("SELECT `name` FROM `users` WHERE `users`.`email` = '$escapedEmail' LIMIT 1;");
-    if (false===$response){
-        //TODO: don't output the error
-        $error = $mysqli->error;
-        echo json_encode(['error'=>"Error looking up username: $error"]);
-        exit();
-    }
-    $username = $result->fetch_all()[0][0];
+    $username = lookUpUsername($escapedEmail);
     $token = createToken($email, $username, $expiration);
     echo json_encode(array('token' => $token,'expiration' => $expiration,'email'=>$email,'username'=>$username));
 ?>

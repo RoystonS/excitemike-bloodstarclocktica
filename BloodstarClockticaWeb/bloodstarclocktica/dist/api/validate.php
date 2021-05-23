@@ -1,9 +1,24 @@
 <?php
 
+// this regex comes from the HTML5 spec https://html.spec.whatwg.org/multipage/input.html#e-mail-state-(type%3Demail)
+// it does reject some technically-valid email addresses but it handles the sort I care to support with this app
+$VALID_EMAIL_RE = '^[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$';
+
+$CONFIRM_CODE_RE = '[0-9]{6}';
+$USERNAME_RE = '^[A-Za-z0-9\-_]{2,}$';
+
 // error out if edition json does not look valid
 function validateBoolean($value) {
     if ('boolean' !== gettype($value)){
         echo '{"error":"invalid boolean"}';
+        exit();
+    }
+}
+
+// error out if the confirmation code does not look valid
+function validateConfirmCode($code) {
+    if ('string' !== gettype($code) || !preg_match($CONFIRM_CODE_RE, $code)){
+        echo '{"error":"invalid confirm code"}';
         exit();
     }
 }
@@ -16,14 +31,30 @@ function validateEdition($edition) {
     }
 }
 
+// error out if email looks invalid
+function validateEmail($email){
+    if (!preg_match($VALID_EMAIL_RE, $email)){
+        echo '{"error":"invalid email"}';
+        exit();
+    }
+}
+
 // error out if filename invalid
 function validateFilename($filename) {
     if (($filename==='') ||
-        ($filename==='.')  ||
+        ($filename==='.') ||
         ($filename==='..') ||
         !preg_match("/^[^\\/:\"?<>\\|]+$/", $filename))
     {
         echo '{"error":"invalid saveName"}';
+        exit();
+    }
+}
+
+// error out if username invalid
+function validateUsername($username) {
+    if (!preg_match($USERNAME_RE, $username)){
+        echo '{"error":"invalid username"}';
         exit();
     }
 }

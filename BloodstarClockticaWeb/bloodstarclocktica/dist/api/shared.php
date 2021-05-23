@@ -23,6 +23,21 @@
         return json_decode(file_get_contents('php://input'), true);
     }
 
+    // find username based on email
+    function lookUpUsername($email) {
+        $escapedEmail = $mysqli->real_escape_string($email);
+        $secondsPerDay = 60 * 60 * 24;
+        $tokenDuration = 1 * $secondsPerDay;
+        $expiration = time() + $tokenDuration;
+        $response = $mysqli->query("SELECT `name` FROM `users` WHERE `users`.`email` = '$escapedEmail' LIMIT 1;");
+        if (false===$response){
+            $error = $mysqli->error;
+            echo json_encode(['error'=>'Error looking up username']);
+            exit();
+        }
+        return $result->fetch_all()[0][0];
+    }
+
     // look up database info and connect
     function makeMysqli() {
         $dbInfo = json_decode(file_get_contents('../../protected/db'),true);

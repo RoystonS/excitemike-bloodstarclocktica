@@ -15,8 +15,7 @@
         $result = $mysqli->query("SELECT `hash`,`users`.`email`,`users`.`name` FROM `hash` INNER JOIN `users` ON `users`.`email` = `hash`.`email` WHERE `hash`.`email` = '$escapedEmail' LIMIT 1;");
     }
     if (false===$result){
-        //TODO: don't output the error
-        echo json_encode(array("error" => 'sql error '.$mysqli->error));
+        echo json_encode(array("error" => 'sql error'));
         exit();
     }
     if (0===$result->num_rows){
