@@ -42,7 +42,7 @@ class SignInDlg extends AriaDialog<SessionInfo> {
             },
             {
                 t:'input',
-                a:{type:'text',required:'true',id:'signInDlgUsername',placeholder:'Username or email',autocomplete:'username',autofocus:'true'},// TODO: pattern
+                a:{type:'text',required:'true',id:'signInDlgUsername',placeholder:'Username or email',autocomplete:'username',autofocus:'true'},
                 events:{keyup:submitOnEnter as unknown as EventListener}
             },{
                 t:'label',
@@ -50,7 +50,7 @@ class SignInDlg extends AriaDialog<SessionInfo> {
                 txt:'Password'
             },{
                 t:'input',
-                a:{type:'password',required:'true',id:'signInDlgPassword',placeholder:'Password',autocomplete:'current-password'},// TODO: pattern
+                a:{type:'password',required:'true',id:'signInDlgPassword',placeholder:'Password',autocomplete:'current-password'},
                 events:{keyup:submitOnEnter as unknown as EventListener}
             }]
         },{
