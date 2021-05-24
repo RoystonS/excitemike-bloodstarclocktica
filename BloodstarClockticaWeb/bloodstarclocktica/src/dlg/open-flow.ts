@@ -5,14 +5,19 @@
 import {Edition} from '../model/edition';
 import * as SdcDlg from '../dlg/blood-save-discard-cancel';
 import { spinner } from './spinner-dlg';
-import cmd from '../commands/cmd';
 import { showError } from './blood-message-dlg';
 import { createElement, CreateElementsOptions } from '../util';
 import { AriaDialog } from './aria-dlg';
 import { setRecentFile } from '../recent-file';
-import signIn from '../sign-in';
+import signIn, { signedInCmd } from '../sign-in';
 
+type ListData = {token:string,username:string};
 type ListFilesReturn = {error?:string,files:string[]};
+type OpenData = {
+    saveName: string,
+    token: string,
+    username: string
+};
 type OpenReturn = {error?:string,data:{[key:string]:unknown}};
 
 /** dialog for choosing a file */
@@ -55,8 +60,13 @@ export async function chooseFile():Promise<string> {
  * Brings up the loading spinner during the operation
  */
 async function listFiles():Promise<string[]> {
+    const sessionInfo = await signIn();
+    const request:ListData={
+        token:sessionInfo.token,
+        username:sessionInfo.username,
+    };
     try {
-        const {error,files} = await cmd('list', 'Retrieving file list') as ListFilesReturn;
+        const {error,files} = await signedInCmd('list', 'Retrieving file list', request) as ListFilesReturn;
         if (error) {
             console.error(error);
             await showError('Network Error', `Error encountered while retrieving file list`, error);
@@ -77,23 +87,31 @@ async function listFiles():Promise<string[]> {
  * @returns promise that resolves to whether a file was successfully opened
  */
  async function openNoPrompts(edition:Edition, name:string, suppressErrorMessage=false):Promise<boolean> {
-    const sessionInfo = await signIn();
-    const openData = {
-        saveName: name
-    };
-    const payload = JSON.stringify(openData);
-    const {error,data} = await cmd('open', `Retrieving ${name}`, payload) as OpenReturn;
-    if (error) {
+    try {
+        const sessionInfo = await signIn();
+        const openData:OpenData = {
+            saveName: name,
+            token: sessionInfo.token,
+            username: sessionInfo.username
+        };
+        const {error,data} = await signedInCmd('open', `Retrieving ${name}`, openData) as OpenReturn;
+        if (error) {
+            if (!suppressErrorMessage) {
+                await showError('Error', `Error encountered while trying to open file ${name}`, error);
+            }
+            return false;
+        }
+        const success = await spinner('open', `Opening edition file "${name}"`, edition.open(name, data));
+        if (success) {
+            setRecentFile(edition.saveName.get(), sessionInfo.email);
+        }
+        return success;
+    } catch (error) {
         if (!suppressErrorMessage) {
             await showError('Error', `Error encountered while trying to open file ${name}`, error);
         }
         return false;
     }
-    const success = await spinner('open', `Opening edition file "${name}"`, edition.open(name, data));
-    if (success) {
-        setRecentFile(edition.saveName.get(), sessionInfo.email);
-    }
-    return success;
 }
 
 /**

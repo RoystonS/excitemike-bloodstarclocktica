@@ -6,7 +6,7 @@
     $token = requireField($request, 'token');
     $tokenPayload = verifySession($token);
     $username = $tokenPayload['username'];
-    $userSaveDir = join_paths('../usersave', $userName);
+    $userSaveDir = join_paths('../usersave', $username);
     
     if (!file_exists($userSaveDir)) {
         mkdir($userSaveDir, 0777, true);
