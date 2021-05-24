@@ -6,7 +6,7 @@
     $email = requireField($request, 'email');
     $confirmCode = requireField($request, 'code');
 
-    validateConfirmCode($code);
+    validateConfirmCode($confirmCode);
     validateEmail($email);
     
     // get signup data
