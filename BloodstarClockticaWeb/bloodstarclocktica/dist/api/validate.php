@@ -19,7 +19,7 @@ function validateBoolean($value) {
 function validateConfirmCode($code) {
     global $CONFIRM_CODE_RE;
     if ('string' !== gettype($code) || !preg_match($CONFIRM_CODE_RE, $code)){
-        echo json_encode(['error'=>"invalid confirm code -- $CONFIRM_CODE_RE -- $code"]);
+        echo json_encode(['error'=>'invalid confirm code']);
         exit();
     }
 }
