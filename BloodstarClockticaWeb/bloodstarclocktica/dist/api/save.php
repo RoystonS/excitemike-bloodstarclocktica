@@ -13,6 +13,7 @@
     $saveName = requireField($request, 'saveName');
     validateFilename($saveName);
     $username = $tokenPayload['username'];
+    validateUsername($usernam);
 
     writeEditionFile($username, $saveName, $customEdition, $clobber);
 

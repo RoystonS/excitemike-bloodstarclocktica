@@ -24,13 +24,13 @@
     }
 
     // find username based on email
-    function lookUpUsername($email) {
+    function lookUpUsername($mysqli, $email) {
         $escapedEmail = $mysqli->real_escape_string($email);
         $secondsPerDay = 60 * 60 * 24;
         $tokenDuration = 1 * $secondsPerDay;
         $expiration = time() + $tokenDuration;
-        $response = $mysqli->query("SELECT `name` FROM `users` WHERE `users`.`email` = '$escapedEmail' LIMIT 1;");
-        if (false===$response){
+        $result = $mysqli->query("SELECT `name` FROM `users` WHERE `users`.`email` = '$escapedEmail' LIMIT 1;");
+        if (false===$result){
             $error = $mysqli->error;
             echo json_encode(['error'=>'Error looking up username']);
             exit();
@@ -79,36 +79,6 @@
         else
         {
             echo json_encode(array("error" => "field \"$fieldName\" is missing"));
-            exit();
-        }
-    }
-
-    // binary data to ${id}.png in save directory
-    function writeImage($saveName, $id, $isSource, $binaryData) {
-        global $saveDir;
-        validateFilename($saveName);
-
-        // ensure directory exists
-        if (!file_exists($saveDir)) {
-            mkdir($saveDir, 0777, true);
-        }
-        $editionFolder = join_paths($saveDir, $saveName);
-        if (!file_exists($editionFolder)) {
-            $success = mkdir($editionFolder, 0777, true);
-            if (!$success) {
-                echo json_encode(array('error' =>"could not make directory for '$saveName'"));
-                exit();
-            }
-        }
-
-        $suffix = '.png';
-        if ($isSource) {$suffix = '.src.png';}
-        $path = join_paths($editionFolder, $id.$suffix);
-
-        try {
-            file_put_contents($path, $binaryData);
-        } catch (Exception $e) {
-            echo json_encode(array('error' =>"error writing file '$saveName'"));
             exit();
         }
     }

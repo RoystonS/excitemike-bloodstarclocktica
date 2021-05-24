@@ -57,7 +57,7 @@
         exit();
     }
     
-    $username = lookUpUsername($email);
+    $username = lookUpUsername($mysqli, $email);
     $token = createToken($email, $username, $expiration);
     echo json_encode(array('token' => $token,'expiration' => $expiration,'email'=>$email,'username'=>$username));
 ?>

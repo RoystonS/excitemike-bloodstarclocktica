@@ -1,11 +1,15 @@
 <?php
+    ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
+    error_reporting(E_ALL);
 
 // this regex comes from the HTML5 spec https://html.spec.whatwg.org/multipage/input.html#e-mail-state-(type%3Demail)
 // it does reject some technically-valid email addresses but it handles the sort I care to support with this app
-$VALID_EMAIL_RE = '^[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$';
+$VALID_EMAIL_RE = '/^[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/';
 
-$CONFIRM_CODE_RE = '[0-9]{6}';
-$USERNAME_RE = '^[A-Za-z0-9\-_]{2,}$';
+$CONFIRM_CODE_RE = '/^[0-9]{6}$/';
+$USERNAME_RE = '/^[A-Za-z0-9\-_]{2,}$/';
+$CHARACTERID_RE = $USERNAME_RE;
 
 // error out if edition json does not look valid
 function validateBoolean($value) {
@@ -17,8 +21,9 @@ function validateBoolean($value) {
 
 // error out if the confirmation code does not look valid
 function validateConfirmCode($code) {
+    global $CONFIRM_CODE_RE;
     if ('string' !== gettype($code) || !preg_match($CONFIRM_CODE_RE, $code)){
-        echo '{"error":"invalid confirm code"}';
+        echo json_encode(['error'=>"invalid confirm code -- $CONFIRM_CODE_RE -- $code"]);
         exit();
     }
 }
@@ -33,8 +38,18 @@ function validateEdition($edition) {
 
 // error out if email looks invalid
 function validateEmail($email){
+    global $VALID_EMAIL_RE;
     if (!preg_match($VALID_EMAIL_RE, $email)){
         echo '{"error":"invalid email"}';
+        exit();
+    }
+}
+
+// error out if character id invalid
+function validateCharacterId($id) {
+    global $CHARACTERID_RE;
+    if (!preg_match($CHARACTERID_RE, $id)){
+        echo '{"error":"invalid character id"}';
         exit();
     }
 }
@@ -53,6 +68,7 @@ function validateFilename($filename) {
 
 // error out if username invalid
 function validateUsername($username) {
+    global $USERNAME_RE;
     if (!preg_match($USERNAME_RE, $username)){
         echo '{"error":"invalid username"}';
         exit();
