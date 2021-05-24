@@ -18,7 +18,7 @@ type OpenData = {
     token: string,
     username: string
 };
-type OpenReturn = {error?:string,data:{[key:string]:unknown}};
+type OpenReturn = {error:string}|{data:{[key:string]:unknown}};
 
 /** dialog for choosing a file */
 class ChooseFileDlg extends AriaDialog<string> {
@@ -94,14 +94,14 @@ async function listFiles():Promise<string[]> {
             token: sessionInfo.token,
             username: sessionInfo.username
         };
-        const {error,data} = await signedInCmd('open', `Retrieving ${name}`, openData) as OpenReturn;
-        if (error) {
+        const response = await signedInCmd('open', `Retrieving ${name}`, openData) as OpenReturn;
+        if ('error' in response) {
             if (!suppressErrorMessage) {
-                await showError('Error', `Error encountered while trying to open file ${name}`, error);
+                await showError('Error', `Error encountered while trying to open file ${name}`, response.error);
             }
             return false;
         }
-        const success = await spinner('open', `Opening edition file "${name}"`, edition.open(name, data));
+        const success = await spinner('open', `Opening edition file "${name}"`, edition.open(name, response.data));
         if (success) {
             setRecentFile(edition.saveName.get(), sessionInfo.email);
         }

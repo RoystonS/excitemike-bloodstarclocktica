@@ -2,30 +2,31 @@
  * Create script.json
  * @module Publish
  */
-import cmd from './cmd';
 import {Edition} from '../model/edition';
 import { showError } from '../dlg/blood-message-dlg';
 import { AriaDialog } from '../dlg/aria-dlg';
+import signIn, { signedInCmd } from '../sign-in';
 
+type PublishData = {
+    saveName:string,
+    token:string,
+};
 type PublishReturn = {error?:string,script:string,almanac:string};
 
 /**
  * publish the edition
  */
 export default async function publish(edition:Edition):Promise<boolean> {
-    type PublishData = {
-        saveName:string
-    };
-    
+    const sessionInfo = await signIn();
     const saveName = edition.saveName.get();
     const saveData:PublishData = {
+        token:sessionInfo.token,
         saveName: saveName
     };
-    const payload = JSON.stringify(saveData);
 
     let response:PublishReturn;
     try {
-        response = await cmd('publish', `Publishing ${edition.saveName.get()}`, payload) as PublishReturn;
+        response = await signedInCmd('publish', `Publishing ${edition.saveName.get()}`, saveData) as PublishReturn;
     } catch (error) {
         await showError('Error', 'Error encountered during publish', error);
         return false;
