@@ -43,7 +43,6 @@ function verifySession($token){
         $decodedHeader = json_decode(base64urlDecode($header));
         $decodedPayload = json_decode(base64urlDecode($payload), true);
         $decodedSignature = base64urlDecode($signature);
-        $alg = $supported_algs[$decodedHeader->alg];
 
         // weird wrinkle for ES256
         if ($decodedHeader->alg !== 'RS256') {

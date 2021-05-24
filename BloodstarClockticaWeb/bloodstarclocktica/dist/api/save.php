@@ -13,7 +13,7 @@
     $saveName = requireField($request, 'saveName');
     validateFilename($saveName);
     $username = $tokenPayload['username'];
-    validateUsername($usernam);
+    validateUsername($username);
 
     writeEditionFile($username, $saveName, $customEdition, $clobber);
 
@@ -21,7 +21,7 @@
 
     // encode as json and write to save directory
     function writeEditionFile($username, $saveName, $data, $clobber) {
-        $userSaveDir = join_paths('../usersave', $userName);
+        $userSaveDir = join_paths('../usersave', $username);
         if (!file_exists($userSaveDir)) {
             mkdir($userSaveDir, 0777, true);
         }

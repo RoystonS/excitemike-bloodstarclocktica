@@ -2,11 +2,11 @@
     header('Content-Type: application/json;');
     include('shared.php');
     requirePost();
-    $request = getPayload();
-    $token = requireField($request, 'token');
+    $data = getPayload();
+    $token = requireField($data, 'token');
     $tokenPayload = verifySession($token);
 
-    $saveName = requireField($request, 'saveName');
+    $saveName = requireField($data, 'saveName');
     validateFilename($saveName);
 
     $id = requireField($data, 'id');
@@ -32,7 +32,7 @@
 
     // binary data to ${id}.png in save directory
     function writeImage($username, $saveName, $id, $isSource, $binaryData) {
-        $userSaveDir = join_paths('../usersave', $userName);
+        $userSaveDir = join_paths('../usersave', $username);
         if (!file_exists($userSaveDir)) {
             mkdir($userSaveDir, 0777, true);
         }

@@ -1,8 +1,4 @@
 <?php
-    ini_set('display_errors', '1');
-    ini_set('display_startup_errors', '1');
-    error_reporting(E_ALL);
-
 // this regex comes from the HTML5 spec https://html.spec.whatwg.org/multipage/input.html#e-mail-state-(type%3Demail)
 // it does reject some technically-valid email addresses but it handles the sort I care to support with this app
 $VALID_EMAIL_RE = '/^[a-zA-Z0-9.!#$%&\'*+\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/';
