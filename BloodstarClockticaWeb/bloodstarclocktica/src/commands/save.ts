@@ -109,7 +109,7 @@ type Separated = {
 };
 
 /** separate the edition json and images for saving as separate files */
-async function separateImages(edition:Edition):Promise<Separated> {
+async function separateImages(username:string,edition:Edition):Promise<Separated> {
     const saveName = edition.saveName.get();
     const editionSerialized = await edition.serialize();
     const characters = editionSerialized.characterList as {id:string, unStyledImage?:string, styledImage?:string}[];
@@ -121,14 +121,14 @@ async function separateImages(edition:Edition):Promise<Separated> {
         {
             const oldImageStr = character.unStyledImage;
             if (oldImageStr && oldImageStr.startsWith('data:')) {
-                character.unStyledImage = `https://www.bloodstar.xyz/save/${saveName}/${id}.src.png`;
+                character.unStyledImage = `https://www.bloodstar.xyz/usersave/${username}/${saveName}/${id}.src.png`;
                 sourceImages.set(id, oldImageStr);
             }
         }
         {
             const oldImageStr = character.styledImage;
             if (oldImageStr && oldImageStr.startsWith('data:')) {
-                character.styledImage = `https://www.bloodstar.xyz/save/${saveName}/${id}.png`;
+                character.styledImage = `https://www.bloodstar.xyz/usersave/${username}/${saveName}/${id}.png`;
                 finalImages.set(id, oldImageStr);
             }
         }
@@ -136,7 +136,7 @@ async function separateImages(edition:Edition):Promise<Separated> {
     const meta = editionSerialized.meta as {logo?:string};
     const logo:string|undefined = meta.logo;
     if (logo && logo.startsWith('data:')) {
-        meta.logo = `https://www.bloodstar.xyz/save/${saveName}/_meta.png`;
+        meta.logo = `https://www.bloodstar.xyz/usersave/${username}/${saveName}/_meta.png`;
     }
     
     return {
@@ -157,7 +157,7 @@ async function separateImages(edition:Edition):Promise<Separated> {
  */
 async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):Promise<boolean> {
     // serialize the edition, but break images out into separate pieces to save
-    const toSave = await separateImages(edition);
+    const toSave = await separateImages(sessionInfo.username, edition);
 
     // save JSON
     const saveName = edition.saveName.get();
