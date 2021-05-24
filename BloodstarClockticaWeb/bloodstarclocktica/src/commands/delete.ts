@@ -6,10 +6,10 @@ import { show as showMessage, showError } from '../dlg/blood-message-dlg';
 import {spinner} from '../dlg/spinner-dlg';
 import {show as getConfirmation} from "../dlg/yes-no-dlg";
 import {chooseFile} from "../dlg/open-flow";
-import cmd from './cmd';
+import signIn, { signedInCmd } from '../sign-in';
 
-type SaveData = {saveName:string};
-type DeleteReturn = {success:true,error?:string};
+type DeleteData = {token:string,saveName:string};
+type DeleteReturn = {error:string}|true;
 
 /** confirm deletion */
 async function confirmDelete(name:string):Promise<boolean> {
@@ -32,7 +32,7 @@ async function confirmDelete(name:string):Promise<boolean> {
     if (!name) {return '';}
     if (!await confirmDelete(name)) {return '';}
     if (!await spinner('delete', 'Choose file to delete', deleteFile(name))){return '';}
-    await showMessage(`File "${name}" deleted`);
+    await showMessage(`Deleted`, `File "${name}" deleted`);
     return name;
 }
 
@@ -42,20 +42,19 @@ async function confirmDelete(name:string):Promise<boolean> {
  * @returns true if nothing went terribly wrong
  */
 async function deleteFile(name:string):Promise<boolean>{
-    const deleteData:SaveData = {
+    const sessionInfo = await signIn();
+    const deleteData:DeleteData = {
+        token:sessionInfo.token,
         saveName: name
     };
-    const payload = JSON.stringify(deleteData);
     try {
-        const {error} = await cmd('delete', `Deleting ${name}`, payload) as DeleteReturn;
-        if (error) {
-            await showError('Error', `Error encountered while trying to delete file ${name}`, error);
-            return false;
-        }
+        const response = await signedInCmd('delete', `Deleting ${name}`, deleteData) as DeleteReturn;
+        if (true === response) {return true;}
+        const {error} = response;
+        await showError('Error', `Error encountered while trying to delete file ${name}`, error);
+        return false;
     } catch (error) {
         await showError('Error', `Error encountered while trying to delete file ${name}`, error);
         return false
     }
-
-    return true;
 }
