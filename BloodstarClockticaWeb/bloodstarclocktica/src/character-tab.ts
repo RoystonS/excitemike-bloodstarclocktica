@@ -15,6 +15,7 @@ type TagsThatCanBeDisabled = "button" | "fieldset" | "input" | "optgroup" | "opt
 /** set up character tab bindings */
 function bindCharacterTabControls(character:Character):(()=>void)|null {
     const characterTabIds:Set<string> = new Set<string>();
+    // TODO: validate/warn character Id
     bindTrackedText('characterId', character.id, characterTabIds);
     bindTrackedText('characterName', character.name, characterTabIds);
     bindTrackedComboBox('characterTeam', character.team, characterTabIds, parseBloodTeam, x=>x);
