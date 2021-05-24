@@ -76,7 +76,7 @@ export default function init(edition:Edition):void {
         ['saveFileAsButton', saveFileAsClicked],
         ['jsonFromUrlButton', BloodIO.importJsonFromUrl],
         ['jsonFromFileButton', BloodIO.importJsonFromFile],
-        ['importBlood', BloodIO.importBlood],
+        ['importBloodButton', BloodIO.importBlood],
         ['importOfficialButton', importOfficialClicked],
         ['saveAndPublishButton', saveAndPublishClicked],
         ['helpButton', showHelp],
