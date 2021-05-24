@@ -20,7 +20,14 @@
         list($foundName,$foundEmail) = $result->fetch_all()[0];
 
         if (($foundName===$username)&&($foundEmail===$email)){
-            // user is restarting sign up, which is fine
+            $result = $mysqli->query("SELECT 1 FROM `hash` WHERE `hash`.`email` = '$escapedEmail' LIMIT 1;");
+            if (0===$result->num_rows) {
+                // not confirmed. restarting is fine
+            } else {
+                // if they are already confirmed, it's not valid to sign up again
+                echo json_encode('emailTaken');
+                exit();
+            }
         } else if ($foundEmail===$email){
             echo json_encode('emailTaken');
             exit();
