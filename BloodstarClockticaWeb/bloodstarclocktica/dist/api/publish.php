@@ -1,8 +1,4 @@
 <?php
-    ini_set('display_errors', '1');
-    ini_set('display_startup_errors', '1');
-    error_reporting(E_ALL);
-
     header('Content-Type: application/json;');
     include('shared.php');
     include('almanac.php');
@@ -24,7 +20,7 @@
     $script = makeScript($data, $saveName);
 
     // ensure publish directory exists
-    $publishDir = join_paths('../p', $saveName);
+    $publishDir = "../p/$username/$saveName";
     if (!file_exists($publishDir)) {
         mkdir($publishDir, 0777, true);
     }
@@ -61,12 +57,10 @@
         // ignoring errors in deleting unused images
     }
 
-
-
     echo json_encode(array(
         'success' => true,
-        'script'=>'https://www.bloodstar.xyz/p/'.$saveName.'/script.json',
-        'almanac'=>'https://www.bloodstar.xyz/p/'.$saveName.'/almanac.html')
+        'script'=>"https://www.bloodstar.xyz/p/$username/$saveName/script.json",
+        'almanac'=>"https://www.bloodstar.xyz/p/$username/$saveName/almanac.html")
     );
 
     // copy field if it is present
@@ -119,7 +113,7 @@
                 if (preg_match("/^data:$/", $inMeta['logo'])) {
                     $outMeta['logo'] = $inMeta['logo'];
                 } else {
-                    $outMeta['logo'] = 'https://www.bloodstar.xyz/p/'.$saveName.'/_meta.png';
+                    $outMeta['logo'] = "https://www.bloodstar.xyz/p/$username/$saveName/_meta.png";
                 }
             }
 
@@ -151,7 +145,7 @@
                     if (preg_match("/^data:$/", $inCharacter['styledImage'])) {
                         $outCharacter['image'] = $inCharacter['styledImage'];
                     } else {
-                        $outCharacter['image'] = 'https://www.bloodstar.xyz/p/'.$saveName.'/'.$id.'.png';
+                        $outCharacter['image'] = "https://www.bloodstar.xyz/p/$username/$saveName/$id.png";
                     }
                 }
 
