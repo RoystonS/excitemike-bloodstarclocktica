@@ -10,6 +10,7 @@ import importOfficial from './import/official';
 import publish from './commands/publish';
 import {save, saveAs} from './commands/save';
 import {chooseAndDeleteFile} from './commands/delete';
+import {deleteAccount} from './commands/delete-account';
 import * as SdcDlg from './dlg/blood-save-discard-cancel';
 import {signIn, signOut} from './sign-in';
 import { clearRecentFile, setRecentFile } from "./recent-file";
@@ -24,15 +25,8 @@ async function addCharacterClicked(edition:Edition):Promise<boolean> {
 }
 
 /** user chose to change their password */
-async function changePasswordClicked(_edition:Edition):Promise<boolean> {
+async function changePasswordClicked():Promise<boolean> {
     // TODO: implement changePasswordClicked
-    await showMessage('Not implemented', 'This feature is not yet implemented');
-    return true;
-}
-
-/** user chose to delete their account */
-async function deleteAccountClicked(_edition:Edition):Promise<boolean> {
-    // TODO: implement deleteAccountClicked
     await showMessage('Not implemented', 'This feature is not yet implemented');
     return true;
 }
@@ -67,7 +61,7 @@ export default function init(edition:Edition):void {
     const mapping:[string,(edition:Edition)=>Promise<boolean>][] = [
         ['signOutBtn', signOutClicked],
         ['changePasswordBtn', changePasswordClicked],
-        ['deleteAccountBtn', deleteAccountClicked],
+        ['deleteAccountBtn', deleteAccount],
         ['addCharacterButton', addCharacterClicked],
         ['newFileButton', newFileClicked],
         ['openFileButton', showOpenFlow],
@@ -121,7 +115,7 @@ export async function saveFileAsClicked(edition:Edition):Promise<boolean> {
 }
 
 /** clicked the help menu button */
-function showHelp(_edition:Edition):Promise<boolean> {
+function showHelp():Promise<boolean> {
     // TODO: implement showHelp
     void showError('Not yet implemented', '`showHelp` Not yet implemented');
     return Promise.resolve(true);
