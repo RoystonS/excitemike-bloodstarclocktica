@@ -76,7 +76,6 @@ async function showConfirmStep(email:string):Promise<SessionInfo|null>{
  * @returns email address to which a confirmation email was sent, or the empty string
  */
 async function showSignUpStep():Promise<string>{
-    // TODO: check availability
     const usernameField = createElement({t:'input',a:{type:'text',required:'true',placeholder:'Username',autocomplete:'username'},id:'signUpDlgUsername'});
     const usernameWarnings = createElement({t:'div',css:['column'],a:{style:'color:red;grid-column-start:span 2'}});
     const emailField = createElement({t:'input',a:{type:'email',required:'true',placeholder:'name@host.com',autocomplete:'email'},id:'signUpDlgEmail'});
