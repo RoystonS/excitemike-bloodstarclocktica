@@ -20,8 +20,8 @@
 .curvedCharacterNameSvg {
     pointer-events: none;
     font-size:24px;
-    width:100%;
-    height:100%;
+    width:200px;
+    height:200px;
 }
 #curvedCharacterNameTextPath {
     /*filter: drop-shadow(0 1.5px 0 white) drop-shadow(0 -1.5px 0 white) drop-shadow(1.5px 0 0 white) drop-shadow(-1.5px 0 0 white) drop-shadow(0 2px 2px rgba(0,0,0,.5));*/
