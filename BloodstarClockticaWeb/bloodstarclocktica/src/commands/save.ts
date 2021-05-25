@@ -56,10 +56,9 @@ async function confirmClobber(saveData:SaveData):Promise<SaveResult> {
  */
  export async function saveAs(edition:Edition):Promise<boolean> {
     const name = await promptForName(edition.saveName.get());
-    const sessionInfo = await signIn();
-
-    // null means cancel
     if (null === name) {return false;}
+    const sessionInfo = await signIn();
+    if (!sessionInfo){return false;}
     
     if (!validateSaveName(name)) {
         await showMessage('Invalid File Name', `"${name}" is not a valid filename.`);
@@ -93,7 +92,11 @@ export async function save(edition:Edition):Promise<boolean> {
             case '':
                 return await saveAs(edition);
             default:
-                return await _save(await signIn(), edition, true);
+                {
+                    const sessionInfo = await signIn();
+                    if (!sessionInfo){return false;}
+                    return await _save(sessionInfo, edition, true);
+                }
         }
     } catch (error) {
         await showError('Error', 'Error encountered while trying to save', error);

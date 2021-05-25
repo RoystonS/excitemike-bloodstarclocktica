@@ -43,6 +43,7 @@ async function confirmDelete(name:string):Promise<boolean> {
  */
 async function deleteFile(name:string):Promise<boolean>{
     const sessionInfo = await signIn();
+    if (!sessionInfo){return false;}
     const deleteData:DeleteData = {
         token:sessionInfo.token,
         saveName: name

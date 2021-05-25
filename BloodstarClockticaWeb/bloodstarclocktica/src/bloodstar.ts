@@ -162,10 +162,13 @@ async function init() {
     menuInit(edition);
 
     // need to sign in before we can do much of anything
-    const session = await signIn();
-    updateUserDisplay(session);
+    let sessionInfo = null;
+    while (!sessionInfo) {
+        sessionInfo = await signIn();
+    }
+    updateUserDisplay(sessionInfo);
 
-    await initCustomEdition(session.email);
+    await initCustomEdition(sessionInfo.email);
 }
 
 type StatusBarData = Map<string, {id:string,exported:number,total:number}>;

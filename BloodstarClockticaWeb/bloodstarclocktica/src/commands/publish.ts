@@ -18,6 +18,7 @@ type PublishReturn = {error?:string,script:string,almanac:string};
  */
 export default async function publish(edition:Edition):Promise<boolean> {
     const sessionInfo = await signIn();
+    if (!sessionInfo){return false;}
     const saveName = edition.saveName.get();
     const saveData:PublishData = {
         token:sessionInfo.token,

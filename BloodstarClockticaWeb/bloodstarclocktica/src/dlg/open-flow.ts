@@ -62,6 +62,7 @@ export async function chooseFile():Promise<string> {
  */
 async function listFiles():Promise<string[]> {
     const sessionInfo = await signIn();
+    if (!sessionInfo) {return [];}
     const request:ListData={
         token:sessionInfo.token,
         username:sessionInfo.username,
@@ -90,6 +91,7 @@ async function listFiles():Promise<string[]> {
  async function openNoPrompts(edition:Edition, name:string, suppressErrorMessage=false):Promise<boolean> {
     try {
         const sessionInfo = await signIn();
+        if (!sessionInfo){return false;}
         const openData:OpenData = {
             saveName: name,
             token: sessionInfo.token,

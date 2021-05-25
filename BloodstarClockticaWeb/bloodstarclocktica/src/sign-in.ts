@@ -4,8 +4,13 @@
  */
 import cmd from "./commands/cmd";
 import {showError} from "./dlg/blood-message-dlg";
-import {show as doSignInFlow} from "./dlg/sign-in-flow";
+import {show as doSignInFlow, SignInFlowOptions} from "./dlg/sign-in-flow";
 import { SessionInfo } from "./iam";
+
+type SignInOptions = SignInFlowOptions & {
+    /** true to force a new sign-in instead of reusing existing token */
+    force?:boolean
+};
 
 let sessionInfo:SessionInfo|null = null;
 
@@ -47,9 +52,9 @@ function getStoredToken():SessionInfo|null{
  * prompt the user for a user+pass to sign in with
  * @returns Promise that resolves to auth info that worked or the null if user did not successfully sign in
  */
-async function promptAndSignIn():Promise<SessionInfo|null>{
+async function promptAndSignIn(options?:SignInFlowOptions):Promise<SessionInfo|null>{
     try {
-        return await doSignInFlow("Sign in");
+        return await doSignInFlow(options);
     } catch (error) {
         await showError('Error', 'Error encountered during sign-in', error);
     }
@@ -64,7 +69,7 @@ async function promptAndSignIn():Promise<SessionInfo|null>{
 export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:string, body:{token:string}):Promise<ResultType> {
     sessionInfo = sessionInfo || getStoredToken();
     while (!sessionInfo || accessTokenExpired()) {
-        await signIn(true);
+        await signIn({force:true,message:'Please sign in to continue.'});
         if (sessionInfo){
             body.token = sessionInfo.token;
         }
@@ -72,7 +77,7 @@ export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:str
 
     let result = await cmd<ResultType|'signInRequired'>(cmdName, spinnerMessage, JSON.stringify(body));
     while (result==='signInRequired') {
-        await signIn(true);
+        await signIn({force:true,message:'Please sign in to continue.'});
         if (sessionInfo){
             body.token = sessionInfo.token;
         }
@@ -83,22 +88,29 @@ export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:str
 
 /**
  * sign in using saved info or prompting for user+pass if necessary
- * Loops until a valid sign-in occurs.
+ * If canCancel is not set in options, this loops until a valid sign-in occurs.
  * @returns promise that resolves to user info
  */
-export async function signIn(force=false):Promise<SessionInfo> {
+export async function signIn(options?:SignInOptions):Promise<SessionInfo|null> {
+    const force = !!(options?.force);
     sessionInfo = sessionInfo || getStoredToken();
     if (!force && sessionInfo && !accessTokenExpired()){return sessionInfo;}
     clearStoredToken();
     sessionInfo = null;
 
-    while (!sessionInfo) {
-        try {
-            sessionInfo = await promptAndSignIn();
-        } catch (error) {
-            await showError('Error', 'Error while signing in', error);
+    if (options?.canCancel) {
+        sessionInfo = await promptAndSignIn(options);
+        return sessionInfo;
+    } else {
+        while (!sessionInfo) {
+            try {
+                sessionInfo = await promptAndSignIn(options);
+            } catch (error) {
+                await showError('Error', 'Error while signing in', error);
+            }
         }
     }
+
     storeToken(sessionInfo);
     return sessionInfo;
 }

@@ -3,16 +3,24 @@
  * @module DeleteAccountFlow
  */
 import { show as showMessage, showError } from "../dlg/blood-message-dlg";
-import signIn, { signedInCmd } from "../sign-in";
+import signIn, { signedInCmd, signOut } from "../sign-in";
 import { show as getConfirmation } from "../dlg/yes-no-dlg";
 import { AriaDialog } from "../dlg/aria-dlg";
 import { createElement } from "../util";
+import { SessionInfo } from "../iam";
 type DeleteAccountData = {token:string,password:string};
 type DeleteAccountResult = {error:string}|true;
 
 /** make sure the user really really wants to do that */
-async function confirmDeleteAccount():Promise<boolean>{
-    const sessionInfo = await signIn(false); // TODO: make clear in the dialog that this is for deletion
+async function confirmDeleteAccount():Promise<SessionInfo|null>{
+    const sessionInfo = await signIn({
+        canCancel:true,
+        title:'Confirm Account',
+        message:'Sign in again to confirm account deletion',
+        includeForgotPasswordLink:false,
+        includeSignUpLink:false,
+        force:true});
+    if (!sessionInfo) {return null;}
     if (!await getConfirmation(
         'Confirm Delete',
         `Are you sure you'd like to the account associated with username "${sessionInfo.username}" and email "${sessionInfo.email}"? You will not be able to recover your account!`,
@@ -21,14 +29,14 @@ async function confirmDeleteAccount():Promise<boolean>{
             noLabel:'Cancel',
             checkboxMessage:`Yes, I am certain I want to permanently delete my account`,
         }))
-    { return false; }
-    return true;
+    { return null; }
+    return sessionInfo;
 }
 
 /** user chose to delete their account */
 export async function deleteAccount():Promise<boolean> {
-    const sessionInfo = await signIn(false); // TODO: make clear in the dialog that this is for deletion
-    if (!confirmDeleteAccount()){return false;}
+    const sessionInfo = await confirmDeleteAccount();
+    if (!sessionInfo){return false;}
 
     const password = await getPassword();
     if (!password){return false;}
@@ -41,7 +49,8 @@ export async function deleteAccount():Promise<boolean> {
     
     if (true === result) {
         await showMessage('Done', 'Account deleted');
-        return !!await signIn(true);
+        signOut();
+        return !!await signIn();
     }
 
     const {error} = result;

@@ -8,8 +8,27 @@ import showSignUpFlow from './sign-up-flow';
 import showResetPasswordFlow from './reset-password-flow';
 import { SessionInfo, signIn } from '../iam';
 
+export type SignInFlowOptions = {
+    /** set true to make dialog cancelable */
+    canCancel?:boolean,
+
+    /** set false to remove forgot password link */
+    includeForgotPasswordLink?:boolean,
+
+    /** set false to remove signup link */
+    includeSignUpLink?:boolean,
+
+    /** extra text about why you are being asked to sign in */
+    message?:string,
+
+    /** optional prompt */
+    title?:string,
+};
+
 class SignInDlg extends AriaDialog<SessionInfo> {
-    canCancel():boolean{return false;}
+    private _canCancel = false;
+
+    canCancel():boolean{return this._canCancel;}
 
     /** get a value from a field by id */
     private getValue(id:string):string {
@@ -17,7 +36,9 @@ class SignInDlg extends AriaDialog<SessionInfo> {
         return inputElement ? inputElement.value : '';
     }
 
-    async open(prompt:string):Promise<SessionInfo|null> {
+    async open(options?:SignInFlowOptions):Promise<SessionInfo|null> {
+        this._canCancel = !!options?.canCancel;
+        const title = options?.title || 'Sign In';
         const submitOnEnter = async (event:KeyboardEvent):Promise<void>=>{
             switch (event.code)
             {
@@ -28,11 +49,25 @@ class SignInDlg extends AriaDialog<SessionInfo> {
                     break;
             }
         };
+
+        // title
         const body:CreateElementsOptions = [{
             t:'h1',
             a:{role:'alert'},
-            txt:prompt,
-        },{
+            txt:title,
+        }];
+
+        // message
+        const message = options?.message;
+        if (message) {
+            body.push({
+                t:'p',
+                txt:message
+            });
+        }
+
+        // main fields
+        body.push({
             t:'div',
             css:['twoColumnGrid'],
             children:[{
@@ -53,37 +88,51 @@ class SignInDlg extends AriaDialog<SessionInfo> {
                 a:{type:'password',required:'true',id:'signInDlgPassword',placeholder:'Password',autocomplete:'current-password'},
                 events:{keyup:submitOnEnter as unknown as EventListener}
             }]
-        },{
-            t:'a',
-            a:{href:'#',style:'align-self:center'},
-            txt:'Forgot your password?',
-            events:{click:async()=>this.close(await showResetPasswordFlow())}
-        },{
+        });
+        
+        // forgot password link
+        const includeForgotPasswordLink = false !== (options?.includeForgotPasswordLink);
+        if (includeForgotPasswordLink) {
+            body.push({
+                t:'a',
+                a:{href:'#',style:'align-self:center'},
+                txt:'Forgot your password?',
+                events:{click:async()=>this.close(await showResetPasswordFlow())}
+            });
+        }
+
+        // sign in button
+        body.push({
             t:'button',
             txt:'Sign in',
             events:{click:async ()=>this.close(await this.signIn())}
-        },{
-            t:'div',
-            txt:'Need an account? ',
-            a:{style:'align-self:center'},
-            children:[{
-                t:'a',
-                a:{href:'#'},
-                txt:'Sign Up',
-                events:{click:async ()=>{
-                    const signUpResult = await showSignUpFlow();
-                    if (signUpResult) {
-                        this.close(signUpResult);
-                    }
-                }}
-            }]
-        }];
+        });
+
+        // sign up link
+        const includeSignUpLink = false !== (options?.includeSignUpLink);
+        if (includeSignUpLink){
+            body.push({
+                t:'div',
+                txt:'Need an account? ',
+                a:{style:'align-self:center'},
+                children:[{
+                    t:'a',
+                    a:{href:'#'},
+                    txt:'Sign Up',
+                    events:{click:async ()=>{
+                        const signUpResult = await showSignUpFlow();
+                        if (signUpResult) {
+                            this.close(signUpResult);
+                        }
+                    }}
+                }]});
+        }
 
         return await this.baseOpen(
             document.activeElement,
             'sign-in',
             body,
-            []
+            this._canCancel ? [{label:'Cancel'}] : []
         );
     }
 
@@ -100,6 +149,6 @@ class SignInDlg extends AriaDialog<SessionInfo> {
  * returns a promise that resolves to the entered
  * string or null if the user cancelled
  */
-export async function show(prompt:string):Promise<SessionInfo|null> {
-    return await new SignInDlg().open(prompt);
+export async function show(options?:SignInFlowOptions):Promise<SessionInfo|null> {
+    return await new SignInDlg().open(options);
 }

@@ -106,6 +106,7 @@ async function saveAndPublishClicked(edition:Edition):Promise<boolean> {
  */
 export async function saveFileAsClicked(edition:Edition):Promise<boolean> {
     const sessionInfo = await signIn();
+    if (!sessionInfo){return false;}
     if (await saveAs(edition)) {
         setRecentFile(edition.saveName.get(), sessionInfo.email);
         return true;
