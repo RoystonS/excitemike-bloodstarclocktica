@@ -19,13 +19,19 @@
         exit();
     }
     if (0===$result->num_rows){
-        echo json_encode(array("error" => "no such username or email \"$usernameOrEmail\""));
+        echo json_encode([
+            'title' => 'Sign-In Error',
+            'message' => 'Incorrect username or password.'
+        ]);
         exit();
     }
     $results = $result->fetch_all();
     list($hash, $email, $username) = $results[0];
     if (!password_verify($password, $hash)) {
-        echo json_encode(array("error" => "password did not match"));
+        echo json_encode([
+            'title' => 'Sign-In Error',
+            'message' => 'Incorrect username or password.'
+        ]);
         exit();
     }
 

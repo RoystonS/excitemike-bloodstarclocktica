@@ -42,10 +42,6 @@
 .dialogBox > *:last-child {
     margin-block-end: 0;
 }
-.dialogBox > .title {
-    text-align: center;
-    font-weight: bold;
-}
 .dialogBox > p, .dialogBox > pre {
     margin-block-start: 0;
 }

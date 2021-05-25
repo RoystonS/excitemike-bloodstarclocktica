@@ -23,7 +23,10 @@ type SignInData = {
     usernameOrEmail:string,
     password:string
 };
-type SignInResponse = {error?:string,token?:string,expiration?:number,username?:string,email?:string};
+type SignInResponse
+    = {error:string}
+    | {message:string,title:string}
+    | {token:string,expiration:number,username:string,email:string};
 type SignUpData = {
     username:string,
     password:string,
@@ -128,11 +131,16 @@ export async function signIn(usernameOrEmail:string, password:string):Promise<Se
         password
     };
     const payload = JSON.stringify(signInData);
-    const {error,token,expiration,username,email} = await cmd('signin', 'Signing in', payload) as SignInResponse;
-    if (error) {
-        await showError('Error', `Error encountered while trying to sign in ${usernameOrEmail}`, error);
+    const response = await cmd('signin', 'Signing in', payload) as SignInResponse;
+    if ('error' in response) {
+        await showError('Error', `Error encountered while trying to sign in ${usernameOrEmail}`, response.error);
         return null;
     }
+    if ('message' in response) {
+        await showMessage(response.title, response.message);
+        return null;
+    }
+    const {token,expiration,username,email} = response;
     if (!token || !expiration || !username || !email) {return null;}
     return {token,expiration,username,email};
 }

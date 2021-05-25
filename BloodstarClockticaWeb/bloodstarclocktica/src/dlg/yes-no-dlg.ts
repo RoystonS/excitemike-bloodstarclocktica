@@ -25,8 +25,7 @@ class YesNoDialog extends AriaDialog<boolean> {
         const checkboxMessage = options?.checkboxMessage || '';
 
         const body:CreateElementsOptions = [{
-            t:'p',
-            css:['title'],
+            t:'h1',
             txt:titleText
         }];
         

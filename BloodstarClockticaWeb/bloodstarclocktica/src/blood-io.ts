@@ -48,14 +48,14 @@ async function chooseJsonFile():Promise<File|null> {
     return await dlg.baseOpen(
         document.activeElement,
         'chooseJsonFile',
-        [{
-            t:'button',
-            txt:'Choose File',
-            events:{click:()=>chooseFile()}
-        }],
         [
-            {label:'Cancel'}
-        ]
+            {t:'h1',txt:'Choose file'},
+            {t:'div',css:['dialogBtnGroup'],children:[
+                {t:'button',txt:'Choose File',events:{click:()=>chooseFile()}},
+                {t:'button',txt:'Cancel',events:{click:()=>dlg.close()}}
+            ]}
+        ],
+        []
     );
 }
 

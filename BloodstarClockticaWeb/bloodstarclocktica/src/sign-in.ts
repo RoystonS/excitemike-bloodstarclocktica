@@ -48,12 +48,12 @@ function getStoredToken():SessionInfo|null{
  * @returns Promise that resolves to auth info that worked or the null if user did not successfully sign in
  */
 async function promptAndSignIn():Promise<SessionInfo|null>{
-    const accessToken = await doSignInFlow("Sign in");
-    if (!accessToken) {
-        await showError('Error', 'Error encountered during sign-in', 'Network error or incorrect username or password.');
-        return null;
+    try {
+        return await doSignInFlow("Sign in");
+    } catch (error) {
+        await showError('Error', 'Error encountered during sign-in', error);
     }
-    return accessToken;
+    return null;
 }
 
 /**

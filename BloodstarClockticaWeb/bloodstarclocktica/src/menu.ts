@@ -10,7 +10,7 @@ import importOfficial from './import/official';
 import publish from './commands/publish';
 import {save, saveAs} from './commands/save';
 import {chooseAndDeleteFile} from './commands/delete';
-import {deleteAccount} from './commands/delete-account';
+import {deleteAccount} from './dlg/delete-account-flow';
 import * as SdcDlg from './dlg/blood-save-discard-cancel';
 import {signIn, signOut} from './sign-in';
 import { clearRecentFile, setRecentFile } from "./recent-file";

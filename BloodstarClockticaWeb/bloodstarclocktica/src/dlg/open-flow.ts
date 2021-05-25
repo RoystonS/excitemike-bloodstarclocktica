@@ -26,6 +26,7 @@ class ChooseFileDlg extends AriaDialog<string> {
     async open():Promise<string> {
         const fileListDiv = createElement({t:'div',css:['openDlgList']});
         const body:CreateElementsOptions = [
+            {t:'h1',txt:'Choose File'},
             {t:'p',txt:'Choose an existing file to open:'},
             fileListDiv
         ];

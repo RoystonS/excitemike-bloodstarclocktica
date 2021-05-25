@@ -13,8 +13,10 @@ class NewOpenDlg extends AriaDialog<boolean> {
     canCancel():boolean{return false;}
     async open(edition:Edition):Promise<boolean> {
         const body:CreateElementsOptions = [{
+            t:'h1',
+            txt: 'Welcome'
+        },{
             t:'p',
-            css:['title'],
             txt:'To get started, open an existing edition or create a new one.'
         }];
         const buttons:ButtonCfg<boolean>[] = [

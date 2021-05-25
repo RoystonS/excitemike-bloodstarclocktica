@@ -43,7 +43,7 @@ export default async function publish(edition:Edition):Promise<boolean> {
         null,
         'publishComplete', 
         [
-            {t:'p',css:['title'],txt:'Publish Complete'},
+            {t:'h1',txt:'Publish Complete'},
             {
                 t:'div',
                 css:['uploadCompleteGrid'],
