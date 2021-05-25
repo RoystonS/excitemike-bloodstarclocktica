@@ -9,7 +9,7 @@ import { getCorsProxyUrl } from "./util";
 import Locks from './lock';
 import { spinner } from './dlg/spinner-dlg';
 
-const MAX_SIMULTANEOUS_IMAGE_REQUESTS = 5;
+const MAX_SIMULTANEOUS_IMAGE_REQUESTS = 8;
 
 /** data about how clocktower.online wants the images */
 export const enum ProcessImageSettings {

@@ -131,18 +131,24 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     /** inverse of serialize */
     async deserialize(serialized:ReadonlyArray<{[key:string]:unknown}>):Promise<void> {
         await this.clear();
-        const toAdd:ItemType[] = [];
+        const promises = [];
         for (const itemData of serialized) {
             if ((itemData !== null) &&
                 (typeof itemData !== 'string') &&
                 (typeof itemData !== 'number') &&
                 (typeof itemData !== 'boolean') &&
-                !Array.isArray(itemData) ) {
-                const item = await this.itemCtor();
-                await item.deserialize(itemData);
-                toAdd.push(item);
+                !Array.isArray(itemData) )
+            {
+                promises.push(
+                    this.itemCtor()
+                    .then(async item=>{
+                        await item.deserialize(itemData);
+                        return item;
+                    })
+                );
             }
         }
+        const toAdd = await Promise.all(promises);
         await this.addMany(toAdd);
     }
 

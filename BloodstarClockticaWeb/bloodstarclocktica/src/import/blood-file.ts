@@ -21,7 +21,7 @@ async function trySet<T>(value:T|undefined, property:Property<T>):Promise<void> 
     }
 }
 
-const MAX_SIMULTANEOUS_EXTRACT = 2;
+const MAX_SIMULTANEOUS_EXTRACT = 99;
 const MAX_SIMULTANEOUS_PER_CHARACTER = 99;
 
 /** combine spinner and throttling of work */
