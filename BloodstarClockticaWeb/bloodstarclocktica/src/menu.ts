@@ -57,7 +57,6 @@ async function importOfficialClicked(edition:Edition):Promise<boolean> {
 
 /** hook up menu commands to html elements */
 export default function init(edition:Edition):void {
-    // TODO: might be easier to maintain if I built the html in code?
     const mapping:[string,(edition:Edition)=>Promise<boolean>][] = [
         ['signOutBtn', signOutClicked],
         ['changePasswordBtn', changePasswordClicked],

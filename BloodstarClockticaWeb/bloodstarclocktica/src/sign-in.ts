@@ -96,7 +96,6 @@ export async function signIn(force=false):Promise<SessionInfo> {
         try {
             sessionInfo = await promptAndSignIn();
         } catch (error) {
-            // TODO: better messaging when things go wrong
             await showError('Error', 'Error while signing in', error);
         }
     }
