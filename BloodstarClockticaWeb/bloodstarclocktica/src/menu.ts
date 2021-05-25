@@ -3,7 +3,7 @@
  * @module Menu
  */
 
-import { show as showMessage, showError } from "./dlg/blood-message-dlg";
+import { showError } from "./dlg/blood-message-dlg";
 import { Edition } from "./model/edition";
 import { hookupClickEvents } from "./util";
 import importOfficial from './import/official';
@@ -18,6 +18,7 @@ import { show as showOpenFlow } from "./dlg/open-flow";
 import * as BloodIO from './blood-io';
 import { SessionInfo } from "./iam";
 import { newEdition } from './commands/new';
+import showResetPasswordFlow from './dlg/reset-password-flow';
 
 /** add a new character to the custom edition */
 async function addCharacterClicked(edition:Edition):Promise<boolean> {
@@ -27,9 +28,7 @@ async function addCharacterClicked(edition:Edition):Promise<boolean> {
 
 /** user chose to change their password */
 async function changePasswordClicked():Promise<boolean> {
-    // TODO: implement changePasswordClicked
-    await showMessage('Not implemented', 'This feature is not yet implemented');
-    return true;
+    return !!await showResetPasswordFlow();
 }
 
 /** menu item for delete clicked */
