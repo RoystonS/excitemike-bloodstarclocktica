@@ -6,7 +6,7 @@
 import { Edition } from '../model/edition';
 import { CreateElementsOptions } from '../util';
 import {AriaDialog, ButtonCfg} from './aria-dlg';
-import * as BloodIO from '../blood-io';
+import {newEdition} from '../commands/new';
 import { show as showOpenFlow } from "../dlg/open-flow";
 
 class NewOpenDlg extends AriaDialog<boolean> {
@@ -21,7 +21,7 @@ class NewOpenDlg extends AriaDialog<boolean> {
         }];
         const buttons:ButtonCfg<boolean>[] = [
             {label:'Open Existing', callback:()=>showOpenFlow(edition)},
-            {label:'Create New', callback:()=>BloodIO.newEdition(edition)}
+            {label:'Create New', callback:()=>newEdition(edition)}
         ];
         return !!await this.baseOpen(
             document.activeElement,

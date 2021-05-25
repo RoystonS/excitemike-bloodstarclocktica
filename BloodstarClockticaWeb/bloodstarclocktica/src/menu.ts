@@ -17,6 +17,7 @@ import { clearRecentFile, setRecentFile } from "./recent-file";
 import { show as showOpenFlow } from "./dlg/open-flow";
 import * as BloodIO from './blood-io';
 import { SessionInfo } from "./iam";
+import { newEdition } from './commands/new';
 
 /** add a new character to the custom edition */
 async function addCharacterClicked(edition:Edition):Promise<boolean> {
@@ -86,7 +87,7 @@ export default function init(edition:Edition):void {
  */
 async function newFileClicked(edition:Edition):Promise<boolean> {
     try {
-        await BloodIO.newEdition(edition);
+        await newEdition(edition);
     } catch (error) {
         await showError('Error', 'Something went wrong when creating new file', error);
     }

@@ -8,15 +8,6 @@ import { fetchJson } from './util';
 import { AriaDialog } from './dlg/aria-dlg';
 import { importBloodFile } from './import/blood-file';
 
-/// prompt for save if needed, then reset to new custom edition
-export async function newEdition(edition:Edition):Promise<boolean> {
-    if (await SdcDlg.savePromptIfDirty(edition)) {
-        await edition.reset();
-        return true;
-    }
-    return false;
-}
-
 /** user chose to import character(s) from a json file */
 export async function importJsonFromUrl(edition:Edition):Promise<boolean> {
     if (!await SdcDlg.savePromptIfDirty(edition)) {return false;}
