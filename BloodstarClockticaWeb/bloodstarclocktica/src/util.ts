@@ -21,7 +21,10 @@ export type CreateElementOptions<K extends keyof HTMLElementTagNameMap> = {
     /** event listeners to add to the element */
     events?:{[key:string]:EventListenerOrEventListenerObject|undefined},
 
-    /** id to set on the element */
+    /** set innerHTML on the element. doesn't really work at the same time as txt */
+    html?:string;
+
+    /** id to set on the element. doesn't really work at the same time as html */
     id?:string;
 
     /** inner text to set on the element */
@@ -32,7 +35,16 @@ export type CreateElementsOptions = (CreateElementOptions<keyof HTMLElementTagNa
 
 /** more concise element creation. see comments on CreateElementOptions */
 export function createElement<K extends keyof HTMLElementTagNameMap>(options:CreateElementOptions<K>):HTMLElementTagNameMap[K] {
-    const {a: attributes, children, css: classes, events: eventListeners, id, txt: innerText, t: tag} = options;
+    const {
+        a: attributes,
+        children,
+        css: classes,
+        events: eventListeners,
+        html,
+        id,
+        txt: innerText,
+        t: tag,
+    } = options;
     const element = document.createElement(tag);
 
     if (id) {
@@ -46,7 +58,11 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(options:Cre
         }
     }
 
-    if (innerText !== undefined) {
+    if (html) {
+        element.innerHTML = html;
+    }
+
+    if (innerText) {
         element.innerText = innerText;
     }
 

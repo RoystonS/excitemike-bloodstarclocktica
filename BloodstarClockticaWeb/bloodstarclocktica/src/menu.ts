@@ -19,6 +19,7 @@ import * as BloodIO from './blood-io';
 import { SessionInfo } from "./iam";
 import { newEdition } from './commands/new';
 import showResetPasswordFlow from './dlg/reset-password-flow';
+import showHelp from './dlg/help-dlg';
 
 /** add a new character to the custom edition */
 async function addCharacterClicked(edition:Edition):Promise<boolean> {
@@ -72,7 +73,7 @@ export default function init(edition:Edition):void {
         ['importBloodButton', BloodIO.importBlood],
         ['importOfficialButton', importOfficialClicked],
         ['saveAndPublishButton', saveAndPublishClicked],
-        ['helpButton', showHelp],
+        ['helpButton', showHelpClicked],
     ];
     const translatedMapping:[string,(e:Event)=>void][] = mapping.map(x=>{
         const [name,f] = x;
@@ -115,10 +116,9 @@ export async function saveFileAsClicked(edition:Edition):Promise<boolean> {
 }
 
 /** clicked the help menu button */
-function showHelp():Promise<boolean> {
-    // TODO: implement showHelp
-    void showError('Not yet implemented', '`showHelp` Not yet implemented');
-    return Promise.resolve(true);
+async function showHelpClicked():Promise<boolean> {
+    await showHelp();
+    return true;
 }
 
 /** forget session info */
