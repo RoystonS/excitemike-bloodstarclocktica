@@ -14,7 +14,6 @@ type ResetPasswordData = {
     password:string
 };
 
-// TODO: this dupes a lot from sign-up-flow
 class ConfirmAndChoosePasswordDlg extends AriaDialog<ResetPasswordData|null> {
     async open(email:string,doWarning:boolean):Promise<ResetPasswordData|null>{
         const codeField = createElement({t:'input',a:{type:'text',minlength:'6',maxlength:'6',autocomplete:'off',required:'',pattern:'[0-9]{6}',title:'six-digit code from your email'},id:'codeFromEmail'});

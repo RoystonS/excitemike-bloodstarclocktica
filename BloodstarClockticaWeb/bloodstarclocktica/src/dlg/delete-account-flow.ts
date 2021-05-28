@@ -18,8 +18,7 @@ async function confirmDeleteAccount():Promise<SessionInfo|null>{
         title:'Confirm Account',
         message:'Sign in again to confirm account deletion',
         includeForgotPasswordLink:false,
-        includeSignUpLink:false,
-        force:true});
+        includeSignUpLink:false});
     if (!sessionInfo) {return null;}
     if (!await getConfirmation(
         'Confirm Delete',
@@ -79,7 +78,7 @@ class PasswordDlg extends AriaDialog<string> {
             'pwd-for-del-accnt',
             [
                 {t:'h1',txt:'Enter Password'},
-                {t:'p',txt:'Enter your password ton continue deleting your account.'},
+                {t:'p',txt:'Enter your password to continue deleting your account.'},
                 passwordField],
             [{label:'OK',id:'pwdOkButton',callback:()=>passwordField.value},
             {label:'Cancel'}]

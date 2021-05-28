@@ -11,10 +11,29 @@
 
     $email = requireField($tokenPayload, 'email');
     validateEmail($email);
+    
+    $password = requireField($request, 'password');
 
     $mysqli = makeMysqli();
     $escapedUsername = $mysqli->real_escape_string($username);
     $escapedEmail = $mysqli->real_escape_string($email);
+    
+    $result = $mysqli->query("SELECT `hash` FROM `hash` WHERE `hash`.`email` = '$escapedEmail' LIMIT 1;");
+    if (false===$result){
+        echo json_encode(['error' => 'sql error']);
+        exit();
+    }
+    if (0===$result->num_rows){
+        echo json_encode(['error' => 'user not found']);
+        exit();
+    }
+    $results = $result->fetch_all();
+    $hash = $results[0][0];
+    if (!password_verify($password, $hash)) {
+        echo json_encode(['error' => 'password incorrect']);
+        exit();
+    }
+
     if (false===$mysqli->query("DELETE FROM `hash` WHERE `hash`.`email` = '$escapedEmail'")){
         echo json_encode(['error'=>'Error deleting user']);
         exit();
@@ -24,7 +43,7 @@
         exit();
     }
     if (false===$mysqli->query("DELETE FROM `unconfirmed` WHERE `unconfirmed`.`email` = '$escapedEmail'")){
-        echo json_encode(['error'=>'Error deleting user'.]);
+        echo json_encode(['error'=>'Error deleting user']);
         exit();
     }
     if (false===$mysqli->query("DELETE FROM `users` WHERE `users`.`email` = '$escapedEmail'")){
