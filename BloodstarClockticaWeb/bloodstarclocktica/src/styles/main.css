@@ -190,3 +190,11 @@ ul#status {
     gap:6px;
 }
 .nowrap {white-space: nowrap;text-overflow:ellipsis;overflow:hidden;}
+.importCharacter {
+    padding:2px 2px 2px 5px;
+    margin:2px;
+    display: flex;
+}
+.importCharacter > * {
+    flex-basis: auto;
+}

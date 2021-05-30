@@ -37,7 +37,7 @@ class YesNoDialog extends AriaDialog<boolean> {
             const syncToButton = ():void=>{
                 const checkboxElem = this.querySelector<HTMLInputElement>('#confirmCheckbox');
                 if (!checkboxElem) {return;}
-                const buttonElem = this.querySelector<HTMLButtonElement>('#yesLabel');
+                const buttonElem = this.querySelector<HTMLButtonElement>('#yesButton');
                 if (!buttonElem) {return;}
                 buttonElem.disabled = !checkboxElem.checked;
             };
@@ -63,7 +63,7 @@ class YesNoDialog extends AriaDialog<boolean> {
             'message',
             body,
             [
-                {label:yesLabel,id:'yesLabel',callback:yesCallback,disabled:!!checkboxMessage},
+                {label:yesLabel,id:'yesButton',callback:yesCallback,disabled:!!checkboxMessage},
                 {label:noLabel, callback:() => false}
             ]
         );

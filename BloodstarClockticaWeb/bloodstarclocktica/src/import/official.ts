@@ -17,8 +17,8 @@ const MAX_CHARACTER_ICON_WIDTH = 539;
 const MAX_CHARACTER_ICON_HEIGHT = 539;
 
 /** dialog subclass for choosing an official character to clone */
-class ChooseOfficialCharDlg extends AriaDialog<CharacterEntry> {
-    async open(json:CharacterEntry[]):Promise<CharacterEntry|null> {
+class ChooseOfficialCharDlg extends AriaDialog<CharacterEntry[]> {
+    async open(json:CharacterEntry[]):Promise<CharacterEntry[]> {
         const entriesById = toMap(json);
         const troubleBrewing = createElement({t:'details',children:[{t:'summary',txt:'Trouble Brewing'}],a:{open:''}});
         const badMoonRising = createElement({t:'details',children:[{t:'summary',txt:'Bad Moon Rising'}],a:{open:''}});
@@ -33,6 +33,26 @@ class ChooseOfficialCharDlg extends AriaDialog<CharacterEntry> {
                 }
             }
         };
+        const updateButton = ():void=>{
+            const buttonElem = this.querySelector<HTMLButtonElement>('#importButton');
+            if (!buttonElem) {return;}
+            const foundCharacters = container.querySelectorAll('input:checked');
+            buttonElem.innerText = `Import ${foundCharacters.length} Characters`;
+            buttonElem.disabled = foundCharacters.length===0;
+        };
+        const doImport = ():CharacterEntry[]=>{
+            const selected = container.querySelectorAll('input:checked');
+            const selectedCharacters = [];
+            for (let i=0;i<selected.length;++i){
+                const checkbox = selected[i] as HTMLElement;
+                const characterId = checkbox.dataset['id'];
+                if (!characterId) {continue;}
+                const characterEntry = entriesById.get(characterId);
+                if (!characterEntry){continue;}
+                selectedCharacters.push(characterEntry);
+            }
+            return selectedCharacters;
+        };
         const filterRow = createElement({
             t:'div',
             css:['row'],
@@ -46,30 +66,34 @@ class ChooseOfficialCharDlg extends AriaDialog<CharacterEntry> {
 
         for (const character of json) {
             if (!character.name) {continue;}
-            const button = createElement({
-                t:'button',
-                txt:character.name,
-                events:{click:()=>this.close(character)},
-                a:{title:character.ability||'','data-id':character.id}
+            const characterContainer = createElement({
+                t:'div',
+                css:['importCharacter'],
+                a:{title:character.ability||'','data-id':character.id},
+                children:[
+                    {t:'input',a:{type:'checkbox','data-id':character.id},id:`${character.id}-checkbox`,events:{change:updateButton}},
+                    {t:'label',a:{for:`${character.id}-checkbox`},txt:character.name}
+                ]
             });
-            setTeamColorStyle(parseBloodTeam(character.team || ''), button.classList);
+            setTeamColorStyle(parseBloodTeam(character.team || ''), characterContainer.classList);
             switch (character.edition) {
-                case 'tb': troubleBrewing.appendChild(button); break;
-                case 'bmr': badMoonRising.appendChild(button); break;
-                case 'snv': sectsAndViolets.appendChild(button); break;
-                default: otherEditions.appendChild(button); break;
+                case 'tb': troubleBrewing.appendChild(characterContainer); break;
+                case 'bmr': badMoonRising.appendChild(characterContainer); break;
+                case 'snv': sectsAndViolets.appendChild(characterContainer); break;
+                default: otherEditions.appendChild(characterContainer); break;
             }
         }
+
         return await this.baseOpen(
             document.activeElement,
             'importOfficial',
             [
-                {t:'p',txt:'Choose a character to import:'},
+                {t:'h1',txt:'Choose character(s) to import'},
                 filterRow,
                 container
             ],
-            [{label:'Cancel'}]
-        );
+            [{label:'Import 0 Characters',id:'importButton',callback:doImport,disabled:true},{label:'Cancel'}]
+        )||[];
     }
 }
 
@@ -100,16 +124,19 @@ function doFilter(filterString:string, characters:Map<string, CharacterEntry>, p
 export default async function importOfficial(edition:Edition):Promise<boolean> {
     const json = await fetchJson<CharacterEntry[]>('https://raw.githubusercontent.com/bra1n/townsquare/main/src/roles.json');
     if (!json) {return false;}
-    const choice = await new ChooseOfficialCharDlg().open(json);
-    if (!choice) {return false;}
+    const choices = await new ChooseOfficialCharDlg().open(json);
+    if (!choices) {return false;}
     
-    const character = await edition.addNewCharacter();
-    try {
-        return await _importOfficial(choice, character);
-    } catch (error) {
-        await edition.characterList.deleteItem(character);
-        throw error;
-    }
+    const results = await Promise.all(choices.map(async choice=>{
+        const character = await edition.addNewCharacter();
+        try {
+            return await _importOfficial(choice, character);
+        } catch (error) {
+            await edition.characterList.deleteItem(character);
+            throw error;
+        }
+    }));
+    return results.reduce((a,b)=>a&&b, true);
 }
 
 /** load from the character entry to the character object */
