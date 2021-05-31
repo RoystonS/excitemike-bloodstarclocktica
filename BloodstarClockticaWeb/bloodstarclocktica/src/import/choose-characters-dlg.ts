@@ -4,13 +4,13 @@
  */
 import {AriaDialog} from '../dlg/aria-dlg';
 import { createElement, walkHTMLElements } from '../util';
-import { CharacterEntry } from "./json";
+import { ScriptEntry } from "./json";
 import { parseBloodTeam } from "../model/blood-team";
 import { setTeamColorStyle } from "../team-color";
 
 /** convert list of entries to map by id */
-function toMap(entries:CharacterEntry[]):Map<string, CharacterEntry> {
-    const map = new Map<string, CharacterEntry>();
+function toMap(entries:ScriptEntry[]):Map<string, ScriptEntry> {
+    const map = new Map<string, ScriptEntry>();
     for (const entry of entries){
         map.set(entry.id, entry);
     }
@@ -18,10 +18,10 @@ function toMap(entries:CharacterEntry[]):Map<string, CharacterEntry> {
 }
 
 /** dialog subclass for choosing an official character to clone */
-export class ChooseCharactersDlg extends AriaDialog<CharacterEntry[]> {
+export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
 
     /** override for custom layout */
-    protected addElementForCharacter(_character:CharacterEntry, container:HTMLElement, characterElement:HTMLElement):void {
+    protected addElementForCharacter(_character:ScriptEntry, container:HTMLElement, characterElement:HTMLElement):void {
         container.appendChild(characterElement);
     }
     
@@ -30,7 +30,7 @@ export class ChooseCharactersDlg extends AriaDialog<CharacterEntry[]> {
         return createElement({t:'div',css:['importOfficialList']});
     }
 
-    async open(json:CharacterEntry[]):Promise<CharacterEntry[]> {
+    async open(json:ScriptEntry[]):Promise<ScriptEntry[]> {
         const entriesById = toMap(json);
         const container = this.makeContainer();
         const onFilterChange=(e:Event)=>{
@@ -48,7 +48,7 @@ export class ChooseCharactersDlg extends AriaDialog<CharacterEntry[]> {
             buttonElem.innerText = `Import ${foundCharacters.length} Characters`;
             buttonElem.disabled = foundCharacters.length===0;
         };
-        const doImport = ():CharacterEntry[]=>{
+        const doImport = ():ScriptEntry[]=>{
             const selected = container.querySelectorAll('input:checked');
             const selectedCharacters = [];
             for (let i=0;i<selected.length;++i){
@@ -68,23 +68,61 @@ export class ChooseCharactersDlg extends AriaDialog<CharacterEntry[]> {
                 {t:'label',a:{'for':'chooseOfficialFilter'},txt:'Filter'},
                 {
                     t:'input',id:'chooseOfficialFilter',a:{name:'chooseOfficialFilter'},
-                    events:{change:onFilterChange,input:onFilterChange}
-                }
+                    events:{change:onFilterChange,input:onFilterChange},
+                },
+                // clear filter button
+                {t:'button',txt:'x',events:{click:()=>{
+                    const filterTextBox = filterRow.querySelector('#chooseOfficialFilter');
+                    if (!(filterTextBox instanceof HTMLInputElement)) {return;}
+                    filterTextBox.value = '';
+                    filterTextBox.dispatchEvent(new Event('change'));
+                }}},
+                // select all button
+                {t:'button',txt:'Select All',events:{click:()=>{
+                    const checkBoxes = container.querySelectorAll('input[type=checkbox]');
+                    for (let i=0;i<checkBoxes.length;++i){
+                        const checkbox = checkBoxes[i] as HTMLInputElement;
+                        checkbox.checked=true;
+                    }
+                    updateButton();
+                }}},
+                // unselect all button
+                {t:'button',txt:'Unselect All',events:{click:()=>{
+                    const checkBoxes = container.querySelectorAll('input[type=checkbox]');
+                    for (let i=0;i<checkBoxes.length;++i){
+                        const checkbox = checkBoxes[i] as HTMLInputElement;
+                        checkbox.checked=false;
+                    }
+                    updateButton();
+                }}},
             ]});
 
         for (const character of json) {
             if (!character.name) {continue;}
-            const characterContainer = createElement({
-                t:'div',
-                css:['importCharacter'],
-                a:{title:character.ability||'','data-id':character.id},
-                children:[
-                    {t:'input',a:{type:'checkbox','data-id':character.id},id:`${character.id}-checkbox`,events:{change:updateButton}},
-                    {t:'label',a:{for:`${character.id}-checkbox`},txt:character.name}
-                ]
-            });
-            setTeamColorStyle(parseBloodTeam(character.team || ''), characterContainer.classList);
-            this.addElementForCharacter(character, container, characterContainer);
+            if ('ability' in character) {
+                const characterContainer = createElement({
+                    t:'div',
+                    css:['importCharacter'],
+                    a:{title:character.ability||'','data-id':character.id},
+                    children:[
+                        {t:'input',a:{type:'checkbox','data-id':character.id},id:`${character.id}-checkbox`,events:{change:updateButton}},
+                        {t:'label',a:{for:`${character.id}-checkbox`},txt:character.name}
+                    ]
+                });
+                setTeamColorStyle(parseBloodTeam(character.team || ''), characterContainer.classList);
+                this.addElementForCharacter(character, container, characterContainer);
+            } else {
+                const characterContainer = createElement({
+                    t:'div',
+                    css:['importCharacter'],
+                    a:{title:'Meta information about the script. (name, author, logo)','data-id':character.id},
+                    children:[
+                        {t:'input',a:{type:'checkbox','data-id':character.id},id:`${character.id}-checkbox`,events:{change:updateButton}},
+                        {t:'label',a:{for:`${character.id}-checkbox`},txt:character.name}
+                    ]
+                });
+                this.addElementForCharacter(character, container, characterContainer);
+            }
         }
 
         return await this.baseOpen(
@@ -103,7 +141,7 @@ export class ChooseCharactersDlg extends AriaDialog<CharacterEntry[]> {
 /**
  * hide characters who don't pass the filter
  */
-function doFilter(filterString:string, characters:Map<string, CharacterEntry>, element:HTMLElement):void {
+function doFilter(filterString:string, characters:Map<string, ScriptEntry>, element:HTMLElement):void {
     const id = element.dataset.id;
     if (!id) {return;}
     const character = characters.get(id);
@@ -116,7 +154,7 @@ function doFilter(filterString:string, characters:Map<string, CharacterEntry>, e
 }
 
 /** test a character against the filter */
-function passesFilter(filterString:string, entry:CharacterEntry):boolean {
+function passesFilter(filterString:string, entry:ScriptEntry):boolean {
     if (!filterString) {return true;}
     filterString = filterString.toLowerCase();
     for (const haystack of Object.values(entry)){
