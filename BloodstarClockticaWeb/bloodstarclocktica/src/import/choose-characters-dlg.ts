@@ -71,7 +71,7 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
                     events:{change:onFilterChange,input:onFilterChange},
                 },
                 // clear filter button
-                {t:'button',txt:'Clear filter',events:{click:()=>{
+                {t:'button',txt:'Clear Filter',events:{click:()=>{
                     const filterTextBox = filterRow.querySelector('#chooseOfficialFilter');
                     if (!(filterTextBox instanceof HTMLInputElement)) {return;}
                     filterTextBox.value = '';
