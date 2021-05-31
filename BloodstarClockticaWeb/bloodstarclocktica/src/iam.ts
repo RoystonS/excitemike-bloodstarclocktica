@@ -9,7 +9,7 @@ import { show as showMessage, showError } from "./dlg/blood-message-dlg";
 export type SessionInfo = {token:string,expiration:number,username:string,email:string};
 type ConfirmEmailData = {code:string,email:string};
 type RequestResetData = {usernameOrEmail:string};
-type ResendSignUpConfirmationData = {usernameOrEmail:string};
+type ResendSignUpConfirmationData = {email:string};
 type ResetPasswordData = {
     code:string,
     email:string,
@@ -92,13 +92,12 @@ export async function resetPassword(resetData:ResetPasswordData):Promise<Session
  * send the sign up confirmation email again
  * @returns email address to which a confirmation email was sent, or the empty string
  */
-export async function resendSignUpConfirmation(usernameOrEmail:string):Promise<string>{
-    // TODO: implement server side
-    const data:ResendSignUpConfirmationData = {usernameOrEmail};
+export async function resendSignUpConfirmation(email:string):Promise<string>{
+    const data:ResendSignUpConfirmationData = {email};
     const payload = JSON.stringify(data);
     const response = await cmd('resendconf', 'Requesting signup confirmation email', payload) as EmailResponse;
     if ('error' in response) {
-        await showError('Error', `Error encountered while requesting signup confirmation email for ${usernameOrEmail}`, response.error);
+        await showError('Error', `Error encountered while requesting signup confirmation email for ${email}`, response.error);
         return '';
     }
     return response.email;
