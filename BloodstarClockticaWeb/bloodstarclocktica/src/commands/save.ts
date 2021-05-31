@@ -236,6 +236,7 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
     }
 
     // await results
+    // TODO: had a bug with this spinner never coming down
     const results = await spinner('save', `Saving as ${saveName}`, Promise.all(promises)) as SaveImgResult[];
     for (const response of results) {
         if ('error' in response) {
