@@ -206,7 +206,7 @@ export async function importJsonFromFile(edition:Edition):Promise<boolean> {
 export async function importJsonFromUrl(edition:Edition):Promise<boolean> {
     const url = await StringDlg.show('Enter URL', 'Enter URL to a custom-script.json file.');
     if (!url){return false;}
-    const json = await fetchJson<ScriptEntry[]>(url);
+    const json = await spinner('importJsonFromUrl', 'Fetching custom script JSON', fetchJson<ScriptEntry[]>(url));
     if (!json) {return false;}
     return await importJson(json, edition);
 }
