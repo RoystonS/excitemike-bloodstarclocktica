@@ -3,7 +3,6 @@
  * @module ImportJson
  */
 
- import {savePromptIfDirty} from '../dlg/blood-save-discard-cancel';
 import { ObservableCollection } from "../bind/observable-collection";
 import { urlToCanvas } from "../blood-image";
 import {spinner} from '../dlg/spinner-dlg';
@@ -13,6 +12,7 @@ import { Edition } from "../model/edition";
 import * as StringDlg from '../dlg/blood-string-dlg';
 import { fetchJson } from '../util';
 import { AriaDialog } from "../dlg/aria-dlg";
+import { ChooseCharactersDlg } from './choose-characters-dlg';
 
 export type MetaEntry = {
     id:'_meta',
@@ -153,14 +153,17 @@ async function importEntry(entry:ScriptEntry, edition:Edition, firstNightOrder:N
 }
 
 /** import a whole script */
-async function importEdition(json:ScriptEntry[], edition:Edition):Promise<boolean> {
-    await edition.reset();
-    await edition.characterList.clear();
+async function importScript(json:ScriptEntry[], edition:Edition):Promise<boolean> {
+    const choices = await new ChooseCharactersDlg().open(json);
+    if (!choices) {return false;}
+
     const firstNightOrder:NightOrderTracker = new Map<number, Character[]>();
     const otherNightOrder:NightOrderTracker = new Map<number, Character[]>();
-    const promises = json.map(characterJson=>importEntry(characterJson, edition, firstNightOrder, otherNightOrder));
+    const promises = choices.map(characterJson=>importEntry(characterJson, edition, firstNightOrder, otherNightOrder));
 
-    const allImported = (await Promise.all(promises)).reduce((a,b)=>a&&b, true);
+    const importResults = await spinner('importJsonFromUrl', 'Importing', Promise.all(promises));
+
+    const allImported = importResults.reduce((a,b)=>a&&b, true);
     if (!allImported) { return false; }
 
     // set night order
@@ -189,12 +192,11 @@ export async function importJson(fileOrStringOrArray:File|string|ScriptEntry[], 
     } else {
         json = fileOrStringOrArray;
     }
-    return await spinner('importJson', 'Importing edition', importEdition(json, edition));
+    return importScript(json, edition);
 }
 
 /** user chose to import character(s) from a json file */
 export async function importJsonFromFile(edition:Edition):Promise<boolean> {
-    if (!await savePromptIfDirty(edition)) {return false;}
     const file = await chooseJsonFile();
     if (!file){return false;}
     return await importJson(file, edition);
@@ -202,10 +204,9 @@ export async function importJsonFromFile(edition:Edition):Promise<boolean> {
 
 /** user chose to import character(s) from a json file */
 export async function importJsonFromUrl(edition:Edition):Promise<boolean> {
-    if (!await savePromptIfDirty(edition)) {return false;}
     const url = await StringDlg.show('Enter URL', 'Enter URL to a custom-script.json file.');
     if (!url){return false;}
     const json = await fetchJson<ScriptEntry[]>(url);
     if (!json) {return false;}
-    return await spinner('importJsonFromUrl', 'Importing json', importJson(json, edition)) || false;
+    return await importJson(json, edition);
 }

@@ -71,7 +71,7 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
                     events:{change:onFilterChange,input:onFilterChange},
                 },
                 // clear filter button
-                {t:'button',txt:'x',events:{click:()=>{
+                {t:'button',txt:'Clear filter',events:{click:()=>{
                     const filterTextBox = filterRow.querySelector('#chooseOfficialFilter');
                     if (!(filterTextBox instanceof HTMLInputElement)) {return;}
                     filterTextBox.value = '';
@@ -98,31 +98,8 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
             ]});
 
         for (const character of json) {
-            if (!character.name) {continue;}
-            if ('ability' in character) {
-                const characterContainer = createElement({
-                    t:'div',
-                    css:['importCharacter'],
-                    a:{title:character.ability||'','data-id':character.id},
-                    children:[
-                        {t:'input',a:{type:'checkbox','data-id':character.id},id:`${character.id}-checkbox`,events:{change:updateButton}},
-                        {t:'label',a:{for:`${character.id}-checkbox`},txt:character.name}
-                    ]
-                });
-                setTeamColorStyle(parseBloodTeam(character.team || ''), characterContainer.classList);
-                this.addElementForCharacter(character, container, characterContainer);
-            } else {
-                const characterContainer = createElement({
-                    t:'div',
-                    css:['importCharacter'],
-                    a:{title:'Meta information about the script. (name, author, logo)','data-id':character.id},
-                    children:[
-                        {t:'input',a:{type:'checkbox','data-id':character.id},id:`${character.id}-checkbox`,events:{change:updateButton}},
-                        {t:'label',a:{for:`${character.id}-checkbox`},txt:character.name}
-                    ]
-                });
-                this.addElementForCharacter(character, container, characterContainer);
-            }
+            const characterElement = this.createElementforCharacter(character, updateButton);
+            this.addElementForCharacter(character, container, characterElement);
         }
 
         return await this.baseOpen(
@@ -135,6 +112,34 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
             ],
             [{label:'Import 0 Characters',id:'importButton',callback:doImport,disabled:true},{label:'Cancel'}]
         )||[];
+    }
+
+    /** create the row for hte given entry */
+    protected createElementforCharacter(scriptEntry:ScriptEntry, updateCb:()=>void):HTMLElement {
+        if ('ability' in scriptEntry) {
+            const element = createElement({
+                t:'div',
+                css:['importCharacter'],
+                a:{title:scriptEntry.ability||'','data-id':scriptEntry.id},
+                children:[
+                    {t:'input',a:{type:'checkbox','data-id':scriptEntry.id},id:`${scriptEntry.id}-checkbox`,events:{change:updateCb}},
+                    {t:'label',a:{for:`${scriptEntry.id}-checkbox`},txt:scriptEntry.name}
+                ]
+            });
+            setTeamColorStyle(parseBloodTeam(scriptEntry.team || ''), element.classList);
+            return element;
+        }
+
+        // must be a meta entry
+        return createElement({
+            t:'div',
+            css:['importCharacter'],
+            a:{title:'Name, author, and logo for the custom script.','data-id':scriptEntry.id},
+            children:[
+                {t:'input',a:{type:'checkbox','data-id':scriptEntry.id},id:`${scriptEntry.id}-checkbox`,events:{change:updateCb}},
+                {t:'label',a:{for:`${scriptEntry.id}-checkbox`},txt:`Name, Author, and Logo`}
+            ]
+        });
     }
 }
 
