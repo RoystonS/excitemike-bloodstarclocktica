@@ -196,7 +196,7 @@ export function ordinal(n:number):string {
     }
 }
 
-/** go through a HTMLElement and all its child HTMLElement, and call the function on them */
+/** go through a HTMLElement and all its child HTMLElements, and call the function on them */
 export function walkHTMLElements(element:HTMLElement, f:(element:HTMLElement)=>void):void {
     if (!(element instanceof HTMLElement)) {return;}
     const stack:HTMLElement[] = [element];
