@@ -252,6 +252,12 @@ async function chooseBloodFile():Promise<File|null> {
     );
 }
 
+/** user chose to import a project form the windows version of Bloodstar Clocktica */
+export async function importBlood(edition:Edition):Promise<boolean> {
+    if (!await savePromptIfDirty(edition)) {return false;}
+    return await importBloodFile(edition);
+}
+
 /** user chose to import a .blood file */
 export async function importBloodFile(edition:Edition):Promise<boolean> {
     if (!await savePromptIfDirty(edition)) {return false;}

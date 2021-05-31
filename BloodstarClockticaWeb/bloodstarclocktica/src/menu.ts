@@ -6,6 +6,8 @@
 import { showError } from "./dlg/blood-message-dlg";
 import { Edition } from "./model/edition";
 import { hookupClickEvents } from "./util";
+import { importBlood } from './import/blood-file';
+import { importJsonFromFile, importJsonFromUrl, } from './import/json';
 import importOfficial from './import/official';
 import publish from './commands/publish';
 import {save, saveAs} from './commands/save';
@@ -15,7 +17,6 @@ import * as SdcDlg from './dlg/blood-save-discard-cancel';
 import {signIn, signOut} from './sign-in';
 import { clearRecentFile, setRecentFile } from "./recent-file";
 import { show as showOpenFlow } from "./dlg/open-flow";
-import * as BloodIO from './blood-io';
 import { SessionInfo } from "./iam";
 import { newEdition } from './commands/new';
 import showResetPasswordFlow from './dlg/reset-password-flow';
@@ -68,9 +69,9 @@ export default function init(edition:Edition):void {
         ['deleteFileButton', deleteFileClicked],
         ['saveFileButton', save],
         ['saveFileAsButton', saveFileAsClicked],
-        ['jsonFromUrlButton', BloodIO.importJsonFromUrl],
-        ['jsonFromFileButton', BloodIO.importJsonFromFile],
-        ['importBloodButton', BloodIO.importBlood],
+        ['jsonFromUrlButton', importJsonFromUrl],
+        ['jsonFromFileButton', importJsonFromFile],
+        ['importBloodButton', importBlood],
         ['importOfficialButton', importOfficialClicked],
         ['saveAndPublishButton', saveAndPublishClicked],
         ['helpButton', showHelpClicked],
