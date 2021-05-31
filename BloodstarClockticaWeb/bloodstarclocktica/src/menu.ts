@@ -127,6 +127,7 @@ async function signOutClicked(edition:Edition):Promise<boolean> {
     if (!await SdcDlg.savePromptIfDirty(edition)) {return false;}
     signOut();
     updateUserDisplay(null);
+    await edition.reset();
     const session = await signIn();
     updateUserDisplay(session);
     return true;
