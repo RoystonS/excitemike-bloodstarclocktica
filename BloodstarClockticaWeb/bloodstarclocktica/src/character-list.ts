@@ -118,6 +118,7 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
         del.className = "characterListButton";
         del.innerText = "Delete";
         del.onclick = async () => {
+            // TODO: surface errors in this
             if (await getConfirmation('Confirm Delete', `Are you sure you want to delete character "${character.name.get()}"?`)) {
                 await collection.deleteItem(character);
             }

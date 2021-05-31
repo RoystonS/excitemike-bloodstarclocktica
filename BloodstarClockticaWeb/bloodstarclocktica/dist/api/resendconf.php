@@ -20,7 +20,6 @@
     $secondsPerDay = 60 * 60 * 24;
     $reservationDuration = 1 * $secondsPerDay;
     $expiration = time() + $reservationDuration;
-    $hash = password_hash($password, PASSWORD_BCRYPT, ['cost'=>10]);
     $confirmCode = sprintf('%06d', random_int(0,999999));
     $confirmHash = password_hash("$confirmCode:$email", PASSWORD_BCRYPT, ['cost'=>10]);
     $escapedHash = $mysqli->real_escape_string($hash);
@@ -29,7 +28,6 @@
                                 ."VALUES ('$escapedEmail', $expiration, '$escapedHash', '$escapedConfirmHash') "
                                 .'ON DUPLICATE KEY UPDATE '
                                 .'`expiration`=VALUES(`expiration`), '
-                                .'`hash`=VALUES(`hash`), '
                                 .'`confirmHash`=VALUES(`confirmHash`) '
                                 .';')){
         $error = $mysqli->error;
