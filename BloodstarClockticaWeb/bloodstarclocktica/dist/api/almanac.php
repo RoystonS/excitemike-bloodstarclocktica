@@ -98,7 +98,7 @@
                 {
                     $flavor = $almanac['flavor'] ?? '';
                     if ($flavor !== '') {
-                        $flavorHtml = $Parsedown->text('“'.$flavor.'”');
+                        $flavorHtml = '“'.$flavor.'”';
                         $almanacHtml .= "<div class=\"flavor\">$flavorHtml</div>";
                     }
                 }
