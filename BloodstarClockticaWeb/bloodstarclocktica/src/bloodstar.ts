@@ -161,6 +161,7 @@ async function init() {
 
     menuInit(edition);
 
+    // TODO: allow using site without signing in
     // need to sign in before we can do much of anything
     let sessionInfo = null;
     while (!sessionInfo) {
