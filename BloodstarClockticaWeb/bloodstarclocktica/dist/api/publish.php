@@ -17,7 +17,7 @@
     $data = json_decode($data, true);
 
     // build script.json from it
-    $script = makeScript($data, $saveName);
+    $script = makeScript($data, $saveName, $username);
 
     // ensure publish directory exists
     $publishDir = "../p/$username/$saveName";
@@ -98,7 +98,7 @@
     }
 
     // build the script object to convert to json
-    function makeScript($saveData, $saveName) {
+    function makeScript($saveData, $saveName, $username) {
         $scriptData = array();
 
         if (array_key_exists('meta', $saveData)){
@@ -151,6 +151,7 @@
 
                 copyField($inCharacter, 'edition', $outCharacter, 'edition');
                 copyField($inCharacter, 'firstNightReminder', $outCharacter, 'firstNightReminder');
+                // TODO: do substitutions
                 copyField($inCharacter, 'otherNightReminder', $outCharacter, 'otherNightReminder');
                 if (array_key_exists('characterReminderTokens', $inCharacter)){
                     $outCharacter['reminders'] = explode("\n", $inCharacter['characterReminderTokens']);
