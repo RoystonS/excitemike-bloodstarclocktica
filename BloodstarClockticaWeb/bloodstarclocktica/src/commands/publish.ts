@@ -39,6 +39,7 @@ export default async function publish(edition:Edition):Promise<boolean> {
         return false;
     }
     const {script,almanac} = response;
+    const cacheTrickingScriptLink = `${script}?${(Date.now() % (31*24*60*60*1000)).toString(16)}`;
 
     await new AriaDialog<void>().baseOpen(
         null,
@@ -50,7 +51,7 @@ export default async function publish(edition:Edition):Promise<boolean> {
                 css:['uploadCompleteGrid'],
                 children:[
                     {t:'span',txt:'script:'},
-                    {t:'a',a:{'href':script,'target':'_blank'},txt:script},
+                    {t:'a',a:{'href':cacheTrickingScriptLink,'target':'_blank'},txt:cacheTrickingScriptLink},
                     {t:'span',txt:'almanac:'},
                     {t:'a',a:{'href':almanac,'target':'_blank'},txt:almanac},
                 ]
