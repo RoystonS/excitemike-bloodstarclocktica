@@ -4,7 +4,7 @@
     $Parsedown = new Parsedown();
 
     // build html for the almanac
-    function makeAlmanac($saveData, $saveName) {
+    function makeAlmanac($saveData, $username, $saveName) {
         $name = $saveData['meta']['name'];
 
         return 
@@ -20,13 +20,13 @@
 <ol class="nav">'
 .makeNavItems($saveData)
 .'</ol><ol class="almanac-viewport">'
-.makeAlmanacItems($saveData, $saveName)
+.makeAlmanacItems($saveData, $username, $saveName)
 .'<li class="generated-by">this almanac generated using <a href="https://www.bloodstar.xyz">Bloodstar Clocktica</a></li>'
 .'</ol></div></body></html>';
     }
 
     // build html for almanac content
-    function makeAlmanacItems($saveData, $saveName) {
+    function makeAlmanacItems($saveData, $username, $saveName) {
         global $Parsedown;
         $almanacHtml = '';
         $name = $saveName;
@@ -41,12 +41,12 @@
             if (array_key_exists('synopsis', $almanac)) {
                 $almanacHtml .= '<li class="page" id="synopsis"><div class="page-contents">';
                 $almanacHtml .= $Parsedown->text($almanac['synopsis']);
-                $almanacHtml .= "<img src=\"/p/$saveName/_meta.png\" alt=\"$name\">";
+                $almanacHtml .= "<img src=\"/p/$username/$saveName/_meta.png\" alt=\"$name\">";
                 $almanacHtml .= '</div></li>';
             }
             if (array_key_exists('overview', $almanac)) {
                 $almanacHtml .= '<li class="page" id="overview"><div class="page-contents">';
-                $inlineLogo = "<img src=\"/p/$saveName/_meta.png\" alt=\"$name\" class=\"inline-logo\">";
+                $inlineLogo = "<img src=\"/p/$username/$saveName/_meta.png\" alt=\"$name\" class=\"inline-logo\">";
                 $overview = $Parsedown->text($almanac['overview']);
                 $insertPos = strpos($overview, '<p>') + 3;
                 $overview = substr_replace($overview, $inlineLogo, $insertPos, 0);

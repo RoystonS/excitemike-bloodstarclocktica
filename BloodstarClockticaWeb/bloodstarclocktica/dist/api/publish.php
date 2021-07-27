@@ -43,7 +43,7 @@
 
     // almanac
     try {
-        $almanac = makeAlmanac($data, $saveName);
+        $almanac = makeAlmanac($data, $username, $saveName);
         file_put_contents(join_paths($publishDir, 'almanac.html'), $almanac);
     } catch (Exception $e) {
         echo json_encode(array('error' =>"error writing almanac.html"));
