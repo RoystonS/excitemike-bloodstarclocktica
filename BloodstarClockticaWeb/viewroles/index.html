@@ -93,11 +93,18 @@ const viewRolesJson = (address) => {
 }
 button.addEventListener("click", e => viewRolesJson(document.getElementById("link").value));
 
+const linkInput = document.getElementById("link");
 let match = (new RegExp('[?&]url=([^&]*)')).exec(location.search);
 if (match) {
-    let url = match[1];
-    document.getElementById("link").value = url;
+    let url = decodeURIComponent(match[1]);
+    linkInput.value = url;
     viewRolesJson(url);
 }
+
+function updateAddressBar() {
+    window.history.replaceState(null, '', `./?url=${encodeURIComponent(linkInput.value)}`);
+}
+linkInput.addEventListener('change', updateAddressBar);
+linkInput.addEventListener('input', updateAddressBar);
 
 </script></body></html>
