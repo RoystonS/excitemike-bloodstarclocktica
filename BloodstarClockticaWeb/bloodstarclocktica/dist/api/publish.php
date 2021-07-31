@@ -171,7 +171,7 @@
         // night order
         if (array_key_exists('firstNightOrder', $saveData)){
             $firstNightOrder = $saveData['firstNightOrder'];
-            $i = 1;
+            $i = 10; // start higher so that it's after Demon/Minion info
             foreach ($firstNightOrder as $id) {
                 if (array_key_exists($id, $charactersById)) {
                     $character = &$charactersById[$id];
