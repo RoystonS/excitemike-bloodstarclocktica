@@ -7,7 +7,6 @@ Bloodstar feature requests
 - almanac pdf
 - notes
 - mobile support
-- autoselect new character
 - autogenerate ids
 - cache issue with image src? revision id in saved png name
 - bug: changing id doesn't fix the image paths

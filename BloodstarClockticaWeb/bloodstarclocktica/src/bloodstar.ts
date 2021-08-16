@@ -29,7 +29,7 @@ import './styles/tabs.css';
 import './styles/teamcolor.css';
 
 let edition:Edition = new Edition();
-const selectedCharacter = new BloodBind.Property<Character|null>(null);
+export const selectedCharacter = new BloodBind.Property<Character|null>(null);
 
 /**
  * switch to a tab

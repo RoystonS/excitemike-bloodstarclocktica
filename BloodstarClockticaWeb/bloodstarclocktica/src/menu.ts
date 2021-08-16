@@ -3,6 +3,7 @@
  * @module Menu
  */
 
+import * as bloodstar from "./bloodstar";
 import { showError } from "./dlg/blood-message-dlg";
 import { Edition } from "./model/edition";
 import { hookupClickEvents, showHideElement } from "./util";
@@ -24,7 +25,16 @@ import showHelp from './dlg/help-dlg';
 
 /** add a new character to the custom edition */
 async function addCharacterClicked(edition:Edition):Promise<boolean> {
-    await edition.addNewCharacter();
+    const newCharacter = await edition.addNewCharacter();
+
+    // scroll down to it if necessary
+    const list = document.getElementById('characterList');
+    const newItem = list?.lastElementChild;
+    newItem?.scrollIntoView();
+
+    // select it
+    await bloodstar.selectedCharacter.set(newCharacter);
+
     return true;
 }
 
