@@ -25,8 +25,10 @@ type OpenReturn = {error:string}|{data:{[key:string]:unknown}};
 class ChooseFileDlg extends AriaDialog<string> {
     /** returns name of chosen file, or empty string */
     async open():Promise<string> {
-        // TODO: more specific title
-        const sessionInfo = await signIn();
+        const sessionInfo = await signIn({
+            title:'Sign In to Open',
+            message:'You must first sign in to open a file.'
+        });
         if (!sessionInfo) {return '';}
 
         const fileListDiv = createElement({t:'div',css:['openDlgList']});
@@ -93,8 +95,10 @@ async function listFiles(sessionInfo:SessionInfo):Promise<string[]> {
  */
  async function openNoPrompts(edition:Edition, name:string, suppressErrorMessage=false):Promise<boolean> {
     try {
-        // TODO: more specific title
-        const sessionInfo = await signIn();
+        const sessionInfo = await signIn({
+            title:'Sign In to Open',
+            message:'You must first sign in to open a file.'
+        });
         if (!sessionInfo){return false;}
         const openData:OpenData = {
             saveName: name,

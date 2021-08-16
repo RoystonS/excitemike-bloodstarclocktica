@@ -57,8 +57,10 @@ async function confirmClobber(saveData:SaveData):Promise<SaveResult> {
  export async function saveAs(edition:Edition):Promise<boolean> {
     const name = await promptForName(edition.saveName.get());
     if (null === name) {return false;}
-    // TODO: more specific title
-    const sessionInfo = await signIn();
+    const sessionInfo = await signIn({
+        title:'Sign In to Save',
+        message:'You must first sign in if you wish to save.'
+    });
     if (!sessionInfo){return false;}
     
     if (!validateSaveName(name)) {
@@ -94,8 +96,10 @@ export async function save(edition:Edition):Promise<boolean> {
                 return await saveAs(edition);
             default:
                 {
-                    // TODO: more specific title
-                    const sessionInfo = await signIn();
+                    const sessionInfo = await signIn({
+                        title:'Sign In to Save',
+                        message:'You must first sign in if you wish to save.'
+                    });
                     if (!sessionInfo){return false;}
                     return await _save(sessionInfo, edition, true);
                 }
@@ -238,7 +242,7 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
     }
 
     // await results
-    // TODO: had a bug with this spinner never coming down
+    // TODO: I think I had a bug with this spinner never coming down?
     const results = await spinner('save', `Saving as ${saveName}`, Promise.all(promises)) as SaveImgResult[];
     for (const response of results) {
         if ('error' in response) {
