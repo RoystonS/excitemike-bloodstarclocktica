@@ -1,4 +1,0 @@
-﻿NOTE: better to run release.py than to do it manually
-
-1. At the bottom of BloodstarClockticaWpf's AssemblyInfo.cs
-2. Line 3 of Product.wxs

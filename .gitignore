@@ -1,15 +1,6 @@
-.vs/
 node_modules/
 ftpinfo.json
 *.d.ts
-BloodstarClockticaLib/bin/
-BloodstarClockticaLib/obj/
-BloodstarClockticaWpf/bin/
-BloodstarClockticaWpf/obj/
-Installer/bin/
-Installer/obj/
-obj/
-packages/
 .htpasswd
 .htaccess
 BloodstarClockticaWeb/bloodstarclocktica/dist/*.html
