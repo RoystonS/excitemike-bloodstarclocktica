@@ -6,6 +6,7 @@ import cmd from "./commands/cmd";
 import {showError} from "./dlg/blood-message-dlg";
 import {show as doSignInFlow, SignInFlowOptions} from "./dlg/sign-in-flow";
 import { SessionInfo } from "./iam";
+import { updateUserDisplay } from "./menu";
 
 type SignInOptions = SignInFlowOptions & {
     /** true to force a new sign-in instead of reusing existing token */
@@ -29,7 +30,7 @@ function clearStoredToken():void{
         try{
             localStorage.removeItem('accessToken');
         } catch (error) {
-            // ignore error
+            console.error(error);
         }
     }
 }
@@ -88,19 +89,21 @@ export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:str
 
 /**
  * sign in using saved info or prompting for user+pass if necessary
- * If canCancel is not set in options, this loops until a valid sign-in occurs.
+ * If canCancel is false in options, this loops until a valid sign-in occurs.
  * @returns promise that resolves to user info
  */
 export async function signIn(options?:SignInOptions):Promise<SessionInfo|null> {
     const force = !!(options?.force);
     sessionInfo = sessionInfo || getStoredToken();
-    if (!force && sessionInfo && !accessTokenExpired()){return sessionInfo;}
+    if (!force && sessionInfo && !accessTokenExpired()){
+        updateUserDisplay(sessionInfo);
+        return sessionInfo;
+    }
     clearStoredToken();
     sessionInfo = null;
 
-    if (options?.canCancel) {
+    if (options?.canCancel !== false) {
         sessionInfo = await promptAndSignIn(options);
-        return sessionInfo;
     } else {
         while (!sessionInfo) {
             try {
@@ -112,6 +115,9 @@ export async function signIn(options?:SignInOptions):Promise<SessionInfo|null> {
     }
 
     storeToken(sessionInfo);
+
+    updateUserDisplay(sessionInfo);
+
     return sessionInfo;
 }
 
@@ -119,12 +125,13 @@ export async function signIn(options?:SignInOptions):Promise<SessionInfo|null> {
 export function signOut():void{
     sessionInfo = null;
     clearStoredToken();
+    updateUserDisplay(null);
 }
 
 /**
  * store auth info for next time
  */
-function storeToken(accessToken:SessionInfo):void {
+function storeToken(accessToken:SessionInfo | null):void {
     const localStorage = window.localStorage;
     if (localStorage) {
         try{

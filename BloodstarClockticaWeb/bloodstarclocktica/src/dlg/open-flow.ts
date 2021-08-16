@@ -10,6 +10,7 @@ import { createElement, CreateElementsOptions } from '../util';
 import { AriaDialog } from './aria-dlg';
 import { setRecentFile } from '../recent-file';
 import signIn, { signedInCmd } from '../sign-in';
+import { SessionInfo } from '../iam';
 
 type ListData = {token:string,username:string};
 type ListFilesReturn = {error?:string,files:string[]};
@@ -24,6 +25,10 @@ type OpenReturn = {error:string}|{data:{[key:string]:unknown}};
 class ChooseFileDlg extends AriaDialog<string> {
     /** returns name of chosen file, or empty string */
     async open():Promise<string> {
+        // TODO: more specific title
+        const sessionInfo = await signIn();
+        if (!sessionInfo) {return '';}
+
         const fileListDiv = createElement({t:'div',css:['openDlgList']});
         const body:CreateElementsOptions = [
             {t:'h1',txt:'Choose File'},
@@ -31,7 +36,7 @@ class ChooseFileDlg extends AriaDialog<string> {
             fileListDiv
         ];
 
-        const files = await listFiles();
+        const files = await listFiles(sessionInfo);
         if (!files) {return '';}
         if (files.length) {
             for (const name of files) {
@@ -60,9 +65,7 @@ export async function chooseFile():Promise<string> {
  * Get a list of openable files
  * Brings up the loading spinner during the operation
  */
-async function listFiles():Promise<string[]> {
-    const sessionInfo = await signIn();
-    if (!sessionInfo) {return [];}
+async function listFiles(sessionInfo:SessionInfo):Promise<string[]> {
     const request:ListData={
         token:sessionInfo.token,
         username:sessionInfo.username,
@@ -90,6 +93,7 @@ async function listFiles():Promise<string[]> {
  */
  async function openNoPrompts(edition:Edition, name:string, suppressErrorMessage=false):Promise<boolean> {
     try {
+        // TODO: more specific title
         const sessionInfo = await signIn();
         if (!sessionInfo){return false;}
         const openData:OpenData = {

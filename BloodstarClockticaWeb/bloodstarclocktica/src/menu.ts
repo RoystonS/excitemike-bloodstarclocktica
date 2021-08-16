@@ -5,7 +5,7 @@
 
 import { showError } from "./dlg/blood-message-dlg";
 import { Edition } from "./model/edition";
-import { hookupClickEvents } from "./util";
+import { hookupClickEvents, showHideElement } from "./util";
 import { importBlood } from './import/blood-file';
 import { importJsonFromFile, importJsonFromUrl, } from './import/json';
 import importOfficial from './import/official';
@@ -60,6 +60,7 @@ async function importOfficialClicked(edition:Edition):Promise<boolean> {
 /** hook up menu commands to html elements */
 export default function init(edition:Edition):void {
     const mapping:[string,(edition:Edition)=>Promise<boolean>][] = [
+        ['signInBtn', signInClicked],
         ['signOutBtn', signOutClicked],
         ['changePasswordBtn', changePasswordClicked],
         ['deleteAccountBtn', deleteAccount],
@@ -107,6 +108,7 @@ async function saveAndPublishClicked(edition:Edition):Promise<boolean> {
  * user chose to save the current file under a new name
  */
 export async function saveFileAsClicked(edition:Edition):Promise<boolean> {
+    // TODO: more specific title
     const sessionInfo = await signIn();
     if (!sessionInfo){return false;}
     if (await saveAs(edition)) {
@@ -122,19 +124,36 @@ async function showHelpClicked():Promise<boolean> {
     return true;
 }
 
+/** sign in */
+async function signInClicked():Promise<boolean> {
+    await signIn();
+    return true;
+}
+
 /** forget session info */
 async function signOutClicked(edition:Edition):Promise<boolean> {
     if (!await SdcDlg.savePromptIfDirty(edition)) {return false;}
     signOut();
-    updateUserDisplay(null);
     await edition.reset();
-    const session = await signIn();
-    updateUserDisplay(session);
+    await signIn();
     return true;
 }
 
 /** show who is signed in and a sign out button */
 export function updateUserDisplay(session:SessionInfo|null):void {
+    for (const id of ['signedInLabel','signOutBtn','changePasswordBtn','deleteAccountBtn']) {
+        const element = document.getElementById(id);
+        if (element) {
+            showHideElement(element, !!session);
+        }
+    }
+    for (const id of ['signedOutLabel','signInBtn']) {
+        const element = document.getElementById(id);
+        if (element) {
+            showHideElement(element, !session);
+        }
+    }
+
     const username = document.getElementById('userName');
     if (!(username instanceof HTMLSpanElement)){return;}
     username.innerText = session ? session.username : '';

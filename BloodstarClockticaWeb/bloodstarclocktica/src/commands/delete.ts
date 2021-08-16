@@ -28,6 +28,7 @@ async function confirmDelete(name:string):Promise<boolean> {
  * @returns promise that resolves to the name of the deleted file, or empty string if nothing was deleted
  */
  export async function chooseAndDeleteFile():Promise<string> {
+    // TODO: this needs to tell you it is for deletion, not open
     const name = await chooseFile();
     if (!name) {return '';}
     if (!await confirmDelete(name)) {return '';}
@@ -42,6 +43,7 @@ async function confirmDelete(name:string):Promise<boolean> {
  * @returns true if nothing went terribly wrong
  */
 async function deleteFile(name:string):Promise<boolean>{
+    // TODO: more specific title
     const sessionInfo = await signIn();
     if (!sessionInfo){return false;}
     const deleteData:DeleteData = {

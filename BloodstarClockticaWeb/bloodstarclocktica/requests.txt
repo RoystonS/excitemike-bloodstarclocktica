@@ -1,5 +1,4 @@
 Bloodstar feature requests
-- guest mode
 - sharing
 - collaboration
 - tagging
@@ -12,3 +11,4 @@ Bloodstar feature requests
 - autogenerate ids
 - cache issue with image src? revision id in saved png name
 - bug: changing id doesn't fix the image paths
+- import needs to force unique name

@@ -57,6 +57,7 @@ async function confirmClobber(saveData:SaveData):Promise<SaveResult> {
  export async function saveAs(edition:Edition):Promise<boolean> {
     const name = await promptForName(edition.saveName.get());
     if (null === name) {return false;}
+    // TODO: more specific title
     const sessionInfo = await signIn();
     if (!sessionInfo){return false;}
     
@@ -93,6 +94,7 @@ export async function save(edition:Edition):Promise<boolean> {
                 return await saveAs(edition);
             default:
                 {
+                    // TODO: more specific title
                     const sessionInfo = await signIn();
                     if (!sessionInfo){return false;}
                     return await _save(sessionInfo, edition, true);

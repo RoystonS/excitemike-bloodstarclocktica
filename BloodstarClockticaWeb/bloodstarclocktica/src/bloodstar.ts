@@ -161,15 +161,12 @@ async function init() {
 
     menuInit(edition);
 
-    // TODO: allow using site without signing in
-    // need to sign in before we can do much of anything
-    let sessionInfo = null;
-    while (!sessionInfo) {
-        sessionInfo = await signIn();
-    }
-    updateUserDisplay(sessionInfo);
+    updateUserDisplay(null);
+    const sessionInfo = await signIn({cancelLabel:'Continue as Guest'});
 
-    await initCustomEdition(sessionInfo.email);
+    if (sessionInfo) {
+        await initCustomEdition(sessionInfo.email);
+    }
 }
 
 type StatusBarData = Map<string, {id:string,exported:number,total:number}>;

@@ -53,8 +53,9 @@
             </div> -->
             <div id="windowTitle"></div>
             <div class="dropdown" tabindex="0">
-                signed in as: <span id="userName"></span>
-                <div class="dropdownContent toLeft">
+                <span id="signedOutLabel">signed out</span><span id="signedInLabel">signed in as: </span><span id="userName"></span>
+                <div class="dropdownContent toLeft" id="signedInMenu">
+                    <button id="signInBtn">Sign in</button>
                     <button id="signOutBtn">Sign out</button>
                     <button id="changePasswordBtn">Change password</button>
                     <button id="deleteAccountBtn">Delete account</button>
