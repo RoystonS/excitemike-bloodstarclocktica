@@ -108,7 +108,10 @@ async function newFileClicked(edition:Edition):Promise<boolean> {
 
 /** user chose to save and publish */
 async function saveAndPublishClicked(edition:Edition):Promise<boolean> {
-    if (!edition.dirty.get() || await save(edition)) {
+    // needs to be saved first if dirty OR never-been-saved
+    const saveNeeded = edition.dirty.get() || (edition.saveName.get() === edition.saveName.getDefault());
+
+    if (!saveNeeded || await save(edition)) {
         await publish(edition);
     }
     return false;
