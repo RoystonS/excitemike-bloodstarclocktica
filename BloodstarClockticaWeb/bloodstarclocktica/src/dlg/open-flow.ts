@@ -21,20 +21,28 @@ type OpenData = {
 };
 type OpenReturn = {error:string}|{data:{[key:string]:unknown}};
 
+type ChooseFileOptions = {
+    /** customize prompt title */
+    title?:string,
+
+    /** customize prompt message */
+    message?:string
+};
+
 /** dialog for choosing a file */
 class ChooseFileDlg extends AriaDialog<string> {
     /** returns name of chosen file, or empty string */
-    async open():Promise<string> {
+    async open(options?:ChooseFileOptions):Promise<string> {
         const sessionInfo = await signIn({
-            title:'Sign In to Open',
-            message:'You must first sign in to open a file.'
+            title:'Sign In to Choose File',
+            message:'You must first sign in to choose a file.'
         });
         if (!sessionInfo) {return '';}
 
         const fileListDiv = createElement({t:'div',css:['openDlgList']});
         const body:CreateElementsOptions = [
-            {t:'h1',txt:'Choose File'},
-            {t:'p',txt:'Choose an existing file to open:'},
+            {t:'h1',txt:options?.title||'Choose File'},
+            {t:'p',txt:options?.message||'Choose an existing file to open:'},
             fileListDiv
         ];
 
@@ -59,8 +67,8 @@ class ChooseFileDlg extends AriaDialog<string> {
 }
 
 /** share file chooser with the delete command */
-export async function chooseFile():Promise<string> {
-    return await new ChooseFileDlg().open();
+export async function chooseFile(options?:ChooseFileOptions):Promise<string> {
+    return await new ChooseFileDlg().open(options);
 }
 
 /**
