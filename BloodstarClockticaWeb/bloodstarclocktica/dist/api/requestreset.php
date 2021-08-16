@@ -63,7 +63,6 @@
 
     echo json_encode(array('email'=>$email));
 
-    // TODO: test clearing expired
     $leeway = 60;
     $killTime = time() + $leeway;
     try {

@@ -31,7 +31,6 @@
     }
 
     // expiration
-    // TODO: TEST EXPIRATION
     $timestamp = time();
     $leeway = 60;
     if (($timestamp - $leeway) >= $expiration) {

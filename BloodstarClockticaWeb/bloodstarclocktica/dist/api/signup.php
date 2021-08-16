@@ -81,7 +81,6 @@
 
     echo 'true';
 
-    // TODO: test clearing expired
     $leeway = 60;
     $killTime = time() + $leeway;
     try {
