@@ -513,6 +513,9 @@ export function imageUrlToDataUri(url:string, useCorsProxy:boolean):Promise<stri
     return Locks.enqueue('imageRequest', ()=>_imageUrlToDataUri(url,useCorsProxy), MAX_SIMULTANEOUS_IMAGE_REQUESTS);
 }
 
+/** used to limit messages about download errors */
+let blockErrorMessages = false;
+
 /** get image data from the url and convert it to a dataUri */
 export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean):Promise<string> {
     const controller = new AbortController();
@@ -530,7 +533,11 @@ export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean):Promi
         }));
         if (!response.ok) {
             // intentional floating promise - TODO: something to prevent getting many of these at once
-            void showMessage('Network Error', `Something went wrong while trying to reach ${url}`);
+            if (!blockErrorMessages) {
+                const msgPromise = showMessage('Network Error', `Something went wrong while trying to reach ${url}`);
+                blockErrorMessages = true;
+                msgPromise.finally(()=>{blockErrorMessages=false;});
+            }
             console.error(`Trying to reach ${proxiedUrl}\n${response.status}: (${response.type}) ${response.statusText}`);
             return '';
         }
