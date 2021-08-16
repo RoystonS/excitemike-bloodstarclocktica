@@ -105,7 +105,7 @@ async function showSignUpStep():Promise<string>{
         buttonElem.disabled = !(validateUsername(usernameField.value) && validateEmail(emailField.value) && validatePassword(passwordField.value) && (passwordField.value === confirmField.value));
     };
     const usernameWarn = ()=>{
-        updateUsernameWarnings(usernameField.value, usernameWarnings);
+        updateUsernameWarnings(usernameField.value, usernameWarnings, 'Username');
         syncToButton();
     };
     const emailWarn = ()=>{

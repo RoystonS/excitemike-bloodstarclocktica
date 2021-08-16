@@ -33,18 +33,18 @@ export function updatePasswordWarnings(password:string, passwordConfirm:string, 
 }
 
 /** update container contents to warn if save name does not look valid */
-export function updateSaveNameWarnings(name:string, container:HTMLElement):void {
-    return updateUsernameWarnings(name, container);
+export function updateSaveNameWarnings(name:string, container:HTMLElement, fieldName:string):void {
+    return updateUsernameWarnings(name, container, fieldName);
 }
 
 /** update container contents to warn if username does not look valid */
-export function updateUsernameWarnings(username:string, container:HTMLElement):void {
+export function updateUsernameWarnings(username:string, container:HTMLElement, fieldName:string):void {
     container.innerText = '';
     if (username.length < 2) {
-        container.appendChild(createElement({t:'span',txt:`× Username too short`}));
+        container.appendChild(createElement({t:'span',txt:`× ${fieldName} too short`}));
     }
     if (!VALID_URL_PART.test(username)){
-        container.appendChild(createElement({t:'span',txt:`× Usernames should contain only letters, numbers, hyphens (-), and underscores (_)`}));
+        container.appendChild(createElement({t:'span',txt:`× ${fieldName} should contain only letters, numbers, hyphens (-), and underscores (_)`}));
     }
 }
 

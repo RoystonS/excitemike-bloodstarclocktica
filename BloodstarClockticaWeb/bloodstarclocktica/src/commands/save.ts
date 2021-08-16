@@ -265,6 +265,6 @@ async function promptForName(defaultName:string):Promise<string|null> {
             pattern:'[A-Za-z0-9\\-_]{1,25}',
             hint: 'Name should contain only letters, numbers, hyphens (-), and underscores (_)',
             validateFn: validateSaveName,
-            warningsFn: updateSaveNameWarnings
+            warningsFn: (input:string,container:HTMLElement)=>updateSaveNameWarnings(input,container,'Save name')
         });
 }
