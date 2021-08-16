@@ -3,8 +3,9 @@ ftpinfo.json
 *.d.ts
 .htpasswd
 .htaccess
-BloodstarClockticaWeb/bloodstarclocktica/dist/*.html
-BloodstarClockticaWeb/bloodstarclocktica/dist/*.css
-BloodstarClockticaWeb/bloodstarclocktica/dist/*.js
-BloodstarClockticaWeb/bloodstarclocktica/dist/fonts/
-BloodstarClockticaWeb/bloodstarclocktica/dist/*.js.LICENSE.txt
+dist/
+bloodstar.xyz/dist/*.html
+bloodstar.xyz/dist/*.css
+bloodstar.xyz/dist/*.js
+bloodstar.xyz/dist/fonts/
+bloodstar.xyz/dist/*.js.LICENSE.txt
