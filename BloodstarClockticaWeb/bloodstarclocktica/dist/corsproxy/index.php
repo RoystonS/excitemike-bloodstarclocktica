@@ -69,7 +69,9 @@ function getUrl($request_url, $request_method, $request_headers, $count) {
     }
 
     // let the request begin
-    $ch = curl_init($request_url);
+    $safeRequestUrl = implode('/', array_map('rawurlencode', explode('/', $request_url)));
+    $safeRequestUrl = str_replace('%3A',':', $safeRequestUrl);
+    $ch = curl_init($safeRequestUrl);
 
     curl_setopt($ch, CURLOPT_HTTPHEADER, $request_headers);   // (re-)send headers
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);     // return response

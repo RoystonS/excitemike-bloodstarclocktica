@@ -135,7 +135,7 @@ export async function fetchJson<T>(uri:string):Promise<T|null> {
 
 /** get url for when you want to use a cors proxy */
 export function getCorsProxyUrl(url:string):string {
-    return `https://www.bloodstar.xyz/corsproxy/?url=${encodeURIComponent(url)}`;
+    return `https://www.bloodstar.xyz/corsproxy/?url=${encodeURIComponent(escape(url))}`;
 }
 
 /** set event listeners for clicks, return a function you can call to undo it */

@@ -562,12 +562,13 @@ export async function urlToCanvas(url:string, width:number, height:number, useCo
             canvas.width = (scale * image.width) | 0;
             canvas.height = (scale * image.height) | 0;
             const ctx = canvas.getContext('2d');
-            if (!ctx) {
+            if (ctx) {
+                ctx.drawImage(image,0,0,canvas.width,canvas.height);
+                resolve(canvas);
+            } else {
                 reject('no context 2d');
                 return;
             }
-            ctx.drawImage(image,0,0,canvas.width,canvas.height);
-            resolve(canvas);
         };
         image.src = url;
     });
