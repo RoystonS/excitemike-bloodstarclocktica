@@ -21,15 +21,20 @@
     margin: 0;
     padding: 3px 6px 6px 6px;
     background:none;
-    border:none;
+    border-top: none;
+    border-right: none;
+    border-left: none;
     border-bottom: 2px solid #666;
 }
-.tabButton:hover {
-    background:none;
-    border:none;
+.tabButton:hover, .tabButton:focus-visible {
+    background:#333;
+    border-top: none;
+    border-right: none;
+    border-left: none;
     border-bottom: 2px solid #3977FF;
 }
 .selectedTabBtn, .selectedTabBtn:hover, .selectedTabBtn:focus, .selectedTabBtn:focus-visible {
+    background:#333;
     padding-top: 0px;
     border-top: none;
     border-right: none;
