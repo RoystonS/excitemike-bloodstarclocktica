@@ -157,8 +157,10 @@ async function importScript(json:ScriptEntry[], edition:Edition):Promise<boolean
     const choices = await new ChooseCharactersDlg().open(json);
     if (!choices) {return false;}
 
+    const oldLength = edition.firstNightOrder.getLength();
     const firstNightOrder:NightOrderTracker = new Map<number, Character[]>();
     const otherNightOrder:NightOrderTracker = new Map<number, Character[]>();
+
     const promises = choices.map(characterJson=>importEntry(characterJson, edition, firstNightOrder, otherNightOrder));
 
     const importResults = await spinner('importJsonFromUrl', 'Importing', Promise.all(promises));
@@ -169,10 +171,16 @@ async function importScript(json:ScriptEntry[], edition:Edition):Promise<boolean
     // set night order
     const data:[NightOrderTracker, ObservableCollection<Character>][] = [[firstNightOrder, edition.firstNightOrder],[otherNightOrder, edition.otherNightOrder]];
     for (const [nightMap, collection] of data) {
+        let dst = oldLength;
         const keys = Array.from(nightMap.keys()).sort((a, b) => a - b);
-        await collection.clear();
+
         for (const key of keys) {
-            await collection.addMany(nightMap.get(key) || []);
+            for (const character of nightMap.get(key) || []) {
+                const src = collection.indexOf(character);
+                if (src > dst) {
+                    await collection.move(src, dst++);
+                }
+            }
         }
     }
 
