@@ -3,7 +3,6 @@ ftpinfo.json
 *.d.ts
 .htpasswd
 .htaccess
-dist/
 bloodstar.xyz/dist/*.html
 bloodstar.xyz/dist/*.css
 bloodstar.xyz/dist/*.js
