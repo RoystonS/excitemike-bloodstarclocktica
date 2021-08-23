@@ -95,6 +95,22 @@ export class Character extends ObservableObject<Character> {
         this.imageSettings.addPropertyChangedEventListener(regenCb);
         this.unStyledImage.addListener(regenCb);
         this.team.addListener(regenCb);
+
+        // IF source or styled image are url paths instead of data uris,
+        // THEN id change should force a regen, because that path is probably based on id
+        this.id.addListener(async ()=>{
+            const unstyled = this.unStyledImage.get();
+            if (unstyled === null) { return; }
+            if (!unstyled.startsWith('data:')) {
+                await this.regenerateStyledImage();
+                return;
+            }
+            const styled = this.styledImage.get();
+            if ((styled === null) || !styled.startsWith('data:')) {
+                await this.regenerateStyledImage();
+                return;
+            }
+        });
     }
 
     static async asyncNew():Promise<Character>

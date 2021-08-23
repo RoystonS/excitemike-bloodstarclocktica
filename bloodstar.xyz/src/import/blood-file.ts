@@ -114,7 +114,7 @@ class BloodImporter {
         return true;
     }
 
-    /** make sure that acharacter exists in the edition/map before continuing */
+    /** make sure that a character exists in the edition/map before continuing */
     private ensureCharacter(id:string):Promise<Character> {
         return spinAndThrottle('ensureCharacter', `Creating ${id}`, async ()=>{
             let character = this.charactersById.get(id);

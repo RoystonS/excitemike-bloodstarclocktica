@@ -105,6 +105,7 @@ export class Edition extends ObservableObject<Edition> {
                 case 'dirty':
                 case 'saveName':
                     await edition.windowTitle.set(`File: ${(edition.dirty.get() ? '[unsaved changes] ' : '')}${edition.saveName.get() || '[unnamed]'}`);
+                    await edition.regenAllIds();
                     break;
                 case 'windowTitle':
                     break;
@@ -115,8 +116,11 @@ export class Edition extends ObservableObject<Edition> {
         });
 
         // watch for dirtying of images
-        edition.characterList.addItemChangedListener((_:number, character:Character, propName:PropKey<Character>) => {
+        edition.characterList.addItemChangedListener(async (_:number, character:Character, propName:PropKey<Character>) => {
             switch (propName) {
+                case 'name':
+                    await character.id.set(edition.generateValidId(character.name.get()));
+                    break;
                 case 'id':
                     edition.dirtySourceImages.add(character.id.get());
                     edition.dirtyFinalImages.add(character.id.get());
@@ -187,9 +191,41 @@ export class Edition extends ObservableObject<Edition> {
     /** add a new character to the set */
     async addNewCharacter():Promise<Character> {
         const character = await Character.asyncNew();
-        await this.makeNameAndIdUnique(character);
+        await character.id.set(this.generateValidId(character.name.get()));
         await this.characterList.add(character);
         return character;
+    }
+
+    /** get a unique id from the given basename */
+    generateValidId(basename:string):string {
+        const newBase = basename
+            .toLowerCase()
+            .replace(/[^A-Za-z0-9_]/g, '');
+        const suffix = this.saveName.get()
+            .toLowerCase()
+            .replace(/[^A-Za-z0-9_]/g, '');
+        let number = 0;
+        let combined = `${newBase}${number||''}_${suffix}`;
+        let dupeFound = false;
+        do {
+            dupeFound = false;
+            for (const character of this.characterList) {
+                if (character.id.get() == combined) {
+                    number++;
+                    combined = `${newBase}${number||''}_${suffix}`;
+                    dupeFound = true;
+                    break;
+                }
+            }
+        } while (dupeFound);
+        return combined;
+    }
+
+    /** update all ids (you probably changed the save name of the edition) */
+    private async regenAllIds():Promise<void> {
+        for (const character of this.characterList) {
+            await character.id.set(this.generateValidId(character.name.get()));
+        }
     }
 
     /** make sure there are no duplicate ids */
@@ -199,7 +235,7 @@ export class Edition extends ObservableObject<Edition> {
             let id = character.id.get();
             if (ids.has(id)){
                 while (ids.has(id)){
-                    id = `${id}${(Math.random()*10)|0}`;
+                    id = this.generateValidId(character.name.get());
                 }
                 await character.id.set(id);
             }
@@ -215,26 +251,6 @@ export class Edition extends ObservableObject<Edition> {
 
     /** check whether image needs saving */
     isLogoDirty():boolean{return this.dirtyLogo;}
-
-    /** make sure the name and id of a newly added character aren't taken */
-    async makeNameAndIdUnique(character:Character):Promise<void> {
-        let i = 1;
-        const originalId = character.id.get();
-        const originalName = character.name.get();
-        let matchFound;
-        do {
-            matchFound = false;
-            for (const existingCharacter of this.characterList) {
-                if ((existingCharacter.id.get() === character.id.get()) || (existingCharacter.name.get() === character.name.get())) {
-                    matchFound = true;
-                    await character.id.set(originalId + i);
-                    await character.name.set(originalName + i);
-                    i++;
-                    break;
-                }
-            }
-        } while (matchFound);
-    }
 
     /** edition was just opened or saved */
     async markClean():Promise<void> {

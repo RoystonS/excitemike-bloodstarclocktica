@@ -94,7 +94,8 @@ async function importMeta(entry:MetaEntry, edition:Edition):Promise<boolean> {
 /** import a character into the edition */
 async function importCharacter(entry:CharacterEntry, edition:Edition, firstNightOrder:NightOrderTracker, otherNightOrder:NightOrderTracker):Promise<boolean> {
     const character = await spinner(entry.id, `Adding new character`, edition.addNewCharacter());
-    await character.id.set(entry.id);
+    const newId = edition.generateValidId(entry.name||'newcharacter');
+    await character.id.set(newId);
     {
         const nightNumber = entry.firstNight || 0;
         const fnoList = firstNightOrder.get(nightNumber) || [];

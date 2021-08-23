@@ -58,7 +58,7 @@ export default async function importOfficial(edition:Edition):Promise<boolean> {
     const results = await Promise.all(choices.map(async choice=>{
         const character = await edition.addNewCharacter();
         try {
-            return await _importOfficial(choice, character);
+            return await _importOfficial(choice, character, edition);
         } catch (error) {
             await edition.characterList.deleteItem(character);
             throw error;
@@ -68,7 +68,7 @@ export default async function importOfficial(edition:Edition):Promise<boolean> {
 }
 
 /** load from the character entry to the character object */
-async function _importOfficial(fromCharacter:CharacterEntry, toCharacter:Character):Promise<boolean> {
+async function _importOfficial(fromCharacter:CharacterEntry, toCharacter:Character, edition:Edition):Promise<boolean> {
     if (fromCharacter.ability) {
         await toCharacter.ability.set(fromCharacter.ability);
     }
@@ -76,7 +76,8 @@ async function _importOfficial(fromCharacter:CharacterEntry, toCharacter:Charact
         await toCharacter.firstNightReminder.set(fromCharacter.firstNightReminder);
     }
     if (fromCharacter.id) {
-        await toCharacter.id.set(fromCharacter.id);
+        const newId = edition.generateValidId(fromCharacter.id);
+        await toCharacter.id.set(newId);
     }
     {
         const url = `https://github.com/bra1n/townsquare/raw/main/src/assets/icons/${fromCharacter.id}.png`;

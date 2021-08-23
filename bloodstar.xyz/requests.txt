@@ -7,11 +7,10 @@ Bloodstar feature requests
 - almanac pdf
 - notes
 - mobile support
-- autogenerate ids
 - cache issue with image src? revision id in saved png name
-- bug: changing id doesn't fix the image paths
-    - after you fix that: almanac uses images in usersave when it should instead use published ones
+- after you fix that: almanac uses images in usersave when it should instead use published ones
 - import needs to force unique name
 - when you open a new file, clear remembered previous open file
 - changelog field
 - almanac should use published images, not images out of save directory
+- "copy to clipboard" buttons

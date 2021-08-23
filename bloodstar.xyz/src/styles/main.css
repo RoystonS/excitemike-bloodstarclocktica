@@ -80,6 +80,13 @@ input[type=checkbox]:hover {
 input[type=checkbox]:checked::before {
     content:'\2713';
 }
+input[type="text"]:read-only {
+    background-color: #333;
+    color:#999;
+}
+input[type="text"]:read-only:hover, input[type="text"]:read-only:focus-visible {
+    border: 1px solid #999;
+}
 /* this is a copy of how Firefox styles autocompleted items for reference in case I want to override it here later
 input:autofill {
     filter: grayscale(21%) brightness(88%) contrast(161%) invert(10%) sepia(40%) saturate(206%);
