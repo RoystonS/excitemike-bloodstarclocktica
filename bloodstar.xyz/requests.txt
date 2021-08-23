@@ -10,5 +10,4 @@ Bloodstar feature requests
 - cache issue with image src? revision id in saved png name
 - import needs to force unique name
 - changelog field
-- almanac should use published images, not images out of save directory
 - "copy to clipboard" buttons
