@@ -1,4 +1,4 @@
-html,body{height:100%;font-size:16px}
+html,body{height:100%;font-size:16px;scroll-behavior:smooth;}
 body{
     background:#333;
     color:#eee;
@@ -76,7 +76,6 @@ ol.nav > li {
     align-items: stretch;
     justify-content: space-between;
     flex-flow: column nowrap;
-    scroll-behavior: smooth;
     overflow-x:hidden;
     max-width:800px;
     margin-left:124px;
