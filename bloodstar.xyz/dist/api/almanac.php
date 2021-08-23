@@ -74,7 +74,7 @@
 
                 // character image
                 if (array_key_exists('styledImage', $character)){
-                    $image = $character['styledImage'];
+                    $image = "/p/$username/$saveName/$id.png";
                     $almanacHtml .= "style=\"background-image:url('$image');\"><div class=\"spacer\"></div";
                 }
                 $almanacHtml .= '>';

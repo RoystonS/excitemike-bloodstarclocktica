@@ -8,7 +8,6 @@ Bloodstar feature requests
 - notes
 - mobile support
 - cache issue with image src? revision id in saved png name
-- after you fix that: almanac uses images in usersave when it should instead use published ones
 - import needs to force unique name
 - changelog field
 - almanac should use published images, not images out of save directory
