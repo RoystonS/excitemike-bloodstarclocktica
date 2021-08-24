@@ -295,6 +295,17 @@
                             <div class="twoColumnGrid">
                                 <label for="characterExport" title="Whether this character should be included when exporting.">Include in Export</label>
                                 <input type="checkbox" name="characterExport" id="characterExport" title="Whether this character should be included when exporting.">
+
+                                <label for="characterNotes" title="Place to store notes about this character. Not included in exported script JSON or almanac.">Notes</label>
+                                <div class="autogrowWrap">
+                                    <textarea
+                                        name="characterNotes"
+                                        id="characterNotes"
+                                        title="Place to store notes about this character. Not included in exported script JSON or almanac."
+                                        rows="1"
+                                        oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+                                </div>
+
                                 <label for="characterAttribution" title="Unused by clocktower.online, but included in exported JSON. Good place to give credit to image creator, for example.">Attribution</label>
                                 <div class="autogrowWrap">
                                     <textarea

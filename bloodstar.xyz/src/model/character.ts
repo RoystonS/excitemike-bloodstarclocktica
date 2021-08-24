@@ -37,6 +37,9 @@ export class Character extends ObservableObject<Character> {
 
     @observableProperty('')
     readonly attribution!: Property<string>;
+
+    @observableProperty('')
+    readonly notes!: Property<string>;
     
     @observableChild(CharacterAlmanac)
     readonly almanac!: CharacterAlmanac;

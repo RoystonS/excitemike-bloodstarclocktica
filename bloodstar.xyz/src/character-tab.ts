@@ -26,6 +26,7 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
     bindTrackedText('characterReminderTokens', character.characterReminderTokens, characterTabIds);
     bindTrackedText('globalReminderTokens', character.globalReminderTokens, characterTabIds);
     bindTrackedCheckBox('characterExport', character.export, characterTabIds);
+    bindTrackedText('characterNotes', character.notes, characterTabIds);
     bindTrackedText('characterAttribution', character.attribution, characterTabIds);
     bindTrackedText('characterAlmanacFlavor', character.almanac.flavor, characterTabIds);
     bindTrackedText('characterAlmanacOverview', character.almanac.overview, characterTabIds);

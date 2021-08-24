@@ -5,5 +5,4 @@ Bloodstar feature requests
 - export images for print & play
 - handout pdf
 - almanac pdf
-- notes
 - mobile support
