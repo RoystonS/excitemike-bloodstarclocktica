@@ -37,6 +37,30 @@ ol#menu > li {
     min-width:150px;
     box-shadow: 0px 2px 4px 0px #3977FF;
 }
+.dropdownContent > a, .dropdownContent > span {
+    color:#eee;
+    text-decoration: none;
+    padding:2px;
+    border:1px solid #666;
+    background:#333;
+    cursor: pointer;
+    font-family: 'Open Sans', sans-serif;
+    font-size:13px;
+    font-weight:bold;
+    letter-spacing: +1px;
+    padding-left:6px;
+    padding-right:6px;
+}
+.dropdownContent > a:hover
+, .dropdownContent > a:focus-visible
+{
+    border: 1px solid #3977FF;
+    background:#3977FF;
+}
+.dropdownContent > a:focus
+{
+    border: 1px solid #3977FF;
+}
 .dropdownContent > * {
     display:flex;
     justify-content: space-between;
