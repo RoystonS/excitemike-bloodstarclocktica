@@ -193,8 +193,11 @@ ul#status {
 
 .uploadCompleteGrid {
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto 1fr auto;
     gap:6px;
+}
+.uploadCompleteGrid > a {
+    letter-spacing: 0;
 }
 .nowrap {white-space: nowrap;text-overflow:ellipsis;overflow:hidden;}
 .importCharacter {

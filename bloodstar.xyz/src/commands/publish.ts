@@ -44,6 +44,19 @@ export default async function publish(edition:Edition):Promise<boolean> {
     const {script,almanac} = response;
     const cacheTrickingScriptLink = `${script}?${(Date.now() % (31*24*60*60*1000)).toString(16)}`;
 
+    const copyLink = async (evt: Event, link:string)=>{
+        try {
+            await navigator.clipboard.writeText(link);
+            if (evt.target instanceof HTMLButtonElement) {
+                evt.target.innerText = 'Copied!';
+            }
+        } catch (e) {
+            // do nothing
+        }
+    };
+    const copyScriptLink = async (evt: Event)=>await copyLink(evt, cacheTrickingScriptLink);
+    const copyAlmanacLink = async (evt: Event)=>await copyLink(evt, almanac);
+
     await new AriaDialog<void>().baseOpen(
         null,
         'publishComplete', 
@@ -54,9 +67,11 @@ export default async function publish(edition:Edition):Promise<boolean> {
                 css:['uploadCompleteGrid'],
                 children:[
                     {t:'span',txt:'script:'},
-                    {t:'a',a:{'href':cacheTrickingScriptLink,'target':'_blank'},txt:cacheTrickingScriptLink},
+                    {t:'a',a:{href:cacheTrickingScriptLink,target:'_blank'},txt:cacheTrickingScriptLink},
+                    {t:'button',txt:'copy',events:{click:copyScriptLink}},
                     {t:'span',txt:'almanac:'},
-                    {t:'a',a:{'href':almanac,'target':'_blank'},txt:almanac},
+                    {t:'a',a:{href:almanac,target:'_blank'},txt:almanac},
+                    {t:'button',txt:'copy',events:{click:copyAlmanacLink}},
                 ]
             }
         ],

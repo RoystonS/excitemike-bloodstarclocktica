@@ -7,4 +7,3 @@ Bloodstar feature requests
 - almanac pdf
 - notes
 - mobile support
-- "copy to clipboard" buttons

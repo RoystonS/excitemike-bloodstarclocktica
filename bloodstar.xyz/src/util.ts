@@ -9,7 +9,7 @@ export type CreateElementOptions<K extends keyof HTMLElementTagNameMap> = {
     /** tag name of the element to create */
     t:K
 
-    /** attributes to set on the created element (used the same as a) */
+    /** attributes to set on the created element */
     a?:{[key:string]:string},
 
     /** children to append or configuration used to create those children */
