@@ -127,6 +127,16 @@
                                         rows="1"
                                         oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
                                 </div>
+                                <label for="metaChangeLog" title="Markdown supported! A place to document changes between revisions of your set.">Changelog</label>
+                                <div class="autogrowWrap">
+                                    <textarea
+                                        name="metaChangeLog"
+                                        id="metaChangeLog"
+                                        title="Markdown supported! A place to document changes between revisions of your set."
+                                        spellcheck="true"
+                                        rows="1"
+                                        oninput="this.parentNode.dataset.replicatedValue = this.value"></textarea>
+                                </div>
                             </div>
                         </div>
                     </details>
@@ -220,11 +230,6 @@
                         <summary>Character</summary>
                         <div class="fieldgroup">
                             <div class="twoColumnGrid">
-                                <!--
-                                    <label for="characterId" title="Unique internal ID for this character without spaces or special characters.">ID</label>
-                                    <input type="text" name="characterId" id="characterId" title="Unique internal ID for this character without spaces or special characters." readonly>
-                                -->
-        
                                 <label for="characterName" title="The displayed name of this character.">Name</label>
                                 <input type="text" name="characterName" id="characterName" title="The displayed name of this character.">
         

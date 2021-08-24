@@ -10,4 +10,6 @@ export class EditionAlmanac extends ObservableObject<EditionAlmanac> {
     readonly synopsis!:Property<string>;
     @observableProperty('')
     readonly overview!:Property<string>;
+    @observableProperty('')
+    readonly changelog!:Property<string>;
 }

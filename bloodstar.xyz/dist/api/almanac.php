@@ -53,6 +53,12 @@
                 $almanacHtml .= $overview;
                 $almanacHtml .= '</div></li>';
             }
+            if (array_key_exists('changelog', $almanac)) {
+                $almanacHtml .= '<li class="page" id="changelog"><div class="page-contents">';
+                $almanacHtml .= '<h2>Changelog</h2><hr><div class="overview">';
+                $almanacHtml .= $Parsedown->text($almanac['changelog']);
+                $almanacHtml .= '</div></div></li>';
+            }
         }
 
         if (array_key_exists('characterList', $saveData)){
@@ -171,6 +177,9 @@
             }
             if (array_key_exists('overview', $almanac)) {
                 $items .= makeNavItem('Overview', 'overview');
+            }
+            if (array_key_exists('changelog', $almanac)) {
+                $items .= makeNavItem('Changelog', 'changelog');
             }
         }
 

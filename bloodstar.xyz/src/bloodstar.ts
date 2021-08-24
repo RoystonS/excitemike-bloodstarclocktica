@@ -94,6 +94,7 @@ async function initBindings():Promise<void> {
     BloodBind.bindTextById('metaAuthor', edition.meta.author);
     BloodBind.bindTextById('metaSynopsis', edition.almanac.synopsis);
     BloodBind.bindTextById('metaOverview', edition.almanac.overview);
+    BloodBind.bindTextById('metaChangeLog', edition.almanac.changelog);
     BloodBind.bindImageChooserById('metaLogoInput', edition.meta.logo, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
     BloodBind.bindImageDisplayById('metaLogoDisplay', edition.meta.logo);
     

@@ -102,7 +102,9 @@ ol.nav > li {
     color:#333;
 }
 .spacer{height:11rem}
-#synopsis > .page-contents > p, #overview > .page-contents > p{
+#synopsis > .page-contents > p,
+#overview > .page-contents > p,
+#changelog > .page-contents > p {
     width:60%;
 }
 
@@ -261,7 +263,8 @@ p{
         margin-top:45px;
     }
     #synopsis > .page-contents > p,
-    #overview > .page-contents > p {width:100%}
+    #overview > .page-contents > p,
+    #changelog > .page-contents > p {width:100%}
     .team{
         font-size:3vw;
         letter-spacing:0;
