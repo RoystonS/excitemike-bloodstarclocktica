@@ -7,7 +7,4 @@ Bloodstar feature requests
 - almanac pdf
 - notes
 - mobile support
-- cache issue with image src? revision id in saved png name
-- import needs to force unique name
-- changelog field
 - "copy to clipboard" buttons
