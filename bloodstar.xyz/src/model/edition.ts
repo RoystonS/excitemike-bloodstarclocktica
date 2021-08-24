@@ -105,7 +105,6 @@ export class Edition extends ObservableObject<Edition> {
                 case 'dirty':
                 case 'saveName':
                     await edition.windowTitle.set(`File: ${(edition.dirty.get() ? '[unsaved changes] ' : '')}${edition.saveName.get() || '[unnamed]'}`);
-                    await edition.regenAllIds();
                     break;
                 case 'windowTitle':
                     break;
@@ -222,10 +221,12 @@ export class Edition extends ObservableObject<Edition> {
     }
 
     /** update all ids (you probably changed the save name of the edition) */
-    private async regenAllIds():Promise<void> {
-        for (const character of this.characterList) {
-            await character.id.set(this.generateValidId(character.name.get()));
-        }
+    async regenAllIds():Promise<void> {
+        await Promise.all(
+            this.characterList.map(
+                character=>character.id.set(this.generateValidId(character.name.get()))
+            )
+        );
     }
 
     /** make sure there are no duplicate ids */
@@ -274,8 +275,8 @@ export class Edition extends ObservableObject<Edition> {
     /** set to opened file */
     async open(saveName:string, data:{ [key: string]: unknown; }):Promise<boolean> {
         if (!data) {await this.reset(); return false;}
-        await spinner('edition.open', 'Deserializing edition', this.deserialize(data));
         await this.saveName.set(saveName);
+        await spinner('edition.open', 'Deserializing edition', this.deserialize(data));
         
         // mark all as up to date
         await this.markClean();

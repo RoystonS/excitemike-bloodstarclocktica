@@ -12,6 +12,7 @@ import { setRecentFile } from '../recent-file';
 import { updateSaveNameWarnings, validateSaveName } from '../validate';
 import {signedInCmd, signIn} from '../sign-in';
 import { SessionInfo } from '../iam';
+import { imageUrlToDataUri } from '../blood-image';
 
 type SaveData = {
     clobber?:boolean,
@@ -71,6 +72,8 @@ async function confirmClobber(saveData:SaveData):Promise<SaveResult> {
     const backupName = edition.saveName.get();
     try {
         await edition.saveName.set(name);
+        await edition.markDirty();
+        await spinner('saveAs.regeneratingimages', 'Copying Images', edition.regenAllIds());
         const success = await _save(sessionInfo, edition, backupName===name);
         if (!success) {
             await edition.saveName.set(backupName);
@@ -226,18 +229,26 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
     }
 
     {
-        const logo = toSave.logo;
-        if (logo && logo.startsWith('data:') && edition.isLogoDirty()) {
-            promises.push(Locks.enqueue('saveImage', ()=>{
-                const saveData:SaveImgData = {
-                    token: sessionInfo.token,
-                    saveName: saveName,
-                    id: '_meta',
-                    isSource:false,
-                    image: logo
-                };
-                return signedInCmd('save-img', `Saving _meta.png`, saveData);
-            }, MAX_SIMULTANEOUS_IMAGE_SAVES));
+        let logo = toSave.logo;
+        if (logo && edition.isLogoDirty()) {
+            const sourceUrl = new URL(logo);
+            const isDataUri = sourceUrl.protocol === 'data:';
+            if (!isDataUri) {
+                const useCors = sourceUrl.hostname !== window.location.hostname;
+                logo = await imageUrlToDataUri(logo, useCors);
+            }
+            if (logo && logo.startsWith('data:')) {
+                promises.push(Locks.enqueue('saveImage', ()=>{
+                    const saveData:SaveImgData = {
+                        token: sessionInfo.token,
+                        saveName: saveName,
+                        id: '_meta',
+                        isSource:false,
+                        image: logo||''
+                    };
+                    return signedInCmd('save-img', `Saving _meta.png`, saveData);
+                }, MAX_SIMULTANEOUS_IMAGE_SAVES));
+            }
         }
     }
 

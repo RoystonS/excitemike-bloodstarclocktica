@@ -107,6 +107,7 @@ export class Character extends ObservableObject<Character> {
             }
             const styled = this.styledImage.get();
             if ((styled === null) || !styled.startsWith('data:')) {
+                // TODO: we could copy these on the server instead of this expensive regen
                 await this.regenerateStyledImage();
                 return;
             }
