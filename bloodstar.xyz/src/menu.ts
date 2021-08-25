@@ -16,7 +16,7 @@ import {chooseAndDeleteFile} from './commands/delete';
 import {deleteAccount} from './dlg/delete-account-flow';
 import * as SdcDlg from './dlg/blood-save-discard-cancel';
 import {signIn, signOut} from './sign-in';
-import { clearRecentFile, setRecentFile } from "./recent-file";
+import { setRecentFile } from "./recent-file";
 import { show as showOpenFlow } from "./dlg/open-flow";
 import { SessionInfo } from "./iam";
 import { newEdition } from './commands/new';
@@ -47,7 +47,6 @@ async function changePasswordClicked():Promise<boolean> {
 export async function deleteFileClicked(edition:Edition):Promise<boolean> {
     const deleted = await chooseAndDeleteFile();
     if (!deleted) {return false;}
-    clearRecentFile(deleted);
 
     // if you deleted the current edition, you must mark all its images as dirty!
     if (deleted === edition.saveName.get()) {

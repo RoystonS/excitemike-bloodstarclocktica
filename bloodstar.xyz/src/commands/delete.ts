@@ -7,6 +7,7 @@ import {spinner} from '../dlg/spinner-dlg';
 import {show as getConfirmation} from "../dlg/yes-no-dlg";
 import {chooseFile} from "../dlg/open-flow";
 import signIn, { signedInCmd } from '../sign-in';
+import { clearRecentFile } from '../recent-file';
 
 type DeleteData = {token:string,saveName:string};
 type DeleteReturn = {error:string}|true;
@@ -32,6 +33,7 @@ async function confirmDelete(name:string):Promise<boolean> {
     if (!name) {return '';}
     if (!await confirmDelete(name)) {return '';}
     if (!await spinner('delete', 'Choose file to delete', deleteFile(name))){return '';}
+    clearRecentFile(name);
     await showMessage(`Deleted`, `File "${name}" deleted`);
     return name;
 }
