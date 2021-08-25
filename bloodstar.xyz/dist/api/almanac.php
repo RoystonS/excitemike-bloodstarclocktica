@@ -30,10 +30,12 @@
         global $Parsedown;
         $almanacHtml = '';
         $name = $saveName;
+        $hasLogo = false;
 
         if (array_key_exists('meta', $saveData)) {
             $meta = $saveData['meta'];
             $name = $meta['name'];
+            $hasLogo = array_key_exists('logo', $meta);
         }
 
         if (array_key_exists('almanac', $saveData)) {
@@ -41,15 +43,19 @@
             if (array_key_exists('synopsis', $almanac)) {
                 $almanacHtml .= '<li class="page" id="synopsis"><div class="page-contents">';
                 $almanacHtml .= $Parsedown->text($almanac['synopsis']);
-                $almanacHtml .= "<img src=\"/p/$username/$saveName/_meta.png\" alt=\"$name\">";
+                if ($hasLogo) {
+                    $almanacHtml .= "<img src=\"/p/$username/$saveName/_meta.png\" alt=\"$name\">";
+                }
                 $almanacHtml .= '</div></li>';
             }
             if (array_key_exists('overview', $almanac)) {
                 $almanacHtml .= '<li class="page" id="overview"><div class="page-contents">';
-                $inlineLogo = "<img src=\"/p/$username/$saveName/_meta.png\" alt=\"$name\" class=\"inline-logo\">";
                 $overview = $Parsedown->text($almanac['overview']);
-                $insertPos = strpos($overview, '<p>') + 3;
-                $overview = substr_replace($overview, $inlineLogo, $insertPos, 0);
+                if ($hasLogo) {
+                    $inlineLogo = "<img src=\"/p/$username/$saveName/_meta.png\" alt=\"$name\" class=\"inline-logo\">";
+                    $insertPos = strpos($overview, '<p>') + 3;
+                    $overview = substr_replace($overview, $inlineLogo, $insertPos, 0);
+                }
                 $almanacHtml .= $overview;
                 $almanacHtml .= '</div></li>';
             }

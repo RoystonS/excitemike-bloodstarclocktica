@@ -6,3 +6,9 @@ Bloodstar feature requests
 - handout pdf
 - almanac pdf
 - mobile support
+- bug: acts a bit funny if you delete your open file, close the tab, then come back
+- include attribution in almanac somehow
+- "created by" field for almanac as well
+- saveAs is quite slow :(
+- script link in almanac
+- night order in almanac
