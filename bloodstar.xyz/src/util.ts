@@ -149,19 +149,22 @@ export function hookupClickEvents(data: [string, (e: Event) => void][]):()=>void
         };
     }
 
+    const listenersToRemove: [string, (e:Event)=>void][] = [];
+
     for (const [id, cb] of data) {
         const element = document.getElementById(id);
         if (element) {
-            element.addEventListener("click", wrapCb(cb));
+            const listener = wrapCb(cb);
+            listenersToRemove.push([id, listener]);
+            element.addEventListener("click", listener);
         }
     }
 
-    const backupData = data;
     return ()=>{
-        for (const [id, cb] of backupData) {
+        for (const [id, listener] of listenersToRemove) {
             const element = document.getElementById(id);
             if (element) {
-                element.removeEventListener("click", wrapCb(cb));
+                element.removeEventListener("click", listener);
             }
         }
     }
