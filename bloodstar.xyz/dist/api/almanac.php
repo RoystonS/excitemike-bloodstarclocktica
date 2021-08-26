@@ -21,8 +21,96 @@
 .makeNavItems($saveData)
 .'</ol><ol class="almanac-viewport">'
 .makeAlmanacItems($saveData, $username, $saveName)
+.makeNightOrder($saveData, $username, $saveName)
 .'<li class="generated-by">this almanac generated using <a href="https://www.bloodstar.xyz">Bloodstar Clocktica</a></li>'
 .'</ol></div></body></html>';
+    }
+
+    // build html for night order pages
+    function makeNightOrder($saveData, $username, $saveName) {
+        if (!array_key_exists('characterList', $saveData)){return '';}
+        if (!array_key_exists('firstNightOrder', $saveData)){return '';}
+        
+        $almanacHtml = '';
+
+        // build character map
+        $firstNightCharacterMap = array();
+        $otherNightCharacterMap = array();
+        $characterList = $saveData['characterList'];
+        foreach ($characterList as $character) {
+            // skip if not supposed to be exported
+            if (array_key_exists('export', $character)) {
+                if (!$character['export']) {continue;}
+            }
+            $id = $character['id'] ?? 'newcharacter';
+            // first night order
+            if (array_key_exists('firstNightReminder', $character) && ($character['firstNightReminder'] !== '')) {
+                $firstNightCharacterMap[$id] = $character;
+            }
+            // other night order
+            if (array_key_exists('otherNightReminder', $character) && ($character['otherNightReminder'] !== '')) {
+                $otherNightCharacterMap[$id] = $character;
+            }
+        }
+        
+        // begin page
+        $almanacHtml .= "<li class=\"page\" id=\"nightOrder\"><div class=\"page-contents nightOrder\">";
+
+        // begin first night column
+        $almanacHtml .= "<div class=\"firstNightColumn\"><h2>First Night</h2><div class=\"nightOrderList\">";
+        
+        // each character in first night
+        $firstNightOrder = $saveData['firstNightOrder'];
+        foreach ($firstNightOrder as $characterId) {
+            if (!array_key_exists($characterId, $firstNightCharacterMap)) {continue;}
+            $character = $firstNightCharacterMap[$characterId];
+            $name = $character['name'] ?? 'New Character';
+            $id = $character['id'] ?? 'newcharacter';
+
+            // character image
+            if (array_key_exists('styledImage', $character)){
+                $image = "/p/$username/$saveName/$id.png";
+                $almanacHtml .= "<div class=\"nightOrderListIcon\" style=\"background-image:url('$image');\"></div>";
+            } else {
+                $almanacHtml .= "<div></div>";
+            }
+
+            // character name
+            $almanacHtml .= "<div class=\"nightOrderListName\">$name</div>";
+        }
+
+        // end first night column
+        $almanacHtml .= "</div></div>";
+
+        // begin other nights column
+        $almanacHtml .= "<div class=\"otherNightsColumn\"><h2>Other Nights</h2><div class=\"nightOrderList\">";
+        
+        // each character in other nights
+        $otherNightOrder = $saveData['otherNightOrder'];
+        foreach ($otherNightOrder as $characterId) {
+            if (!array_key_exists($characterId, $otherNightCharacterMap)) {continue;}
+            $character = $otherNightCharacterMap[$characterId];
+            $name = $character['name'] ?? 'New Character';
+            $id = $character['id'] ?? 'newcharacter';
+
+            // character image
+            if (array_key_exists('styledImage', $character)){
+                $image = "/p/$username/$saveName/$id.png";
+                $almanacHtml .= "<div class=\"nightOrderListIcon\" style=\"background-image:url('$image');\"></div>";
+            } else {
+                $almanacHtml .= "<div></div>";
+            }
+
+            // character name
+            $almanacHtml .= "<div class=\"nightOrderListName\">$name</div>";
+        }
+
+        // end other nights column
+        $almanacHtml .= "</div></div>";
+
+        // end page
+        $almanacHtml .= "</div></li>";
+        return $almanacHtml;
     }
 
     // build html for almanac content
@@ -203,6 +291,8 @@
                     $items .= makeNavItem($character['name'], $character['id']);
                 }
             }
+
+            $items .= makeNavItem('Night Order', 'nightOrder');
         }
 
         return $items;

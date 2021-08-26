@@ -10,5 +10,7 @@ Bloodstar feature requests
 - include attribution in almanac somehow
 - "created by" field for almanac as well
 - saveAs is quite slow :(
-- script link in almanac
-- night order in almanac
+- make printable
+- minion info, demon info in list 
+    - if before minion info, night order >=1, <4,
+    - if between minion info & demon info, night order >=4, <7,

@@ -377,3 +377,33 @@ p{
 .fabled hr {
     border-color:#553412;
 }
+
+.nightOrder {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap:6px;
+}
+.nightOrderList {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap:6px;
+    align-items: center;
+}
+.nightOrderListName {
+    font-size:1.7rem;
+}
+.nightOrderListIcon {
+    width: 60px;
+    height: 60px;
+    overflow: hidden;
+    background-size: 76px 76px;
+    background-repeat: no-repeat;
+    background-position: top;
+}
+.firstNightColumn {
+    align-self: start;
+}
+.otherNightsColumn {
+    transform:rotate(180deg);
+    align-self: end;
+}
