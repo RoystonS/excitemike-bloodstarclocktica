@@ -14,7 +14,8 @@
 <link href="https://fonts.googleapis.com/css2?family=PT+Serif&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Nova+Script&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="https://www.bloodstar.xyz/p/almanac.css">
+<link rel="stylesheet" type="text/css" media="screen" href="https://www.bloodstar.xyz/p/almanac.css">
+<link rel="stylesheet" type="text/css" media="print" href="https://www.bloodstar.xyz/p/print.css">
 <title>'.$name.' Almanac</title>
 </head><body><div class="almanac-row">
 <ol class="nav">'
@@ -54,10 +55,10 @@
         }
         
         // begin page
-        $almanacHtml .= "<li class=\"page\" id=\"nightOrder\"><div class=\"page-contents nightOrder\">";
+        $almanacHtml .= "<li class=\"page\" id=\"nightOrder\"><div class=\"page-contents\"><h2>Night Order</h2><div class=\"nightOrder\">";
 
         // begin first night column
-        $almanacHtml .= "<div class=\"firstNightColumn\"><h2>First Night</h2><div class=\"nightOrderList\">";
+        $almanacHtml .= "<div class=\"firstNightColumn\"><h3>First Night</h3><div class=\"nightOrderList\">";
         
         // each character in first night
         $firstNightOrder = $saveData['firstNightOrder'];
@@ -70,7 +71,7 @@
             // character image
             if (array_key_exists('styledImage', $character)){
                 $image = "/p/$username/$saveName/$id.png";
-                $almanacHtml .= "<div class=\"nightOrderListIcon\" style=\"background-image:url('$image');\"></div>";
+                $almanacHtml .= "<img class=\"nightOrderListIcon\" src=\"$image\" alt=\"\"/>";
             } else {
                 $almanacHtml .= "<div></div>";
             }
@@ -83,7 +84,7 @@
         $almanacHtml .= "</div></div>";
 
         // begin other nights column
-        $almanacHtml .= "<div class=\"otherNightsColumn\"><h2>Other Nights</h2><div class=\"nightOrderList\">";
+        $almanacHtml .= "<div class=\"otherNightsColumn\"><h3>Other Nights</h3><div class=\"nightOrderList\">";
         
         // each character in other nights
         $otherNightOrder = $saveData['otherNightOrder'];
@@ -96,7 +97,7 @@
             // character image
             if (array_key_exists('styledImage', $character)){
                 $image = "/p/$username/$saveName/$id.png";
-                $almanacHtml .= "<div class=\"nightOrderListIcon\" style=\"background-image:url('$image');\"></div>";
+                $almanacHtml .= "<img class=\"nightOrderListIcon\" src=\"$image\" alt=\"\"/>";
             } else {
                 $almanacHtml .= "<div></div>";
             }
@@ -109,7 +110,7 @@
         $almanacHtml .= "</div></div>";
 
         // end page
-        $almanacHtml .= "</div></li>";
+        $almanacHtml .= "</div></div></li>";
         return $almanacHtml;
     }
 
@@ -132,7 +133,7 @@
                 $almanacHtml .= '<li class="page" id="synopsis"><div class="page-contents">';
                 $almanacHtml .= $Parsedown->text($almanac['synopsis']);
                 if ($hasLogo) {
-                    $almanacHtml .= "<img src=\"/p/$username/$saveName/_meta.png\" alt=\"$name\">";
+                    $almanacHtml .= "<img src=\"/p/$username/$saveName/_meta.png\" alt=\"$name\"/>";
                 }
                 $almanacHtml .= '</div></li>';
             }
@@ -140,7 +141,7 @@
                 $almanacHtml .= '<li class="page" id="overview"><div class="page-contents">';
                 $overview = $Parsedown->text($almanac['overview']);
                 if ($hasLogo) {
-                    $inlineLogo = "<img src=\"/p/$username/$saveName/_meta.png\" alt=\"$name\" class=\"inline-logo\">";
+                    $inlineLogo = "<img src=\"/p/$username/$saveName/_meta.png\" alt=\"$name\" class=\"inline-logo\"/>";
                     $insertPos = strpos($overview, '<p>') + 3;
                     $overview = substr_replace($overview, $inlineLogo, $insertPos, 0);
                 }
@@ -175,7 +176,8 @@
                 // character image
                 if (array_key_exists('styledImage', $character)){
                     $image = "/p/$username/$saveName/$id.png";
-                    $almanacHtml .= "style=\"background-image:url('$image');\"><div class=\"spacer\"></div";
+                    // old way: $almanacHtml .= "style=\"background-image:url('$image');\"><div class=\"spacer\"></div";
+                    $almanacHtml .= "> <img src=\"$image\" class=\"characterImage\" alt=\"\"/";
                 }
                 $almanacHtml .= '>';
 
@@ -246,7 +248,7 @@
                 }
                 
 
-                // team, end page tags
+                // end page tags
                 $almanacHtml .= "<p class=\"team\">$teamDisplay</p></div></li>";
             }
         }
@@ -267,13 +269,13 @@
         if (array_key_exists('almanac', $saveData)) {
             $almanac = $saveData['almanac'];
             if (array_key_exists('synopsis', $almanac)) {
-                $items .= makeNavItem('Synopsis', 'synopsis');
+                $items .= makeNavItem('Synopsis', 'synopsis', '');
             }
             if (array_key_exists('overview', $almanac)) {
-                $items .= makeNavItem('Overview', 'overview');
+                $items .= makeNavItem('Overview', 'overview', '');
             }
             if (array_key_exists('changelog', $almanac)) {
-                $items .= makeNavItem('Changelog', 'changelog');
+                $items .= makeNavItem('Changelog', 'changelog', '');
             }
         }
 
@@ -288,19 +290,20 @@
                 }
 
                 if (array_key_exists('name', $character) && array_key_exists('id', $character)){
-                    $items .= makeNavItem($character['name'], $character['id']);
+                    $team = $character['team'] ?? '';
+                    $items .= makeNavItem($character['name'], $character['id'], $team);
                 }
             }
 
-            $items .= makeNavItem('Night Order', 'nightOrder');
+            $items .= makeNavItem('Night Order', 'nightOrder', '');
         }
 
         return $items;
     }
 
     // html for a single nav item
-    function makeNavItem($label,$id){
-        return "<li><a href=\"#$id\">$label</a></li>";
+    function makeNavItem($label,$id,$class){
+        return "<li class=\"$class\"><a href=\"#$id\">$label</a></li>";
     }
 
     // variable substitutions

@@ -211,6 +211,157 @@ p{
     top:0;
     left:-1.4rem;
 }
+.page::before{background-image:url('/img/paper.png');}
+
+.townsfolk h1,
+.townsfolk h2,
+.townsfolk h3,
+.townsfolk h4,
+.townsfolk h5,
+.townsfolk h6,
+.townsfolk .ability,
+.townsfolk .team,
+.townsfolk .overview > p:nth-child(1)::first-letter,
+.townsfolk .overview > p + p::before {
+    color:#003fb2;
+}
+.townsfolk hr {
+    border-color:#003fb2;
+}
+.nav > li.townsfolk > a {
+    text-shadow: -2px 0 0 #00c;
+}
+
+.outsider h1,
+.outsider h2,
+.outsider h3,
+.outsider h4,
+.outsider h5,
+.outsider h6,
+.outsider .ability,
+.outsider .team,
+.outsider .overview > p:nth-child(1)::first-letter,
+.outsider .overview > p + p::before {
+    color:#006893;
+}
+.outsider hr {
+    border-color:#006893;
+}
+.nav > li.outsider > a {
+    text-shadow: -2px 0 0 #069;
+}
+
+.minion h1,
+.minion h2,
+.minion h3,
+.minion h4,
+.minion h5,
+.minion h6,
+.minion .ability,
+.minion .team,
+.minion .overview > p:nth-child(1)::first-letter,
+.minion .overview > p + p::before {
+    color:#9f0000;
+}
+.minion hr {
+    border-color:#9f0000;
+}
+.nav > li.minion > a {
+    text-shadow: -2px 0 0 #930;
+}
+
+.demon h1,
+.demon h2,
+.demon h3,
+.demon h4,
+.demon h5,
+.demon h6,
+.demon .ability,
+.demon .team,
+.demon .overview > p:nth-child(1)::first-letter,
+.demon .overview > p + p::before {
+    color:#940000;
+}
+.demon hr {
+    border-color:#940000;
+}
+.nav > li.demon > a {
+    text-shadow: -2px 0 0 #c00;
+}
+
+.traveler h1,
+.traveler h2,
+.traveler h3,
+.traveler h4,
+.traveler h5,
+.traveler h6,
+.traveler .ability,
+.traveler .team,
+.traveler .overview > p:nth-child(1)::first-letter,
+.traveler .overview > p + p::before {
+    color:#553412;
+}
+.traveler hr {
+    border-color:#553412;
+}
+.nav > li.traveler > a{
+    text-shadow: -2px 0 0 #00c, 2px 0 0 #c00;
+}
+
+.fabled h1,
+.fabled h2,
+.fabled h3,
+.fabled h4,
+.fabled h5,
+.fabled h6,
+.fabled .ability,
+.fabled .team,
+.fabled .overview > p:nth-child(1)::first-letter,
+.fabled .overview > p + p::before {
+    color:#553412;
+}
+.fabled hr {
+    border-color:#553412;
+}
+.nav > li.fabled > a {
+    color: #ffc;
+}
+
+.characterImage {
+    max-width:22rem;
+    max-height:22rem;
+    margin-top: -2rem;
+    margin-bottom: -6.5rem;
+}
+.nightOrder {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap:5rem;
+    margin:1rem;
+
+}
+.nightOrderList {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap:6px;
+    align-items: center;
+}
+.nightOrderListName {
+    font-size:1.2rem;
+}
+.nightOrderListIcon {
+    max-width: 60px;
+    max-height: 60px;
+    margin-bottom: -20px;
+}
+.firstNightColumn {
+    align-self: start;
+}
+.otherNightsColumn {
+    /*transform:rotate(180deg);*/
+    align-self: end;
+}
+
 
 @media only screen and (max-width:799px){
     .page-contents{
@@ -275,135 +426,25 @@ p{
     }
     .tip > p{width:75vw;}
     .inline-logo{margin-left:0}
+    .nightOrder {gap:1rem;}
 }
 @media only screen and (max-width:450px){
     h1, h2{font-size:8vw}
     h3, h4, h5, h6, h7 {font-size:4vw}
+    .nightOrderListIcon{
+        max-height: 6vw;
+        margin-bottom: -2vw;
+        margin-right: -1vw;
+    }
 }
-.page::before{background-image:url('/img/paper.png');}
-
-.townsfolk h1,
-.townsfolk h2,
-.townsfolk h3,
-.townsfolk h4,
-.townsfolk h5,
-.townsfolk h6,
-.townsfolk .ability,
-.townsfolk .team,
-.townsfolk .overview > p:nth-child(1)::first-letter,
-.townsfolk .overview > p + p::before {
-    color:#003fb2;
-}
-.townsfolk hr {
-    border-color:#003fb2;
-}
-
-.outsider h1,
-.outsider h2,
-.outsider h3,
-.outsider h4,
-.outsider h5,
-.outsider h6,
-.outsider .ability,
-.outsider .team,
-.outsider .overview > p:nth-child(1)::first-letter,
-.outsider .overview > p + p::before {
-    color:#006893;
-}
-.outsider hr {
-    border-color:#006893;
-}
-
-.minion h1,
-.minion h2,
-.minion h3,
-.minion h4,
-.minion h5,
-.minion h6,
-.minion .ability,
-.minion .team,
-.minion .overview > p:nth-child(1)::first-letter,
-.minion .overview > p + p::before {
-    color:#9f0000;
-}
-.minion hr {
-    border-color:#9f0000;
-}
-
-.demon h1,
-.demon h2,
-.demon h3,
-.demon h4,
-.demon h5,
-.demon h6,
-.demon .ability,
-.demon .team,
-.demon .overview > p:nth-child(1)::first-letter,
-.demon .overview > p + p::before {
-    color:#940000;
-}
-.demon hr {
-    border-color:#940000;
-}
-
-.traveler h1,
-.traveler h2,
-.traveler h3,
-.traveler h4,
-.traveler h5,
-.traveler h6,
-.traveler .ability,
-.traveler .team,
-.traveler .overview > p:nth-child(1)::first-letter,
-.traveler .overview > p + p::before {
-    color:#553412;
-}
-.traveler hr {
-    border-color:#553412;
-}
-
-.fabled h1,
-.fabled h2,
-.fabled h3,
-.fabled h4,
-.fabled h5,
-.fabled h6,
-.fabled .ability,
-.fabled .team,
-.fabled .overview > p:nth-child(1)::first-letter,
-.fabled .overview > p + p::before {
-    color:#553412;
-}
-.fabled hr {
-    border-color:#553412;
-}
-
-.nightOrder {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap:6px;
-}
-.nightOrderList {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap:6px;
-    align-items: center;
-}
-.nightOrderListName {
-    font-size:1.7rem;
-}
-.nightOrderListIcon {
-    width: 60px;
-    height: 60px;
-    overflow: hidden;
-    background-size: 76px 76px;
-    background-repeat: no-repeat;
-    background-position: top;
-}
-.firstNightColumn {
-    align-self: start;
-}
-.otherNightsColumn {
-    transform:rotate(180deg);
-    align-self: end;
+@media only screen and (max-width:400px){
+    h1, h2{font-size:32px}
+    h3, h4, h5, h6, h7 {font-size:16px}
+    .nightOrderListIcon{
+        max-height: 24px;
+        margin-bottom: -8px;
+        margin-right: 0;
+    }
+    .nightOrder{display:block}
+    .nightOrderList{margin-bottom:1rem}
 }
