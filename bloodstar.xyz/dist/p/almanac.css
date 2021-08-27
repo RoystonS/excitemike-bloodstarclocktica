@@ -170,7 +170,7 @@ p{
     text-align:center;
     font-size:0.8rem;
 }
-.overview, .example, .how-to-run {
+.overview, .example, .how-to-run, .attribution {
     width:80%;
 }
 .tip > p {
@@ -329,7 +329,7 @@ p{
 
 .characterImage {
     max-width:22rem;
-    max-height:22rem;
+    height:22rem;
     margin-top: -2rem;
     margin-bottom: -6.5rem;
 }
@@ -351,7 +351,7 @@ p{
 }
 .nightOrderListIcon {
     max-width: 60px;
-    max-height: 60px;
+    height: 60px;
     margin-bottom: -20px;
 }
 .firstNightColumn {
@@ -421,7 +421,7 @@ p{
         letter-spacing:0;
         top:10vw;
     }
-    .ability, .flavor, .overview, .example, .how-to-run{
+    .ability, .flavor, .overview, .example, .how-to-run, .attribution{
         width:80vw;
     }
     .tip > p{width:75vw;}
@@ -432,7 +432,7 @@ p{
     h1, h2{font-size:8vw}
     h3, h4, h5, h6, h7 {font-size:4vw}
     .nightOrderListIcon{
-        max-height: 6vw;
+        height: 6vw;
         margin-bottom: -2vw;
         margin-right: -1vw;
     }
@@ -441,7 +441,7 @@ p{
     h1, h2{font-size:32px}
     h3, h4, h5, h6, h7 {font-size:16px}
     .nightOrderListIcon{
-        max-height: 24px;
+        height: 24px;
         margin-bottom: -8px;
         margin-right: 0;
     }

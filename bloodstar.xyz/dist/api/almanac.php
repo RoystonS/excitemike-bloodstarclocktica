@@ -171,15 +171,13 @@
                 $name = $character['name'] ?? 'New Character';
                 
                 // begin page
-                $almanacHtml .= "<li class=\"page\" id=\"$id\"><div class=\"page-contents $team\" ";
+                $almanacHtml .= "<li class=\"page\" id=\"$id\"><div class=\"page-contents $team\">";
 
                 // character image
                 if (array_key_exists('styledImage', $character)){
                     $image = "/p/$username/$saveName/$id.png";
-                    // old way: $almanacHtml .= "style=\"background-image:url('$image');\"><div class=\"spacer\"></div";
-                    $almanacHtml .= "> <img src=\"$image\" class=\"characterImage\" alt=\"\"/";
+                    $almanacHtml .= "<img src=\"$image\" class=\"characterImage\" alt=\"\"/>";
                 }
-                $almanacHtml .= '>';
 
                 // name
                 $almanacHtml .= "<h2>$name</h2>";
@@ -246,10 +244,21 @@
                         $almanacHtml .= '</div>';
                     }
                 }
+
+                // attribution
+                if (array_key_exists('attribution', $character)){
+                    $attribution = $character['attribution'] ?? '';
+                    $almanacHtml .= '<h3>Attribution</h3>';
+                    $almanacHtml .= "<div class=\"attribution\">";
+                    $almanacHtml .= $Parsedown->text(doSubstitutions($character, $attribution));
+                    $almanacHtml .= "</div>";
+                }
                 
+                // team
+                $almanacHtml .= "<p class=\"team\">$teamDisplay</p>";
 
                 // end page tags
-                $almanacHtml .= "<p class=\"team\">$teamDisplay</p></div></li>";
+                $almanacHtml .= "</div></li>";
             }
         }
 
