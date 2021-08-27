@@ -228,8 +228,8 @@ p{
 .townsfolk hr {
     border-color:#003fb2;
 }
-.nav > li.townsfolk > a {
-    text-shadow: -2px 0 0 #00c;
+.nav > li.townsfolk {
+    background: #1f65ff55;
 }
 
 .outsider h1,
@@ -247,8 +247,8 @@ p{
 .outsider hr {
     border-color:#006893;
 }
-.nav > li.outsider > a {
-    text-shadow: -2px 0 0 #069;
+.nav > li.outsider {
+    background: #46d5ff55;
 }
 
 .minion h1,
@@ -266,8 +266,8 @@ p{
 .minion hr {
     border-color:#9f0000;
 }
-.nav > li.minion > a {
-    text-shadow: -2px 0 0 #930;
+.nav > li.minion {
+    background: #ff690055;
 }
 
 .demon h1,
@@ -285,8 +285,8 @@ p{
 .demon hr {
     border-color:#940000;
 }
-.nav > li.demon > a {
-    text-shadow: -2px 0 0 #c00;
+.nav > li.demon {
+    background: #ce010055;
 }
 
 .traveler h1,
@@ -304,8 +304,8 @@ p{
 .traveler hr {
     border-color:#553412;
 }
-.nav > li.traveler > a{
-    text-shadow: -2px 0 0 #00c, 2px 0 0 #c00;
+.nav > li.traveler {
+    background: linear-gradient(90deg, #1f65ff55 49%,#ce010055 51%);
 }
 
 .fabled h1,
@@ -323,8 +323,8 @@ p{
 .fabled hr {
     border-color:#553412;
 }
-.nav > li.fabled > a {
-    color: #ffc;
+.nav > li.fabled {
+    background: #ffe91f55;
 }
 
 .characterImage {
