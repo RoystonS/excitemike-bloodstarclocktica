@@ -4,6 +4,7 @@
  */
 import { Property } from '../bind/bindings';
 import {ObservableObject, observableProperty} from '../bind/observable-object';
+import { ProcessImageSettings } from '../blood-image';
 
 export class CharacterImageSettings extends ObservableObject<CharacterImageSettings> {
 
@@ -11,9 +12,21 @@ export class CharacterImageSettings extends ObservableObject<CharacterImageSetti
     @observableProperty(true)
     readonly shouldRestyle!: Property<boolean>;
 
-    /** how much to shrink the image to leave room for text */
-    @observableProperty(1)
-    readonly shrinkToFit!: Property<number>;
+    /** adjust image sizing */
+    @observableProperty(ProcessImageSettings.USABLE_REGION_WIDTH / ProcessImageSettings.FULL_WIDTH)
+    readonly sizeFactor!: Property<number>;
+
+    /** adjust image placement */
+    @observableProperty(ProcessImageSettings.USABLE_REGION_CENTER_X / ProcessImageSettings.FULL_WIDTH)
+    readonly horizontalPlacement!: Property<number>;
+
+    /** adjust image placement */
+    @observableProperty(ProcessImageSettings.USABLE_REGION_CENTER_Y / ProcessImageSettings.FULL_WIDTH)
+    readonly verticalPlacement!: Property<number>;
+
+    /** whether to crop the image to visible pixels. default: true */
+    @observableProperty(true)
+    readonly shouldCrop!: Property<boolean>;
 
     /** whether to colorize the image. default: true */
     @observableProperty(true)

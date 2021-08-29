@@ -44,7 +44,10 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
     };
 
     bindTrackedCheckBox('shouldRestyle', character.imageSettings.shouldRestyle, characterTabIds);
-    sliderHelper('shrinkToFit', character.imageSettings.shrinkToFit);
+    sliderHelper('horizontalPlacement', character.imageSettings.horizontalPlacement);
+    sliderHelper('verticalPlacement', character.imageSettings.verticalPlacement);
+    sliderHelper('sizeFactor', character.imageSettings.sizeFactor);
+    bindTrackedCheckBox('shouldCrop', character.imageSettings.shouldCrop, characterTabIds);
     bindTrackedCheckBox('shouldColorize', character.imageSettings.shouldColorize, characterTabIds);
     bindTrackedCheckBox('useOutsiderAndMinionColors', character.imageSettings.useOutsiderAndMinionColors, characterTabIds);
     bindTrackedCheckBox('useTexture', character.imageSettings.useTexture, characterTabIds);

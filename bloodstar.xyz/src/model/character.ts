@@ -29,8 +29,6 @@ async function safelyConvertImage(_object:ObservableObject<unknown>, field:Obser
     }
 }
 
-function lerp(a:number, b:number, t:number):number {return a+(b-a)*t;}
-
 export class Character extends ObservableObject<Character> {
     @observableProperty('')
     readonly ability!: Property<string>;
@@ -157,7 +155,12 @@ export class Character extends ObservableObject<Character> {
         let bloodImage = await urlToBloodImage(unstyledImage, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, false);
 
         // crop
-        bloodImage = bloodImage.trim();
+        if (imageSettings.shouldCrop.get()) {
+            bloodImage = bloodImage.trim();
+        }
+
+        if (bloodImage.width === 0) {return this.styledImage.set(null);}
+        if (bloodImage.height === 0) {return this.styledImage.set(null);}
 
         // colorize
         if (imageSettings.shouldColorize.get()) {
@@ -173,19 +176,22 @@ export class Character extends ObservableObject<Character> {
 
         // make full size image with icon pasted into the correct place
         {
-            const shrinkToFitAmount = imageSettings.shrinkToFit.get();
-            if (shrinkToFitAmount > 0) {
-            bloodImage = new BloodImage([ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT])
-                .pasteZoomed(
-                    bloodImage,
-                    lerp(0, ProcessImageSettings.USABLE_REGION_X, shrinkToFitAmount),
-                    lerp(0, ProcessImageSettings.USABLE_REGION_Y, shrinkToFitAmount),
-                    lerp(ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.USABLE_REGION_WIDTH, shrinkToFitAmount),
-                    lerp(ProcessImageSettings.FULL_HEIGHT, ProcessImageSettings.USABLE_REGION_HEIGHT, shrinkToFitAmount),
-                );
+            const srcW = bloodImage.width;
+            const srcH = bloodImage.height;
+            const aspect = srcW / srcH;
+            let dstW = ProcessImageSettings.FULL_WIDTH * imageSettings.sizeFactor.get();
+            let dstH = ProcessImageSettings.FULL_HEIGHT * imageSettings.sizeFactor.get();
+            if (aspect > 1.0) {
+                dstH = dstW / aspect;
             } else {
-                bloodImage = bloodImage.fit(ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
+                dstW = dstH * aspect;
             }
+            const dstX = (ProcessImageSettings.FULL_WIDTH - dstW) * imageSettings.horizontalPlacement.get();
+            const dstY = (ProcessImageSettings.FULL_HEIGHT - dstH) * imageSettings.verticalPlacement.get();
+            
+            bloodImage =
+                new BloodImage([ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT])
+                .pasteZoomed(bloodImage, dstX, dstY, dstW, dstH);
         }
 
         // texture

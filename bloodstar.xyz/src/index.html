@@ -49,7 +49,7 @@
                 Info
                 <div class="dropdownContent">
                     <a href="https://bitbucket.org/excitemike/bloodstarclocktica" target="_blank">Source code</a>
-                    <span style="white-space: nowrap;">updated: 2021.08.27</span>
+                    <span style="white-space: nowrap;">updated: 2021.08.29</span>
                 </div>
             </div>
             <div id="windowTitle"></div>
@@ -163,9 +163,22 @@
                                                 <input type="checkbox" name="shouldRestyle" id="shouldRestyle" title="Whether to restyle the image at all.">
                                                 <div></div>
 
-                                                <label for="shrinkToFit" title="How much to shrink the image to leave room for text.">Position Adjust</label>
-                                                <input type="range" name="shrinkToFit" id="shrinkToFit" min="0" max="1" step="0.05" title="How much to shrink the image to leave room for text.">
-                                                <label id="shrinkToFitValueLabel" for="shrinkToFit"></label>
+                                                <!-- TODO: copy to mobile version (not yet commited so this TODO won't make sense to anyone but Mike) -->
+                                                <label for="horizontalPlacement" title="Adjust horizontal placement of icon.">Horizontal Placement</label>
+                                                <input type="range" name="horizontalPlacement" id="horizontalPlacement" min="0" max="1" step="0.05" title="Adjust horizontal placement of icon.">
+                                                <label id="horizontalPlacementValueLabel" for="horizontalPlacement"></label>
+
+                                                <label for="verticalPlacement" title="Adjust vertical placement of icon.">Vertical Placement</label>
+                                                <input type="range" name="verticalPlacement" id="verticalPlacement" min="0" max="1" step="0.05" title="Adjust vertical placement of icon.">
+                                                <label id="verticalPlacementValueLabel" for="verticalPlacement"></label>
+
+                                                <label for="sizeFactor" title="Adjust image size.">Size</label>
+                                                <input type="range" name="sizeFactor" id="sizeFactor" min="0" max="1" step="0.05" title="Adjust image size.">
+                                                <label id="sizeFactorValueLabel" for="sizeFactor"></label>
+                                                
+                                                <label for="shouldCrop">Crop</label>
+                                                <input type="checkbox" name="crop" id="shouldCrop" title="Whether to crop the image to just the visible area.">
+                                                <div></div>
                                                 
                                                 <label for="shouldColorize">Colorize</label>
                                                 <input type="checkbox" name="shouldColorize" id="shouldColorize" title="Whether to recolor the image based on team.">

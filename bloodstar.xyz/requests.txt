@@ -6,8 +6,11 @@ Bloodstar feature requests
 - handout pdf
 - almanac pdf
 - mobile support
-- bug: acts a bit funny if you delete your open file, close the tab, then come back
+    - hide status bar on narrow screens
+    - fix and animate character list expand/collapse
+    - menu and title on separate rows on narrow screens
+    - dragging
 - saveAs is quite slow :(
 - minion info, demon info in list 
-    - if before minion info, night order >=1, <4,
-    - if between minion info & demon info, night order >=4, <7,
+    - if before minion info, night order >=1, <4
+    - if between minion info & demon info, night order >=4, <7
