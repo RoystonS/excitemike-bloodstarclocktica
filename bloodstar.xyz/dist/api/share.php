@@ -39,7 +39,7 @@
 
     // don't add yourself
     if ($user === $owner) {
-        echo json_encode(array("error" => 'added yourself'));
+        echo json_encode(array("error" => 'can\'t add yourself'));
         exit();
     }
 

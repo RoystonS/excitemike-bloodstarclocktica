@@ -21,10 +21,10 @@ type ShareAllRequest = GetSharedRequest & {all:true};
 type ShareAllResponse = {error:string}|true;
 
 type UnshareRequest = GetSharedRequest & {user:string};
-type UnshareResponse = {error:string}|{success:true};
+type UnshareResponse = {error:string}|true;
 
 type UnshareAllRequest = GetSharedRequest & {all:true};
-type UnshareAllResponse = {error:string}|{success:true};
+type UnshareAllResponse = {error:string}|true;
 
 class SharingDlg extends AriaDialog<void> {
     shareList:ShareList|null = null;
@@ -120,7 +120,7 @@ class SharingDlg extends AriaDialog<void> {
         };
         try {
             const response = await signedInCmd<UnshareAllResponse>('unshare', 'Unsharing', request);
-            if ('error' in response){
+            if (true !== response){
                 await showError('Network Error', `Error encountered while unsharing`, response.error);
                 console.error(response.error);
                 return;
@@ -138,7 +138,7 @@ class SharingDlg extends AriaDialog<void> {
     async removeUser(user:string):Promise<void> {
         if (!await getConfirmation(
             'Unshare with user?', 
-            `Are you sure you'd like to stop sharing with user "${name}"?`,
+            `Are you sure you'd like to stop sharing with user "${user}"?`,
             ))
         { return; }
 
@@ -155,7 +155,7 @@ class SharingDlg extends AriaDialog<void> {
         };
         try {
             const response = await signedInCmd<UnshareResponse>('unshare', 'Unsharing', request);
-            if ('error' in response){
+            if (true !== response){
                 await showError('Network Error', `Error encountered while unsharing`, response.error);
                 console.error(response.error);
                 return;
