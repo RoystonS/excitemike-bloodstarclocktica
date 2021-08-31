@@ -15,6 +15,7 @@ import menuInit, { updateUserDisplay } from './menu';
 import {save} from './commands/save';
 import {clearRecentFile, getRecentFile} from './recent-file';
 import {show as showOpenFlow} from './dlg/open-flow';
+import { initMobileBindings } from './mobile';
 import './styles/autogrowtextarea.css';
 import './styles/characterlist.css';
 import './styles/charactertab.css';
@@ -27,6 +28,7 @@ import './styles/scrollbars.css';
 import './styles/slider.css';
 import './styles/tabs.css';
 import './styles/teamcolor.css';
+import './styles/mobile.css';
 
 let edition:Edition = new Edition();
 export const selectedCharacter = new BloodBind.Property<Character|null>(null);
@@ -131,6 +133,8 @@ async function initBindings():Promise<void> {
         }
     });
     updateStatusbar();
+
+    await initMobileBindings();
 }
 
 /** initialize CustomEdition object to bind to */

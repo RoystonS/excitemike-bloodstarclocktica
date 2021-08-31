@@ -14,3 +14,5 @@ Bloodstar feature requests
 - minion info, demon info in list 
     - if before minion info, night order >=1, <4
     - if between minion info & demon info, night order >=4, <7
+- gray out other image settings when Restyle Image unchecked
+    - similar for dropshadow options when dropshadow unchecked

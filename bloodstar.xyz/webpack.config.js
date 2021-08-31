@@ -33,6 +33,11 @@ const config = {
             title: 'Bloodstar Clocktica',
             template: './src/index.html'
         }),
+        new HtmlWebpackPlugin({
+            title: 'Bloodstar Clocktica',
+            template: './src/m.html',
+            filename: 'm.html'
+        }),
         new MiniCssExtractPlugin({filename:'bloodstar.[contenthash].css',chunkFilename:'[id].css'}),
     ],
     resolve: {

@@ -1,0 +1,41 @@
+#menu{padding-top:6px;}
+.curtainMenu {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1;
+    top:0;
+    left:0;
+    background: rgb(0,0,0,0.8);
+    overflow-x: hidden;
+    overflow-y: auto;
+    transition: 0.5s;
+}
+.curtainMenu[open] {
+    width: 100%;
+}
+.curtainMenu button
+,.curtainMenu a {
+    font-size: 20px;
+    margin: 3px;
+}
+.curtainMenu .closeCurtainBtn{
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    font-size: 40px;
+}
+.closeCurtainBtn{
+    padding:0;
+    border:none;
+    background:none;
+}
+.curtainMenuContent{
+    position: relative;
+    top: 25%;
+    text-align: center;
+    margin-top: 30px;
+    display: flex;
+    flex-flow: column;
+    align-content: center;
+}
