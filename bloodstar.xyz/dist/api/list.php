@@ -40,7 +40,7 @@
     function getSharedFiles($username) {
         $mysqli = makeMysqli();
         $escapedUser = $mysqli->real_escape_string($username);
-        $result = $mysqli->query("SELECT `share`.`owner`, `share`.`edition` FROM `share` WHERE `share`.`user` = '$escapedUser' OR `share`.`user` = 'EVERYONE';");
+        $result = $mysqli->query("SELECT `share`.`owner`, `share`.`edition` FROM `share` WHERE `owner` <> '$escapedUser' AND (`share`.`user` = '$escapedUser' OR `share`.`user` = 'EVERYONE');");
         if (false===$result){
             echo json_encode(array("error" => 'sql error'));
             exit();
