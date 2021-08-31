@@ -22,6 +22,7 @@ import { SessionInfo } from "./iam";
 import { newEdition } from './commands/new';
 import showResetPasswordFlow from './dlg/reset-password-flow';
 import showHelp from './dlg/help-dlg';
+import showSharing from './dlg/sharing-dlg';
 
 /** add a new character to the custom edition */
 async function addCharacterClicked(edition:Edition):Promise<boolean> {
@@ -84,6 +85,7 @@ export default function init(edition:Edition):void {
         ['importBloodButton', importBlood],
         ['importOfficialButton', importOfficialClicked],
         ['saveAndPublishButton', saveAndPublishClicked],
+        ['sharingButton', sharingButtonClicked],
         ['helpButton', showHelpClicked],
     ];
     const translatedMapping:[string,(e:Event)=>void][] = mapping.map(x=>{
@@ -130,6 +132,12 @@ export async function saveFileAsClicked(edition:Edition):Promise<boolean> {
         return true;
     }
     return false;
+}
+
+/** clicked the sharing button */
+async function sharingButtonClicked(edition:Edition):Promise<boolean> {
+    await showSharing(edition.saveName.get());
+    return true;
 }
 
 /** clicked the help menu button */

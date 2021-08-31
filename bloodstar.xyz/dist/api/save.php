@@ -1,4 +1,6 @@
 <?php
+    // TODO: limit number of saved editions! (send back a message about it, client prompts for deletion)
+    // TODO: limit number of characters per edition! (client side should prevent it, but validate here, too)
     header('Content-Type: application/json;');
     include('shared.php');
     requirePost();

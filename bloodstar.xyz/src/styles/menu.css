@@ -58,12 +58,14 @@ ol#menu > li {
     background:#3977FF;
 }
 .dropdownContent > a:focus
+, .dropdownContent > a:active
 {
     border: 1px solid #3977FF;
 }
 .dropdownContent > * {
     display:flex;
     justify-content: space-between;
+    white-space: nowrap;
 }
 .dropdown:hover, .dropdown:focus, .dropdown:focus-visible {
     border-color: #3977FF;

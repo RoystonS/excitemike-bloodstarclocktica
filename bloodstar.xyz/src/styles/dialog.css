@@ -63,6 +63,17 @@
 .dialogBtnGroup:empty {
     display: none;
 }
+.shareDlgList{
+    display: flex;
+    flex-flow: column nowrap;
+    max-height: 50vh;
+    max-width: 90vw;
+    overflow-x:hidden;
+    overflow-y:auto;
+    border: 1px solid #333;
+    padding:6px;
+    margin-bottom:6px;
+}
 .openDlgList{
     display: flex;
     flex-flow: column nowrap;
@@ -83,7 +94,7 @@
     white-space: nowrap;
 }
 .openDlgList > button:focus {
-    border: 1px solid #3977FF;  
+    border: 1px solid #3977FF;
 }
 .openDlgList > button:hover,
 .openDlgList > button:focus-visible

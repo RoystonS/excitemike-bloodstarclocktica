@@ -12,7 +12,7 @@ import { setRecentFile } from '../recent-file';
 import signIn, { signedInCmd } from '../sign-in';
 import { SessionInfo } from '../iam';
 
-type ListData = {token:string,username:string};
+type ListData = {token:string};
 type ListFilesReturn = {error?:string,files:string[]};
 type OpenData = {
     saveName: string,
@@ -77,8 +77,7 @@ export async function chooseFile(options?:ChooseFileOptions):Promise<string> {
  */
 async function listFiles(sessionInfo:SessionInfo):Promise<string[]> {
     const request:ListData={
-        token:sessionInfo.token,
-        username:sessionInfo.username,
+        token:sessionInfo.token
     };
     try {
         const {error,files} = await signedInCmd('list', 'Retrieving file list', request) as ListFilesReturn;

@@ -1,4 +1,6 @@
 <?php
+    // TODO: limit image size
+    // TODO: limit number of images per edition - client character limit should prevent this anyway, but sanity check here
     header('Content-Type: application/json;');
     include('shared.php');
     requirePost();
