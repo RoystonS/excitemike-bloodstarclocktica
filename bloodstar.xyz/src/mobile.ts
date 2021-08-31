@@ -7,7 +7,7 @@ let currentCurtain: Element|null = null;
 export function initMobileBindings():void {
     hookupClickEvents([
         ['mobileHamburger', ()=>openCurtainMenu('mobileMainMenu')],
-        ['mobileSignInOut', ()=>openCurtainMenu('mobileSignInOutMainMenu')],
+        ['mobileSignInOut', ()=>openCurtainMenu('mobileSignInOutMenu')],
         ['mobileFileButton', ()=>openCurtainMenu('mobileFileMenu')],
         ['mobileImportButton', ()=>openCurtainMenu('mobileImportMenu')],
         ['mobilePublishButton', ()=>openCurtainMenu('mobilePublishMenu')],
