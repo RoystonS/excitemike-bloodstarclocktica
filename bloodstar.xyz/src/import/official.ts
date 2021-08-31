@@ -7,13 +7,10 @@ import {spinner} from '../dlg/spinner-dlg';
 import { Edition } from "../model/edition";
 import { createElement, fetchJson } from "../util";
 import { CharacterEntry } from "./json";
-import { urlToCanvas } from "../blood-image";
+import { ProcessImageSettings, urlToCanvas } from "../blood-image";
 import { Character } from "../model/character";
 import {ChooseCharactersDlg} from './choose-characters-dlg';
 import { parseBloodTeam } from '../model/blood-team';
-
-const MAX_CHARACTER_ICON_WIDTH = 539;
-const MAX_CHARACTER_ICON_HEIGHT = 539;
 
 /** dialog subclass for choosing an official character to clone */
 class ChooseOfficialCharDlg extends ChooseCharactersDlg {
@@ -53,7 +50,6 @@ export default async function importOfficial(edition:Edition):Promise<boolean> {
     const json = await spinner('importOfficial', 'Fetching official characters', fetchJson<CharacterEntry[]>('https://raw.githubusercontent.com/bra1n/townsquare/main/src/roles.json'));
     if (!json) {return false;}
     const choices = await new ChooseOfficialCharDlg().open(json);
-    if (!choices) {return false;}
     
     const results = await Promise.all(choices.map(async choice=>{
         const character = await edition.addNewCharacter();
@@ -76,12 +72,12 @@ async function _importOfficial(fromCharacter:CharacterEntry, toCharacter:Charact
         await toCharacter.firstNightReminder.set(fromCharacter.firstNightReminder);
     }
     if (fromCharacter.id) {
-        const newId = edition.generateValidId(fromCharacter.id);
+        const newId = edition.generateValidId(fromCharacter.name||'newcharacter');
         await toCharacter.id.set(newId);
     }
     {
         const url = `https://github.com/bra1n/townsquare/raw/main/src/assets/icons/${fromCharacter.id}.png`;
-        const canvas = await spinner(fromCharacter.id, `Downloading image for ${fromCharacter.name}`, urlToCanvas(url, MAX_CHARACTER_ICON_WIDTH, MAX_CHARACTER_ICON_HEIGHT, true));
+        const canvas = await spinner(fromCharacter.id, `Downloading image for ${fromCharacter.name}`, urlToCanvas(url, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, true));
         const dataUrl = canvas.toDataURL('image/png');
         await toCharacter.imageSettings.shouldRestyle.set(false);
         await spinner(fromCharacter.id, `Setting character image for ${fromCharacter.name}`, toCharacter.unStyledImage.set(dataUrl));

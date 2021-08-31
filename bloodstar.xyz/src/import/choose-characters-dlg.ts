@@ -134,10 +134,10 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
         return createElement({
             t:'div',
             css:['importCharacter'],
-            a:{title:'Name, author, and logo for the custom script.','data-id':scriptEntry.id},
+            a:{title:'Meta information about the custom script, such as name, author, and logo.','data-id':scriptEntry.id},
             children:[
                 {t:'input',a:{type:'checkbox','data-id':scriptEntry.id},id:`${scriptEntry.id}-checkbox`,events:{change:updateCb}},
-                {t:'label',a:{for:`${scriptEntry.id}-checkbox`},txt:`Name, Author, and Logo`}
+                {t:'label',a:{for:`${scriptEntry.id}-checkbox`},txt:`Meta (Name, Author, Edition Logo, etc.)`}
             ]
         });
     }

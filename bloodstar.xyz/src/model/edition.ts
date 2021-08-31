@@ -299,4 +299,16 @@ export class Edition extends ObservableObject<Edition> {
         await this.fixDuplicateIds();
         return await super.serialize();
     }
+
+    /** search the character list */
+    getCharacterById(id:string):Character|null {
+        for (let i=0; i<this.characterList.getLength(); ++i) {
+            const character = this.characterList.get(i);
+            if (!character) {continue;}
+            if (character.id.get() === id) {
+                return character;
+            }
+        }
+        return null;
+    }
 }

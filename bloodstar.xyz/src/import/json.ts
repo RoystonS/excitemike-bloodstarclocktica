@@ -4,7 +4,7 @@
  */
 
 import { ObservableCollection } from "../bind/observable-collection";
-import { urlToCanvas } from "../blood-image";
+import { ProcessImageSettings, urlToCanvas } from "../blood-image";
 import {spinner} from '../dlg/spinner-dlg';
 import { parseBloodTeam } from "../model/blood-team";
 import { Character } from "../model/character";
@@ -41,8 +41,6 @@ type NightOrderTracker = Map<number, Character[]>;
 // sizes here based on what what I see clocktower.online using
 const MAX_LOGO_WIDTH = 1661;
 const MAX_LOGO_HEIGHT = 709;
-const MAX_CHARACTER_ICON_WIDTH = 539;
-const MAX_CHARACTER_ICON_HEIGHT = 539;
 
 /** promise for choosing a JSON file */
 async function chooseJsonFile():Promise<File|null> {
@@ -133,7 +131,7 @@ async function importCharacter(entry:CharacterEntry, edition:Edition, firstNight
         await character.ability.set(entry.ability);
     }
     if (entry.image){
-        const canvas = await spinner(entry.id, `Downloading image for ${entry.name}`, urlToCanvas(entry.image, MAX_CHARACTER_ICON_WIDTH, MAX_CHARACTER_ICON_HEIGHT, true));
+        const canvas = await spinner(entry.id, `Downloading image for ${entry.name}`, urlToCanvas(entry.image, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, true));
         const dataUrl = canvas.toDataURL('image/png');
         await spinner(entry.id, `Setting character image for ${entry.name}`, character.imageSettings.shouldRestyle.set(false));
         await spinner(entry.id, `Setting character image for ${entry.name}`, character.unStyledImage.set(dataUrl));

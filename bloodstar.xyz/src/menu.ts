@@ -10,6 +10,7 @@ import { hookupClickEvents, showHideElement } from "./util";
 import { importBlood } from './import/blood-file';
 import { importJsonFromFile, importJsonFromUrl, } from './import/json';
 import importOfficial from './import/official';
+import importShared from './import/shared';
 import publish from './commands/publish';
 import {save, saveAs} from './commands/save';
 import {chooseAndDeleteFile} from './commands/delete';
@@ -67,6 +68,16 @@ async function importOfficialClicked(edition:Edition):Promise<boolean> {
     }
 }
 
+/** user chose to import from a shared Bloodstar file */
+async function importSharedClicked(edition:Edition):Promise<boolean> {
+    try {
+        return await importShared(edition);
+    } catch (error) {
+        await showError('Error', 'Something went wrong when trying to import from shared Bloodstar save', error);
+        throw error;
+    }
+}
+
 /** hook up menu commands to html elements */
 export default function init(edition:Edition):void {
     const mapping:[string,(edition:Edition)=>Promise<boolean>][] = [
@@ -87,6 +98,7 @@ export default function init(edition:Edition):void {
         ['saveAndPublishButton', saveAndPublishClicked],
         ['sharingButton', sharingButtonClicked],
         ['helpButton', showHelpClicked],
+        ['importSharedButton', importSharedClicked]
     ];
     const translatedMapping:[string,(e:Event)=>void][] = mapping.map(x=>{
         const [name,f] = x;
