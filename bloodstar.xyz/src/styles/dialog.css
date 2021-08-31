@@ -64,15 +64,19 @@
     display: none;
 }
 .shareDlgList{
-    display: flex;
-    flex-flow: column nowrap;
+    display: grid;
+    grid-template-columns: 1fr auto;
     max-height: 50vh;
     max-width: 90vw;
     overflow-x:hidden;
     overflow-y:auto;
     border: 1px solid #333;
     padding:6px;
-    margin-bottom:6px;
+    gap: 6px;
+}
+.shareDlgList > button {
+    font-weight: normal;
+    padding: 0px 6px;
 }
 .openDlgList{
     display: flex;

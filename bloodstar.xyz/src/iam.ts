@@ -95,7 +95,7 @@ export async function resetPassword(resetData:ResetPasswordData):Promise<Session
 export async function resendSignUpConfirmation(email:string):Promise<string>{
     const data:ResendSignUpConfirmationData = {email};
     const payload = JSON.stringify(data);
-    const response = await cmd('resendconf', 'Requesting signup confirmation email', payload) as EmailResponse;
+    const response = await cmd<EmailResponse>('resendconf', 'Requesting signup confirmation email', payload);
     if ('error' in response) {
         await showError('Error', `Error encountered while requesting signup confirmation email for ${email}`, response.error);
         return '';
