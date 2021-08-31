@@ -112,6 +112,10 @@
 .openDlgList > p:nth-child(1) {
     margin-top:0px;
 }
+.openSharedList {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+}
 .spinner {
     flex: 0 0 auto;
     display: inline-block;

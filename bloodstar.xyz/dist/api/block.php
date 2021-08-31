@@ -6,29 +6,24 @@
     $token = requireField($request, 'token');
     $tokenPayload = verifySession($token);
 
-    $owner = $tokenPayload['username'];
-    validateUsername($owner);
+    $blocker = $tokenPayload['username'];
+    validateUsername($blocker);
 
-    $saveName = requireField($request, 'saveName');
-    validateFilename($saveName);
+    $blockee = requireField($request, 'username');
+    validateUsername($blockee);
 
     $mysqli = makeMysqli();
-    $escapedOwner = $mysqli->real_escape_string($owner);
-    $escapedEdition = $mysqli->real_escape_string($saveName);
-
-    // specific user
-    $user = requireField($request, 'user');
-    validateUsername($user);
-    $escapedUser = $mysqli->real_escape_string($user);
+    $escapedBlocker = $mysqli->real_escape_string($blocker);
+    $escapedBlockee = $mysqli->real_escape_string($blockee);
 
     // don't add yourself
-    if ($user === $owner) {
-        echo json_encode(array("error" => 'can\'t add yourself'));
+    if ($blocker === $blockee) {
+        echo json_encode(array("error" => 'can\'t block yourself'));
         exit();
     }
 
     // user has to exist
-    $result = $mysqli->query("SELECT 1 FROM `users` WHERE `name` = '$escapedUser';");
+    $result = $mysqli->query("SELECT 1 FROM `users` WHERE `name` = '$escapedBlockee';");
     if (false===$result){
         echo json_encode(array("error" => 'sql error'));
         exit();
@@ -39,7 +34,7 @@
     }
 
     // user has to not already be added
-    $result = $mysqli->query("SELECT 1 FROM `share` WHERE `owner` = '$escapedOwner' AND `edition` = '$escapedEdition' AND `user` = '$escapedUser';");
+    $result = $mysqli->query("SELECT 1 FROM `block` WHERE `blocker` = '$escapedBlocker' AND `blockee` = '$escapedBlockee';");
     if (false===$result){
         echo json_encode(array("error" => 'sql error'));
         exit();
@@ -49,8 +44,9 @@
         exit();
     }
 
-    // do insert
-    $result = $mysqli->query("INSERT INTO `share` (`owner`, `edition`, `user`) VALUES ('$escapedOwner', '$escapedEdition', '$escapedUser');");
+    // finally go ahead and do it
+    $result = $mysqli->query("INSERT INTO `block` (`blocker`, `blockee`) VALUES ('$escapedBlocker', '$escapedBlockee');");
+
     if (false===$result){
         echo json_encode(array("error" => 'sql error'));
         exit();

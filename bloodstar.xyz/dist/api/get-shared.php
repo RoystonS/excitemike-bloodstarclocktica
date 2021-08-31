@@ -34,12 +34,6 @@
     foreach ($results as $row) {
         list($user) = $row;
 
-        // if any user is 'EVERYONE', bail and return the special EVERYONE case
-        if ($user === 'EVERYONE') {
-            echo('{"users":"all"}');
-            exit();
-        }
-
         array_push($users, $user);
     }
 

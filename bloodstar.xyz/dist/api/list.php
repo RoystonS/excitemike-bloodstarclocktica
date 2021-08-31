@@ -38,9 +38,11 @@
     echo json_encode(array('files' => $yourFiles, 'shared' => $sharedFiles));
 
     function getSharedFiles($username) {
+        $blockList = getBlockList($username);
+
         $mysqli = makeMysqli();
         $escapedUser = $mysqli->real_escape_string($username);
-        $result = $mysqli->query("SELECT `share`.`owner`, `share`.`edition` FROM `share` WHERE `owner` <> '$escapedUser' AND (`share`.`user` = '$escapedUser' OR `share`.`user` = 'EVERYONE');");
+        $result = $mysqli->query("SELECT `share`.`owner`, `share`.`edition` FROM `share` WHERE `owner` <> '$escapedUser' AND `share`.`user` = '$escapedUser';");
         if (false===$result){
             echo json_encode(array("error" => 'sql error'));
             exit();
@@ -49,12 +51,33 @@
         $results = $result->fetch_all();
         foreach ($results as $row) {
             list($owner, $edition) = $row;
-            if (!array_key_exists($owner, $sharedFiles)) {
-                $sharedFiles[$owner] = array();
+            // filter out blocked users
+            if (!in_array($owner, $blockList, true)) {
+                if (!array_key_exists($owner, $sharedFiles)) {
+                    $sharedFiles[$owner] = array();
+                }
+                array_push($sharedFiles[$owner], $edition);
             }
-            array_push($sharedFiles[$owner], $edition);
         }
 
         return $sharedFiles;
+    }
+
+    // users blocked by username
+    function getBlockList($blocker) {
+        $mysqli = makeMysqli();
+        $escapedBlocker = $mysqli->real_escape_string($blocker);
+        $result = $mysqli->query("SELECT `blockee` FROM `block` WHERE `blocker` = '$escapedBlocker';");
+        if (false===$result){
+            echo json_encode(array("error" => 'sql error'));
+            exit();
+        }
+        $results = $result->fetch_all();
+        $blockList = array();
+        foreach ($results as $row) {
+            list($blockee) = $row;
+            array_push($blockList, $blockee);
+        }
+        return $blockList;
     }
 ?>

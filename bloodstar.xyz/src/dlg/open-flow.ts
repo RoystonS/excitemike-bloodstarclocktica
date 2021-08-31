@@ -11,7 +11,11 @@ import { AriaDialog } from './aria-dlg';
 import { setRecentFile } from '../recent-file';
 import signIn, { signedInCmd } from '../sign-in';
 import { SessionInfo } from '../iam';
+import {show as getConfirmation} from "./yes-no-dlg";
+import {showBlockUser} from './block-flow';
 
+type LeaveRequest = {token:string,owner:string,saveName:string};
+type LeaveResponse = {error:string}|true;
 type ListRequest = {token:string,includeShared?:boolean};
 type ListFilesResponse = {
     error?:string,
@@ -75,12 +79,32 @@ class ChooseFileDlg extends AriaDialog<string|[string, string]> {
         // list shared files
         if (owners.length) {
             fileListDiv.appendChild(createElement({t:'p',txt:'Files shared with you:'}));
+            const sharedList = createElement({t:'div',css:['openSharedList']});
+            fileListDiv.appendChild(sharedList);
             for (const owner of owners) {
                 const editions = sharedFiles[owner];
                 for (const edition of editions) {
                     const label = `${owner} / ${edition}`;
-                    const button = createElement({t:'button',txt:label,events:{click:()=>this.close([owner,edition])}});
-                    fileListDiv.appendChild(button);
+                    const openButton = createElement({t:'button',txt:label,events:{click:()=>this.close([owner,edition])}});
+                    const leaveButton = createElement({t:'button',txt:'Leave'});
+                    const blockButton = createElement({t:'button',txt:'Block'});
+                    leaveButton.addEventListener('click',async ()=>{
+                        if (await showLeave(owner,edition)) {
+                            // Row can be removed
+                            openButton.remove();
+                            leaveButton.remove();
+                            blockButton.remove();
+                        }
+                    });
+                    blockButton.addEventListener('click',async ()=>{
+                        if (await showBlockUser(owner)) {
+                            // Any number of rows could be wrong now. Bail on the whole popup.
+                            this.close(null);
+                        }
+                    });
+                    sharedList.appendChild(openButton);
+                    sharedList.appendChild(leaveButton);
+                    sharedList.appendChild(blockButton);
                 }
             }
         }
@@ -191,9 +215,48 @@ async function openNoSavePrompt(edition:Edition, name='', suppressErrorMessage=f
  * @param suppressErrorMessage if true, no error message appears when soemthing goes wrong
  * @returns whether a file was successfully opened
  */
- export async function show(edition:Edition, name='', suppressErrorMessage=false):Promise<boolean> {
+export async function show(edition:Edition, name='', suppressErrorMessage=false):Promise<boolean> {
     if (await SdcDlg.savePromptIfDirty(edition)) {
         return await openNoSavePrompt(edition, name, suppressErrorMessage);
     }
     return false;
+}
+
+/**
+ * Confirm, then leave a file's sharelist
+ * @param owner username of the file's owner
+ * @param edition savename for the file
+ * @returns promise that resolves to whether you left the file
+ */
+async function showLeave(owner:string, edition:string):Promise<boolean> {
+    const sessionInfo = await signIn({
+        title:'Sign In to Leave',
+        message:'You must first sign in to leave the file\'s sharelist.'
+    });
+    if (!sessionInfo) {return false;}
+    if (!await getConfirmation(
+        `Leave "${owner} / ${edition}"`,
+        `Are you sure you'd like to leave "${owner} / ${edition}"? You will no longer be able to import from this file.`,
+        ))
+    { return false; }
+    
+    const request:LeaveRequest = {
+        token:sessionInfo.token,
+        owner,
+        saveName:edition
+    };
+
+    try {
+        const response = await signedInCmd<LeaveResponse>('leave', 'Leaving share list', request);
+        if (response===true) {
+            return true;
+        }
+        const {error} = response;
+        console.error(error);
+        await showError('Network Error', `Error encountered while retrieving share list`, error);
+        return false;
+    } catch (error) {
+        await showError('Network Error', `Error encountered while retrieving share list`, error);
+        return false;
+    }
 }

@@ -11,6 +11,7 @@ export function initMobileBindings():void {
         ['mobileFileButton', ()=>openCurtainMenu('mobileFileMenu')],
         ['mobileImportButton', ()=>openCurtainMenu('mobileImportMenu')],
         ['mobilePublishButton', ()=>openCurtainMenu('mobilePublishMenu')],
+        ['mobileSharingButton', ()=>openCurtainMenu('mobileSharingMenu')],
         ['openCharacterPaneBtn', ()=>openCurtainMenu('characterPane')],
     ]);
 
@@ -20,6 +21,8 @@ export function initMobileBindings():void {
         const btn = allCloseBtns[i];
         btn.addEventListener("click", closeCurtain);
     }
+
+    // TODO: escape/back button to close curtain
 }
 
 /** close currently-open curtain menu, if any */

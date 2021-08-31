@@ -4,7 +4,7 @@
  */
 
 import * as bloodstar from "./bloodstar";
-import { showError } from "./dlg/blood-message-dlg";
+import {show as showMessage, showError } from "./dlg/blood-message-dlg";
 import { Edition } from "./model/edition";
 import { hookupClickEvents, showHideElement } from "./util";
 import { importBlood } from './import/blood-file';
@@ -24,6 +24,7 @@ import { newEdition } from './commands/new';
 import showResetPasswordFlow from './dlg/reset-password-flow';
 import showHelp from './dlg/help-dlg';
 import showSharing from './dlg/sharing-dlg';
+import {showManageBlocked} from './dlg/block-flow';
 
 /** add a new character to the custom edition */
 async function addCharacterClicked(edition:Edition):Promise<boolean> {
@@ -98,7 +99,8 @@ export default function init(edition:Edition):void {
         ['saveAndPublishButton', saveAndPublishClicked],
         ['sharingButton', sharingButtonClicked],
         ['helpButton', showHelpClicked],
-        ['importSharedButton', importSharedClicked]
+        ['importSharedButton', importSharedClicked],
+        ['blockedUsersButton', blockedUsersClicked]
     ];
     const translatedMapping:[string,(e:Event)=>void][] = mapping.map(x=>{
         const [name,f] = x;
@@ -148,7 +150,18 @@ export async function saveFileAsClicked(edition:Edition):Promise<boolean> {
 
 /** clicked the sharing button */
 async function sharingButtonClicked(edition:Edition):Promise<boolean> {
-    await showSharing(edition.saveName.get());
+    const saveName = edition.saveName.get();
+    if (!saveName) {
+        await showMessage('No Savename', 'You must save this file before you can share it.');
+        return false;
+    }
+    await showSharing(saveName);
+    return true;
+}
+
+/** clicked the Manage Blocked Users button */
+async function blockedUsersClicked():Promise<boolean> {
+    await showManageBlocked();
     return true;
 }
 

@@ -34,24 +34,15 @@
         exit();
     }
 
-    if (false===$mysqli->query("DELETE FROM `hash` WHERE `hash`.`email` = '$escapedEmail'")){
-        echo json_encode(['error'=>'Error deleting user']);
-        exit();
-    }
-    if (false===$mysqli->query("DELETE FROM `reset` WHERE `reset`.`email` = '$escapedEmail'")){
-        echo json_encode(['error'=>'Error deleting user']);
-        exit();
-    }
-    if (false===$mysqli->query("DELETE FROM `unconfirmed` WHERE `unconfirmed`.`email` = '$escapedEmail'")){
-        echo json_encode(['error'=>'Error deleting user']);
-        exit();
-    }
-    if (false===$mysqli->query("DELETE FROM `share` WHERE `share`.`owner` = '$escapedUsername' OR `share`.`user` = '$escapedUsername'")){
-        echo json_encode(['error'=>'Error deleting user']);
-        exit();
-    }
-    if (false===$mysqli->query("DELETE FROM `users` WHERE `users`.`email` = '$escapedEmail'")){
-        echo json_encode(['error'=>'Error deleting user']);
+    $queries = "DELETE FROM `hash` WHERE `hash`.`email` = '$escapedEmail';"
+             . "DELETE FROM `reset` WHERE `reset`.`email` = '$escapedEmail';"
+             . "DELETE FROM `unconfirmed` WHERE `unconfirmed`.`email` = '$escapedEmail';"
+             . "DELETE FROM `share` WHERE `share`.`owner` = '$escapedUsername' OR `share`.`user` = '$escapedUsername';"
+             . "DELETE FROM `block` WHERE `blocker` = '$escapedUsername' OR `blockee` = '$escapedUsername';"
+             . "DELETE FROM `users` WHERE `users`.`email` = '$escapedEmail';";
+
+    if (false===$mysqli->multi_query($queries)){
+        echo json_encode(array('error'=>'Error deleting user', 'debug'=>$queries));
         exit();
     }
 
