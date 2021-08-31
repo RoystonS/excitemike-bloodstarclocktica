@@ -31,7 +31,7 @@
         deleteEditionFromDB($username, $saveName);
     }
 
-    // remove a directoy and files within from the server
+    // remove a directory and files within from the server
     // NOTE: does not handle subdirectories yet, just files
     function deleteDirectory($path) {
         if (is_dir($path)) {
@@ -51,7 +51,7 @@
     function deleteEditionFromDB($owner, $edition) {
         $mysqli = makeMysqli();
         $escapedOwner = $mysqli->real_escape_string($owner);
-        $escapedEdition = $mysqli->real_escape_string($saveName);
+        $escapedEdition = $mysqli->real_escape_string($edition);
         $result = $mysqli->query("DELETE FROM `share` WHERE `share`.`owner` = '$escapedOwner' AND `share`.`edition` = '$escapedEdition';");
         if (false===$result){
             echo json_encode(array("error" => 'sql error'));
