@@ -74,7 +74,7 @@ class ChooseFileDlg extends AriaDialog<string|[string, string]> {
 
         // list shared files
         if (owners.length) {
-            fileListDiv.appendChild(createElement({t:'p',txt:'Shared files:'}));
+            fileListDiv.appendChild(createElement({t:'p',txt:'Files shared with you:'}));
             for (const owner of owners) {
                 const editions = sharedFiles[owner];
                 for (const edition of editions) {
