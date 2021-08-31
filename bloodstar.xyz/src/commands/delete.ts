@@ -9,8 +9,8 @@ import {chooseFile} from "../dlg/open-flow";
 import signIn, { signedInCmd } from '../sign-in';
 import { clearRecentFile } from '../recent-file';
 
-type DeleteData = {token:string,saveName:string};
-type DeleteReturn = {error:string}|true;
+type DeleteRequest = {token:string,saveName:string};
+type DeleteResponse = {error:string}|true;
 
 /** confirm deletion */
 async function confirmDelete(name:string):Promise<boolean> {
@@ -49,12 +49,12 @@ async function deleteFile(name:string):Promise<boolean>{
         message:'You must be signed in to delete a file.'
     });
     if (!sessionInfo){return false;}
-    const deleteData:DeleteData = {
+    const deleteData:DeleteRequest = {
         token:sessionInfo.token,
         saveName: name
     };
     try {
-        const response = await signedInCmd('delete', `Deleting ${name}`, deleteData) as DeleteReturn;
+        const response = await signedInCmd<DeleteResponse>('delete', `Deleting ${name}`, deleteData);
         if (true === response) {return true;}
         const {error} = response;
         await showError('Error', `Error encountered while trying to delete file ${name}`, error);

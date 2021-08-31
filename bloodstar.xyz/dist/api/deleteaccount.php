@@ -46,6 +46,10 @@
         echo json_encode(['error'=>'Error deleting user']);
         exit();
     }
+    if (false===$mysqli->query("DELETE FROM `share` WHERE `share`.`owner` = '$escapedUsername' OR `share`.`user` = '$escapedUsername'")){
+        echo json_encode(['error'=>'Error deleting user']);
+        exit();
+    }
     if (false===$mysqli->query("DELETE FROM `users` WHERE `users`.`email` = '$escapedEmail'")){
         echo json_encode(['error'=>'Error deleting user']);
         exit();

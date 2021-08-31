@@ -26,6 +26,9 @@
 
         // publish directory
         deleteDirectory(join_paths('../p', $saveName));
+
+        // remove from database
+        deleteEditionFromDB($username, $saveName);
     }
 
     // remove a directoy and files within from the server
@@ -41,6 +44,18 @@
                 }
             }
             rmdir($path);
+        }
+    }
+
+    // when an edition is deleted, there is now DB cleanup to do
+    function deleteEditionFromDB($owner, $edition) {
+        $mysqli = makeMysqli();
+        $escapedOwner = $mysqli->real_escape_string($owner);
+        $escapedEdition = $mysqli->real_escape_string($saveName);
+        $result = $mysqli->query("DELETE FROM `share` WHERE `share`.`owner` = '$escapedOwner' AND `share`.`edition` = '$escapedEdition';");
+        if (false===$result){
+            echo json_encode(array("error" => 'sql error'));
+            exit();
         }
     }
 ?>
