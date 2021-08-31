@@ -31,6 +31,7 @@ async function confirmDelete(name:string):Promise<boolean> {
  export async function chooseAndDeleteFile():Promise<string> {
     const name = await chooseFile({message:'Choose an existing file to delete:'});
     if (!name) {return '';}
+    if (Array.isArray(name)) {return '';}
     if (!await confirmDelete(name)) {return '';}
     if (!await spinner('delete', 'Choose file to delete', deleteFile(name))){return '';}
     clearRecentFile(name);

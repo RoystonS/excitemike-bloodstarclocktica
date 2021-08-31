@@ -10,10 +10,23 @@
     validateUsername($username);
 
     $saveName = requireField($request, 'saveName');
+
+    // opening your own saves
+    if (!is_array($saveName)) {
+        validateFilename($saveName);
+        $data = readEditionFile($username, $saveName);
+        // it's already JSON, so we just need to wrap it
+        echo('{"data":'.$data.'}');
+        exit();
+    }
+    
+    // otherwise, your opening a shared save
+    include('permission.php');
+    list($owner, $saveName) = $saveName;
+    validateUsername($owner);
     validateFilename($saveName);
-    
-    $data = readEditionFile($username, $saveName);
-    
+    validatePermission($username, $owner, $saveName);
+    $data = readEditionFile($owner, $saveName);
     // it's already JSON, so we just need to wrap it
     echo('{"data":'.$data.'}');
 ?>

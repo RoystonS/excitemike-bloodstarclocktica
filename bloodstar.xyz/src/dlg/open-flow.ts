@@ -12,27 +12,34 @@ import { setRecentFile } from '../recent-file';
 import signIn, { signedInCmd } from '../sign-in';
 import { SessionInfo } from '../iam';
 
-type ListData = {token:string};
-type ListFilesReturn = {error?:string,files:string[]};
-type OpenData = {
-    saveName: string,
+type ListRequest = {token:string,includeShared?:boolean};
+type ListFilesResponse = {
+    error?:string,
+    files:string[],
+    shared?:{[key:string]:string[]}
+};
+export type OpenRequest = {
+    saveName: string|[string, string],
     token: string,
     username: string
 };
-type OpenReturn = {error:string}|{data:{[key:string]:unknown}};
+export type OpenResponse = {error:string}|{data:{[key:string]:unknown}};
 
 type ChooseFileOptions = {
     /** customize prompt title */
     title?:string,
 
     /** customize prompt message */
-    message?:string
+    message?:string,
+
+    /** list shared files? */
+    includeShared?:boolean
 };
 
 /** dialog for choosing a file */
-class ChooseFileDlg extends AriaDialog<string> {
+class ChooseFileDlg extends AriaDialog<string|[string, string]> {
     /** returns name of chosen file, or empty string */
-    async open(options?:ChooseFileOptions):Promise<string> {
+    async open(options?:ChooseFileOptions):Promise<string|[string, string]> {
         const sessionInfo = await signIn({
             title:'Sign In to Choose File',
             message:'You must first sign in to choose a file.'
@@ -46,15 +53,36 @@ class ChooseFileDlg extends AriaDialog<string> {
             fileListDiv
         ];
 
-        const files = await listFiles(sessionInfo);
+        const files = await listFiles(sessionInfo, options?.includeShared||false);
         if (!files) {return '';}
-        if (files.length) {
-            for (const name of files) {
+        const yourFiles = Array.isArray(files) ? files : files.files;
+        const owners = (options?.includeShared && !Array.isArray(files) && files.shared) ? Object.keys(files.shared) : [];
+        const sharedFiles = (owners.length > 0 && !Array.isArray(files) && files.shared) ? files.shared : {};
+
+        // list your files (perhaps with label)
+        if (owners.length) {
+            fileListDiv.appendChild(createElement({t:'p',txt:'Your files:'}));
+        }
+        if (yourFiles.length) {
+            for (const name of yourFiles) {
                 const button = createElement({t:'button',txt:name,events:{click:()=>this.close(name)}});
                 fileListDiv.appendChild(button);
             }
         } else {
             fileListDiv.appendChild(createElement({t:'p',txt:'No files found.',a:{role:'alert'}}));
+        }
+
+        // list shared files
+        if (owners.length) {
+            fileListDiv.appendChild(createElement({t:'p',txt:'Shared files:'}));
+            for (const owner of owners) {
+                const editions = sharedFiles[owner];
+                for (const edition of editions) {
+                    const label = `${owner} / ${edition}`;
+                    const button = createElement({t:'button',txt:label,events:{click:()=>this.close([owner,edition])}});
+                    fileListDiv.appendChild(button);
+                }
+            }
         }
         
         return await this.baseOpen(
@@ -67,7 +95,8 @@ class ChooseFileDlg extends AriaDialog<string> {
 }
 
 /** share file chooser with the delete command */
-export async function chooseFile(options?:ChooseFileOptions):Promise<string> {
+// TODO: simplify return type
+export async function chooseFile(options?:ChooseFileOptions):Promise<string|[string, string]> {
     return await new ChooseFileDlg().open(options);
 }
 
@@ -75,17 +104,24 @@ export async function chooseFile(options?:ChooseFileOptions):Promise<string> {
  * Get a list of openable files
  * Brings up the loading spinner during the operation
  */
-async function listFiles(sessionInfo:SessionInfo):Promise<string[]> {
-    const request:ListData={
-        token:sessionInfo.token
+// TODO: simplify return type
+async function listFiles(sessionInfo:SessionInfo, includeShared:boolean):Promise<string[]|ListFilesResponse> {
+    const request:ListRequest={
+        token:sessionInfo.token,
+        includeShared
     };
     try {
-        const {error,files} = await signedInCmd('list', 'Retrieving file list', request) as ListFilesReturn;
-        if (error) {
-            console.error(error);
-            await showError('Network Error', `Error encountered while retrieving file list`, error);
+        const response = await signedInCmd<ListFilesResponse>('list', 'Retrieving file list', request);
+        if ('error' in response) {
+            console.error(response.error);
+            await showError('Network Error', `Error encountered while retrieving file list`, response.error);
         }
-        return files || [];
+        // TODO: can we remove this special case without breaking anybody?
+        if (!('shared' in response)) {
+            return response.files || [];
+        } else {
+            return response;
+        }
     } catch (error) {
         await showError('Network Error', `Error encountered while retrieving file list`, error);
     }
@@ -107,12 +143,12 @@ async function listFiles(sessionInfo:SessionInfo):Promise<string[]> {
             message:'You must first sign in to open a file.'
         });
         if (!sessionInfo){return false;}
-        const openData:OpenData = {
+        const openData:OpenRequest = {
             saveName: name,
             token: sessionInfo.token,
             username: sessionInfo.username
         };
-        const response = await signedInCmd('open', `Retrieving ${name}`, openData) as OpenReturn;
+        const response = await signedInCmd<OpenResponse>('open', `Retrieving ${name}`, openData);
         if ('error' in response) {
             if (!suppressErrorMessage) {
                 await showError('Error', `Error encountered while trying to open file ${name}`, response.error);
@@ -141,7 +177,8 @@ async function listFiles(sessionInfo:SessionInfo):Promise<string[]> {
  */
 async function openNoSavePrompt(edition:Edition, name='', suppressErrorMessage=false):Promise<boolean> {
     const finalName = name || await new ChooseFileDlg().open();
-    if (finalName) {
+    // TODO: this is where we'd change it to allow opening other folks' editions
+    if (!Array.isArray(finalName) && finalName) {
         return await spinner('open', `Opening edition file "${finalName}"`, openNoPrompts(edition, finalName, suppressErrorMessage));
     }
     return false;
