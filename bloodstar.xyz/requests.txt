@@ -18,4 +18,6 @@ Bloodstar feature requests
     - similar for dropshadow options when dropshadow unchecked
 - character sheets
 - rename command
-- Potential for rare bugs: the various places a sign-in popup comes up might need to check that you are still the same user?
+- Potential for bugs: we might need to check that you are still the same user after a sign-in popup
+- prompt to go to mobile version
+- mobile drag and drop

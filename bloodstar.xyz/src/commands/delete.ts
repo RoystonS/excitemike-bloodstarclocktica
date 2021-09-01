@@ -29,9 +29,12 @@ async function confirmDelete(name:string):Promise<boolean> {
  * @returns promise that resolves to the name of the deleted file, or empty string if nothing was deleted
  */
  export async function chooseAndDeleteFile():Promise<string> {
-    const name = await chooseFile({message:'Choose an existing file to delete:'});
+    const name = await chooseFile({message:'Choose an existing file to delete:', includeShared:false});
     if (!name) {return '';}
+
+    // can't delete shared files
     if (Array.isArray(name)) {return '';}
+
     if (!await confirmDelete(name)) {return '';}
     if (!await spinner('delete', 'Choose file to delete', deleteFile(name))){return '';}
     clearRecentFile(name);

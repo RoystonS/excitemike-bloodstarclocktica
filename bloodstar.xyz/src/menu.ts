@@ -18,7 +18,7 @@ import {deleteAccount} from './dlg/delete-account-flow';
 import * as SdcDlg from './dlg/blood-save-discard-cancel';
 import {signIn, signOut} from './sign-in';
 import { setRecentFile } from "./recent-file";
-import { show as showOpenFlow } from "./dlg/open-flow";
+import { promptAndOpen } from "./dlg/open-flow";
 import { SessionInfo } from "./iam";
 import { newEdition } from './commands/new';
 import showResetPasswordFlow from './dlg/reset-password-flow';
@@ -88,7 +88,7 @@ export default function init(edition:Edition):void {
         ['deleteAccountBtn', deleteAccount],
         ['addCharacterButton', addCharacterClicked],
         ['newFileButton', newFileClicked],
-        ['openFileButton', showOpenFlow],
+        ['openFileButton', (edition:Edition)=>promptAndOpen(edition, {includeShared:true, copyWarning:true})],
         ['deleteFileButton', deleteFileClicked],
         ['saveFileButton', save],
         ['saveFileAsButton', saveFileAsClicked],

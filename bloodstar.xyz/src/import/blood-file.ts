@@ -220,7 +220,7 @@ class BloodImporter {
     }
 }
 
-/** promise for choosing a JSON file */
+/** promise for choosing a .blood file */
 async function chooseBloodFile():Promise<File|null> {
     const fileInput = createElement({t:'input',a:{type:'file',accept:'.blood'},css:['hidden']});
     if (!(fileInput instanceof HTMLInputElement)) {return null;}

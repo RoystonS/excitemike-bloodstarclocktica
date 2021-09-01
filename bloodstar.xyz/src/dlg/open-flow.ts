@@ -22,6 +22,10 @@ type ListFilesResponse = {
     files:string[],
     shared?:{[key:string]:string[]}
 };
+export type ListFilesReturn = {
+    yours: string[],
+    shared?: {[key:string]:string[]}
+};
 export type OpenRequest = {
     saveName: string|[string, string],
     token: string,
@@ -37,7 +41,10 @@ type ChooseFileOptions = {
     message?:string,
 
     /** list shared files? */
-    includeShared?:boolean
+    includeShared?:boolean,
+
+    /** whether to label it as making a copy of shared files */
+    copyWarning?:boolean
 };
 
 /** dialog for choosing a file */
@@ -57,11 +64,8 @@ class ChooseFileDlg extends AriaDialog<string|[string, string]> {
             fileListDiv
         ];
 
-        const files = await listFiles(sessionInfo, options?.includeShared||false);
-        if (!files) {return '';}
-        const yourFiles = Array.isArray(files) ? files : files.files;
-        const owners = (options?.includeShared && !Array.isArray(files) && files.shared) ? Object.keys(files.shared) : [];
-        const sharedFiles = (owners.length > 0 && !Array.isArray(files) && files.shared) ? files.shared : {};
+        const {yours:yourFiles, shared:sharedFiles} = await listFiles(sessionInfo, options?.includeShared||false);
+        const owners = (options?.includeShared && sharedFiles) ? Object.keys(sharedFiles) : [];
 
         // list your files (perhaps with label)
         if (owners.length) {
@@ -77,8 +81,9 @@ class ChooseFileDlg extends AriaDialog<string|[string, string]> {
         }
 
         // list shared files
-        if (owners.length) {
-            fileListDiv.appendChild(createElement({t:'p',txt:'Files shared with you:'}));
+        if (owners.length && sharedFiles) {
+            const sharedLabel = options?.copyWarning ? 'Copy a file shared with you:' : 'Files shared with you:';
+            fileListDiv.appendChild(createElement({t:'p',txt:sharedLabel}));
             const sharedList = createElement({t:'div',css:['openSharedList']});
             fileListDiv.appendChild(sharedList);
             for (const owner of owners) {
@@ -128,8 +133,7 @@ export async function chooseFile(options?:ChooseFileOptions):Promise<string|[str
  * Get a list of openable files
  * Brings up the loading spinner during the operation
  */
-// TODO: simplify return type
-async function listFiles(sessionInfo:SessionInfo, includeShared:boolean):Promise<string[]|ListFilesResponse> {
+async function listFiles(sessionInfo:SessionInfo, includeShared:boolean):Promise<ListFilesReturn> {
     const request:ListRequest={
         token:sessionInfo.token,
         includeShared
@@ -140,16 +144,17 @@ async function listFiles(sessionInfo:SessionInfo, includeShared:boolean):Promise
             console.error(response.error);
             await showError('Network Error', `Error encountered while retrieving file list`, response.error);
         }
-        // TODO: can we remove this special case without breaking anybody?
-        if (!('shared' in response)) {
-            return response.files || [];
-        } else {
-            return response;
+        const ret:ListFilesReturn = {
+            yours: response.files || [],
+        };
+        if (response.shared && Object.keys(response.shared).length) {
+            ret.shared = response.shared;
         }
+        return ret;
     } catch (error) {
         await showError('Network Error', `Error encountered while retrieving file list`, error);
     }
-    return [];
+    return {yours:[]};
 }
 
 /**
@@ -157,10 +162,9 @@ async function listFiles(sessionInfo:SessionInfo, includeShared:boolean):Promise
  * Brings up the loading spinner during the operation
  * @param edition Edition instance with which to open a file
  * @param name name of the file to open
- * @param suppressErrorMessage if true, no error message appears when soemthing goes wrong
  * @returns promise that resolves to whether a file was successfully opened
  */
- async function openNoPrompts(edition:Edition, name:string, suppressErrorMessage=false):Promise<boolean> {
+ async function openNoPrompts(edition:Edition, name:string|[string,string]):Promise<boolean> {
     try {
         const sessionInfo = await signIn({
             title:'Sign In to Open',
@@ -174,20 +178,17 @@ async function listFiles(sessionInfo:SessionInfo, includeShared:boolean):Promise
         };
         const response = await signedInCmd<OpenResponse>('open', `Retrieving ${name}`, openData);
         if ('error' in response) {
-            if (!suppressErrorMessage) {
-                await showError('Error', `Error encountered while trying to open file ${name}`, response.error);
-            }
+            await showError('Error', `Error encountered while trying to open file ${name}`, response.error);
             return false;
         }
-        const success = await spinner('open', `Opening edition file "${name}"`, edition.open(name, response.data));
+        const saveName = Array.isArray(name) ? '' : name;
+        const success = await spinner('open', `Opening edition file "${name}"`, edition.open(saveName, response.data));
         if (success) {
             setRecentFile(edition.saveName.get(), sessionInfo.email);
         }
         return success;
     } catch (error) {
-        if (!suppressErrorMessage) {
-            await showError('Error', `Error encountered while trying to open file ${name}`, error);
-        }
+        await showError('Error', `Error encountered while trying to open file ${name}`, error);
         return false;
     }
 }
@@ -196,14 +197,39 @@ async function listFiles(sessionInfo:SessionInfo, includeShared:boolean):Promise
  * Prompt for the file to open and open it, skipping the save prompt
  * @param edition Edition instance with which to open a file
  * @param name Optional already-chosen file
- * @param suppressErrorMessage if true, no error message appears when soemthing goes wrong
+ * @param options optional ChooseFileOptions for the dialog
  * @returns whether a file was successfully opened
  */
-async function openNoSavePrompt(edition:Edition, name='', suppressErrorMessage=false):Promise<boolean> {
-    const finalName = name || await new ChooseFileDlg().open();
-    // TODO: this is where we'd change it to allow opening other folks' editions
-    if (!Array.isArray(finalName) && finalName) {
-        return await spinner('open', `Opening edition file "${finalName}"`, openNoPrompts(edition, finalName, suppressErrorMessage));
+async function openPromptNoSavePrompt(edition:Edition, options?:ChooseFileOptions):Promise<boolean> {
+    const name = await new ChooseFileDlg().open(options);
+    return openExistingNoSavePrompt(edition, name);
+}
+/**
+ * Open chosen file, skipping the save prompt
+ * @param edition Edition instance with which to open a file
+ * @param name Optional already-chosen file
+ * @param options optional ChooseFileOptions for the dialog
+ * @returns whether a file was successfully opened
+ */
+async function openExistingNoSavePrompt(edition:Edition, name:string|[string,string]):Promise<boolean> {
+    if (Array.isArray(name)) {
+        const label = name.join(' / ');
+        return await spinner('open', `Opening shared file "${label}"`, openNoPrompts(edition, name));
+    } else if (name) {
+        return await spinner('open', `Opening edition file "${name}"`, openNoPrompts(edition, name));
+    }
+    return false;
+}
+
+/**
+ * Open an already-chosen file
+ * @param edition Edition instance with which to open a file
+ * @param name savename of the file to open
+ * @returns whether a file was successfully opened
+ */
+export async function openExisting(edition:Edition, name:string):Promise<boolean> {
+    if (await SdcDlg.savePromptIfDirty(edition)) {
+        return await openExistingNoSavePrompt(edition, name);
     }
     return false;
 }
@@ -211,13 +237,12 @@ async function openNoSavePrompt(edition:Edition, name='', suppressErrorMessage=f
 /**
  * Open a file
  * @param edition Edition instance with which to open a file
- * @param name Optional already-chosen file
- * @param suppressErrorMessage if true, no error message appears when soemthing goes wrong
+ * @param options optional ChooseFileOptions for the dialog
  * @returns whether a file was successfully opened
  */
-export async function show(edition:Edition, name='', suppressErrorMessage=false):Promise<boolean> {
+export async function promptAndOpen(edition:Edition, options?:ChooseFileOptions):Promise<boolean> {
     if (await SdcDlg.savePromptIfDirty(edition)) {
-        return await openNoSavePrompt(edition, name, suppressErrorMessage);
+        return await openPromptNoSavePrompt(edition, options);
     }
     return false;
 }

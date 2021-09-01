@@ -7,7 +7,7 @@ import { Edition } from '../model/edition';
 import { CreateElementsOptions } from '../util';
 import {AriaDialog, ButtonCfg} from './aria-dlg';
 import {newEdition} from '../commands/new';
-import { show as showOpenFlow } from "../dlg/open-flow";
+import { promptAndOpen } from "../dlg/open-flow";
 
 class NewOpenDlg extends AriaDialog<boolean> {
     canCancel():boolean{return false;}
@@ -20,7 +20,7 @@ class NewOpenDlg extends AriaDialog<boolean> {
             txt:'To get started, open an existing edition or create a new one.'
         }];
         const buttons:ButtonCfg<boolean>[] = [
-            {label:'Open Existing', callback:()=>showOpenFlow(edition)},
+            {label:'Open Existing', callback:()=>promptAndOpen(edition, {includeShared:true, copyWarning:true})},
             {label:'Create New', callback:()=>newEdition(edition)}
         ];
         return !!await this.baseOpen(

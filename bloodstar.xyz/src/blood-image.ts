@@ -69,7 +69,7 @@ export default class BloodImage {
         return this.canvas.height;
     }
     
-    /** create BloodImage from canvas, image data, size, or datat URI */
+    /** create BloodImage from canvas, image data, size, or data URI */
     constructor(imageData:HTMLCanvasElement|ImageData|[number,number]) {
         if (imageData instanceof HTMLCanvasElement) {
             this.canvas = imageData;

@@ -111,13 +111,11 @@ class SharingDlg extends AriaDialog<void> {
             return;
         }
 
-        if (Array.isArray(this.shareList)) {
-            const i = this.shareList.indexOf(user);
-            if (i !== -1) {
-                this.shareList.splice(i, 1);
-            }
-            this.updateSharingDlg();
+        const i = this.shareList.indexOf(user);
+        if (i !== -1) {
+            this.shareList.splice(i, 1);
         }
+        this.updateSharingDlg();
     }
 
     /** do the command to share with the specified user */
@@ -145,10 +143,8 @@ class SharingDlg extends AriaDialog<void> {
             return;
         }
         
-        if (Array.isArray(this.shareList)) {
-            this.shareList.push(user);
-            this.updateSharingDlg();
-        }
+        this.shareList.push(user);
+        this.updateSharingDlg();
     }
 
     /** bring up subdialog for sharing with a specific person */

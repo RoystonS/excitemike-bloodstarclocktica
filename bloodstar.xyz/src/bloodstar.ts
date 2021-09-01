@@ -14,7 +14,7 @@ import {signIn} from './sign-in';
 import menuInit, { updateUserDisplay } from './menu';
 import {save} from './commands/save';
 import {clearRecentFile, getRecentFile} from './recent-file';
-import {show as showOpenFlow} from './dlg/open-flow';
+import {openExisting} from './dlg/open-flow';
 import './styles/autogrowtextarea.css';
 import './styles/characterlist.css';
 import './styles/charactertab.css';
@@ -138,7 +138,7 @@ async function initCustomEdition(email:string):Promise<void> {
     try {
         const rememberedFile = getRecentFile(email);
         if (rememberedFile) {
-            if (await showOpenFlow(edition, rememberedFile, true)) {
+            if (await openExisting(edition, rememberedFile)) {
                 return;
             }
             clearRecentFile(rememberedFile);
