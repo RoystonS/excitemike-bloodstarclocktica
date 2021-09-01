@@ -1,23 +1,29 @@
 #menu{padding-top:6px;}
+
 .curtainMenu {
-    height: 100%;
-    width: 0;
+    height: 100vh;
+    width: 100vw;
     position: fixed;
     z-index: 1;
     top:0;
-    left:0;
-    background: rgb(0,0,0,0.8);
-    overflow-x: hidden;
-    overflow-y: auto;
-    transition: 0.5s;
+    left:-100vw;
+    background: #222;
+    overflow: hidden;
+    opacity: 0;
+    transition: 0.25s;
 }
 .curtainMenu[open] {
-    width: 100%;
+    left:0;
+    opacity: 1;
 }
 .curtainMenu button
 ,.curtainMenu a {
     font-size: 20px;
-    margin: 3px;
+}
+.curtainMenu .characterListButton {
+    font-size: 13px;
+    margin: 0;
+    padding: 0 2px;
 }
 .curtainMenu .closeCurtainBtn{
     position: absolute;
@@ -32,26 +38,55 @@
 }
 .curtainMenuContent{
     position: relative;
-    top: 15%;
+    top: 25%;
     text-align: center;
     display: flex;
     flex-flow: column;
     margin: 0 15% 0 15%;
+    overflow: hidden;
+    height: calc(100vh - 110px);
 }
-#characterListContainer {
-    position: unset;
-    top:unset;
-    right:unset;
-    bottom:unset;
-    left:unset;
-}
+
 #characterPane {
     position:unset;
-    top:unset;
-    right:unset;
-    bottom:unset;
-    left:unset;
 }
-#menu > div:last-child {
-    padding-right: 0px;
+
+@media only screen and (max-width:500px){
+
+    #characterListContainer {
+        position: unset;
+        overflow-y:auto;
+    }
+    .characterListName {
+        text-align: left;
+    }
+    #menu > div:last-child {
+        margin-right: 0px;
+    }
+    #metaLogoDisplay {
+        max-width: 100%;
+        max-height: 200px;
+    }
+    .characterListThumbnail {
+        max-width: 85px;
+        max-height: 85px;
+        opacity: 0.5;
+        top: calc(50% - 32px);
+        left: calc(50% - 55px);
+    }
+    .characterListItem > input[type="checkbox"] {
+        display: none;
+    }
+    .characterListItemSelected > .characterListName {
+        transform: scale(1.1);
+    }
+    .characterListItemSelected > .characterListThumbnail {
+        opacity: 0.75 !important;
+    }
+    .tabButton, .selectedTabBtn, .selectedTabBtn:hover, .selectedTabBtn:focus, .selectedTabBtn:focus-visible {
+        font-weight: normal;
+    }
+    .button {
+        letter-spacing:0;
+    }
 }

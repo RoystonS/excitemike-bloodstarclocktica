@@ -1,10 +1,11 @@
+import { tabClicked } from './bloodstar';
 import { hookupClickEvents } from './util';
 
 /** track currently open curtain menu */
 let currentCurtain: Element|null = null;
 
 /** initialize listeners for mobile version of bloodstar */
-export function initMobileBindings():void {
+function initMobileBindings():void {
     hookupClickEvents([
         ['mobileHamburger', ()=>openCurtainMenu('mobileMainMenu')],
         ['mobileSignInOut', ()=>openCurtainMenu('mobileSignInOutMenu')],
@@ -12,7 +13,8 @@ export function initMobileBindings():void {
         ['mobileImportButton', ()=>openCurtainMenu('mobileImportMenu')],
         ['mobilePublishButton', ()=>openCurtainMenu('mobilePublishMenu')],
         ['mobileSharingButton', ()=>openCurtainMenu('mobileSharingMenu')],
-        ['openCharacterPaneBtn', ()=>openCurtainMenu('characterPane')],
+        
+        ['charlistTabBtn', ()=>tabClicked('charlistTabBtn','characterlisttab')],
     ]);
 
     // find ALL `closeCurtainBtn`
@@ -38,3 +40,10 @@ function openCurtainMenu(id:string):void {
     currentCurtain = document.getElementById(id);
     currentCurtain?.setAttribute('open','true');
 }
+
+import {init} from "./bloodstar";
+import './styles/mobile.css';
+
+void init().then(()=>{
+    initMobileBindings();
+});

@@ -15,7 +15,6 @@ import menuInit, { updateUserDisplay } from './menu';
 import {save} from './commands/save';
 import {clearRecentFile, getRecentFile} from './recent-file';
 import {show as showOpenFlow} from './dlg/open-flow';
-import { initMobileBindings } from './mobile';
 import './styles/autogrowtextarea.css';
 import './styles/characterlist.css';
 import './styles/charactertab.css';
@@ -28,7 +27,6 @@ import './styles/scrollbars.css';
 import './styles/slider.css';
 import './styles/tabs.css';
 import './styles/teamcolor.css';
-import './styles/mobile.css';
 
 let edition:Edition = new Edition();
 export const selectedCharacter = new BloodBind.Property<Character|null>(null);
@@ -36,7 +34,7 @@ export const selectedCharacter = new BloodBind.Property<Character|null>(null);
 /**
  * switch to a tab
  */
-function tabClicked(btnId:string, tabId:string):void {
+export function tabClicked(btnId:string, tabId:string):void {
     {
         const allTabBtns = document.getElementsByClassName("tabButton");
         for (let i = 0; i < allTabBtns.length; i++) {
@@ -133,8 +131,6 @@ async function initBindings():Promise<void> {
         }
     });
     updateStatusbar();
-
-    await initMobileBindings();
 }
 
 /** initialize CustomEdition object to bind to */
@@ -159,7 +155,7 @@ async function initCustomEdition(email:string):Promise<void> {
 }
 
 /** prepare app */
-async function init() {
+async function _init() {
     edition = await Edition.asyncNew();
 
     await initBindings();
@@ -212,13 +208,20 @@ function updateStatusbar():void {
     }
 }
 
-// wait for dom to load
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
-} else {
-    // `DOMContentLoaded` already fired
-    
-    // intentional floating promise
-    void init();
+export function init():Promise<void> {
+    return new Promise((resolve)=>{
+        // wait for dom to load
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", async ()=>{
+                await init();
+                resolve();
+            });
+        } else {
+            // `DOMContentLoaded` already fired
+            
+            // intentional floating promise
+            void _init().then(resolve);
+        }
+    });
 }
 

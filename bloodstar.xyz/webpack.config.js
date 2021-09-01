@@ -3,7 +3,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const path = require('path');
 const config = {
-    entry: './src/bloodstar.ts',
+    entry: {main:"./src/main.ts",mobile:"./src/mobile.ts"},
     module: {
         rules:[{
             test: /\.tsx?$/,
@@ -31,13 +31,16 @@ const config = {
     plugins: [
         new HtmlWebpackPlugin({
             title: 'Bloodstar Clocktica',
-            template: './src/index.html'
+            template: './src/index.html',
+            chunks: ['main'],
         }),
         new HtmlWebpackPlugin({
             title: 'Bloodstar Clocktica',
             template: './src/m.html',
+            chunks: ['mobile'],
             filename: 'm.html'
         }),
+         
         new MiniCssExtractPlugin({filename:'bloodstar.[contenthash].css',chunkFilename:'[id].css'}),
     ],
     resolve: {
@@ -65,7 +68,7 @@ module.exports = (env, argv) => {
         config.output.filename = '[name].js';
         config.plugins = config.plugins.map(plugin=>{
             if (!(plugin instanceof MiniCssExtractPlugin)) {return plugin;}
-            return new MiniCssExtractPlugin({filename:'bloodstar.css',chunkFilename:'[id].css'});
+            return new MiniCssExtractPlugin({filename:'[name].css',chunkFilename:'[id].css'});
         });
     }
 

@@ -78,24 +78,12 @@
             </div>
         </div>
 
-        <button id="openCharacterPaneBtn">Characters</button>
-        <div id="characterPane" class="curtainMenu">
-            <button class="closeCurtainBtn">&times;</button>
-                <div class="curtainMenuContent">
-                <h1>Characters</h1>
-                <button id="addCharacterButton">Add Character</button>
-                <div id="characterListContainer">
-                    <ol id="characterList">
-                    </ol>
-                </div>
-            </div>
-        </div>
-
         <div id="main-row">
             <div id="tabs">
                 <div id="tabBar">
                     <button class="tabButton" id="metaTabBtn" title="Set information about this edition.">Meta</a></button>
-                    <button class="tabButton" id="charTabBtn" title="Set information about the selected character.">Edit Character</a></button>
+                    <button class="tabButton" id="charlistTabBtn" title="Choose a character to edit.">Char List</a></button>
+                    <button class="tabButton" id="charTabBtn" title="Set information about the selected character.">Edit Char</a></button>
                     <button class="tabButton" id="firstNightTabBtn" title="Set the night order for the first night.">First Night Order</a></button>
                     <button class="tabButton" id="otherNightTabBtn" title="Set the night order for other nights.">Other Night Order</a></button>
                 </div>
@@ -111,7 +99,7 @@
                                     <input type="text" name="metaAuthor" id="metaAuthor" title="This edition's author.">
                                     <label>Logo</label>
                                     <div>
-                                        <img id="metaLogoDisplay" height="200px"/>
+                                        <img id="metaLogoDisplay"/>
                                         <div class="row">
                                             <button onclick="document.getElementById('metaLogoInput').click()">Choose Image</button>
                                             <input type="file" accept="image/*" name="metaLogoInput" id="metaLogoInput" style="display:none">
@@ -159,6 +147,15 @@
                             </div>
                         </details>
                     </div>
+                    <div id="characterlisttab" class="tab">
+                        <div id="characterPane">
+                            <button id="addCharacterButton">Add Character</button>
+                            <div id="characterListContainer">
+                                <ol id="characterList">
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
                     <div id="charactertab" class="tab">
                         <details open>
                             <summary>Character Image</summary>
@@ -193,7 +190,7 @@
                                             <input type="checkbox" name="shouldRestyle" id="shouldRestyle" title="Whether to restyle the image at all.">
                                             <div></div>
 
-                                            <!-- TODO: bring margin sliders over -->
+                                            <!-- TODO: bring x,y,size sliders over -->
                                         
                                             <label for="shouldCrop">Crop</label>
                                             <input type="checkbox" name="crop" id="shouldCrop" title="Whether to crop the image to just the visible area.">
