@@ -1,0 +1,119 @@
+/* responsive stuff for desktop site */
+
+/* general */
+@media only screen and (max-width:600px){
+    button {
+        letter-spacing:0;
+    }
+}
+@media only screen and (max-width:500px){
+    ul#status{display:none}
+}
+
+/* character list */
+@media only screen and (max-width:900px){
+    .characterListThumbnail {
+        position:unset;
+        width: 31px;
+        max-height: 31px;
+        margin: -10px 0 -15px 0;
+    }
+    .characterListName {
+        font-weight:normal;
+    }
+    .characterListButton {
+        padding:1px 4px;
+    }
+    .characterListItemSelected > .characterListThumbnail {
+        opacity: 0.75 !important;
+    }
+    .characterListItem > span
+    ,.characterListItem > button {
+        font-weight:normal;
+    }
+    .characterListItem:hover > span
+    ,.characterListItem:hover > button {
+        opacity: 0.75;
+    }
+    .characterListItem::after{
+        font-size:13px;
+    }
+}
+@media only screen and (max-width:800px){
+    .characterListButton {
+        padding:1px 1px;
+    }
+    .characterListItem > input[type="checkbox"] {
+        display: none;
+    }
+    .characterListItem::after{
+        content:none;
+    }
+}
+@media only screen and (max-width:600px){
+    .characterListThumbnail {
+        display:none
+    }
+    .characterListItem:hover > span
+    ,.characterListItem:hover > button {
+        opacity: 1;
+    }
+    .characterListItemSelected > .characterListName {
+        transform:unset;
+    }
+}
+@media only screen and (max-width:500px){
+    .characterListThumbnail {
+        display:block;
+        opacity: 1 !important;
+        margin: -10px 0 -15px -5px;
+    }
+}
+
+/* menu */
+@media only screen and (max-width:600px){
+    #menu {padding:0;}
+    #menu > div {
+        margin: 0;
+    }
+    .dropdown{
+        padding:0 3px;
+    }
+}
+
+/* tabs */
+@media only screen and (max-width:800px){
+    .tabButton, .selectedTabBtn, .selectedTabBtn:hover, .selectedTabBtn:focus, .selectedTabBtn:focus-visible {
+        font-weight: normal;
+        padding:3px 2px 6px 2px;
+    }
+}
+
+/* night order */
+@media only screen and (max-width:900px){
+    .nightOrderButton {
+        margin-right:0;
+    }
+}
+@media only screen and (max-width:800px){
+    .nightOrderItem::before {display:none}
+    .nightOrderThumbnail{
+        position:unset;
+        width: 31px;
+        max-height: 31px;
+        margin: -10px 0 -15px 0;
+    }
+    .nightOrderItem > * {
+        margin-right:unset;
+    }
+}
+@media only screen and (max-width:700px){
+    .nightOrderButton {
+        padding:1px 1px;
+    }
+    .nightOrderReminder {display:none}
+    .nightOrderName {flex: 1 1 auto;}
+}
+@media only screen and (max-width:500px){
+    .nightOrderItem > .ordinal{display:none}
+}

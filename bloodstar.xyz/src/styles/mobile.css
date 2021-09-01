@@ -85,8 +85,12 @@
     }
     .tabButton, .selectedTabBtn, .selectedTabBtn:hover, .selectedTabBtn:focus, .selectedTabBtn:focus-visible {
         font-weight: normal;
+        padding:3px 0 6px 0;
     }
-    .button {
+    button {
         letter-spacing:0;
+    }
+    .nightOrderReminder{
+        display:none;
     }
 }

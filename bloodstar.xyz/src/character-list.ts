@@ -80,16 +80,16 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
     }
 
     {
-        const icon = createElement({t:'img',css:['characterListThumbnail']});
-        bindImageDisplay(icon, character.styledImage);
-        row.appendChild(icon);
-    }
-
-    {
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         bindCheckbox(checkbox, character.export);
         row.appendChild(checkbox);
+    }
+
+    {
+        const icon = createElement({t:'img',css:['characterListThumbnail']});
+        bindImageDisplay(icon, character.styledImage);
+        row.appendChild(icon);
     }
 
     {

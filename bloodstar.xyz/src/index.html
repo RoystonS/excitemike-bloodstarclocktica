@@ -154,7 +154,7 @@
                     <details open>
                         <summary>Character Image</summary>
                         <div class="fieldgroup">
-                            <div class="row">
+                            <div class="characterImageRow">
                                 <div class="column">
                                     <button onclick="document.getElementById('characterUnstyledImageInput').click()">Choose Image</button>
                                     <input type="file" accept="image/*" name="characterUnstyledImageInput" id="characterUnstyledImageInput" style="display:none">
@@ -163,73 +163,6 @@
                                         <input type="checkbox" name="previewOnToken" id="previewOnToken">
                                         <label for="previewOnToken">Preview on token</label>
                                     </div>
-                                    <details>
-                                        <summary>Style settings</summary>
-                                        <div class="fieldgroup">
-                                            <div class="imageSettingsGrid">
-                                                <label for="shouldRestyle" title="Whether to restyle the image at all.">Restyle Image</label>
-                                                <input type="checkbox" name="shouldRestyle" id="shouldRestyle" title="Whether to restyle the image at all.">
-                                                <div></div>
-
-                                                <label for="horizontalPlacement" title="Adjust horizontal placement of icon.">Horizontal Placement</label>
-                                                <input type="range" name="horizontalPlacement" id="horizontalPlacement" min="0" max="1" step="0.05" title="Adjust horizontal placement of icon.">
-                                                <label id="horizontalPlacementValueLabel" for="horizontalPlacement" data-places="2"></label>
-
-                                                <label for="verticalPlacement" title="Adjust vertical placement of icon.">Vertical Placement</label>
-                                                <input type="range" name="verticalPlacement" id="verticalPlacement" min="0" max="1" step="0.05" title="Adjust vertical placement of icon.">
-                                                <label id="verticalPlacementValueLabel" for="verticalPlacement" data-places="2"></label>
-
-                                                <label for="sizeFactor" title="Adjust image size.">Size</label>
-                                                <input type="range" name="sizeFactor" id="sizeFactor" min="0" max="1" step="0.05" title="Adjust image size.">
-                                                <label id="sizeFactorValueLabel" for="sizeFactor" data-places="2"></label>
-                                                
-                                                <label for="shouldCrop">Crop</label>
-                                                <input type="checkbox" name="crop" id="shouldCrop" title="Whether to crop the image to just the visible area.">
-                                                <div></div>
-                                                
-                                                <label for="shouldColorize">Colorize</label>
-                                                <input type="checkbox" name="shouldColorize" id="shouldColorize" title="Whether to recolor the image based on team.">
-                                                <div></div>
-                                                
-                                                <label for="useOutsiderAndMinionColors" title="If checked, Outsiders and Minions get their own colors instead of using just blue/red for Good/Evil colors.">Outsider/Minion Colors</label>
-                                                <input type="checkbox" name="useOutsiderAndMinionColors" id="useOutsiderAndMinionColors" title="If checked, Outsiders and Minions get their own colors instead of using just blue/red for Good/Evil colors.">
-                                                <div></div>
-                                                
-                                                <label for="useTexture" title="If checked, a grunge texture is applied to the image.">Texture</label>
-                                                <input type="checkbox" name="useTexture" id="useTexture" title="If checked, a grunge texture is applied to the image.">
-                                                <div></div>
-                                                
-                                                <label for="useBorder" title="Whether a border should be added to the image.">Border</label>
-                                                <input type="checkbox" name="useBorder" id="useBorder" title="Whether a border should be added to the image.">
-                                                <div></div>
-                                                
-                                                <label for="borderIntensity" title="Scales the border effect.">Border Intensity</label>
-                                                <input type="range" name="borderIntensity" id="borderIntensity" min="0" max="5" step="1" title="Scales the border effect.">
-                                                <label id="borderIntensityValueLabel" for="borderIntensity"></label>
-                                                
-                                                <label for="dropShadow" title="Whether to add a drop shadow effect to the image.">Drop Shadow</label>
-                                                <input type="checkbox" name="dropShadow" id="dropShadow" title="Whether to add a drop shadow effect to the image.">
-                                                <div></div>
-                                                
-                                                <label for="dropShadowSize" title="How much the dropshadow spreads.">Dropshadow Size</label>
-                                                <input type="range" name="dropShadowSize" id="dropShadowSize" min="0" max="32" step="1" title="How much the dropshadow spreads.">
-                                                <label id="dropShadowSizeValueLabel" for="dropShadowSize"></label>
-                                                
-                                                <label for="dropShadowOffsetX" title="Horizontal offset of the dropshadow effect.">Dropshadow Offset X</label>
-                                                <input type="range" name="dropShadowOffsetX" id="dropShadowOffsetX" min="-20" max="20" step="1" title="Horizontal offset of the dropshadow effect.">
-                                                <label id="dropShadowOffsetXValueLabel" for="dropShadowOffsetX"></label>
-                                                
-                                                <label for="dropShadowOffsetY" title="Vertical offset of the dropshadow effect.">Dropshadow Offset Y</label>
-                                                <input type="range" name="dropShadowOffsetY" id="dropShadowOffsetY" min="-20" max="20" step="1" title="Vertical offset of the dropshadow effect.">
-                                                <label id="dropShadowOffsetYValueLabel" for="dropShadowOffsetY"></label>
-                                                
-                                                <label for="dropShadowOpacity" title="Opacity of the dropshadow effect: 0=invisible, 1=fully opaque.">Dropshadow Opacity</label>
-                                                <input type="range" name="dropShadowOpacity" id="dropShadowOpacity" min="0" max="1" step="0.05" title="Opacity of the dropshadow effect: 0=invisible, 1=fully opaque.">
-                                                <label id="dropShadowOpacityValueLabel" for="dropShadowOpacity" data-places="2"></label>
-                                            </div>
-                                            <button id="resetImageSettings">Reset Defaults</button>
-                                        </div>
-                                    </details>
                                 </div>
                                 <div id="characterImagePreview">
                                     <img id="tokenBackground" style="max-height:200px;max-width: 200px;"/>
@@ -245,6 +178,73 @@
                                     <div id="characterImagePreviewSpinner"></div>
                                 </div>
                             </div>
+                            <details>
+                                <summary>Style settings</summary>
+                                <div class="fieldgroup">
+                                    <div class="imageSettingsGrid">
+                                        <label for="shouldRestyle" title="Whether to restyle the image at all.">Restyle Image</label>
+                                        <input type="checkbox" name="shouldRestyle" id="shouldRestyle" title="Whether to restyle the image at all.">
+                                        <div></div>
+
+                                        <label for="horizontalPlacement" title="Adjust horizontal placement of icon.">Horizontal Placement</label>
+                                        <input type="range" name="horizontalPlacement" id="horizontalPlacement" min="0" max="1" step="0.05" title="Adjust horizontal placement of icon.">
+                                        <label id="horizontalPlacementValueLabel" for="horizontalPlacement" data-places="2"></label>
+
+                                        <label for="verticalPlacement" title="Adjust vertical placement of icon.">Vertical Placement</label>
+                                        <input type="range" name="verticalPlacement" id="verticalPlacement" min="0" max="1" step="0.05" title="Adjust vertical placement of icon.">
+                                        <label id="verticalPlacementValueLabel" for="verticalPlacement" data-places="2"></label>
+
+                                        <label for="sizeFactor" title="Adjust image size.">Size</label>
+                                        <input type="range" name="sizeFactor" id="sizeFactor" min="0" max="1" step="0.05" title="Adjust image size.">
+                                        <label id="sizeFactorValueLabel" for="sizeFactor" data-places="2"></label>
+                                        
+                                        <label for="shouldCrop">Crop</label>
+                                        <input type="checkbox" name="crop" id="shouldCrop" title="Whether to crop the image to just the visible area.">
+                                        <div></div>
+                                        
+                                        <label for="shouldColorize">Colorize</label>
+                                        <input type="checkbox" name="shouldColorize" id="shouldColorize" title="Whether to recolor the image based on team.">
+                                        <div></div>
+                                        
+                                        <label for="useOutsiderAndMinionColors" title="If checked, Outsiders and Minions get their own colors instead of using just blue/red for Good/Evil colors.">Outsider/Minion Colors</label>
+                                        <input type="checkbox" name="useOutsiderAndMinionColors" id="useOutsiderAndMinionColors" title="If checked, Outsiders and Minions get their own colors instead of using just blue/red for Good/Evil colors.">
+                                        <div></div>
+                                        
+                                        <label for="useTexture" title="If checked, a grunge texture is applied to the image.">Texture</label>
+                                        <input type="checkbox" name="useTexture" id="useTexture" title="If checked, a grunge texture is applied to the image.">
+                                        <div></div>
+                                        
+                                        <label for="useBorder" title="Whether a border should be added to the image.">Border</label>
+                                        <input type="checkbox" name="useBorder" id="useBorder" title="Whether a border should be added to the image.">
+                                        <div></div>
+                                        
+                                        <label for="borderIntensity" title="Scales the border effect.">Border Intensity</label>
+                                        <input type="range" name="borderIntensity" id="borderIntensity" min="0" max="5" step="1" title="Scales the border effect.">
+                                        <label id="borderIntensityValueLabel" for="borderIntensity"></label>
+                                        
+                                        <label for="dropShadow" title="Whether to add a drop shadow effect to the image.">Drop Shadow</label>
+                                        <input type="checkbox" name="dropShadow" id="dropShadow" title="Whether to add a drop shadow effect to the image.">
+                                        <div></div>
+                                        
+                                        <label for="dropShadowSize" title="How much the dropshadow spreads.">Dropshadow Size</label>
+                                        <input type="range" name="dropShadowSize" id="dropShadowSize" min="0" max="32" step="1" title="How much the dropshadow spreads.">
+                                        <label id="dropShadowSizeValueLabel" for="dropShadowSize"></label>
+                                        
+                                        <label for="dropShadowOffsetX" title="Horizontal offset of the dropshadow effect.">Dropshadow Offset X</label>
+                                        <input type="range" name="dropShadowOffsetX" id="dropShadowOffsetX" min="-20" max="20" step="1" title="Horizontal offset of the dropshadow effect.">
+                                        <label id="dropShadowOffsetXValueLabel" for="dropShadowOffsetX"></label>
+                                        
+                                        <label for="dropShadowOffsetY" title="Vertical offset of the dropshadow effect.">Dropshadow Offset Y</label>
+                                        <input type="range" name="dropShadowOffsetY" id="dropShadowOffsetY" min="-20" max="20" step="1" title="Vertical offset of the dropshadow effect.">
+                                        <label id="dropShadowOffsetYValueLabel" for="dropShadowOffsetY"></label>
+                                        
+                                        <label for="dropShadowOpacity" title="Opacity of the dropshadow effect: 0=invisible, 1=fully opaque.">Dropshadow Opacity</label>
+                                        <input type="range" name="dropShadowOpacity" id="dropShadowOpacity" min="0" max="1" step="0.05" title="Opacity of the dropshadow effect: 0=invisible, 1=fully opaque.">
+                                        <label id="dropShadowOpacityValueLabel" for="dropShadowOpacity" data-places="2"></label>
+                                    </div>
+                                    <button id="resetImageSettings">Reset Defaults</button>
+                                </div>
+                            </details>
                         </div>
                     </details>
                     <details open>

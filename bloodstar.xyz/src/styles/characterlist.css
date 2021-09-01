@@ -105,6 +105,7 @@ ol#characterList::after {
     transform: scale(1.15);
     color:#eee;
     opacity:1;
+    letter-spacing: 0px;
 }
 .characterListItemSelected:hover, .characterListItemSelected:focus-visible {
     border-color: #eee;
