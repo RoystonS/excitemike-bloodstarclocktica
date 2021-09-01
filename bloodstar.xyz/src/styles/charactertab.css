@@ -36,7 +36,7 @@
 }
 .imageSettingsGrid {
     display: grid;
-    grid-template-columns: auto auto 28px;
+    grid-template-columns: auto auto auto;
     gap:6px;
     margin-bottom: 6px;
 }
