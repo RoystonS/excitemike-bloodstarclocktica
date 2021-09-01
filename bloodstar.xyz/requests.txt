@@ -21,3 +21,5 @@ Bloodstar feature requests
 - Potential for bugs: we might need to check that you are still the same user after a sign-in popup
 - prompt to go to mobile version
 - mobile drag and drop
+- Bug: when opening a file, if the opened shared file has no edition synopsis, overview, etc. set, they will not get cleared from whatever you had before
+- auto-fill author field on new
