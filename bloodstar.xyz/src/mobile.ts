@@ -44,6 +44,6 @@ function openCurtainMenu(id:string):void {
 import {init} from "./bloodstar";
 import './styles/mobile.css';
 
-void init().then(()=>{
+void init({mobile:true}).then(()=>{
     initMobileBindings();
 });

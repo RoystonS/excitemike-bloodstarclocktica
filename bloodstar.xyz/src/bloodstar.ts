@@ -28,8 +28,19 @@ import './styles/slider.css';
 import './styles/tabs.css';
 import './styles/teamcolor.css';
 
+type BloodstarOptions = {
+    mobile?:boolean
+};
+
+let bloodstarOptions:BloodstarOptions = {};
+
 let edition:Edition = new Edition();
 export const selectedCharacter = new BloodBind.Property<Character|null>(null);
+
+/** check whether this is the mobile version of the site */
+export function isMobile():boolean {
+    return bloodstarOptions.mobile||false;
+}
 
 /**
  * switch to a tab
@@ -155,7 +166,9 @@ async function initCustomEdition(email:string):Promise<void> {
 }
 
 /** prepare app */
-async function _init() {
+async function _init(options?:BloodstarOptions) {
+    bloodstarOptions = options||{};
+
     edition = await Edition.asyncNew();
 
     await initBindings();
@@ -208,7 +221,7 @@ function updateStatusbar():void {
     }
 }
 
-export function init():Promise<void> {
+export function init(options?:BloodstarOptions):Promise<void> {
     return new Promise((resolve)=>{
         // wait for dom to load
         if (document.readyState === "loading") {
@@ -220,7 +233,7 @@ export function init():Promise<void> {
             // `DOMContentLoaded` already fired
             
             // intentional floating promise
-            void _init().then(resolve);
+            void _init(options).then(resolve);
         }
     });
 }
