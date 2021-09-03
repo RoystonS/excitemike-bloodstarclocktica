@@ -51,15 +51,17 @@ function getStoredToken():SessionInfo|null{
 
 /**
  * prompt the user for a user+pass to sign in with
- * @returns Promise that resolves to auth info that worked or the null if user did not successfully sign in
+ * updates sessionInfo
+ * @returns Promise that resolves to whether user successfully signed in
  */
-async function promptAndSignIn(options?:SignInFlowOptions):Promise<SessionInfo|null>{
+async function promptAndSignIn(options?:SignInFlowOptions):Promise<boolean>{
     try {
-        return await doSignInFlow(options);
+        sessionInfo = await doSignInFlow(options);
+        return true;
     } catch (error) {
         await showError('Error', 'Error encountered during sign-in', error);
     }
-    return null;
+    return false;
 }
 
 /**
@@ -77,13 +79,14 @@ export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:str
         }
     }
 
-    let result = await cmd<ResultType|'signInRequired'>(cmdName, spinnerMessage, JSON.stringify(body));
+    const bodyClone = {...body};
+    let result = await cmd<ResultType|'signInRequired'>(cmdName, spinnerMessage, JSON.stringify(bodyClone));
     while (result==='signInRequired') {
         await signIn({force:true,message:'Please sign in to continue.'});
         if (sessionInfo){
-            body.token = sessionInfo.token;
+            bodyClone.token = sessionInfo.token;
         }
-        result = await cmd<ResultType|'signInRequired'>(cmdName, spinnerMessage, JSON.stringify(body));
+        result = await cmd<ResultType|'signInRequired'>(cmdName, spinnerMessage, JSON.stringify(bodyClone));
     }
     return result;
 }
@@ -104,11 +107,11 @@ export async function signIn(options?:SignInOptions):Promise<SessionInfo|null> {
     sessionInfo = null;
 
     if (options?.canCancel !== false) {
-        sessionInfo = await promptAndSignIn(options);
+        await promptAndSignIn(options);
     } else {
         while (!sessionInfo) {
             try {
-                sessionInfo = await promptAndSignIn(options);
+                await promptAndSignIn(options);
             } catch (error) {
                 await showError('Error', 'Error while signing in', error);
             }

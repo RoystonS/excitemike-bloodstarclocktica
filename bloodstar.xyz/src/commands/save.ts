@@ -45,8 +45,9 @@ async function confirmClobber(saveData:SaveData):Promise<SaveResult> {
         ]
     );
     if (!okToClobber) {return 'cancel';}
-    saveData.clobber = true;
-    return await signedInCmd<SaveResult>('save', `Saving edition data`, saveData);
+    const saveDataClone = { ...saveData };
+    saveDataClone.clobber = true;
+    return await signedInCmd<SaveResult>('save', `Saving edition data`, saveDataClone);
 }
 
 /**
@@ -229,13 +230,13 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
     }
 
     {
-        let logo = toSave.logo;
-        if (logo && edition.isLogoDirty()) {
-            const sourceUrl = new URL(logo);
+        if (toSave.logo && edition.isLogoDirty()) {
+            const sourceUrl = new URL(toSave.logo);
             const isDataUri = sourceUrl.protocol === 'data:';
+            let logo = toSave.logo;
             if (!isDataUri) {
                 const useCors = sourceUrl.hostname !== window.location.hostname;
-                logo = await imageUrlToDataUri(logo, useCors);
+                logo = await imageUrlToDataUri(toSave.logo, useCors);
             }
             if (logo && logo.startsWith('data:')) {
                 promises.push(Locks.enqueue('saveImage', ()=>{

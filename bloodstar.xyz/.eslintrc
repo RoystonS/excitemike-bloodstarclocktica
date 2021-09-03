@@ -11,6 +11,12 @@
       "plugin:@typescript-eslint/recommended"
     ],
     "rules":{
+      "no-promise-executor-return":"warn",
+      "no-template-curly-in-string":"warn",
+      "no-unreachable-loop":"warn",
+      "no-unsafe-optional-chaining":"warn",
+      "no-useless-backreference":"warn",
+      "require-atomic-updates":"warn",
       "require-await":"error",
       "@typescript-eslint/no-floating-promises": "error"
     }

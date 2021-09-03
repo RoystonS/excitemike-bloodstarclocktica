@@ -557,9 +557,7 @@ export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean):Promi
 
 /** get image data from the url and put it in a new canvas */
 export async function urlToCanvas(url:string, width:number, height:number, useCorsProxy:boolean):Promise<HTMLCanvasElement> {
-    if (useCorsProxy) {
-        url = await imageUrlToDataUri(url, useCorsProxy);
-    }
+    const proxyUrl = useCorsProxy ? await imageUrlToDataUri(url, useCorsProxy) : url;
     const image = new Image();
     const canvas = document.createElement('canvas');
 
@@ -577,7 +575,7 @@ export async function urlToCanvas(url:string, width:number, height:number, useCo
                 return;
             }
         };
-        image.src = url;
+        image.src = proxyUrl;
     });
 }
 
