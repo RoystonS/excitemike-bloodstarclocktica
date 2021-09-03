@@ -97,15 +97,6 @@
 }
 @media only screen and (max-width:800px){
     .nightOrderItem::before {display:none}
-    .nightOrderThumbnail{
-        position:unset;
-        width: 31px;
-        max-height: 31px;
-        margin: -10px 0 -15px 0;
-    }
-    .nightOrderItem > * {
-        margin-right:unset;
-    }
 }
 @media only screen and (max-width:700px){
     .nightOrderButton {

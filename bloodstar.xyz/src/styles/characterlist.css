@@ -86,7 +86,6 @@ ol#characterList::after {
 .characterListItem:hover > .characterListButton
 , .characterListItem:focus-visible > .characterListButton
 , .characterListItemSelected > .characterListButton {
-    display: block;
     border:none;
 }
 .characterListItem > span
@@ -115,7 +114,7 @@ ol#characterList::after {
     max-width: 150px;
     max-height: 150px;
     top: calc(50% - 54px);
-    left: calc(50% - 75px);
+    left: calc(100% - 260px);
     opacity: 0.25;
     pointer-events: none;
     transition: all 0.2s ease-out;

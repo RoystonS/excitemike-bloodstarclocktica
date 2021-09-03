@@ -1,5 +1,3 @@
-#menu{padding-top:6px;}
-
 .curtainMenu {
     height: 100vh;
     width: 100vw;
@@ -50,6 +48,16 @@
 #characterPane {
     position:unset;
 }
+#mobileHamburger {
+    font-size:20px;
+    border:none;
+}
+.characterListItem::after, .nightOrderItem::before{
+    content:none;
+}
+.nightOrderButton {
+    margin-right:0;
+}
 
 @media only screen and (max-width:500px){
 
@@ -85,12 +93,11 @@
     }
     .tabButton, .selectedTabBtn, .selectedTabBtn:hover, .selectedTabBtn:focus, .selectedTabBtn:focus-visible {
         font-weight: normal;
-        padding:3px 0 6px 0;
+        padding:3px 2px 6px 2px;
     }
     button {
         letter-spacing:0;
     }
-    .nightOrderReminder{
-        display:none;
-    }
+    .nightOrderReminder{display:none;}
+    .nightOrderName {flex: 1 1 auto;}
 }

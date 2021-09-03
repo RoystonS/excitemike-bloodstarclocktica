@@ -19,7 +19,3 @@ option {
 .teamColorFabled {
     background-image: linear-gradient(to right, #ffe91fff 2px, #ffe91f00 2px, #ffe91f00 25%, #ffe91f30, #ffe91f00);
 }
-.nightOrderButton {
-    background:none;
-    border:none;
-}
