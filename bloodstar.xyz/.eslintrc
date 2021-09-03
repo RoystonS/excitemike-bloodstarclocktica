@@ -98,6 +98,9 @@
       "camelcase":"warn",
       "comma-spacing":"warn",
       "comma-style":"warn",
+      "consistent-this":"warn",
+      "func-call-spacing":"warn",
+      "indent":["warn", 4, {"SwitchCase": 1}],
       "yoda":"warn",
 
       // addition typescript rules

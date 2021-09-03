@@ -56,7 +56,7 @@ async function confirmClobber(saveData:SaveData):Promise<SaveResult> {
  * @param edition file to save
  * @returns promise resolving to whether the save was successful
  */
- export async function saveAs(edition:Edition):Promise<boolean> {
+export async function saveAs(edition:Edition):Promise<boolean> {
     const name = await promptForName(edition.saveName.get());
     if (name === null) {return false;}
     const sessionInfo = await signIn({
@@ -99,14 +99,14 @@ export async function save(edition:Edition):Promise<boolean> {
             case '':
                 return await saveAs(edition);
             default:
-                {
-                    const sessionInfo = await signIn({
-                        title:'Sign In to Save',
-                        message:'You must first sign in if you wish to save.'
-                    });
-                    if (!sessionInfo){return false;}
-                    return await _save(sessionInfo, edition, true);
-                }
+            {
+                const sessionInfo = await signIn({
+                    title:'Sign In to Save',
+                    message:'You must first sign in if you wish to save.'
+                });
+                if (!sessionInfo){return false;}
+                return await _save(sessionInfo, edition, true);
+            }
         }
     } catch (error) {
         await showError('Error', 'Error encountered while trying to save', error);

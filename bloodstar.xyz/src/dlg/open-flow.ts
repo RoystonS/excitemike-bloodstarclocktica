@@ -164,7 +164,7 @@ async function listFiles(sessionInfo:SessionInfo, includeShared:boolean):Promise
  * @param name name of the file to open
  * @returns promise that resolves to whether a file was successfully opened
  */
- async function openNoPrompts(edition:Edition, name:string|[string, string]):Promise<boolean> {
+async function openNoPrompts(edition:Edition, name:string|[string, string]):Promise<boolean> {
     try {
         const sessionInfo = await signIn({
             title:'Sign In to Open',
@@ -262,7 +262,7 @@ async function showLeave(owner:string, edition:string):Promise<boolean> {
     if (!await getConfirmation(
         `Leave "${owner} / ${edition}"`,
         `Are you sure you'd like to leave "${owner} / ${edition}"? You will no longer be able to import from this file.`,
-        ))
+    ))
     { return false; }
     
     const request:LeaveRequest = {

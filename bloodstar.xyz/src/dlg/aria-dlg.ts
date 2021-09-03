@@ -27,7 +27,7 @@ let pauseFocusTrap = false;
  * @param node 
  * @returns whether focus was successfully set
  */
- function attemptFocus(node:Node):boolean {
+function attemptFocus(node:Node):boolean {
     if (!isFocusable(node)) { return false; }
     pauseFocusTrap = true;
     try {
@@ -93,16 +93,16 @@ function isFocusable(node:Node):boolean {
     }
   
     switch (element.nodeName) {
-      case 'A':
-        return element.href && element.rel !== 'ignore';
-      case 'INPUT':
-        return element.type !== 'hidden' && element.type !== 'file';
-      case 'BUTTON':
-      case 'SELECT':
-      case 'TEXTAREA':
-        return true;
-      default:
-        return false;
+        case 'A':
+            return element.href && element.rel !== 'ignore';
+        case 'INPUT':
+            return element.type !== 'hidden' && element.type !== 'file';
+        case 'BUTTON':
+        case 'SELECT':
+        case 'TEXTAREA':
+            return true;
+        default:
+            return false;
     }
 }
 
@@ -334,21 +334,21 @@ export class AriaDialog<ResultType> {
     }
 }
 
-    /**
-     * Open a dialog. await this.promise to get the result of the dialog.
-     *  `var x:Type = await showDialog<Type>(...));`
-     * @param focusAfterClose element or id of element to focus on after the dialog completes
-     * @param debugName css id prefix for the dialog
-     * @param body array of elements to append as dialog body
-     * @param buttons buttons to add to the dialog
-     * @returns promise that resolves to dialog result, or null
-     */
+/**
+ * Open a dialog. await this.promise to get the result of the dialog.
+ *  `var x:Type = await showDialog<Type>(...));`
+ * @param focusAfterClose element or id of element to focus on after the dialog completes
+ * @param debugName css id prefix for the dialog
+ * @param body array of elements to append as dialog body
+ * @param buttons buttons to add to the dialog
+ * @returns promise that resolves to dialog result, or null
+ */
 export function showDialog<ResultType = unknown>(
-        focusAfterClose:Element|string|null,
-        debugName:string,
-        body:CreateElementsOptions,
-        buttons:ButtonCfg<ResultType|null>[] = [{label:'OK'}]
-    ):Promise<ResultType|null>
+    focusAfterClose:Element|string|null,
+    debugName:string,
+    body:CreateElementsOptions,
+    buttons:ButtonCfg<ResultType|null>[] = [{label:'OK'}]
+):Promise<ResultType|null>
 {
     return new AriaDialog<ResultType>().baseOpen(focusAfterClose, debugName, body, buttons);
 }

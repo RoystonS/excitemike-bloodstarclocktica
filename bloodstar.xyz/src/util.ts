@@ -105,13 +105,13 @@ export async function fetchJson<T>(uri:string):Promise<T|null> {
     }, 15*1000);
     try {
         response = await fetch(uri, {
-                method: 'GET',
-                headers:{
-                    'Accept':'application/json'
-                },
-                mode: 'cors',
-                signal: controller.signal
-            });
+            method: 'GET',
+            headers:{
+                'Accept':'application/json'
+            },
+            mode: 'cors',
+            signal: controller.signal
+        });
         
         if (!response.ok) {
             console.error(`${response.status}: (${response.type}) ${response.statusText}`);

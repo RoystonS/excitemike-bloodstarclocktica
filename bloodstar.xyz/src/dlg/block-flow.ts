@@ -185,7 +185,7 @@ async function showBlockPrompt():Promise<string> {
  * @param username username of who to block
  * @returns promise that resolves to whether the user was blocked
  */
- export async function showBlockUser(username:string):Promise<boolean> {
+export async function showBlockUser(username:string):Promise<boolean> {
     const sessionInfo = await signIn({
         title:'Sign In to Block',
         message:'You must first sign in before blocking a user.'
@@ -194,7 +194,7 @@ async function showBlockPrompt():Promise<string> {
     if (!await getConfirmation(
         `Block ${username}`,
         `Are you sure you'd like to block ${username}? You will no longer be able to import files they share.`,
-        ))
+    ))
     { return false; }
 
     return doBlockUser(username);
@@ -210,7 +210,7 @@ export async function showManageBlocked():Promise<void>{
  * @param username username of who to unblock
  * @returns promise that resolves to whether the user was unblocked
  */
- export async function showUnblockUser(username:string):Promise<boolean> {
+export async function showUnblockUser(username:string):Promise<boolean> {
     // TODO: DRY: signin, then confirmation, then signedInCmd, is a common pattern. make a single function for it somewhere?
     const sessionInfo = await signIn({
         title:'Sign In to Unblock',
@@ -220,7 +220,7 @@ export async function showManageBlocked():Promise<void>{
     if (!await getConfirmation(
         `Unblock ${username}`,
         `Are you sure you'd like to unblock ${username}?`,
-        ))
+    ))
     { return false; }
     
     const request:UnblockRequest = {

@@ -189,7 +189,7 @@ export class Character extends ObservableObject<Character> {
         
         bloodImage =
             new BloodImage([ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT])
-            .pasteZoomed(bloodImage, dstX, dstY, dstW, dstH);
+                .pasteZoomed(bloodImage, dstX, dstY, dstW, dstH);
 
         // texture
         if (imageSettings.useTexture.get()) {

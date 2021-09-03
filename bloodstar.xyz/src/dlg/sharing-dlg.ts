@@ -85,7 +85,7 @@ class SharingDlg extends AriaDialog<void> {
         if (!await getConfirmation(
             'Unshare with user?', 
             `Are you sure you'd like to stop sharing with user "${user}"?`,
-            ))
+        ))
         { return; }
 
         const sessionInfo = await signIn({

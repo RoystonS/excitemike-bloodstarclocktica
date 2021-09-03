@@ -33,10 +33,10 @@ class MessageDialog extends AriaDialog<void> {
  * bring up the popup showing exception information
  */
 export function showError(
-            title = 'Error',
-            message = 'It looks like you encountered a bug! The error message below may help the developers fix it.',
-            error:Error|unknown = undefined
-        ):Promise<void|null> {
+    title = 'Error',
+    message = 'It looks like you encountered a bug! The error message below may help the developers fix it.',
+    error:Error|unknown = undefined
+):Promise<void|null> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const errorMessage = (error instanceof Error) ? `${error.message}` : (error as any).toString();
     return new MessageDialog().open(document.activeElement, title, message, errorMessage);

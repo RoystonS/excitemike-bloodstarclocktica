@@ -150,10 +150,10 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
             {
                 promises.push(
                     this.itemCtor()
-                    .then(async item=>{
-                        await item.deserialize(itemData);
-                        return item;
-                    })
+                        .then(async item=>{
+                            await item.deserialize(itemData);
+                            return item;
+                        })
                 );
             }
         }

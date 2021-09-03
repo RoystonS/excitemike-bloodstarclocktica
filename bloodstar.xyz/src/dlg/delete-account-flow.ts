@@ -83,8 +83,9 @@ class PasswordDlg extends AriaDialog<string> {
                 {t:'h1', txt:'Enter Password'},
                 {t:'p', txt:'Enter your password to continue deleting your account.'},
                 passwordField],
-            [{label:'OK', id:'pwdOkButton', callback:()=>passwordField.value},
-            {label:'Cancel'}]
+            [
+                {label:'OK', id:'pwdOkButton', callback:()=>passwordField.value},
+                {label:'Cancel'}]
         )||'';
     }
 }

@@ -28,7 +28,7 @@ function confirmDelete(name:string):Promise<boolean> {
  * Bring up a list of deletable files, and let the user delete from there
  * @returns promise that resolves to the name of the deleted file, or empty string if nothing was deleted
  */
- export async function chooseAndDeleteFile():Promise<string> {
+export async function chooseAndDeleteFile():Promise<string> {
     const name = await chooseFile({message:'Choose an existing file to delete:', includeShared:false});
     if (!name) {return '';}
 

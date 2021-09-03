@@ -5,12 +5,12 @@
 
 import { createElement } from "./util";
 
- const VALID_URL_PART = /^[A-Za-z0-9\-_]+$/;
+const VALID_URL_PART = /^[A-Za-z0-9\-_]+$/;
 
- // this regex comes from the HTML5 spec https://html.spec.whatwg.org/multipage/input.html#e-mail-state-(type%3Demail)
- // this does reject technically-valid email addresses but it handles the sort I care to support with this app
- const VALID_EMAIL_RE = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
- 
+// this regex comes from the HTML5 spec https://html.spec.whatwg.org/multipage/input.html#e-mail-state-(type%3Demail)
+// this does reject technically-valid email addresses but it handles the sort I care to support with this app
+const VALID_EMAIL_RE = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
 /** update container contents to warn if email does not look valid */
 export function updateEmailWarnings(email:string, container:HTMLElement):void{
     container.innerText = '';
