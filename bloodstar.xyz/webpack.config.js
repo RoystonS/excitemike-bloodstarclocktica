@@ -13,11 +13,14 @@ const config = {
             test: /\.css$/,
             use: [
                 MiniCssExtractPlugin.loader,
-                'css-loader'
+                {
+                    loader: 'css-loader',
+                    options: {url:false}
+                }
             ],
             exclude: /node_modules/
         }, {
-            test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+            test: /\.(png|woff|woff2|eot|ttf|svg)$/i,
             use: [{
                 loader: 'file-loader',
                 options: {
