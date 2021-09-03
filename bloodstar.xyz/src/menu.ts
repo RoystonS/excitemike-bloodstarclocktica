@@ -182,7 +182,7 @@ async function signOutClicked(edition:Edition):Promise<boolean> {
     if (!await SdcDlg.savePromptIfDirty(edition)) {return false;}
     signOut();
     await edition.reset();
-    await signIn();
+    await signIn({cancelLabel:'Continue as Guest'});
     return true;
 }
 
