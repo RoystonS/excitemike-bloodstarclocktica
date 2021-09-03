@@ -186,7 +186,8 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     }
 
     /** create and insert DOM elements at the specified index */
-    private insert(i:number, items:ReadonlyArray<T>):void {
+    private insert(insertLocation:number, items:ReadonlyArray<T>):void {
+        let i = insertLocation;
         for (const item of items) {
             const newChild = this.renderListItem(i, item);
             if (i === this.listElement.childNodes.length) {
@@ -251,21 +252,21 @@ export class CollectionBinding<T extends ObservableObject<T>> {
         const li = document.createElement('li');
         li.draggable = true;
         li.dataset.index = String(i);
-        li.addEventListener('drag', ()=>this.dragged = li);
+        li.addEventListener('drag', ()=>{this.dragged = li;});
         li.addEventListener('dragstart', CollectionBinding.dragstart);
         li.addEventListener('dragend', CollectionBinding.dragend);
         li.addEventListener('dragover', e=>this.dragover(e));
         li.addEventListener('dragleave', e=>this.dragleave(e));
-        li.addEventListener('drop', async e => await this.drop(e));
+        li.addEventListener('drop', e => this.drop(e));
         li.appendChild(this.renderFn(itemData, this.collection));
 
         return li;
     }
 
     /** keep dataset index in sync */
-    private updateIndices(startPosition = 0, endPosition?:number):void {
-        endPosition = (endPosition === undefined) ? this.listElement.childNodes.length : endPosition;
-        for (let i=startPosition; i<endPosition; ++i) {
+    private updateIndices(startPosition:number, endPosition?:number):void {
+        const end = (endPosition === undefined) ? this.listElement.childNodes.length : endPosition;
+        for (let i=startPosition; i<end; ++i) {
             const child = this.listElement.childNodes[i];
             if (child instanceof HTMLElement) {
                 child.dataset.index = String(i);

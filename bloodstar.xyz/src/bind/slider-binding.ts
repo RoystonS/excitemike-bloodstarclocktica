@@ -20,7 +20,7 @@ function syncFromPropertyToElement(element:HTMLInputElement, valueLabel:HTMLElem
     updateValueLabel(element, valueLabel);
 }
 
-export default class SliderBinding  extends BaseBinding<number> {
+export default class SliderBinding extends BaseBinding<number> {
     constructor(element:HTMLInputElement, valueLabel:HTMLElement|null, property:Property<number>) {
         super(
             element,

@@ -142,9 +142,9 @@ export default class BloodImage {
     /** create a new image that is the result of applying a convolution matrix to this image */
     convolve(kernel:number[][]):BloodImage {
         const kernelRows = kernel.length;
-        if (kernelRows % 2 == 0) { throw new Error('convolve function expects the kernel dimensions to be odd'); }
+        if (kernelRows % 2 === 0) { throw new Error('convolve function expects the kernel dimensions to be odd'); }
         const kernelCols = kernel[0].length;
-        if (kernelCols % 2 == 0) { throw new Error('convolve function expects the kernel dimensions to be odd'); }
+        if (kernelCols % 2 === 0) { throw new Error('convolve function expects the kernel dimensions to be odd'); }
         const xReach = (kernelCols / 2)|0;
         const yReach = (kernelRows / 2)|0;
         const destination = new BloodImage([this.width, this.height]);
@@ -166,24 +166,22 @@ export default class BloodImage {
                 let alpha = 0;
 
                 // sum up values from src
-                {
-                    let weightSum = 0;
-                    for (let srcY = Math.max(0, dstY - yReach); srcY < Math.min(h, dstY + yReach); ++srcY) {
-                        for (let srcX = Math.max(0, dstX - xReach); srcX < Math.min(w, dstX + xReach); ++srcX) {
-                            const weight = kernel[srcY - dstY + yReach][srcX - dstX + xReach];
-                            weightSum += weight;
-                            const srcI = (srcX + srcY * w) * 4;
-                            red += weight * srcPixels[srcI + 0];
-                            green += weight * srcPixels[srcI + 1];
-                            blue += weight * srcPixels[srcI + 2];
-                            alpha += weight * srcPixels[srcI + 3];
-                        }
+                let weightSum = 0;
+                for (let srcY = Math.max(0, dstY - yReach); srcY < Math.min(h, dstY + yReach); ++srcY) {
+                    for (let srcX = Math.max(0, dstX - xReach); srcX < Math.min(w, dstX + xReach); ++srcX) {
+                        const weight = kernel[srcY - dstY + yReach][srcX - dstX + xReach];
+                        weightSum += weight;
+                        const srcI = (srcX + srcY * w) * 4;
+                        red += weight * srcPixels[srcI + 0];
+                        green += weight * srcPixels[srcI + 1];
+                        blue += weight * srcPixels[srcI + 2];
+                        alpha += weight * srcPixels[srcI + 3];
                     }
-                    red /= weightSum;
-                    green /= weightSum;
-                    blue /= weightSum;
-                    alpha /= weightSum;
                 }
+                red /= weightSum;
+                green /= weightSum;
+                blue /= weightSum;
+                alpha /= weightSum;
 
                 dstPixels[dstI + 0] = toByte(red);
                 dstPixels[dstI + 1] = toByte(green);
@@ -198,9 +196,9 @@ export default class BloodImage {
     /** create a new image that is the result of applying a convolution matrix to one channel of the image */
     convolveChannel(channel:number, kernel:number[][]):BloodImage {
         const kernelRows = kernel.length;
-        if (kernelRows % 2 == 0) { throw new Error('convolve function expects the kernel dimensions to be odd'); }
+        if (kernelRows % 2 === 0) { throw new Error('convolve function expects the kernel dimensions to be odd'); }
         const kernelCols = kernel[0].length;
-        if (kernelCols % 2 == 0) { throw new Error('convolve function expects the kernel dimensions to be odd'); }
+        if (kernelCols % 2 === 0) { throw new Error('convolve function expects the kernel dimensions to be odd'); }
         const xReach = (kernelCols / 2)|0;
         const yReach = (kernelRows / 2)|0;
         const destination = new BloodImage([this.width, this.height]);
@@ -219,18 +217,16 @@ export default class BloodImage {
                 let value = 0;
 
                 // sum up values from src
-                {
-                    let weightSum = 0;
-                    for (let srcY = Math.max(0, dstY - yReach); srcY < Math.min(h, dstY + yReach); ++srcY) {
-                        for (let srcX = Math.max(0, dstX - xReach); srcX < Math.min(w, dstX + xReach); ++srcX) {
-                            const weight = kernel[srcY - dstY + yReach][srcX - dstX + xReach];
-                            weightSum += weight;
-                            const srcI = (srcX + srcY * w) * 4;
-                            value += weight * srcPixels[srcI + channel];
-                        }
+                let weightSum = 0;
+                for (let srcY = Math.max(0, dstY - yReach); srcY < Math.min(h, dstY + yReach); ++srcY) {
+                    for (let srcX = Math.max(0, dstX - xReach); srcX < Math.min(w, dstX + xReach); ++srcX) {
+                        const weight = kernel[srcY - dstY + yReach][srcX - dstX + xReach];
+                        weightSum += weight;
+                        const srcI = (srcX + srcY * w) * 4;
+                        value += weight * srcPixels[srcI + channel];
                     }
-                    value /= weightSum;
                 }
+                value /= weightSum;
 
                 // write all channels
                 for (let outChannel = 0; outChannel < 4; ++outChannel) {
@@ -275,7 +271,7 @@ export default class BloodImage {
                     for (let x2 = Math.max(0,x-1); x2 < Math.min(w, x+2) && !edgeFound; ++x2) {
                         const i2 = (x2 + y2 * this.width) * 4;
                         const neighborAlpha = srcPixels[i2 + 3];
-                        if ((thisAlpha > 127) != (neighborAlpha > 127)) {
+                        if ((thisAlpha > 127) !== (neighborAlpha > 127)) {
                             edgeFound = true;
                         }
                     }
@@ -382,18 +378,22 @@ export default class BloodImage {
         if ((source.width === 0)||(source.height === 0)||(w === 0)||(h === 0)) {return this;}
         const sourceAspect = source.width / source.height;
         const destinationAspect = w/h;
+        let dstX = x;
+        let dstY = y;
+        let dstW = w;
+        let dstH = h;
         if (sourceAspect > destinationAspect) {
             const newH = Math.floor(w / sourceAspect);
             const extraSpace = h - newH;
-            y += extraSpace / 2;
-            h -= extraSpace;
+            dstY += extraSpace / 2;
+            dstH -= extraSpace;
         } else {
             const newW = Math.floor(h * sourceAspect);
             const extraSpace = w - newW;
-            x += extraSpace / 2;
-            w -= extraSpace;
+            dstX += extraSpace / 2;
+            dstW -= extraSpace;
         }
-        this.ctx.drawImage(source.canvas, x, y, w, h);
+        this.ctx.drawImage(source.canvas, dstX, dstY, dstW, dstH);
         return this;
     }
 
@@ -426,17 +426,17 @@ export default class BloodImage {
      * set red, green, and blue components of image to fixed values, leaving alpha alone
      */
     setRGB(red:number, green:number, blue:number):void {
-        red = toByte(red);
-        green = toByte(green);
-        blue = toByte(blue);
+        const redByte = toByte(red);
+        const greenByte = toByte(green);
+        const blueByte = toByte(blue);
         const imageData = this.ctx.getImageData(0,0,this.width,this.height);
         const pixels = imageData.data;
         for (let y = 0; y < imageData.height; ++y) {
             for (let x = 0; x < imageData.width; ++x) {
                 const i = (x + y * imageData.width) * 4;
-                pixels[i + 0] = red;
-                pixels[i + 1] = green;
-                pixels[i + 2] = blue;
+                pixels[i + 0] = redByte;
+                pixels[i + 1] = greenByte;
+                pixels[i + 2] = blueByte;
             }
         }
         this.ctx.putImageData(imageData, 0, 0)
@@ -580,7 +580,7 @@ export async function urlToCanvas(url:string, width:number, height:number, useCo
 }
 
 /** find the appropriate gradient image for the team and settings */
-export async function getGradientForTeam(team:BloodTeam, useOutsiderAndMinionColors:boolean, width:number, height:number):Promise<BloodImage> {
+export function getGradientForTeam(team:BloodTeam, useOutsiderAndMinionColors:boolean, width:number, height:number):Promise<BloodImage> {
     let url:string;
     switch (team) {
         case BloodTeam.TOWNSFOLK:
@@ -604,5 +604,5 @@ export async function getGradientForTeam(team:BloodTeam, useOutsiderAndMinionCol
         default:
             throw new Error(`getGradientForTeam: unhandled team "${team}"`);
     }
-    return await urlToBloodImage(url, width, height, false);
+    return urlToBloodImage(url, width, height, false);
 }

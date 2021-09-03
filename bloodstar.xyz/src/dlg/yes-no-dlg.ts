@@ -52,25 +52,25 @@ class YesNoDialog extends AriaDialog<boolean> {
         }
 
         const yesCallback = ():boolean=>{
-            if (!checkboxMessage) return true;
+            if (!checkboxMessage) { return true; }
             const checkboxElem = this.querySelector<HTMLInputElement>('#confirmCheckbox');
             if (!checkboxElem) {return false;}
             return checkboxElem.checked;
         };
-
-        return !!await this.baseOpen(
+        const result = await this.baseOpen(
             document.activeElement,
             'message',
             body,
             [
-                {label:yesLabel,id:'yesButton',callback:yesCallback,disabled:!!checkboxMessage},
+                {label:yesLabel,id:'yesButton',callback:yesCallback,disabled:Boolean(checkboxMessage)},
                 {label:noLabel, callback:() => false}
             ]
         );
+        return Boolean(result);
     }
 }
 
 /** bring up the confirmation dialog */
-export async function show(titleText:string, messageText?:string, options?:YesNoOptions):Promise<boolean> {
-    return await new YesNoDialog().open(titleText, messageText, options);
+export function show(titleText:string, messageText?:string, options?:YesNoOptions):Promise<boolean> {
+    return new YesNoDialog().open(titleText, messageText, options);
 }

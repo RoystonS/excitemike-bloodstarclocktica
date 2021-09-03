@@ -97,7 +97,7 @@ export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:str
  * @returns promise that resolves to user info
  */
 export async function signIn(options?:SignInOptions):Promise<SessionInfo|null> {
-    const force = !!(options?.force);
+    const force = Boolean(options?.force);
     sessionInfo = sessionInfo || getStoredToken();
     if (!force && sessionInfo && !accessTokenExpired()){
         updateUserDisplay(sessionInfo);

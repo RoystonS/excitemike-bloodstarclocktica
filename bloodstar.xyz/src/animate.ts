@@ -21,7 +21,8 @@ export function animateAndRemove(element:HTMLElement, cssClass:string, animName:
                 doRemove();
             }
         };
-        timeout = window.setTimeout(doRemove, 400);
+        const TIMEOUT = 400;
+        timeout = window.setTimeout(doRemove, TIMEOUT);
         element.addEventListener('animationend', listener);
         element.classList.add(cssClass);
     });

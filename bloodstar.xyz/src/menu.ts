@@ -43,7 +43,7 @@ async function addCharacterClicked(edition:Edition):Promise<boolean> {
 
 /** user chose to change their password */
 async function changePasswordClicked():Promise<boolean> {
-    return !!await showResetPasswordFlow();
+    return Boolean(await showResetPasswordFlow());
 }
 
 /** menu item for delete clicked */
@@ -191,7 +191,7 @@ export function updateUserDisplay(session:SessionInfo|null):void {
     for (const id of ['signedInLabel','signOutBtn','changePasswordBtn','deleteAccountBtn']) {
         const element = document.getElementById(id);
         if (element) {
-            showHideElement(element, !!session);
+            showHideElement(element, Boolean(session));
         }
     }
     for (const id of ['signedOutLabel','signInBtn']) {

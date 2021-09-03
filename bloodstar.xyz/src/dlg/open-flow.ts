@@ -125,8 +125,8 @@ class ChooseFileDlg extends AriaDialog<string|[string, string]> {
 
 /** share file chooser with the delete command */
 // TODO: simplify return type
-export async function chooseFile(options?:ChooseFileOptions):Promise<string|[string, string]> {
-    return await new ChooseFileDlg().open(options);
+export function chooseFile(options?:ChooseFileOptions):Promise<string|[string, string]> {
+    return new ChooseFileDlg().open(options);
 }
 
 /**
@@ -211,14 +211,14 @@ async function openPromptNoSavePrompt(edition:Edition, options?:ChooseFileOption
  * @param options optional ChooseFileOptions for the dialog
  * @returns whether a file was successfully opened
  */
-async function openExistingNoSavePrompt(edition:Edition, name:string|[string,string]):Promise<boolean> {
+function openExistingNoSavePrompt(edition:Edition, name:string|[string,string]):Promise<boolean> {
     if (Array.isArray(name)) {
         const label = name.join(' / ');
-        return await spinner('open', `Opening shared file "${label}"`, openNoPrompts(edition, name));
+        return spinner('open', `Opening shared file "${label}"`, openNoPrompts(edition, name));
     } else if (name) {
-        return await spinner('open', `Opening edition file "${name}"`, openNoPrompts(edition, name));
+        return spinner('open', `Opening edition file "${name}"`, openNoPrompts(edition, name));
     }
-    return false;
+    return Promise.resolve(false);
 }
 
 /**
@@ -229,7 +229,7 @@ async function openExistingNoSavePrompt(edition:Edition, name:string|[string,str
  */
 export async function openExisting(edition:Edition, name:string):Promise<boolean> {
     if (await SdcDlg.savePromptIfDirty(edition)) {
-        return await openExistingNoSavePrompt(edition, name);
+        return openExistingNoSavePrompt(edition, name);
     }
     return false;
 }
@@ -242,7 +242,7 @@ export async function openExisting(edition:Edition, name:string):Promise<boolean
  */
 export async function promptAndOpen(edition:Edition, options?:ChooseFileOptions):Promise<boolean> {
     if (await SdcDlg.savePromptIfDirty(edition)) {
-        return await openPromptNoSavePrompt(edition, options);
+        return openPromptNoSavePrompt(edition, options);
     }
     return false;
 }

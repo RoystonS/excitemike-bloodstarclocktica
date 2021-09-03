@@ -28,23 +28,21 @@ async function deserializeFromIds(object:ObservableObject<Edition>, nightOrder:O
         charactersById.set(character.id.get(), character);
     }
 
-    {
-        const missingCharacters = new Set<Character>(characterList);
-        const orderedCharacters = [];
-        for (const id of data) {
-            const character = charactersById.get(String(id));
-            if (character===undefined){
-                console.error(`deserializeFromIds: no character found for id ${id}`);
-            } else {
-                missingCharacters.delete(character);
-                orderedCharacters.push(character);
-            }
+    const missingCharacters = new Set<Character>(characterList);
+    const orderedCharacters = [];
+    for (const id of data) {
+        const character = charactersById.get(String(id));
+        if (character===undefined){
+            console.error(`deserializeFromIds: no character found for id ${id}`);
+        } else {
+            missingCharacters.delete(character);
+            orderedCharacters.push(character);
         }
-
-        // characters left out. probably due to duplicate ids. stick them at the end
-        orderedCharacters.splice(orderedCharacters.length, 0, ...missingCharacters);
-        await nightOrder.set(orderedCharacters);
     }
+
+    // characters left out. probably due to duplicate ids. stick them at the end
+    orderedCharacters.splice(orderedCharacters.length, 0, ...missingCharacters);
+    await nightOrder.set(orderedCharacters);
 }
 
 /** observable properties for a custom edition */
@@ -212,7 +210,7 @@ export class Edition extends ObservableObject<Edition> {
         do {
             dupeFound = false;
             for (const character of this.characterList) {
-                if (character.id.get() == combined) {
+                if (character.id.get() === combined) {
                     number++;
                     combined = `${newBase}${number||''}_${suffix}`;
                     dupeFound = true;
@@ -300,7 +298,7 @@ export class Edition extends ObservableObject<Edition> {
     /** overriding to do a last-minute id uniqification */
     async serialize():Promise<{[key:string]:unknown}> {
         await this.fixDuplicateIds();
-        return await super.serialize();
+        return super.serialize();
     }
 
     /** search the character list */

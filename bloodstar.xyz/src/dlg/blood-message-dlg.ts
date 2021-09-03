@@ -6,7 +6,7 @@ import { CreateElementsOptions } from '../util';
 import {AriaDialog} from './aria-dlg';
 
 class MessageDialog extends AriaDialog<void> {
-    async open(focusAfterClose:Element|string|null, titleText:string, messageText?:string, errorMessage?:string):Promise<void|null> {
+    open(focusAfterClose:Element|string|null, titleText:string, messageText?:string, errorMessage?:string):Promise<void|null> {
         const body:CreateElementsOptions = [{
             t:'h1',
             txt:titleText
@@ -20,7 +20,7 @@ class MessageDialog extends AriaDialog<void> {
             body.push({t:'pre', txt:errorMessage});
         }
 
-        return await this.baseOpen(
+        return this.baseOpen(
             focusAfterClose,
             'message',
             body,
@@ -32,17 +32,19 @@ class MessageDialog extends AriaDialog<void> {
 /**
  * bring up the popup showing exception information
  */
-export async function showError(title:string, message:string, error?:Error|unknown):Promise<void|null> {
-    title = title || 'Error';
-    message = message || 'It looks like you encountered a bug! The error message below may help the developers fix it.';
+export function showError(
+            title = 'Error',
+            message = 'It looks like you encountered a bug! The error message below may help the developers fix it.',
+            error:Error|unknown = undefined
+        ):Promise<void|null> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const errorMessage = (error instanceof Error) ? `${error.message}` : (error as any).toString();
-    return await new MessageDialog().open(document.activeElement, title, message, errorMessage);
+    return new MessageDialog().open(document.activeElement, title, message, errorMessage);
 }
 
 /**
  * bring up the popup showing a message
  */
-export async function show(titleText:string, messageText?:string):Promise<void|null> {
-    return await new MessageDialog().open(document.activeElement, titleText, messageText);
+export function show(titleText:string, messageText?:string):Promise<void|null> {
+    return new MessageDialog().open(document.activeElement, titleText, messageText);
 }

@@ -49,7 +49,7 @@ export async function deleteAccount():Promise<boolean> {
     if (true === result) {
         await showMessage('Done', 'Account deleted');
         signOut();
-        return !!await signIn();
+        return Boolean(await signIn());
     }
 
     const {error} = result;
@@ -90,6 +90,6 @@ class PasswordDlg extends AriaDialog<string> {
 }
 
 /** prompt user for their password before letting them delete an account */
-async function getPassword():Promise<string>{
-    return await new PasswordDlg().open();
+function getPassword():Promise<string>{
+    return new PasswordDlg().open();
 }

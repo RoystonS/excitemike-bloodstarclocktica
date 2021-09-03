@@ -15,7 +15,7 @@ type ResetPasswordData = {
 };
 
 class ConfirmAndChoosePasswordDlg extends AriaDialog<ResetPasswordData|null> {
-    async open(email:string,doWarning:boolean):Promise<ResetPasswordData|null>{
+    open(email:string,doWarning:boolean):Promise<ResetPasswordData|null>{
         const codeField = createElement({t:'input',a:{type:'text',minlength:'6',maxlength:'6',autocomplete:'off',required:'',pattern:'[0-9]{6}',title:'six-digit code from your email'},id:'codeFromEmail'});
         const passwordField = createElement({t:'input',a:{type:'password',required:'true',placeholder:'New Password',autocomplete:'new-password'},'id':'passwordInput'});
         const passwordWarnings = createElement({t:'div',css:['column'],a:{style:'color:red;grid-column-start:span 2'}});
@@ -47,7 +47,7 @@ class ConfirmAndChoosePasswordDlg extends AriaDialog<ResetPasswordData|null> {
                 {t:'button',txt:'Cancel',events:{click:()=>this.close()}}
             ]},
             {t:'p',txt:"Didn't receive a code? ",a:{style:'align-self:center;'},children:[
-                {t:'a',a:{href:'#'},txt:'Send a new one',events:{click:async ()=>await sendPasswordResetCode(email)}}
+                {t:'a',a:{href:'#'},txt:'Send a new one',events:{click:()=>sendPasswordResetCode(email)}}
             ]}
         ] as CreateElementsOptions);
 
@@ -70,7 +70,7 @@ class ConfirmAndChoosePasswordDlg extends AriaDialog<ResetPasswordData|null> {
         confirmField.addEventListener('change',passwordWarn);
         confirmField.addEventListener('input',passwordWarn);
 
-        return await this.baseOpen(null,'resetPassword',body,[]);
+        return this.baseOpen(null,'resetPassword',body,[]);
     }
 }
 
@@ -81,7 +81,7 @@ class ConfirmAndChoosePasswordDlg extends AriaDialog<ResetPasswordData|null> {
 async function show():Promise<SessionInfo|null> {
     const email = await showEnterEmailStep();
     if (!email){return null;}
-    return await showCodeAndNewPasswordStep(email);
+    return showCodeAndNewPasswordStep(email);
 }
 
 /**
@@ -113,21 +113,12 @@ async function showCodeAndNewPasswordStep(email:string):Promise<SessionInfo|null
  */
 async function showEnterEmailStep():Promise<string> {
     const submitOnEnter = async (event:KeyboardEvent):Promise<void>=>{
-        switch (event.code)
-        {
-            case 'NumpadEnter':
-            case 'Enter':
-                {
-                    event.preventDefault();
-                    await sendPasswordResetCode(usernameField.value);
-                    const element = document.getElementById('idSubmitRequest');
-                    if (!(element instanceof HTMLButtonElement)){return;}
-                    element.click();
-                }
-                break;
-            default:
-                // others ignored
-                break;
+        if ((event.code === 'NumpadEnter') || (event.code === 'Enter')) {
+            event.preventDefault();
+            await sendPasswordResetCode(usernameField.value);
+            const element = document.getElementById('idSubmitRequest');
+            if (!(element instanceof HTMLButtonElement)){return;}
+            element.click();
         }
     };
     const usernameField = createElement({

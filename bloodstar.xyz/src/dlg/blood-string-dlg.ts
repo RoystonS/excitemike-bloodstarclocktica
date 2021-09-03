@@ -13,7 +13,7 @@ type Validation = {
 };
 
 class StringDialog extends AriaDialog<string> {
-    async open(
+    open(
         title:string,
         prompt:string,
         defaultValue:string,
@@ -66,18 +66,18 @@ class StringDialog extends AriaDialog<string> {
         }
 
         // if there is a warnings function, hook it up
-        const warningsFn  = validation?.warningsFn;
+        const warningsFn = validation?.warningsFn;
         if (warningsFn) {
             const syncWarnings = ()=> warningsFn(inputField.value,warningsContainer);
             inputField.addEventListener('change',syncWarnings);
             inputField.addEventListener('input',syncWarnings);
         }
         const buttons:ButtonCfg<string|null>[] = [
-            {label:'OK', callback:() => inputField.value,id:'stringOkButton',disabled:!!validateFn},
+            {label:'OK', callback:() => inputField.value,id:'stringOkButton',disabled:Boolean(validateFn)},
             {label:'Cancel'}
         ];
 
-        return await this.baseOpen(
+        return this.baseOpen(
             document.activeElement,
             'string',
             body,
@@ -91,6 +91,6 @@ class StringDialog extends AriaDialog<string> {
  * returns a promise that resolves to the entered
  * string or null if the user cancelled
  */
-export async function show(title:string, prompt:string, defaultValue='', validation?:Validation):Promise<string|null> {
-    return await new StringDialog().open(title, prompt, defaultValue, validation);
+export function show(title:string, prompt:string, defaultValue?:string, validation?:Validation):Promise<string|null> {
+    return new StringDialog().open(title, prompt, defaultValue||'', validation);
 }

@@ -53,7 +53,7 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
             const selectedCharacters = [];
             for (let i=0;i<selected.length;++i){
                 const checkbox = selected[i] as HTMLElement;
-                const characterId = checkbox.dataset['id'];
+                const characterId = checkbox.dataset.id;
                 if (!characterId) {continue;}
                 const characterEntry = entriesById.get(characterId);
                 if (!characterEntry){continue;}
@@ -161,10 +161,10 @@ function doFilter(filterString:string, characters:Map<string, ScriptEntry>, elem
 /** test a character against the filter */
 function passesFilter(filterString:string, entry:ScriptEntry):boolean {
     if (!filterString) {return true;}
-    filterString = filterString.toLowerCase();
+    const loweredFilterString = filterString.toLowerCase();
     for (const haystack of Object.values(entry)){
         if (typeof haystack === 'string') {
-            if (-1 !== haystack.toLowerCase().indexOf(filterString)) {return true;}
+            if (-1 !== haystack.toLowerCase().indexOf(loweredFilterString)) {return true;}
         }
     }
     return false;

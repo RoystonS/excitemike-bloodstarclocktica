@@ -32,7 +32,7 @@ class SharingDlg extends AriaDialog<void> {
         if (!this.shareList){return;}
         this.listDiv = createElement({t:'div',css:['shareDlgList']});
         this.addUserButton = createElement({t:'button',txt:'Add User'});
-        this.addUserButton.addEventListener('click', async ()=>await this.showShareWithUser());
+        this.addUserButton.addEventListener('click', ()=>this.showShareWithUser());
     
         const body:CreateElementsOptions = [
             {t:'h1',txt:'Sharing settings'},

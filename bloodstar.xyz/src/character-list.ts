@@ -16,7 +16,7 @@ export function bindCharacterList(id:string, characterList:ObservableCollection<
         id,
         characterList,
         (character: Character, collection:ObservableCollection<Character>)=>makeCharacterListItem(character, collection, selectedCharacterProperty),
-        async (element: Node, character: Character)=>await cleanupListItem(element, character, selectedCharacterProperty)
+        (element: Node, character: Character)=>cleanupListItem(element, character, selectedCharacterProperty)
     );
     // autoselect a character when none selected
     characterList.addCollectionChangedListener(async ():Promise<void>=>{
@@ -41,13 +41,11 @@ async function cleanupListItem(element: Node, character: Character, selectedChar
         });
 
         // cleanup listener from makeCharacterListItem
-        {
-            const cb = characterListCleanupSideTable.get(element);
-            if (cb) {
-                selectedCharacterProperty.removeListener(cb);
-            }
-            characterListCleanupSideTable.delete(element);
+        const cb = characterListCleanupSideTable.get(element);
+        if (cb) {
+            selectedCharacterProperty.removeListener(cb);
         }
+        characterListCleanupSideTable.delete(element);
     }
 }
 
@@ -58,80 +56,67 @@ async function cleanupListItem(element: Node, character: Character, selectedChar
  */
 function makeCharacterListItem(character: Character, collection:ObservableCollection<Character>, selectedCharacterProperty:Property<Character|null>):HTMLElement {
     const row = document.createElement("div");
-    {
-        row.className = "characterListItem";
-        row.tabIndex = 0;
-        row.onclick = async e => { 
-            if (e.target === row) {
+    
+    row.className = "characterListItem";
+    row.tabIndex = 0;
+    row.onclick = async e => { 
+        if (e.target === row) {
+            await selectedCharacterProperty.set(character);
+        }
+    }
+    row.onkeyup = async e => {
+        switch (e.code) {
+            case 'Space':
+            case 'Enter':
+            case 'NumpadEnter':
                 await selectedCharacterProperty.set(character);
-            }
+                break;
+            default:
+                // others ignored
+                break;
         }
-        row.onkeyup = async e => {
-            switch (e.code) {
-                case 'Space':
-                case 'Enter':
-                case 'NumpadEnter':
-                    await selectedCharacterProperty.set(character);
-                    break;
-                default:
-                    // others ignored
-                    break;
+    }
+    bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);
+    bindAttribute(row, 'title', character.ability);
+
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    bindCheckbox(checkbox, character.export);
+    row.appendChild(checkbox);
+
+    const icon = createElement({t:'img',css:['characterListThumbnail']});
+    bindImageDisplay(icon, character.styledImage);
+    row.appendChild(icon);
+
+    const nameElement = createElement({t:'span',css:['characterListName','nowrap']});
+    bindText(nameElement, character.name);
+    row.appendChild(nameElement);
+
+    const up = document.createElement("button");
+    up.className = "characterListButton";
+    up.innerText = "▲";
+    up.onclick = () => collection.moveItemUp(character);
+    row.appendChild(up);
+
+    const down = document.createElement("button");
+    down.className = "characterListButton";
+    down.innerText = "▼";
+    down.onclick = () => collection.moveItemDown(character);
+    row.appendChild(down);
+
+    const del = document.createElement("button");
+    del.className = "characterListButton";
+    del.innerText = "Delete";
+    del.onclick = async () => {
+        try {
+            if (await getConfirmation('Confirm Delete', `Are you sure you want to delete character "${character.name.get()}"?`)) {
+                await collection.deleteItem(character);
             }
+        } catch (e) {
+            await showError('Error', 'Error encountered during deletion', e);
         }
-        bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);
-        bindAttribute(row, 'title', character.ability);
-    }
-
-    {
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        bindCheckbox(checkbox, character.export);
-        row.appendChild(checkbox);
-    }
-
-    {
-        const icon = createElement({t:'img',css:['characterListThumbnail']});
-        bindImageDisplay(icon, character.styledImage);
-        row.appendChild(icon);
-    }
-
-    {
-        const nameElement = createElement({t:'span',css:['characterListName','nowrap']});
-        bindText(nameElement, character.name);
-        row.appendChild(nameElement);
-    }
-
-    {
-        const up = document.createElement("button");
-        up.className = "characterListButton";
-        up.innerText = "▲";
-        up.onclick = () => collection.moveItemUp(character);
-        row.appendChild(up);
-    }
-
-    {
-        const down = document.createElement("button");
-        down.className = "characterListButton";
-        down.innerText = "▼";
-        down.onclick = () => collection.moveItemDown(character);
-        row.appendChild(down);
-    }
-
-    {
-        const del = document.createElement("button");
-        del.className = "characterListButton";
-        del.innerText = "Delete";
-        del.onclick = async () => {
-            try {
-                if (await getConfirmation('Confirm Delete', `Are you sure you want to delete character "${character.name.get()}"?`)) {
-                    await collection.deleteItem(character);
-                }
-            } catch (e) {
-                await showError('Error', 'Error encountered during deletion', e);
-            }
-        };
-        row.appendChild(del);
-    }
+    };
+    row.appendChild(del);
 
     const cb = (selectedCharacter:Character|null):void => {
         if (selectedCharacter === character) {

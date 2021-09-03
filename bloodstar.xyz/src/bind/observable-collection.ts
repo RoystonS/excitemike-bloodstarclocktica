@@ -75,9 +75,8 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
             next:():IteratorResult<ItemType> => {
                 if (index < this.items.length) {
                     return {value:this.items[index++].item, done:false};
-                } else {
-                    return { value:undefined, done: true };
                 }
+                return { value:undefined, done: true };
             }
         };
     }
@@ -329,13 +328,13 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** convert to something that could be converted to JSON and/or read back with deserialize */
-    async serialize():Promise<unknown[]> {
-        return await Promise.all(this.items.map(i=>i.item.serialize()));
+    serialize():Promise<unknown[]> {
+        return Promise.all(this.items.map(i=>i.item.serialize()));
     }
 
     /** add/replace/remove to match the passed-in array */
-    async set(items:ReadonlyArray<ItemType>):Promise<void> {
-        await this.replaceRange(0, this.items.length, items);
+    set(items:ReadonlyArray<ItemType>):Promise<void> {
+        return this.replaceRange(0, this.items.length, items);
     }
 
     /** listen to changes */
@@ -364,9 +363,9 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
      * @param end - one past the final index to update
      */
     private updateIndices(begin?:number, end?:number):void {
-        if (begin === undefined) { begin = 0; }
-        if (end === undefined) { end = this.items.length; }
-        for (let i=begin; i<end; i++){
+        const fixedBegin = begin||0;
+        const fixedEnd = end||this.items.length;
+        for (let i=fixedBegin; i<fixedEnd; i++){
             this.items[i].index = i;
         }
     }

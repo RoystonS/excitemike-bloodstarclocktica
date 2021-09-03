@@ -13,6 +13,7 @@ import { Property } from '../bind/bindings';
 import { ObservableCollection } from '../bind/observable-collection';
 import Locks from '../lock';
 import { parseBloodTeam } from '../model/blood-team';
+import JSZip = require('jszip');
 
 /** set property if the value is not undefined */
 async function trySet<T>(value:T|undefined, property:Property<T>):Promise<void> {
@@ -45,39 +46,46 @@ class BloodImporter {
         const allPaths:string[] = [];
         zip.forEach(relativePath=>allPaths.push(relativePath));
         
-        const deferred:string[] = [];
-
         // do some of them now, defer others until after
-        {
-            const promises = [];
-            for (const relativePath of allPaths) {
-                if (relativePath.startsWith('processed_images/')) {
-                    deferred.push(relativePath);
-                } else {
-                    const zipEntry = zip.file(relativePath);
-                    if (!zipEntry) {return false;}
-                    promises.push(this.importPart(relativePath, zipEntry));
-                }
-            }
-            // wait for the first batch
-            if (!await Promise.all(promises)){return false;}
-        }
+        const deferred:string[] = await this.firstPassImport(zip, allPaths);
 
         // do deferred ones
-        {
-            const promises = [];
-            for (const relativePath of deferred) {
-                const zipEntry = zip.file(relativePath);
-                if (!zipEntry) {return false;}
-                promises.push(this.importPart(relativePath, zipEntry));
-            }
-            // await those
-            if (!await Promise.all(promises)){return false;}
-        }
+        await this.remainingImports(zip, deferred);
     
         await this.finalizeNightOrder();
 
         return true;
+    }
+
+    /** import first batch of items, resolve to a list of deferred items */
+    private async firstPassImport(zip:JSZip, allPaths:string[]):Promise<string[]> {
+        const deferred:string[] = [];
+        const promises = [];
+        for (const relativePath of allPaths) {
+            if (relativePath.startsWith('processed_images/')) {
+                deferred.push(relativePath);
+            } else {
+                const zipEntry = zip.file(relativePath);
+                if (!zipEntry) {throw new Error(`Error reading blood file: failed to open path '${relativePath}'`);}
+                promises.push(this.importPart(relativePath, zipEntry));
+            }
+        }
+        // wait for that batch
+        await Promise.all(promises);
+
+        return deferred;
+    }
+
+    /** import deferred items, resolve to a list of deferred items */
+    private async remainingImports(zip:JSZip, paths:string[]):Promise<void> {
+        const promises = [];
+        for (const relativePath of paths) {
+            const zipEntry = zip.file(relativePath);
+            if (!zipEntry) {throw new Error(`Error reading blood file: failed to open path '${relativePath}'`);}
+            promises.push(this.importPart(relativePath, zipEntry));
+        }
+        // await those
+        await Promise.all(promises);
     }
 
     /** once all characters are loaded, correct the night order */
@@ -134,15 +142,15 @@ class BloodImporter {
             await spinner(relativePath, `Setting logo image`, this.edition.meta.logo.set(`data:image/png;base64,${base64}`));
             return true;
         } else if (relativePath === 'meta.json') {
-            return await this.importMeta(zipEntry);
+            return this.importMeta(zipEntry);
         } else if (relativePath.startsWith('roles/') && relativePath.endsWith('.json')) {
             const id = relativePath.slice(6, relativePath.length - 5);
             const character = await this.ensureCharacter(id);
-            return await spinner(id, `Importing character "${id}"`, this.importRole(character, zipEntry));
+            return spinner(id, `Importing character "${id}"`, this.importRole(character, zipEntry));
         } else if (relativePath.startsWith('src_images/') && relativePath.endsWith('.png')) {
             const id = relativePath.slice(11, relativePath.length - 4);
             const character = await this.ensureCharacter(id);
-            return await spinAndThrottle(
+            return spinAndThrottle(
                 id,
                 `Importing ${relativePath}`,
                 ()=>this.importSourceImage(character, zipEntry),
@@ -151,15 +159,14 @@ class BloodImporter {
         } else if (relativePath.startsWith('processed_images/') && relativePath.endsWith('.png')) {
             const id = relativePath.slice(17, relativePath.length - 4);
             const character = await this.ensureCharacter(id);
-            return await spinAndThrottle(
+            return spinAndThrottle(
                 id,
                 `Importing ${relativePath}`,
                 ()=>this.importProcessedImage(character, zipEntry),
                 MAX_SIMULTANEOUS_PER_CHARACTER
             );
-        } else {
-            console.error(`unhandled bloodfile part "${relativePath}"`);
         }
+        console.error(`unhandled bloodfile part "${relativePath}"`);
         return false;
     }
 
@@ -192,18 +199,16 @@ class BloodImporter {
         if (json.globalReminders) {
             await character.globalReminderTokens.set(json.globalReminders.join('\n'))
         }
-        {
-            const firstNightNumber = json.firstNight || 0;
-            const fno = this.firstNightOrderTracker.get(firstNightNumber) || [];
-            fno.push(character);
-            this.firstNightOrderTracker.set(firstNightNumber, fno);
-        }
-        {
-            const otherNightNumber = json.otherNight || 0;
-            const ono = this.otherNightOrderTracker.get(otherNightNumber) || [];
-            ono.push(character);
-            this.otherNightOrderTracker.set(otherNightNumber, ono);
-        }
+
+        const firstNightNumber = json.firstNight || 0;
+        const fno = this.firstNightOrderTracker.get(firstNightNumber) || [];
+        fno.push(character);
+        this.firstNightOrderTracker.set(firstNightNumber, fno);
+        
+        const otherNightNumber = json.otherNight || 0;
+        const ono = this.otherNightOrderTracker.get(otherNightNumber) || [];
+        ono.push(character);
+        this.otherNightOrderTracker.set(otherNightNumber, ono);
 
         this.charactersById.set(character.id.get(), character);
         return true;
@@ -221,9 +226,9 @@ class BloodImporter {
 }
 
 /** promise for choosing a .blood file */
-async function chooseBloodFile():Promise<File|null> {
+function chooseBloodFile():Promise<File|null> {
     const fileInput = createElement({t:'input',a:{type:'file',accept:'.blood'},css:['hidden']});
-    if (!(fileInput instanceof HTMLInputElement)) {return null;}
+    if (!(fileInput instanceof HTMLInputElement)) {return Promise.resolve(null);}
     const dlg = new AriaDialog<File|null>();
 
     function chooseFile():void {
@@ -237,7 +242,7 @@ async function chooseBloodFile():Promise<File|null> {
         }
     }
     
-    return await dlg.baseOpen(
+    return dlg.baseOpen(
         document.activeElement,
         'chooseBloodFile',
         [
@@ -255,7 +260,7 @@ async function chooseBloodFile():Promise<File|null> {
 /** user chose to import a project form the windows version of Bloodstar Clocktica */
 export async function importBlood(edition:Edition):Promise<boolean> {
     if (!await savePromptIfDirty(edition)) {return false;}
-    return await importBloodFile(edition);
+    return importBloodFile(edition);
 }
 
 /** user chose to import a .blood file */

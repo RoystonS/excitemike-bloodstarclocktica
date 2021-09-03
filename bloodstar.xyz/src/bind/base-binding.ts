@@ -41,7 +41,7 @@ export class Property<T> {
         await this.set(this.defaultValue);
     }
     private async notifyListeners():Promise<void> {
-        return (await Promise.all(this.listeners.map(cb=>cb(this.value))))[0];
+        await Promise.all(this.listeners.map(cb=>cb(this.value)));
     }
 }
 

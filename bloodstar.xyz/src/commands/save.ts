@@ -47,7 +47,7 @@ async function confirmClobber(saveData:SaveData):Promise<SaveResult> {
     if (!okToClobber) {return 'cancel';}
     const saveDataClone = { ...saveData };
     saveDataClone.clobber = true;
-    return await signedInCmd<SaveResult>('save', `Saving edition data`, saveDataClone);
+    return signedInCmd<SaveResult>('save', `Saving edition data`, saveDataClone);
 }
 
 /**
@@ -131,19 +131,17 @@ async function separateImages(username:string,edition:Edition):Promise<Separated
     for (const character of characters) {
         const id = character.id;
         if (!id) {continue;}
-        {
-            const oldImageStr = character.unStyledImage;
-            if (oldImageStr && oldImageStr.startsWith('data:')) {
-                character.unStyledImage = `https://www.bloodstar.xyz/usersave/${username}/${saveName}/${id}.src.png`;
-                sourceImages.set(id, oldImageStr);
-            }
+
+        const unStyledImageStr = character.unStyledImage;
+        if (unStyledImageStr && unStyledImageStr.startsWith('data:')) {
+            character.unStyledImage = `https://www.bloodstar.xyz/usersave/${username}/${saveName}/${id}.src.png`;
+            sourceImages.set(id, unStyledImageStr);
         }
-        {
-            const oldImageStr = character.styledImage;
-            if (oldImageStr && oldImageStr.startsWith('data:')) {
-                character.styledImage = `https://www.bloodstar.xyz/usersave/${username}/${saveName}/${id}.png`;
-                finalImages.set(id, oldImageStr);
-            }
+
+        const styledImageStr = character.styledImage;
+        if (styledImageStr && styledImageStr.startsWith('data:')) {
+            character.styledImage = `https://www.bloodstar.xyz/usersave/${username}/${saveName}/${id}.png`;
+            finalImages.set(id, styledImageStr);
         }
     }
     const meta = editionSerialized.meta as {logo?:string};
@@ -174,28 +172,27 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
 
     // save JSON
     const saveName = edition.saveName.get();
-    {
-        const saveData:SaveData = {
-            token: sessionInfo.token,
-            saveName: saveName,
-            clobber,
-            edition: toSave.edition
-        };
-        let response = await signedInCmd<SaveResult>('save', `Saving edition data`, saveData);
-        if (response==='clobber'){
-            response = await confirmClobber(saveData);
-        }
-        
-        // surface the error, if any
-        if (response==='cancel'){return false;}
-        if (response==='clobber'){return false;}
-        if ('error' in response){
-            await showError('Error', `Error encountered while trying to save ${saveName}`, response.error);
-            return false;
-        }
-        const {success} = response;
-        if (!success) {return false;}
+    
+    const saveData:SaveData = {
+        token: sessionInfo.token,
+        saveName: saveName,
+        clobber,
+        edition: toSave.edition
+    };
+    let response = await signedInCmd<SaveResult>('save', `Saving edition data`, saveData);
+    if (response==='clobber'){
+        response = await confirmClobber(saveData);
     }
+    
+    // surface the error, if any
+    if (response==='cancel'){return false;}
+    if (response==='clobber'){return false;}
+    if ('error' in response){
+        await showError('Error', `Error encountered while trying to save ${saveName}`, response.error);
+        return false;
+    }
+    const {success} = response;
+    if (!success) {return false;}
 
     const promises = [];
 
@@ -229,27 +226,25 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
         }, MAX_SIMULTANEOUS_IMAGE_SAVES));
     }
 
-    {
-        if (toSave.logo && edition.isLogoDirty()) {
-            const sourceUrl = new URL(toSave.logo);
-            const isDataUri = sourceUrl.protocol === 'data:';
-            let logo = toSave.logo;
-            if (!isDataUri) {
-                const useCors = sourceUrl.hostname !== window.location.hostname;
-                logo = await imageUrlToDataUri(toSave.logo, useCors);
-            }
-            if (logo && logo.startsWith('data:')) {
-                promises.push(Locks.enqueue('saveImage', ()=>{
-                    const saveData:SaveImgData = {
-                        token: sessionInfo.token,
-                        saveName: saveName,
-                        id: '_meta',
-                        isSource:false,
-                        image: logo||''
-                    };
-                    return signedInCmd('save-img', `Saving _meta.png`, saveData);
-                }, MAX_SIMULTANEOUS_IMAGE_SAVES));
-            }
+    if (toSave.logo && edition.isLogoDirty()) {
+        const sourceUrl = new URL(toSave.logo);
+        const isDataUri = sourceUrl.protocol === 'data:';
+        let logo = toSave.logo;
+        if (!isDataUri) {
+            const useCors = sourceUrl.hostname !== window.location.hostname;
+            logo = await imageUrlToDataUri(toSave.logo, useCors);
+        }
+        if (logo && logo.startsWith('data:')) {
+            promises.push(Locks.enqueue('saveImage', ()=>{
+                const saveData:SaveImgData = {
+                    token: sessionInfo.token,
+                    saveName: saveName,
+                    id: '_meta',
+                    isSource:false,
+                    image: logo||''
+                };
+                return signedInCmd('save-img', `Saving _meta.png`, saveData);
+            }, MAX_SIMULTANEOUS_IMAGE_SAVES));
         }
     }
 
@@ -273,8 +268,8 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
 /**
  * prompt the user to enter a name to save as
  */
-async function promptForName(defaultName:string):Promise<string|null> {
-    return await inputDlg(
+function promptForName(defaultName:string):Promise<string|null> {
+    return inputDlg(
         'Save',
         'Enter name to save as.',
         defaultName,

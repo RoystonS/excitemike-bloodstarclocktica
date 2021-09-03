@@ -180,7 +180,7 @@ export abstract class ObservableObject<T> {
         if (!this.obsObjCfg) {return false;}
         const cfg = this.obsObjCfg.exceptions.get(key as string|symbol);
         if (!cfg) {return false;}
-        return !!cfg.saveDefault;
+        return Boolean(cfg.saveDefault);
     }
 
     /** check for special behavior for a field */

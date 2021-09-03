@@ -44,7 +44,7 @@ type Binding = BaseBinding<any> | CollectionBinding<any>;
 /** bindings for a checkbox */
 class CheckboxBinding extends BaseBinding<boolean> {
     constructor(element:HTMLInputElement, property:Property<boolean>) {
-        super(element, property, 'change', ()=>property.set(element.checked), v=>element.checked=v);
+        super(element, property, 'change', ()=>property.set(element.checked), v=>{element.checked=v;});
     }
 }
 
@@ -58,9 +58,9 @@ class TextBinding extends BaseBinding<string> {
                 node.dispatchEvent(new Event('input'));
             });
         } else if (node instanceof HTMLElement) {
-            super(node, property, '', null, v=>node.innerText=v);
+            super(node, property, '', null, v=>{node.innerText=v;});
         } else {
-            super(node, property, '', null, v=>node.textContent=v);
+            super(node, property, '', null, v=>{node.textContent=v;});
         }
     }
 }
@@ -69,9 +69,9 @@ class TextBinding extends BaseBinding<string> {
 class TextEnumBinding extends BaseBinding<any> {
     constructor(element:HTMLElement, property:EnumProperty<any>) {
         if ((element instanceof HTMLTextAreaElement) || (element instanceof HTMLInputElement)) {
-            super(element, property, 'input', null, ()=>element.value=property.getDisplay());
+            super(element, property, 'input', null, ()=>{element.value=property.getDisplay();});
         } else {
-            super(element, property, '', null, ()=>element.innerText=property.getDisplay());
+            super(element, property, '', null, ()=>{element.innerText=property.getDisplay();});
         }
     }
 }
@@ -89,7 +89,7 @@ class ComboBoxBinding<T> extends BaseBinding<T> {
         });
 
         const syncFromElementToProperty = ()=>property.set(stringToEnum(element.value));
-        const syncFromPropertyToElement = (value:T)=>element.value=enumToString(value);
+        const syncFromPropertyToElement = (value:T)=>{element.value=enumToString(value);};
         super(element, property, 'change', syncFromElementToProperty, syncFromPropertyToElement);
 
         syncFromPropertyToElement(property.get());

@@ -43,9 +43,9 @@ const MAX_LOGO_WIDTH = 1661;
 const MAX_LOGO_HEIGHT = 709;
 
 /** promise for choosing a JSON file */
-async function chooseJsonFile():Promise<File|null> {
+function chooseJsonFile():Promise<File|null> {
     const fileInput = document.getElementById('jsonFileInput');
-    if (!(fileInput instanceof HTMLInputElement)) {return null;}
+    if (!(fileInput instanceof HTMLInputElement)) {return Promise.resolve(null);}
     fileInput.value = '';
     const dlg = new AriaDialog<File|null>();
 
@@ -60,7 +60,7 @@ async function chooseJsonFile():Promise<File|null> {
         }
     }
     
-    return await dlg.baseOpen(
+    return dlg.baseOpen(
         document.activeElement,
         'chooseJsonFile',
         [
@@ -94,21 +94,21 @@ async function importCharacter(entry:CharacterEntry, edition:Edition, firstNight
     const character = await spinner(entry.id, `Adding new character`, edition.addNewCharacter());
     const newId = edition.generateValidId(entry.name||'newcharacter');
     await character.id.set(newId);
-    {
-        const nightNumber = entry.firstNight || 0;
-        const fnoList = firstNightOrder.get(nightNumber) || [];
-        fnoList.push(character);
-        firstNightOrder.set(nightNumber, fnoList);
-    }
+
+    const firstNightNumber = entry.firstNight || 0;
+    const fnoList = firstNightOrder.get(firstNightNumber) || [];
+    fnoList.push(character);
+    firstNightOrder.set(firstNightNumber, fnoList);
+
     if (entry.firstNightReminder){
         await character.firstNightReminder.set(entry.firstNightReminder);
     }
-    {
-        const nightNumber = entry.otherNight || 0;
-        const onoList = otherNightOrder.get(nightNumber) || [];
-        onoList.push(character);
-        otherNightOrder.set(nightNumber, onoList);
-    }
+
+    const otherNightsNumber = entry.otherNight || 0;
+    const onoList = otherNightOrder.get(otherNightsNumber) || [];
+    onoList.push(character);
+    otherNightOrder.set(otherNightsNumber, onoList)
+
     if (entry.otherNightReminder){
         await character.otherNightReminder.set(entry.otherNightReminder);
     }
@@ -141,14 +141,14 @@ async function importCharacter(entry:CharacterEntry, edition:Edition, firstNight
 }
 
 /** import one entry of a script */
-async function importEntry(entry:ScriptEntry, edition:Edition, firstNightOrder:NightOrderTracker, otherNightOrder:NightOrderTracker):Promise<boolean> {
+function importEntry(entry:ScriptEntry, edition:Edition, firstNightOrder:NightOrderTracker, otherNightOrder:NightOrderTracker):Promise<boolean> {
     if (!entry.id) {
-        return false;
+        return Promise.resolve(false);
     }
     if (entry.id === '_meta') {
-        return await spinner(entry.id, 'Importing _meta', importMeta(entry as MetaEntry, edition));
+        return spinner(entry.id, 'Importing _meta', importMeta(entry as MetaEntry, edition));
     }
-    return await spinner(entry.id,`Importing ${entry.name}`, importCharacter(entry as CharacterEntry, edition, firstNightOrder, otherNightOrder));
+    return spinner(entry.id,`Importing ${entry.name}`, importCharacter(entry as CharacterEntry, edition, firstNightOrder, otherNightOrder));
 }
 
 /** import a whole script */
@@ -206,7 +206,7 @@ export async function importJson(fileOrStringOrArray:File|string|ScriptEntry[], 
 export async function importJsonFromFile(edition:Edition):Promise<boolean> {
     const file = await chooseJsonFile();
     if (!file){return false;}
-    return await importJson(file, edition);
+    return importJson(file, edition);
 }
 
 /** user chose to import character(s) from a json file */
@@ -215,5 +215,5 @@ export async function importJsonFromUrl(edition:Edition):Promise<boolean> {
     if (!url){return false;}
     const json = await spinner('importJsonFromUrl', 'Fetching custom script JSON', fetchJson<ScriptEntry[]>(url));
     if (!json) {return false;}
-    return await importJson(json, edition);
+    return importJson(json, edition);
 }

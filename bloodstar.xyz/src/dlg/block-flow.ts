@@ -197,7 +197,7 @@ async function showBlockPrompt():Promise<string> {
         ))
     { return false; }
 
-    return await doBlockUser(username);
+    return doBlockUser(username);
 }
 
 /** show dialog for managing block list */

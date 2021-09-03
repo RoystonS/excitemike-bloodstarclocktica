@@ -175,24 +175,22 @@ export class Character extends ObservableObject<Character> {
         }
 
         // make full size image with icon pasted into the correct place
-        {
-            const srcW = bloodImage.width;
-            const srcH = bloodImage.height;
-            const aspect = srcW / srcH;
-            let dstW = ProcessImageSettings.FULL_WIDTH * imageSettings.sizeFactor.get();
-            let dstH = ProcessImageSettings.FULL_HEIGHT * imageSettings.sizeFactor.get();
-            if (aspect > 1.0) {
-                dstH = dstW / aspect;
-            } else {
-                dstW = dstH * aspect;
-            }
-            const dstX = (ProcessImageSettings.FULL_WIDTH - dstW) * imageSettings.horizontalPlacement.get();
-            const dstY = (ProcessImageSettings.FULL_HEIGHT - dstH) * imageSettings.verticalPlacement.get();
-            
-            bloodImage =
-                new BloodImage([ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT])
-                .pasteZoomed(bloodImage, dstX, dstY, dstW, dstH);
+        const srcW = bloodImage.width;
+        const srcH = bloodImage.height;
+        const aspect = srcW / srcH;
+        let dstW = ProcessImageSettings.FULL_WIDTH * imageSettings.sizeFactor.get();
+        let dstH = ProcessImageSettings.FULL_HEIGHT * imageSettings.sizeFactor.get();
+        if (aspect > 1.0) {
+            dstH = dstW / aspect;
+        } else {
+            dstW = dstH * aspect;
         }
+        const dstX = (ProcessImageSettings.FULL_WIDTH - dstW) * imageSettings.horizontalPlacement.get();
+        const dstY = (ProcessImageSettings.FULL_HEIGHT - dstH) * imageSettings.verticalPlacement.get();
+        
+        bloodImage =
+            new BloodImage([ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT])
+            .pasteZoomed(bloodImage, dstX, dstY, dstW, dstH);
 
         // texture
         if (imageSettings.useTexture.get()) {

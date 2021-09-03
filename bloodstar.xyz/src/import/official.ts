@@ -75,13 +75,13 @@ async function _importOfficial(fromCharacter:CharacterEntry, toCharacter:Charact
         const newId = edition.generateValidId(fromCharacter.name||'newcharacter');
         await toCharacter.id.set(newId);
     }
-    {
-        const url = `https://github.com/bra1n/townsquare/raw/main/src/assets/icons/${fromCharacter.id}.png`;
-        const canvas = await spinner(fromCharacter.id, `Downloading image for ${fromCharacter.name}`, urlToCanvas(url, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, true));
-        const dataUrl = canvas.toDataURL('image/png');
-        await toCharacter.imageSettings.shouldRestyle.set(false);
-        await spinner(fromCharacter.id, `Setting character image for ${fromCharacter.name}`, toCharacter.unStyledImage.set(dataUrl));
-    }
+
+    const url = `https://github.com/bra1n/townsquare/raw/main/src/assets/icons/${fromCharacter.id}.png`;
+    const canvas = await spinner(fromCharacter.id, `Downloading image for ${fromCharacter.name}`, urlToCanvas(url, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, true));
+    const dataUrl = canvas.toDataURL('image/png');
+    await toCharacter.imageSettings.shouldRestyle.set(false);
+    await spinner(fromCharacter.id, `Setting character image for ${fromCharacter.name}`, toCharacter.unStyledImage.set(dataUrl));
+
     if (fromCharacter.name) {
         await toCharacter.name.set(fromCharacter.name);
     }

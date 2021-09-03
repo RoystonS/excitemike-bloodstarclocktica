@@ -17,7 +17,7 @@ export type UserPass = {username:string,password:string};
 async function show():Promise<SessionInfo|null>{
     const email = await showSignUpStep();
     if (!email) {return null;}
-    return await showConfirmStep(email);
+    return showConfirmStep(email);
 }
 
 class ConfirmSignUpDlg extends AriaDialog<string> {
@@ -46,7 +46,7 @@ class ConfirmSignUpDlg extends AriaDialog<string> {
                 {t:'button',txt:'Cancel',events:{click:()=>this.close('')}}
             ]},
             {t:'p',txt:"Didn't receive a code? ",a:{style:'align-self:center;'},children:[
-                {t:'a',a:{href:'#'},txt:'Send a new one',events:{click:async ()=>await resendSignUpConfirmation(email)}}
+                {t:'a',a:{href:'#'},txt:'Send a new one',events:{click:()=>resendSignUpConfirmation(email)}}
             ]}
         ] as CreateElementsOptions);
         return await this.baseOpen(null,'confirm-sign-up',body,[])||'';

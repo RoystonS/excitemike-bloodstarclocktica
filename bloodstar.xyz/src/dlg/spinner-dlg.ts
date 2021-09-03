@@ -9,7 +9,7 @@ class SpinnerDialog extends AriaDialog<null> {
     private listElement:HTMLUListElement|null = null;
     private messages = new Map<string, {listItem:HTMLLIElement, stack:string[]}>();
 
-    isOpen():boolean {return !!this.listElement;}
+    isOpen():boolean {return Boolean(this.listElement);}
 
     private bumpListSize():void {
         if (!this.listElement){return;}

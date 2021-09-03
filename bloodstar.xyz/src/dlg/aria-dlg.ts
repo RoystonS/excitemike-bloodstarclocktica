@@ -94,9 +94,9 @@ function isFocusable(node:Node):boolean {
   
     switch (element.nodeName) {
       case 'A':
-        return !!element.href && element.rel != 'ignore';
+        return element.href && element.rel !== 'ignore';
       case 'INPUT':
-        return element.type != 'hidden' && element.type != 'file';
+        return element.type !== 'hidden' && element.type !== 'file';
       case 'BUTTON':
       case 'SELECT':
       case 'TEXTAREA':
@@ -204,14 +204,13 @@ export class AriaDialog<ResultType> {
                         const result = callback ? await callback() : null;
                         return this.close(result as any);
                     } catch (error) {
-                        console.error(error);
                         await showError('Error', `Error when handling ${label}`, error);
                         return this.close();
                     }
                 });
                 btn.innerText = label;
                 if (id) {btn.id=id;}
-                btn.disabled = !!disabled;
+                btn.disabled = Boolean(disabled);
                 btnGroup.appendChild(btn);
             }
             box.appendChild(btnGroup);
@@ -242,14 +241,14 @@ export class AriaDialog<ResultType> {
      * @param buttons buttons to add to the dialog
      * @returns promise that resolves to dialog result, or null
      */
-    async baseOpen(
+    baseOpen(
         focusAfterClose:Element|string|null,
-        debugName = '',
+        debugName:string,
         body:CreateElementsOptions,
         buttons:ButtonCfg<ResultType|null>[] = [{label:'OK'}]
     ):Promise<ResultType|null> {
         this.root = this.createDialog(debugName, body, buttons);
-        if (!this.root) {return null;}
+        if (!this.root) {return Promise.resolve(null);}
 
         // we need to replace the previous dialog's listeners
         if (dialogStack.length > 0) {
@@ -281,7 +280,7 @@ export class AriaDialog<ResultType> {
 
         appear(this.root as HTMLElement);
 
-        return await this.promise;
+        return this.promise;
     }
 
     /** find the first element in the dialog with the given id */
@@ -346,7 +345,7 @@ export class AriaDialog<ResultType> {
      */
 export function showDialog<ResultType = unknown>(
         focusAfterClose:Element|string|null,
-        debugName = '',
+        debugName:string,
         body:CreateElementsOptions,
         buttons:ButtonCfg<ResultType|null>[] = [{label:'OK'}]
     ):Promise<ResultType|null>

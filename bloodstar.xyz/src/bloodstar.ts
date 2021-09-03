@@ -46,31 +46,26 @@ export function isMobile():boolean {
  * switch to a tab
  */
 export function tabClicked(btnId:string, tabId:string):void {
-    {
-        const allTabBtns = document.getElementsByClassName("tabButton");
-        for (let i = 0; i < allTabBtns.length; i++) {
-            const tabBtn = allTabBtns[i];
-            tabBtn.classList.remove('selectedTabBtn');
-        }
+    const allTabBtns = document.getElementsByClassName("tabButton");
+    for (let i = 0; i < allTabBtns.length; i++) {
+        const tabBtn = allTabBtns[i];
+        tabBtn.classList.remove('selectedTabBtn');
     }
-    {
-        const allTabs = document.getElementsByClassName("tab");
-        for (let i = 0; i < allTabs.length; i++) {
-            const tabBtn = allTabs[i];
-            tabBtn.classList.remove('activeTab');
-        }
+    
+    const allTabs = document.getElementsByClassName("tab");
+    for (let i = 0; i < allTabs.length; i++) {
+        const tabBtn = allTabs[i];
+        tabBtn.classList.remove('activeTab');
     }
-    {
-        const tabBtn = document.getElementById(btnId);
-        if (tabBtn) {
-            tabBtn.classList.add('selectedTabBtn');
-        }
+    
+    const tabBtn = document.getElementById(btnId);
+    if (tabBtn) {
+        tabBtn.classList.add('selectedTabBtn');
     }
-    {
-        const tabDiv = document.getElementById(tabId);
-        if (tabDiv) {
-            tabDiv.classList.add('activeTab');
-        }
+    
+    const tabDiv = document.getElementById(tabId);
+    if (tabDiv) {
+        tabDiv.classList.add('activeTab');
     }
 }
 
@@ -108,17 +103,15 @@ async function initBindings():Promise<void> {
     BloodBind.bindTextById('metaChangeLog', edition.almanac.changelog);
     BloodBind.bindImageChooserById('metaLogoInput', edition.meta.logo, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
     BloodBind.bindImageDisplayById('metaLogoDisplay', edition.meta.logo);
-    
-    {
-        const tokenBackground = document.getElementById('tokenBackground');
-        if (tokenBackground instanceof HTMLImageElement) {
-            tokenBackground.src = Images.TOKEN_URL;
-            BloodBind.bindVisibility(tokenBackground, edition.previewOnToken);
-        }
-        const curvedCharacterText = document.getElementById('curvedCharacterNameHolder');
-        if (curvedCharacterText) {
-            BloodBind.bindVisibility(curvedCharacterText, edition.previewOnToken);
-        }
+
+    const tokenBackground = document.getElementById('tokenBackground');
+    if (tokenBackground instanceof HTMLImageElement) {
+        tokenBackground.src = Images.TOKEN_URL;
+        BloodBind.bindVisibility(tokenBackground, edition.previewOnToken);
+    }
+    const curvedCharacterText = document.getElementById('curvedCharacterNameHolder');
+    if (curvedCharacterText) {
+        BloodBind.bindVisibility(curvedCharacterText, edition.previewOnToken);
     }
 
     bindCharacterList('characterList', edition.characterList, selectedCharacter);

@@ -17,16 +17,17 @@ class SaveDiscardCancelDlg extends AriaDialog<boolean> {
             txt:'You have unsaved changes! Would you like to save now or discard them?'
         }];
         const buttons:ButtonCfg<boolean>[] = [
-            {label:'Save', callback:async ()=>await save(edition)},
+            {label:'Save', callback:()=>save(edition)},
             {label:'Discard', callback:()=>true},
             {label:'Cancel', callback:()=>false},
         ];
-        return !!await this.baseOpen(
+        const result = await this.baseOpen(
             document.activeElement,
             'savediscardcancel',
             body,
             buttons
         );
+        return Boolean(result);
     }
 }
 
@@ -37,7 +38,8 @@ class SaveDiscardCancelDlg extends AriaDialog<boolean> {
  */
 export async function savePromptIfDirty(edition:Edition):Promise<boolean> {
     if (edition.dirty.get()) {
-        return !!await new SaveDiscardCancelDlg().open(edition);
+        const result = await new SaveDiscardCancelDlg().open(edition);
+        return Boolean(result);
     }
     return true;
 }

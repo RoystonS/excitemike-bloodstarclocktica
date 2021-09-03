@@ -58,48 +58,36 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
     bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);
     bindAttribute(row, 'title', character.getProperty<string>(reminderPropertyName));
 
-    {
-        const ordinal = createElement({t:'span',css:['ordinal']});
-        bindText(ordinal, character.getProperty(ordinalPropertyName) as Property<string>);
-        bindStyle<boolean>(ordinal, character.export, (willExport:boolean, classList:DOMTokenList)=>{
-            if (willExport) {
-                classList.remove('dim');
-            } else {
-                classList.add('dim');
-            }
-        });
-        row.appendChild(ordinal);
-    }
+    const ordinal = createElement({t:'span',css:['ordinal']});
+    bindText(ordinal, character.getProperty(ordinalPropertyName) as Property<string>);
+    bindStyle<boolean>(ordinal, character.export, (willExport:boolean, classList:DOMTokenList)=>{
+        if (willExport) {
+            classList.remove('dim');
+        } else {
+            classList.add('dim');
+        }
+    });
+    row.appendChild(ordinal);
 
-    {
-        const icon = createElement({t:'img',css:['nightOrderThumbnail']});
-        bindImageDisplay(icon, character.styledImage);
-        row.appendChild(icon);
-    }
+    const icon = createElement({t:'img',css:['nightOrderThumbnail']});
+    bindImageDisplay(icon, character.styledImage);
+    row.appendChild(icon);
 
-    {
-        const nameElement = createElement({t:'span',css:['nightOrderName','nowrap']});
-        bindText(nameElement, character.name);
-        row.appendChild(nameElement);
-    }
+    const nameElement = createElement({t:'span',css:['nightOrderName','nowrap']});
+    bindText(nameElement, character.name);
+    row.appendChild(nameElement);
 
-    {
-        const reminderElement = createElement({t:'span',css:['nightOrderReminder','nowrap']});
-        bindText(reminderElement, character.getProperty(reminderPropertyName) as Property<string>);
-        row.appendChild(reminderElement);
-    }
+    const reminderElement = createElement({t:'span',css:['nightOrderReminder','nowrap']});
+    bindText(reminderElement, character.getProperty(reminderPropertyName) as Property<string>);
+    row.appendChild(reminderElement);
 
-    {
-        const moveItemUp = async () => await collection.moveItemUp(character);
-        const up = createElement({t:'button',css:['nightOrderButton'],txt:'▲',events:{click:moveItemUp}});
-        row.appendChild(up);
-    }
+    const moveItemUp = () => collection.moveItemUp(character);
+    const up = createElement({t:'button',css:['nightOrderButton'],txt:'▲',events:{click:moveItemUp}});
+    row.appendChild(up);
 
-    {
-        const moveItemDown = async () => await collection.moveItemDown(character);
-        const down = createElement({t:'button',css:['nightOrderButton'],txt:'▼',events:{click:moveItemDown}});
-        row.appendChild(down);
-    }
+    const moveItemDown = () => collection.moveItemDown(character);
+    const down = createElement({t:'button',css:['nightOrderButton'],txt:'▼',events:{click:moveItemDown}});
+    row.appendChild(down);
 
     return row;
 }
@@ -107,21 +95,19 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
 /** keep ordinal fields up to date as things change */
 async function updateOrdinals(collection:ObservableCollection<Character>, ordinalPropName:'firstNightOrdinal'|'otherNightOrdinal', reminderTextPropName:'firstNightReminder'|'otherNightReminder'):Promise<void> {
     // set ordinal strings
-    {
-        let ordNumber = 1;
-        for (const character of collection) {
-            const willExport = character.export.get();
-            const x = character.getProperty(reminderTextPropName).get();
-            const y = !x;
-            const hasReminder = !y;
+    let ordNumber = 1;
+    for (const character of collection) {
+        const willExport = character.export.get();
+        const x = character.getProperty(reminderTextPropName).get();
+        const y = !x;
+        const hasReminder = !y;
 
-            const place = hasReminder ? ordinal(ordNumber) : '-';
-            const parenned = willExport ? place : `(${place})`;
-            await character.setPropertyValue(ordinalPropName, parenned);
-            
-            if (willExport && hasReminder) {
-                ordNumber++;
-            }
+        const place = hasReminder ? ordinal(ordNumber) : '-';
+        const parenned = willExport ? place : `(${place})`;
+        await character.setPropertyValue(ordinalPropName, parenned);
+        
+        if (willExport && hasReminder) {
+            ordNumber++;
         }
     }
 }

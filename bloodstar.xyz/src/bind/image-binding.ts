@@ -5,12 +5,13 @@ export class ImageDisplayBinding extends BaseBinding<string|null> {
     constructor(element:HTMLImageElement, property:Property<string|null>) {
         element.src = '';
 
+        // TODO: delayed (throttled?) syncing from prop to element
         super(
             element,
             property,
             '',
             null,
-            v=>element.src = v || '');
+            v=>{element.src = v || '';});
     }
 }
 
@@ -53,7 +54,7 @@ export class ImageChooserBinding extends BaseBinding<string|null> {
             element,
             property,
             'change',
-            async ()=>await syncFileElemToProperty(element, property, maxWidth, maxHeight),
+            ()=>syncFileElemToProperty(element, property, maxWidth, maxHeight),
             null);
     }
     destroy():void {
