@@ -5,12 +5,12 @@
 import signIn, { signedInCmd } from '../sign-in';
 import { createElement, CreateElementsOptions } from '../util';
 import { updateUsernameWarnings, validateUsername } from '../validate';
-import {AriaDialog, showDialog} from './aria-dlg';
+import {AriaDialog, ButtonCfg, showDialog} from './aria-dlg';
 import {showError, show as showMessage} from './blood-message-dlg';
 import {show as getConfirmation} from "./yes-no-dlg";
 
-type GetSharedRequest = {token:string, saveName:string};
-type GetSharedResponse = {error?:string, users:string[]};
+type GetSharedRequest = {token:string; saveName:string};
+type GetSharedResponse = {error?:string; users:string[]};
 
 type ShareRequest = GetSharedRequest & {user:string};
 type ShareResponse = {error:string}|true;
@@ -32,7 +32,6 @@ class SharingDlg extends AriaDialog<void> {
         this.editionName = editionName;
         if (!this.editionName) {return;}
         this.shareList = await this.getShareList();
-        if (!this.shareList) {return;}
         this.listDiv = createElement({t:'div', css:['shareDlgList']});
         this.addUserButton = createElement({t:'button', txt:'Add User'});
         this.addUserButton.addEventListener('click', ()=>this.showShareWithUser());
@@ -76,8 +75,8 @@ class SharingDlg extends AriaDialog<void> {
                 await showError('Network Error', `Error encountered while retrieving share list`, error);
                 return [];
             }
-            return users || [];
-        } catch (error) {
+            return users;
+        } catch (error: unknown) {
             await showError('Network Error', `Error encountered while retrieving share list`, error);
         }
         return [];
@@ -109,7 +108,7 @@ class SharingDlg extends AriaDialog<void> {
                 console.error(response.error);
                 return;
             }
-        } catch (error) {
+        } catch (error: unknown) {
             await showError('Network Error', `Error encountered while unsharing`, error);
             return;
         }
@@ -122,13 +121,13 @@ class SharingDlg extends AriaDialog<void> {
     }
 
     /** do the command to share with the specified user */
-    async shareWithUser(user:string):Promise<void> {
+    async shareWithUser(user:string):Promise<boolean> {
         const sessionInfo = await signIn({
             title:'Sign In',
             message:'You must sign in to change sharing settings.'
         });
-        if (!sessionInfo) {return;}
-        if (!this.editionName) {return;}
+        if (!sessionInfo) {return Promise.resolve(false);}
+        if (!this.editionName) {return Promise.resolve(false);}
         const request:ShareRequest={
             token:sessionInfo.token,
             saveName:this.editionName,
@@ -139,19 +138,20 @@ class SharingDlg extends AriaDialog<void> {
             if (response !== true) {
                 await showError('Network Error', `Error encountered while sharing`, response.error);
                 console.error(response.error);
-                return;
+                return Promise.resolve(false);
             }
-        } catch (error) {
+        } catch (error: unknown) {
             await showError('Network Error', `Error encountered while unsharing`, error);
-            return;
+            return Promise.resolve(false);
         }
 
         this.shareList.push(user);
         this.updateSharingDlg();
+        return Promise.resolve(true);
     }
 
     /** bring up subdialog for sharing with a specific person */
-    async showShareWithUser():Promise<void> {
+    async showShareWithUser():Promise<boolean> {
         const usernameField = createElement({t:'input', a:{type:'text', required:'true', placeholder:'Username', autocomplete:'username'}, id:'shareWithUserDlgUsername'});
         const usernameWarnings = createElement({t:'div', css:['column'], a:{style:'color:red'}});
         const syncToButton = ()=>{
@@ -165,23 +165,24 @@ class SharingDlg extends AriaDialog<void> {
         };
         usernameField.addEventListener('change', usernameWarn);
         usernameField.addEventListener('input', usernameWarn);
-        const shareWithUser = async ():Promise<void>=>{
+        const shareWithUser = async ():Promise<boolean>=>{
             if (!validateUsername(usernameField.value)) {
                 await showMessage('Share Error', 'Username not valid.');
-                return;
+                return Promise.resolve(false);
             }
             try {
-                await this.shareWithUser(usernameField.value);
-            } catch (error) {
+                return await this.shareWithUser(usernameField.value);
+            } catch (error: unknown) {
                 await showError('Share Error', 'Something went wrong while sharing.', error);
+                return Promise.resolve(false);
             }
         };
-        const buttons = [
+        const buttons:ButtonCfg<boolean>[] = [
             {label:'Share', id:'shareWithUserButton', callback:shareWithUser, disabled:true},
             {label:'Cancel'}
         ];
 
-        await showDialog<void>(
+        const result = await showDialog<boolean>(
             document.activeElement,
             'share-with-user',
             [
@@ -194,13 +195,13 @@ class SharingDlg extends AriaDialog<void> {
             ],
             buttons
         );
+        return result || false;
     }
 
     /** update dialog after changes */
     updateSharingDlg():void {
         if (!this.listDiv) {return;}
         if (!this.addUserButton) {return;}
-        if (!this.shareList) {return;}
         if (this.shareList.length === 0) {
             this.listDiv.innerText = 'No one';
             this.addUserButton.disabled = false;

@@ -41,7 +41,7 @@ function toDataUri(url:string, maxWidth:number, maxHeight:number):Promise<string
                 resolve(canvas.toDataURL('image/png'));
             };
             image.src = url;
-        } catch (error) {
+        } catch (error: unknown) {
             reject(error);
         }
     });

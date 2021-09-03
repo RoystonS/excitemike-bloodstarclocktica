@@ -47,7 +47,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
         this.dragged = null;
         this.dragOvers = new Set();
 
-        collection.addCollectionChangedListener((e)=>this.collectionChanged(e));
+        collection.addCollectionChangedListener((e)=>{ this.collectionChanged(e); });
 
         // sync DOM to current value
         this.clear();
@@ -180,13 +180,13 @@ export class CollectionBinding<T extends ObservableObject<T>> {
         if (e.target instanceof Element) {
             const listItemElement = e.target.closest('li');
             if (!listItemElement) {return;}
-            listItemElement?.classList.remove('dragging');
+            listItemElement.classList.remove('dragging');
             Animate.growInMaxHeight(listItemElement);
         }
     }
 
     /** create and insert DOM elements at the specified index */
-    private insert(insertLocation:number, items:ReadonlyArray<T>):void {
+    private insert(insertLocation:number, items:readonly T[]):void {
         let i = insertLocation;
         for (const item of items) {
             const newChild = this.renderListItem(i, item);
@@ -215,7 +215,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     }
 
     /** update DOM elements to new data */
-    private replace(start:number, oldData:ReadonlyArray<T>, newData:ReadonlyArray<T>):void {
+    private replace(start:number, oldData:readonly T[], newData:readonly T[]):void {
         if (!oldData.length) {return;}
         if (!newData.length) {return;}
         if (start < 0) {return;}
@@ -231,7 +231,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     }
 
     /** remove DOM elements in the specified index range */
-    private remove(start:number, oldItems:ReadonlyArray<T>):void {
+    private remove(start:number, oldItems:readonly T[]):void {
         const n = oldItems.length;
         if (n === 0) {return;}
         if (start < 0) {return;}
@@ -255,8 +255,8 @@ export class CollectionBinding<T extends ObservableObject<T>> {
         li.addEventListener('drag', ()=>{this.dragged = li;});
         li.addEventListener('dragstart', CollectionBinding.dragstart);
         li.addEventListener('dragend', CollectionBinding.dragend);
-        li.addEventListener('dragover', e=>this.dragover(e));
-        li.addEventListener('dragleave', e=>this.dragleave(e));
+        li.addEventListener('dragover', e=>{ this.dragover(e); });
+        li.addEventListener('dragleave', e=>{ this.dragleave(e); });
         li.addEventListener('drop', e => this.drop(e));
         li.appendChild(this.renderFn(itemData, this.collection));
 
@@ -283,7 +283,6 @@ export class CollectionBinding<T extends ObservableObject<T>> {
 
     /** cleanup whatever was done by renderListItem */
     private cleanupListItem(listItem:Node, oldData:T):void {
-        if (!this.cleanupFn) { return; }
         if (!(listItem instanceof HTMLElement)) { return; }
         if (!listItem.dataset.index ) { return; }
 

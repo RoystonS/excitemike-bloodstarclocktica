@@ -8,17 +8,17 @@ export type CustomSerializeFn = (object:ObservableObject<any>, field:ObservableT
 export type CustomDeserializeFn = (object:ObservableObject<any>, field:ObservableType, data:unknown)=>Promise<void>;
 export type PropertyCfg = {
     /** if set to false, the field is ignored during deserialization */
-    read?:boolean,
+    read?:boolean;
     /** if set to false, the field is ignored during serialization */
-    write?:boolean,
+    write?:boolean;
     /** if set to false, changes to the field do not send property changed events */
-    notify?:boolean,
+    notify?:boolean;
     /** if set to true, changes to the field are serialized even if it is the default value */
-    saveDefault?:boolean,
+    saveDefault?:boolean;
     /** if set, this is used to convert the value before serializing */
-    customSerialize?:CustomSerializeFn,
+    customSerialize?:CustomSerializeFn;
     /** if set, this is used to set the value when deserializing */
-    customDeserialize?:CustomDeserializeFn,
+    customDeserialize?:CustomDeserializeFn;
 };
 export type PropertyChangedListener<T> = (propName:PropKey<T>) => Promise<void>|void;
 
@@ -31,14 +31,14 @@ function noSuchProperty<T>(object:any, key:PropKey<T>):never {
 
 type PropertyEntry = {defaultValue:unknown}
 type EnumPropertyEntry = {
-    defaultValue:unknown,
-    displayValuePairs: DisplayValuePairs<unknown>,
+    defaultValue:unknown;
+    displayValuePairs: DisplayValuePairs<unknown>;
 }
 type CollectionEntry = {
-    ctor:()=>Promise<unknown>,
+    ctor:()=>Promise<unknown>;
 };
 type ChildEntry = {
-    ctor:new ()=>ObservableObject<unknown>,
+    ctor:new ()=>ObservableObject<unknown>;
 };
 
 class ObservableObjectConfig {
@@ -214,13 +214,13 @@ export abstract class ObservableObject<T> {
     }
 
     /** inverse operation from serialize */
-    async deserialize(data:{[key:string]:unknown}):Promise<void> {
+    async deserialize(data:Record<string, unknown>):Promise<void> {
         await this.deserializeNonCustom(data);
         await this.deserializeCustom(data);
     }
 
     /** first pass of deserialization */
-    async deserializeNonCustom(data:{[key:string]:unknown}):Promise<void> {
+    async deserializeNonCustom(data:Record<string, unknown>):Promise<void> {
         await Promise.all([
             this.deserializeNonCustomChildren(data),
             this.deserializeNonCustomCollections(data),
@@ -229,13 +229,12 @@ export abstract class ObservableObject<T> {
     }
 
     /** do non-customized deserialization of child observables */
-    deserializeNonCustomChildren(data:{[key:string]:unknown}):Promise<unknown> {
+    deserializeNonCustomChildren(data:Record<string, unknown>):Promise<unknown> {
         const promises = [];
         for (const [key, child] of this.children) {
             if (!this._canReadField(key)) { continue; }
-            const childData = data[String(key)] as {[key:string]:unknown};
-            if ((childData !== null) &&
-                (typeof childData !== 'string') &&
+            const childData = data[String(key)] as Record<string, unknown>;
+            if ((typeof childData !== 'string') &&
                 (typeof childData !== 'number') &&
                 (typeof childData !== 'boolean') &&
                 !Array.isArray(childData) )
@@ -249,7 +248,7 @@ export abstract class ObservableObject<T> {
     }
 
     /** do non-customized deserialization of properties */
-    deserializeNonCustomCollections(data:{[key:string]:unknown}):Promise<unknown> {
+    deserializeNonCustomCollections(data:Record<string, unknown>):Promise<unknown> {
         const promises = [];
         for (const [key, collection] of this.collections) {
             if (!this._canReadField(key)) { continue; }
@@ -264,7 +263,7 @@ export abstract class ObservableObject<T> {
     }
 
     /** do non-customized deserialization of properties */
-    deserializeNonCustomProperties(data:{[key:string]:unknown}):Promise<unknown> {
+    deserializeNonCustomProperties(data:Record<string, unknown>):Promise<unknown> {
         const promises = [];
         for (const [key, property] of this.properties) {
             if (!this._canReadField(key)) { continue; }
@@ -286,7 +285,7 @@ export abstract class ObservableObject<T> {
     }
 
     /** second pass of deserialization */
-    async deserializeCustom(data:{[key:string]:unknown}):Promise<void> {
+    async deserializeCustom(data:Record<string, unknown>):Promise<void> {
         await Promise.all([
             this.deserializeCustomChildren(data),
             this.deserializeCustomCollections(data),
@@ -295,13 +294,12 @@ export abstract class ObservableObject<T> {
     }
 
     /** do customized deserialization of child observables */
-    deserializeCustomChildren(data:{[key:string]:unknown}):Promise<unknown> {
+    deserializeCustomChildren(data:Record<string, unknown>):Promise<unknown> {
         const promises = [];
         for (const [key, child] of this.children) {
             if (!this._canReadField(key)) { continue; }
-            const childData = data[String(key)] as {[key:string]:unknown};
-            if ((childData !== null) &&
-                (typeof childData !== 'string') &&
+            const childData = data[String(key)] as Record<string, unknown>;
+            if ((typeof childData !== 'string') &&
                 (typeof childData !== 'number') &&
                 (typeof childData !== 'boolean') &&
                 !Array.isArray(childData) )
@@ -316,7 +314,7 @@ export abstract class ObservableObject<T> {
     }
 
     /** do customized deserialization of collections */
-    deserializeCustomCollections(data:{[key:string]:unknown}):Promise<unknown> {
+    deserializeCustomCollections(data:Record<string, unknown>):Promise<unknown> {
         const promises = [];
         for (const [key, collection] of this.collections) {
             if (!this._canReadField(key)) { continue; }
@@ -332,7 +330,7 @@ export abstract class ObservableObject<T> {
     }
 
     /** do customized deserialization of properties */
-    deserializeCustomProperties(data:{[key:string]:unknown}):Promise<unknown> {
+    deserializeCustomProperties(data:Record<string, unknown>):Promise<unknown> {
         const promises = [];
         for (const [key, property] of this.properties) {
             if (!this._canReadField(key)) { continue; }
@@ -396,7 +394,7 @@ export abstract class ObservableObject<T> {
 
     /** retrieve a property value by name */
     getPropertyValue(propName:PropKey<T>):unknown {
-        return this.getProperty(propName)?.get();
+        return this.getProperty(propName).get();
     }
 
     /** send out notification of a property changing */
@@ -430,8 +428,8 @@ export abstract class ObservableObject<T> {
 
     /** convert to an object ready for JSON conversion and that could be read back with deserialize */
     // eslint-disable-next-line require-await
-    async serialize():Promise<{[key:string]:unknown}> {
-        const converted:{[key:string]:unknown} = {};
+    async serialize():Promise<Record<string, unknown>> {
+        const converted:Record<string, unknown> = {};
 
         for (const [key, child] of this.children) {
             if (!this._canWriteField(key)) { continue; }
@@ -463,6 +461,6 @@ export abstract class ObservableObject<T> {
 
     /** set a property value by name */
     async setPropertyValue(propName:PropKey<T>, value:unknown):Promise<void> {
-        await this.getProperty(propName)?.set(value);
+        await this.getProperty(propName).set(value);
     }
 }

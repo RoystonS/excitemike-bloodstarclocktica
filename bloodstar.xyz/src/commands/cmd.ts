@@ -8,7 +8,7 @@ import { spinner } from "../dlg/spinner-dlg";
 const TIMEOUT = 15*1000;
 const MAXRETRIES = 1;
 
-export type UserPass = {username:string, password:string};
+export type UserPass = {username:string; password:string};
 
 /**
  * send a command to the server, await response
@@ -21,7 +21,7 @@ export default function cmd<ResultType = unknown>(cmdName:string, spinnerMessage
 /**
  * wrap fetch with a timeout
  */
-async function fetchWithTimeout(cmdName:string, body:BodyInit|undefined, timeout:number):Promise<Response> {
+function fetchWithTimeout(cmdName:string, body:BodyInit|undefined, timeout:number):Promise<Response> {
     const controller = new AbortController();
     let timedOut = false;
     const timeoutId = setTimeout(()=>{
@@ -29,18 +29,16 @@ async function fetchWithTimeout(cmdName:string, body:BodyInit|undefined, timeout
         controller.abort();
     }, timeout);
 
-    try {
-        return await fetch(`https://www.bloodstar.xyz/api/${cmdName}.php`, {
-            method: 'POST',
-            mode: 'cors',
-            signal: controller.signal,
-            body
-        });
-    } catch (error) {
+    return fetch(`https://www.bloodstar.xyz/api/${cmdName}.php`, {
+        method: 'POST',
+        mode: 'cors',
+        signal: controller.signal,
+        body
+    }).catch(()=>{
         throw new Error(timedOut?`Command "${cmdName} timed out`:`Network error during command "${cmdName}"`);
-    } finally {
+    }).finally(()=>{
         clearTimeout(timeoutId);
-    }
+    });
 }
 
 /**
@@ -51,7 +49,7 @@ async function fetchWithTimeoutAndRetry(cmdName:string, body:BodyInit|undefined,
     while (retriesLeft > 0) {
         try {
             return await fetchWithTimeout(cmdName, body, timeout);
-        } catch (e) {
+        } catch (e: unknown) {
             if (maxRetries <= 0) {throw e;}
             retriesLeft--;
         }
@@ -77,13 +75,13 @@ async function _cmd<ResultType = unknown>(cmdName:string, body:BodyInit|undefine
     let responseText;
     try {
         responseText = await response.text();
-    } catch (error) {
+    } catch (error: unknown) {
         throw new Error(`Error reading server response.`);
     }
 
     try {
         return JSON.parse(responseText);
-    } catch (error) {
+    } catch (error: unknown) {
         throw new Error(`Error parsing server response JSON.`);
     }
 }

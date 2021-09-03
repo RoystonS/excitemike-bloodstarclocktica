@@ -9,9 +9,9 @@ import { updatePasswordWarnings, validatePassword } from "../validate";
 import { showError } from "./blood-message-dlg";
 
 type ResetPasswordData = {
-    code:string,
-    email:string,
-    password:string
+    code:string;
+    email:string;
+    password:string;
 };
 
 class ConfirmAndChoosePasswordDlg extends AriaDialog<ResetPasswordData|null> {
@@ -52,7 +52,7 @@ class ConfirmAndChoosePasswordDlg extends AriaDialog<ResetPasswordData|null> {
                         password:passwordField.value
                     });
                 }}},
-                {t:'button', txt:'Cancel', events:{click:()=>this.close()}}
+                {t:'button', txt:'Cancel', events:{click:()=>{ this.close(); }}}
             ]},
             {t:'p', txt:"Didn't receive a code? ", a:{style:'align-self:center;'}, children:[
                 {t:'a', a:{href:'#'}, txt:'Send a new one', events:{click:()=>sendPasswordResetCode(email)}}
@@ -99,7 +99,7 @@ async function show():Promise<SessionInfo|null> {
  */
 async function showCodeAndNewPasswordStep(email:string):Promise<SessionInfo|null> {
     let warn = false;
-    // eslint-disable-next-line no-constant-condition
+    // eslint-disable-next-line no-constant-condition, @typescript-eslint/no-unnecessary-condition
     while (true) {
         const resetData = await new ConfirmAndChoosePasswordDlg().open(email, warn);
         if (!resetData) {return null;}
@@ -108,7 +108,7 @@ async function showCodeAndNewPasswordStep(email:string):Promise<SessionInfo|null
             const sessionInfo = await resetPassword(resetData);
             if (!sessionInfo) {continue;}
             return sessionInfo;
-        } catch (error) {
+        } catch (error: unknown) {
             await showError('Error', 'Error resetting password', error);
             return null;
         }

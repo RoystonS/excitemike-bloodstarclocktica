@@ -6,10 +6,10 @@ import { createElement, CreateElementsOptions } from '../util';
 import {AriaDialog, ButtonCfg} from './aria-dlg';
 
 type Validation = {
-    pattern:string,
-    hint?:string,
-    warningsFn?:(input:string, container:HTMLElement)=>void,
-    validateFn?:(input:string)=>boolean,
+    pattern:string;
+    hint?:string;
+    warningsFn?:(input:string, container:HTMLElement)=>void;
+    validateFn?:(input:string)=>boolean;
 };
 
 class StringDialog extends AriaDialog<string> {
@@ -68,7 +68,7 @@ class StringDialog extends AriaDialog<string> {
         // if there is a warnings function, hook it up
         const warningsFn = validation?.warningsFn;
         if (warningsFn) {
-            const syncWarnings = ()=> warningsFn(inputField.value, warningsContainer);
+            const syncWarnings = ()=> { warningsFn(inputField.value, warningsContainer); };
             inputField.addEventListener('change', syncWarnings);
             inputField.addEventListener('input', syncWarnings);
         }

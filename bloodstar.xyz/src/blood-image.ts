@@ -2,7 +2,7 @@
  * image processing for character tokens
  * @module ImageProcessing
  */
-import {show as showMessage} from './dlg/blood-message-dlg';
+import {show as showMessage, showNoWait as showMessageNoWait} from './dlg/blood-message-dlg';
 import { BloodTeam } from "./model/blood-team";
 import Images from "./images";
 import { getCorsProxyUrl } from "./util";
@@ -522,8 +522,7 @@ export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean):Promi
     const controller = new AbortController();
     const timeoutId = setTimeout(()=>{
         controller.abort();
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        showMessage('Network Error', `Request timed out trying to reach ${url}`);
+        showMessageNoWait('Network Error', `Request timed out trying to reach ${url}`);
     }, 30*1000);
     try {
         const proxiedUrl = useCorsProxy ? getCorsProxyUrl(url) : url;

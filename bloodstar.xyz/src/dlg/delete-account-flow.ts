@@ -8,7 +8,7 @@ import { show as getConfirmation } from "../dlg/yes-no-dlg";
 import { AriaDialog } from "../dlg/aria-dlg";
 import { createElement } from "../util";
 import { SessionInfo } from "../iam";
-type DeleteAccountData = {token:string, password:string};
+type DeleteAccountData = {token:string; password:string};
 type DeleteAccountResult = {error:string}|true;
 
 /** make sure the user really really wants to do that */
@@ -45,7 +45,7 @@ export async function deleteAccount():Promise<boolean> {
         token:sessionInfo.token,
         password
     };
-    const result = await signedInCmd('deleteaccount', 'Deleting account', commandData) as DeleteAccountResult;
+    const result = await signedInCmd<DeleteAccountResult>('deleteaccount', 'Deleting account', commandData);
 
     if (result === true) {
         await showMessage('Done', 'Account deleted');

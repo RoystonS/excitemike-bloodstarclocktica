@@ -14,37 +14,37 @@ import { SessionInfo } from '../iam';
 import {show as getConfirmation} from "./yes-no-dlg";
 import {showBlockUser} from './block-flow';
 
-type LeaveRequest = {token:string, owner:string, saveName:string};
+type LeaveRequest = {token:string; owner:string; saveName:string};
 type LeaveResponse = {error:string}|true;
-type ListRequest = {token:string, includeShared?:boolean};
+type ListRequest = {token:string; includeShared?:boolean};
 type ListFilesResponse = {
-    error?:string,
-    files:string[],
-    shared?:{[key:string]:string[]}
+    error?:string;
+    files:string[];
+    shared?:Record<string, string[]>;
 };
 export type ListFilesReturn = {
-    yours: string[],
-    shared?: {[key:string]:string[]}
+    yours: string[];
+    shared?: Record<string, string[]>;
 };
 export type OpenRequest = {
-    saveName: string|[string, string],
-    token: string,
-    username: string
+    saveName: string|[string, string];
+    token: string;
+    username: string;
 };
-export type OpenResponse = {error:string}|{data:{[key:string]:unknown}};
+export type OpenResponse = {error:string}|{data:Record<string, unknown>};
 
 type ChooseFileOptions = {
     /** customize prompt title */
-    title?:string,
+    title?:string;
 
     /** customize prompt message */
-    message?:string,
+    message?:string;
 
     /** list shared files? */
-    includeShared?:boolean,
+    includeShared?:boolean;
 
     /** whether to label it as making a copy of shared files */
-    copyWarning?:boolean
+    copyWarning?:boolean;
 };
 
 /** dialog for choosing a file */
@@ -73,7 +73,7 @@ class ChooseFileDlg extends AriaDialog<string|[string, string]> {
         }
         if (yourFiles.length) {
             for (const name of yourFiles) {
-                const button = createElement({t:'button', txt:name, events:{click:()=>this.close(name)}});
+                const button = createElement({t:'button', txt:name, events:{click:()=>{ this.close(name); }}});
                 fileListDiv.appendChild(button);
             }
         } else {
@@ -90,7 +90,7 @@ class ChooseFileDlg extends AriaDialog<string|[string, string]> {
                 const editions = sharedFiles[owner];
                 for (const edition of editions) {
                     const label = `${owner} / ${edition}`;
-                    const openButton = createElement({t:'button', txt:label, events:{click:()=>this.close([owner, edition])}});
+                    const openButton = createElement({t:'button', txt:label, events:{click:()=>{ this.close([owner, edition]); }}});
                     const leaveButton = createElement({t:'button', txt:'Leave'});
                     const blockButton = createElement({t:'button', txt:'Block'});
                     leaveButton.addEventListener('click', async ()=>{
@@ -145,13 +145,13 @@ async function listFiles(sessionInfo:SessionInfo, includeShared:boolean):Promise
             await showError('Network Error', `Error encountered while retrieving file list`, response.error);
         }
         const ret:ListFilesReturn = {
-            yours: response.files || [],
+            yours: response.files,
         };
         if (response.shared && Object.keys(response.shared).length) {
             ret.shared = response.shared;
         }
         return ret;
-    } catch (error) {
+    } catch (error: unknown) {
         await showError('Network Error', `Error encountered while retrieving file list`, error);
     }
     return {yours:[]};
@@ -187,7 +187,7 @@ async function openNoPrompts(edition:Edition, name:string|[string, string]):Prom
             setRecentFile(edition.saveName.get(), sessionInfo.email);
         }
         return success;
-    } catch (error) {
+    } catch (error: unknown) {
         await showError('Error', `Error encountered while trying to open file ${name}`, error);
         return false;
     }
@@ -280,7 +280,7 @@ async function showLeave(owner:string, edition:string):Promise<boolean> {
         console.error(error);
         await showError('Network Error', `Error encountered while retrieving share list`, error);
         return false;
-    } catch (error) {
+    } catch (error: unknown) {
         await showError('Network Error', `Error encountered while retrieving share list`, error);
         return false;
     }

@@ -13,6 +13,7 @@ import { Property } from '../bind/bindings';
 import { ObservableCollection } from '../bind/observable-collection';
 import Locks from '../lock';
 import { parseBloodTeam } from '../model/blood-team';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 import JSZip = require('jszip');
 
 /** set property if the value is not undefined */
@@ -255,8 +256,8 @@ function chooseBloodFile():Promise<File|null> {
             {t:'h1', txt:'Choose file'},
             {t:'p', txt:'Choose a .blood file to import.'},
             {t:'div', css:['dialogBtnGroup'], children:[
-                {t:'button', txt:'Choose File', events:{click:()=>chooseFile()}},
-                {t:'button', txt:'Cancel', events:{click:()=>dlg.close()}}
+                {t:'button', txt:'Choose File', events:{click:()=>{ chooseFile(); }}},
+                {t:'button', txt:'Cancel', events:{click:()=>{ dlg.close(); }}}
             ]}
         ],
         []

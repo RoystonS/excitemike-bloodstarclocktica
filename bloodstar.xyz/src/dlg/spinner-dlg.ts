@@ -8,7 +8,7 @@ import {AriaDialog} from './aria-dlg';
 class SpinnerDialog extends AriaDialog<null> {
     private listElement:HTMLUListElement|null = null;
 
-    private messages = new Map<string, {listItem:HTMLLIElement, stack:string[]}>();
+    private messages = new Map<string, {listItem:HTMLLIElement; stack:string[]}>();
 
     isOpen():boolean {return Boolean(this.listElement);}
 

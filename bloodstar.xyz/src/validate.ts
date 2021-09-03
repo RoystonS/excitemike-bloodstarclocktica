@@ -34,7 +34,7 @@ export function updatePasswordWarnings(password:string, passwordConfirm:string, 
 
 /** update container contents to warn if save name does not look valid */
 export function updateSaveNameWarnings(name:string, container:HTMLElement, fieldName:string):void {
-    return updateUsernameWarnings(name, container, fieldName);
+    updateUsernameWarnings(name, container, fieldName);
 }
 
 /** update container contents to warn if username does not look valid */

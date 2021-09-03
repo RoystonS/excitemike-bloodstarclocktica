@@ -62,7 +62,7 @@ export async function deleteFileClicked(edition:Edition):Promise<boolean> {
 async function importOfficialClicked(edition:Edition):Promise<boolean> {
     try {
         return await importOfficial(edition);
-    } catch (error) {
+    } catch (error: unknown) {
         await showError('Error', 'Something went wrong when trying to clone official character', error);
         throw error;
     }
@@ -72,7 +72,7 @@ async function importOfficialClicked(edition:Edition):Promise<boolean> {
 async function importSharedClicked(edition:Edition):Promise<boolean> {
     try {
         return await importShared(edition);
-    } catch (error) {
+    } catch (error: unknown) {
         await showError('Error', 'Something went wrong when trying to import from shared Bloodstar save', error);
         throw error;
     }
@@ -114,7 +114,7 @@ export default function init(edition:Edition):void {
 async function newFileClicked(edition:Edition):Promise<boolean> {
     try {
         await newEdition(edition);
-    } catch (error) {
+    } catch (error: unknown) {
         await showError('Error', 'Something went wrong when creating new file', error);
     }
     return true;

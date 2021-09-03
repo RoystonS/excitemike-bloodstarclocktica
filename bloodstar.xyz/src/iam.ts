@@ -6,31 +6,31 @@
 import cmd from "./commands/cmd";
 import { showError, show as showMessage } from "./dlg/blood-message-dlg";
 
-export type SessionInfo = {token:string, expiration:number, username:string, email:string};
-type ConfirmEmailData = {code:string, email:string};
+export type SessionInfo = {token:string; expiration:number; username:string; email:string};
+type ConfirmEmailData = {code:string; email:string};
 type RequestResetData = {usernameOrEmail:string};
 type ResendSignUpConfirmationData = {email:string};
 type ResetPasswordData = {
-    code:string,
-    email:string,
-    password:string
+    code:string;
+    email:string;
+    password:string;
 };
-type ConfirmEmailResponse = {error:string}|{token:string, expiration:number, username:string, email:string}|'alreadyConfirmed'|'notSignedUp'|'expired'|'badCode';
-type ResetPasswordResponse = {error:string}|{token:string, expiration:number, username:string, email:string}|'badCode'|'expired';
+type ConfirmEmailResponse = {error:string}|{token:string; expiration:number; username:string; email:string}|'alreadyConfirmed'|'notSignedUp'|'expired'|'badCode';
+type ResetPasswordResponse = {error:string}|{token:string; expiration:number; username:string; email:string}|'badCode'|'expired';
 type EmailResponse = {error:string}|{email:string};
 type SignUpResponse = {error:string}|'usernameTaken'|'emailTaken'|true;
 type SignInData = {
-    usernameOrEmail:string,
-    password:string
+    usernameOrEmail:string;
+    password:string;
 };
 type SignInResponse
     = {error:string}
-    | {message:string, title:string}
-    | {token:string, expiration:number, username:string, email:string};
+    | {message:string; title:string}
+    | {token:string; expiration:number; username:string; email:string};
 type SignUpData = {
-    username:string,
-    password:string,
-    email:string
+    username:string;
+    password:string;
+    email:string;
 };
 
 /**
@@ -40,7 +40,7 @@ type SignUpData = {
 export async function confirmEmail(email:string, code:string):Promise<SessionInfo|null> {
     const data:ConfirmEmailData = {code, email};
     const payload = JSON.stringify(data);
-    const response = await cmd('confirm', 'Checking sign up confirmation', payload) as ConfirmEmailResponse;
+    const response = await cmd<ConfirmEmailResponse>('confirm', 'Checking sign up confirmation', payload);
     if (typeof response === 'string') {
         switch (response) {
             // treat like success
@@ -73,7 +73,7 @@ export async function confirmEmail(email:string, code:string):Promise<SessionInf
  */
 export async function resetPassword(resetData:ResetPasswordData):Promise<SessionInfo|null> {
     const payload = JSON.stringify(resetData);
-    const response = await cmd('reset', 'Confirming password reset', payload) as ResetPasswordResponse;
+    const response = await cmd<ResetPasswordResponse>('reset', 'Confirming password reset', payload);
     if (typeof response === 'string') {
         switch (response) {
             case 'badCode':
@@ -116,7 +116,7 @@ export async function resendSignUpConfirmation(email:string):Promise<string> {
 export async function sendPasswordResetCode(usernameOrEmail:string):Promise<string> {
     const passwordResetData:RequestResetData = {usernameOrEmail};
     const payload = JSON.stringify(passwordResetData);
-    const response = await cmd('requestreset', 'Requesting password reset', payload) as EmailResponse;
+    const response = await cmd<EmailResponse>('requestreset', 'Requesting password reset', payload);
     if ('error' in response) {
         await showError('Error', `Error encountered while trying to reset password for ${usernameOrEmail}`, response.error);
         return '';
@@ -136,7 +136,7 @@ export async function signIn(usernameOrEmail:string, password:string):Promise<Se
         password
     };
     const payload = JSON.stringify(signInData);
-    const response = await cmd('signin', 'Signing in', payload) as SignInResponse;
+    const response = await cmd<SignInResponse>('signin', 'Signing in', payload);
     if ('error' in response) {
         await showError('Error', `Error encountered while trying to sign in ${usernameOrEmail}`, response.error);
         return null;
@@ -165,7 +165,7 @@ export async function signUp(
         email
     };
     const payload = JSON.stringify(signUpData);
-    const response = await cmd('signup', 'Signing up', payload) as SignUpResponse;
+    const response = await cmd<SignUpResponse>('signup', 'Signing up', payload);
     if (response === true) {
         return email||'';
     }

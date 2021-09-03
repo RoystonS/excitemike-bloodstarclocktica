@@ -2,24 +2,24 @@
  * Miscellaneous useful things
  * @module Util
  */
-import {showError, show as showMessage} from './dlg/blood-message-dlg';
+import {showError, showNoWait as showMessageNoWait} from './dlg/blood-message-dlg';
 
 /** configuration used to create DOM elements */
 export type CreateElementOptions<K extends keyof HTMLElementTagNameMap> = {
     /** tag name of the element to create */
-    t:K
+    t:K;
 
     /** attributes to set on the created element */
-    a?:{[key:string]:string},
+    a?:Record<string, string>;
 
     /** children to append or configuration used to create those children */
-    children?:CreateElementsOptions,
+    children?:CreateElementsOptions;
 
     /** css classes to add to the element */
-    css?:string[],
+    css?:string[];
 
     /** event listeners to add to the element */
-    events?:{[key:string]:EventListenerOrEventListenerObject|undefined},
+    events?:Record<string, EventListenerOrEventListenerObject|undefined>;
 
     /** set innerHTML on the element. doesn't really work at the same time as txt */
     html?:string;
@@ -28,7 +28,7 @@ export type CreateElementOptions<K extends keyof HTMLElementTagNameMap> = {
     id?:string;
 
     /** inner text to set on the element */
-    txt?:string,
+    txt?:string;
 };
 
 export type CreateElementsOptions = (CreateElementOptions<keyof HTMLElementTagNameMap>|Node)[];
@@ -100,8 +100,7 @@ export async function fetchJson<T>(uri:string):Promise<T|null> {
     const controller = new AbortController();
     const timeoutId = setTimeout(()=>{
         controller.abort();
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        showMessage('Network Error', `Request timed out trying to reach ${uri}`);
+        showMessageNoWait('Network Error', `Request timed out trying to reach ${uri}`);
     }, 15*1000);
     try {
         response = await fetch(uri, {
@@ -115,14 +114,12 @@ export async function fetchJson<T>(uri:string):Promise<T|null> {
 
         if (!response.ok) {
             console.error(`${response.status}: (${response.type}) ${response.statusText}`);
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            showMessage('Network Error', `Something went wrong while trying to reach ${uri}`);
+            showMessageNoWait('Network Error', `Something went wrong while trying to reach ${uri}`);
             return null;
         }
-    } catch (error) {
+    } catch (error: unknown) {
         console.error(error);
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        showMessage('Network Error', `Something went wrong while trying to reach ${uri}`);
+        showMessageNoWait('Network Error', `Something went wrong while trying to reach ${uri}`);
         return null;
     } finally {
         clearTimeout(timeoutId);
@@ -143,7 +140,7 @@ export function hookupClickEvents(data: [string, (e: Event) => void][]):()=>void
     function wrapCb(cb:(e: Event) => void):(e: Event) => void {
         return async (e: Event)=>{
             try {cb(e);}
-            catch (error) {
+            catch (error: unknown) {
                 await showError('Error', 'Something went wrong', error);
             }
         };

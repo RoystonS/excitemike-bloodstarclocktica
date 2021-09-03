@@ -40,7 +40,7 @@ export function parseBloodTeam(s:string):BloodTeam {
 }
 
 /** blood team options prepared for use with a EnumProperty */
-export const BLOODTEAM_OPTIONS:ReadonlyArray<{display:string, value:BloodTeam}> = [
+export const BLOODTEAM_OPTIONS:readonly {display:string; value:BloodTeam}[] = [
     {display: BloodTeam.TOWNSFOLK_DISPLAY, value: BloodTeam.TOWNSFOLK},
     {display: BloodTeam.OUTSIDER_DISPLAY, value: BloodTeam.OUTSIDER},
     {display: BloodTeam.MINION_DISPLAY, value: BloodTeam.MINION},

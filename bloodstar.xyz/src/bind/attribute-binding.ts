@@ -11,6 +11,6 @@ export default class AttributeBinding extends BaseBinding<string> {
             property,
             '',
             null,
-            v=>element.setAttribute(attributeName, v));
+            v=>{element.setAttribute(attributeName, v);});
     }
 }

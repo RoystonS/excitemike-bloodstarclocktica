@@ -8,6 +8,6 @@ export class VisibilityBinding extends BaseBinding<boolean> {
             property,
             '',
             null,
-            v=>showHideElement(element, v));
+            v=>{ showHideElement(element, v); });
     }
 }

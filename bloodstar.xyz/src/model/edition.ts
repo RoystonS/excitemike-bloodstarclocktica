@@ -274,8 +274,7 @@ export class Edition extends ObservableObject<Edition> {
     }
 
     /** set to opened file */
-    async open(saveName:string, data:{ [key: string]: unknown; }):Promise<boolean> {
-        if (!data) {await this.reset(); return false;}
+    async open(saveName:string, data:Record<string, unknown>):Promise<boolean> {
         await this.saveName.set(saveName);
         await spinner('edition.open', 'Deserializing edition', this.deserialize(data));
 
@@ -296,7 +295,7 @@ export class Edition extends ObservableObject<Edition> {
     }
 
     /** overriding to do a last-minute id uniqification */
-    async serialize():Promise<{[key:string]:unknown}> {
+    async serialize():Promise<Record<string, unknown>> {
         await this.fixDuplicateIds();
         return super.serialize();
     }

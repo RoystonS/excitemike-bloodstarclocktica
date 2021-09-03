@@ -62,7 +62,7 @@ export default async function importShared(edition:Edition):Promise<boolean> {
 
     try {
         return await _importShared(edition, file);
-    } catch (error) {
+    } catch (error: unknown) {
         await showError('Error', `Error encountered while trying to import ${label}`, error);
         return false;
     }

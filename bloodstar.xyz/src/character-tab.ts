@@ -15,7 +15,7 @@ import {
     Property,
     unbindElementById
 } from './bind/bindings';
-import {showError} from "./dlg/blood-message-dlg";
+import {showErrorNoWait} from "./dlg/blood-message-dlg";
 import { ProcessImageSettings } from './blood-image';
 import { BloodTeam, parseBloodTeam } from './model/blood-team';
 import { Character } from './model/character';
@@ -78,8 +78,7 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
 
     if (unbindCharacterTabControls) {
         const message = 'binding character tab controls without clearing previous bindings';
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        showError('Programmer Error', message, new Error(message));
+        showErrorNoWait('Programmer Error', message, new Error(message));
     }
 
     return () => {
@@ -142,7 +141,7 @@ function bindTrackedVisibility(id:string, property:Property<boolean>, set:Set<st
 function disableCharacterTab():void {
     const tabDiv = document.getElementById('charactertab');
     if (!tabDiv) { return; }
-    const tags:ReadonlyArray<TagsThatCanBeDisabled> = ['button', 'fieldset', 'optgroup', 'option', 'select', 'textarea', 'input'];
+    const tags:readonly TagsThatCanBeDisabled[] = ['button', 'fieldset', 'optgroup', 'option', 'select', 'textarea', 'input'];
     for (const tag of tags) {
         const elements = tabDiv.getElementsByTagName(tag);
         for (let i=0; i<elements.length; i++) {
@@ -158,7 +157,7 @@ function disableCharacterTab():void {
 function enableCharacterTab():void {
     const tabDiv = document.getElementById('charactertab');
     if (!tabDiv) { return; }
-    const tags:ReadonlyArray<TagsThatCanBeDisabled> = ['button', 'fieldset', 'optgroup', 'option', 'select', 'textarea', 'input'];
+    const tags:readonly TagsThatCanBeDisabled[] = ['button', 'fieldset', 'optgroup', 'option', 'select', 'textarea', 'input'];
     for (const tag of tags) {
         const elements = tabDiv.getElementsByTagName(tag);
         for (let i=0; i<elements.length; i++) {

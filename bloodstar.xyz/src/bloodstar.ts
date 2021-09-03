@@ -1,6 +1,6 @@
 import * as BloodBind from './bind/bindings';
 import * as BloodNewOpen from "./dlg/blood-new-open-dlg";
-import {showError} from "./dlg/blood-message-dlg";
+import {showErrorNoWait} from "./dlg/blood-message-dlg";
 import {Character} from "./model/character";
 import {Edition} from "./model/edition";
 import {initNightOrderBindings} from './night-order';
@@ -29,7 +29,7 @@ import './styles/tabs.css';
 import './styles/teamcolor.css';
 
 type BloodstarOptions = {
-    mobile?:boolean
+    mobile?:boolean;
 };
 
 let bloodstarOptions:BloodstarOptions = {};
@@ -88,11 +88,11 @@ async function initBindings():Promise<void> {
         }
     });
     hookupClickEvents([
-        ['metaTabBtn', ()=>tabClicked('metaTabBtn', 'metatab')],
-        ['charTabBtn', ()=>tabClicked('charTabBtn', 'charactertab')],
-        ['firstNightTabBtn', ()=>tabClicked('firstNightTabBtn', 'firstNightOrderTab')],
-        ['otherNightTabBtn', ()=>tabClicked('otherNightTabBtn', 'otherNightOrderTab')],
-        ['metaLogoRemoveBtn', ()=>edition && edition.meta.logo.set(null)],
+        ['metaTabBtn', ()=>{ tabClicked('metaTabBtn', 'metatab'); }],
+        ['charTabBtn', ()=>{ tabClicked('charTabBtn', 'charactertab'); }],
+        ['firstNightTabBtn', ()=>{ tabClicked('firstNightTabBtn', 'firstNightOrderTab'); }],
+        ['otherNightTabBtn', ()=>{ tabClicked('otherNightTabBtn', 'otherNightOrderTab'); }],
+        ['metaLogoRemoveBtn', ()=>edition.meta.logo.set(null)],
     ]);
 
     BloodBind.bindTextById('windowTitle', edition.windowTitle);
@@ -151,10 +151,10 @@ async function initCustomEdition(email:string):Promise<void> {
         // eslint-disable-next-line no-empty
         while (!await BloodNewOpen.show(edition)) {
         }
-    } catch (e) {
+    } catch (e: unknown) {
         console.error(e);
-        if (edition) { await edition.reset(); }
-        await showError('Error', 'Error encountered during initialization', e);
+        await edition.reset();
+        showErrorNoWait('Error', 'Error encountered during initialization', e);
     }
 }
 
@@ -176,7 +176,7 @@ async function _init(options?:BloodstarOptions) {
     }
 }
 
-type StatusBarData = Map<string, {id:string, exported:number, total:number}>;
+type StatusBarData = Map<string, {id:string; exported:number; total:number}>;
 
 /** update status bar text */
 function collectStatusBarData():StatusBarData {
@@ -188,16 +188,14 @@ function collectStatusBarData():StatusBarData {
     data.set(BloodTeam.DEMON, {id:'demonsStatus', exported:0, total:0});
     data.set(BloodTeam.TRAVELER, {id:'travelersStatus', exported:0, total:0});
     data.set(BloodTeam.FABLED, {id:'fabledStatus', exported:0, total:0});
-    if (edition) {
-        for (const character of edition.characterList) {
-            const exported = character.export.get();
-            for (const teamKey of ['all', character.team.get()]) {
-                const teamData = data.get(teamKey);
-                if (!teamData) {continue;}
-                teamData.total++;
-                if (exported) {
-                    teamData.exported++;
-                }
+    for (const character of edition.characterList) {
+        const exported = character.export.get();
+        for (const teamKey of ['all', character.team.get()]) {
+            const teamData = data.get(teamKey);
+            if (!teamData) {continue;}
+            teamData.total++;
+            if (exported) {
+                teamData.exported++;
             }
         }
     }

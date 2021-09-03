@@ -122,7 +122,7 @@ export class Character extends ObservableObject<Character> {
         return character;
     }
 
-    async deserialize(data:{[key:string]:unknown}):Promise<void> {
+    async deserialize(data:Record<string, unknown>):Promise<void> {
         this.imageRegenSuspended = true;
         await super.deserialize(data);
         this.imageRegenSuspended = false;
@@ -134,7 +134,7 @@ export class Character extends ObservableObject<Character> {
         try {
             await this.isLoading.set(true);
             await this._regenerateStyledImage();
-        } catch (error) {
+        } catch (error: unknown) {
             await this.styledImage.set('');
             throw error;
         } finally {

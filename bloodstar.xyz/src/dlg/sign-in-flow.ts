@@ -10,22 +10,22 @@ import { SessionInfo, signIn } from '../iam';
 
 export type SignInFlowOptions = {
     /** set true to make dialog cancelable */
-    canCancel?:boolean,
+    canCancel?:boolean;
 
     /** change the label on the cancel button */
-    cancelLabel?:string,
+    cancelLabel?:string;
 
     /** set false to remove forgot password link */
-    includeForgotPasswordLink?:boolean,
+    includeForgotPasswordLink?:boolean;
 
     /** set false to remove signup link */
-    includeSignUpLink?:boolean,
+    includeSignUpLink?:boolean;
 
     /** extra text about why you are being asked to sign in */
-    message?:string,
+    message?:string;
 
     /** optional prompt */
-    title?:string,
+    title?:string;
 };
 
 class SignInDlg extends AriaDialog<SessionInfo> {
@@ -101,7 +101,7 @@ class SignInDlg extends AriaDialog<SessionInfo> {
                 t:'a',
                 a:{href:'#', style:'align-self:center'},
                 txt:'Forgot your password?',
-                events:{click:async ()=>this.close(await showResetPasswordFlow())}
+                events:{click:async ()=>{ this.close(await showResetPasswordFlow()); }}
             });
         }
 
@@ -109,7 +109,7 @@ class SignInDlg extends AriaDialog<SessionInfo> {
         body.push({
             t:'button',
             txt:'Sign in',
-            events:{click:async ()=>this.close(await this.signIn())}
+            events:{click:async ()=>{ this.close(await this.signIn()); }}
         });
 
         // cancel button
@@ -117,7 +117,7 @@ class SignInDlg extends AriaDialog<SessionInfo> {
             body.push({
                 t:'button',
                 txt:options?.cancelLabel||'Cancel',
-                events:{click:()=>this.close(null)}
+                events:{click:()=>{ this.close(null); }}
             });
         }
 

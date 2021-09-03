@@ -2,7 +2,7 @@
  * code related to night order lists
  * @module NightOrder
  */
-import {bindAttribute, bindCollectionById, bindImageDisplay, bindStyle, bindText, Property, unbindElement} from './bind/bindings';
+import {bindAttribute, bindCollectionById, bindImageDisplay, bindStyle, bindText, unbindElement} from './bind/bindings';
 import {ObservableCollection} from './bind/observable-collection';
 import {PropKey} from './bind/observable-object';
 import { BloodTeam } from './model/blood-team';
@@ -68,7 +68,7 @@ export function makeNightOrderItem(
     bindAttribute(row, 'title', character.getProperty<string>(reminderPropertyName));
 
     const ordinal = createElement({t:'span', css:['ordinal']});
-    bindText(ordinal, character.getProperty(ordinalPropertyName) as Property<string>);
+    bindText(ordinal, character.getProperty(ordinalPropertyName));
     bindStyle<boolean>(ordinal, character.export, (willExport:boolean, classList:DOMTokenList)=>{
         if (willExport) {
             classList.remove('dim');
@@ -87,7 +87,7 @@ export function makeNightOrderItem(
     row.appendChild(nameElement);
 
     const reminderElement = createElement({t:'span', css:['nightOrderReminder', 'nowrap']});
-    bindText(reminderElement, character.getProperty(reminderPropertyName) as Property<string>);
+    bindText(reminderElement, character.getProperty(reminderPropertyName));
     row.appendChild(reminderElement);
 
     const moveItemUp = () => collection.moveItemUp(character);

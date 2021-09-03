@@ -7,15 +7,15 @@ import {AriaDialog} from './aria-dlg';
 
 export type YesNoOptions = {
     /** how to label the Yes button. default: 'Yes' */
-    yesLabel?:string,
+    yesLabel?:string;
     /** how to label the No button. default: 'No' */
-    noLabel?:string,
+    noLabel?:string;
     /**
      * Label to place on the checkbox.
      * If present and not empty, a checkbox is present and must be checked in order for the dialog to result in true.
      * If not present or empty, no checkbox appears
      */
-     checkboxMessage?:string
+     checkboxMessage?:string;
 };
 
 class YesNoDialog extends AriaDialog<boolean> {

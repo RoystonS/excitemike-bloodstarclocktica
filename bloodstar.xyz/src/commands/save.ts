@@ -15,17 +15,17 @@ import { SessionInfo } from '../iam';
 import { imageUrlToDataUri } from '../blood-image';
 
 type SaveData = {
-    clobber?:boolean,
-    edition:unknown,
-    saveName:string,
-    token:string,
+    clobber?:boolean;
+    edition:unknown;
+    saveName:string;
+    token:string;
 };
 type SaveImgData = {
-    token:string,
-    saveName:string,
-    id:string,
-    isSource:boolean,
-    image:string
+    token:string;
+    saveName:string;
+    id:string;
+    isSource:boolean;
+    image:string;
 };
 type SaveResult = {error:string}|{success:true}|'clobber'|'cancel';
 type SaveImgResult = {error:string}|{success:true};
@@ -80,7 +80,7 @@ export async function saveAs(edition:Edition):Promise<boolean> {
             await edition.saveName.set(backupName);
         }
         return success;
-    } catch (error) {
+    } catch (error: unknown) {
         await edition.saveName.set(backupName);
         await showError('Error', 'Error encountered while trying to save', error);
     }
@@ -108,24 +108,24 @@ export async function save(edition:Edition):Promise<boolean> {
                 return await _save(sessionInfo, edition, true);
             }
         }
-    } catch (error) {
+    } catch (error: unknown) {
         await showError('Error', 'Error encountered while trying to save', error);
         return false;
     }
 }
 
 type Separated = {
-    edition:unknown,
-    logo?:string,
-    sourceImages:Map<string, string>,
-    finalImages:Map<string, string>
+    edition:unknown;
+    logo?:string;
+    sourceImages:Map<string, string>;
+    finalImages:Map<string, string>;
 };
 
 /** separate the edition json and images for saving as separate files */
 async function separateImages(username:string, edition:Edition):Promise<Separated> {
     const saveName = edition.saveName.get();
     const editionSerialized = await edition.serialize();
-    const characters = editionSerialized.characterList as {id:string, unStyledImage?:string, styledImage?:string}[];
+    const characters = editionSerialized.characterList as {id:string; unStyledImage?:string; styledImage?:string}[];
     const sourceImages = new Map<string, string>();
     const finalImages = new Map<string, string>();
     for (const character of characters) {
@@ -191,8 +191,6 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
         await showError('Error', `Error encountered while trying to save ${saveName}`, response.error);
         return false;
     }
-    const {success} = response;
-    if (!success) {return false;}
 
     const promises = [];
 
@@ -277,6 +275,6 @@ function promptForName(defaultName:string):Promise<string|null> {
             pattern:'[A-Za-z0-9\\-_]{1,25}',
             hint: 'Name should contain only letters, numbers, hyphens (-), and underscores (_)',
             validateFn: validateSaveName,
-            warningsFn: (input:string, container:HTMLElement)=>updateSaveNameWarnings(input, container, 'Save name')
+            warningsFn: (input:string, container:HTMLElement)=>{ updateSaveNameWarnings(input, container, 'Save name'); }
         });
 }

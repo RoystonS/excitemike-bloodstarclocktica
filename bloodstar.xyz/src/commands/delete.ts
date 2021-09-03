@@ -9,7 +9,7 @@ import {chooseFile} from "../dlg/open-flow";
 import signIn, { signedInCmd } from '../sign-in';
 import { clearRecentFile } from '../recent-file';
 
-type DeleteRequest = {token:string, saveName:string};
+type DeleteRequest = {token:string; saveName:string};
 type DeleteResponse = {error:string}|true;
 
 /** confirm deletion */
@@ -63,7 +63,7 @@ async function deleteFile(name:string):Promise<boolean> {
         const {error} = response;
         await showError('Error', `Error encountered while trying to delete file ${name}`, error);
         return false;
-    } catch (error) {
+    } catch (error: unknown) {
         await showError('Error', `Error encountered while trying to delete file ${name}`, error);
         return false;
     }

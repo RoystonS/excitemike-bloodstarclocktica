@@ -19,7 +19,7 @@ export default async function show():Promise<void> {
         // TODO: this could stand to be filled out in a LOT more detail
     ]}];
 
-    await showDialog<void>(
+    await showDialog<undefined>(
         document.activeElement,
         'help',
         body,

@@ -9,14 +9,14 @@ let currentCurtain: Element|null = null;
 /** initialize listeners for mobile version of bloodstar */
 function initMobileBindings():void {
     hookupClickEvents([
-        ['mobileHamburger', ()=>openCurtainMenu('mobileMainMenu')],
-        ['mobileSignInOut', ()=>openCurtainMenu('mobileSignInOutMenu')],
-        ['mobileFileButton', ()=>openCurtainMenu('mobileFileMenu')],
-        ['mobileImportButton', ()=>openCurtainMenu('mobileImportMenu')],
-        ['mobilePublishButton', ()=>openCurtainMenu('mobilePublishMenu')],
-        ['mobileSharingButton', ()=>openCurtainMenu('mobileSharingMenu')],
+        ['mobileHamburger', ()=>{ openCurtainMenu('mobileMainMenu'); }],
+        ['mobileSignInOut', ()=>{ openCurtainMenu('mobileSignInOutMenu'); }],
+        ['mobileFileButton', ()=>{ openCurtainMenu('mobileFileMenu'); }],
+        ['mobileImportButton', ()=>{ openCurtainMenu('mobileImportMenu'); }],
+        ['mobilePublishButton', ()=>{ openCurtainMenu('mobilePublishMenu'); }],
+        ['mobileSharingButton', ()=>{ openCurtainMenu('mobileSharingMenu'); }],
 
-        ['charlistTabBtn', ()=>tabClicked('charlistTabBtn', 'characterlisttab')],
+        ['charlistTabBtn', ()=>{ tabClicked('charlistTabBtn', 'characterlisttab'); }],
     ]);
 
     // find ALL `closeCurtainBtn`
@@ -32,7 +32,7 @@ function initMobileBindings():void {
 /** close currently-open curtain menu, if any */
 function closeCurtain() {
     if (!currentCurtain) {return;}
-    currentCurtain?.removeAttribute('open');
+    currentCurtain.removeAttribute('open');
     currentCurtain = null;
 }
 

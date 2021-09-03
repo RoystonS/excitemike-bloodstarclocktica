@@ -10,7 +10,7 @@ import { updateUserDisplay } from "./menu";
 
 type SignInOptions = SignInFlowOptions & {
     /** true to force a new sign-in instead of reusing existing token */
-    force?:boolean
+    force?:boolean;
 };
 
 let sessionInfo:SessionInfo|null = null;
@@ -26,25 +26,21 @@ function accessTokenExpired():boolean {
 
 function clearStoredToken():void {
     const {localStorage} = window;
-    if (localStorage) {
-        try {
-            localStorage.removeItem('accessToken');
-        } catch (error) {
-            console.error(error);
-        }
+    try {
+        localStorage.removeItem('accessToken');
+    } catch (error: unknown) {
+        console.error(error);
     }
 }
 
 function getStoredToken():SessionInfo|null {
     const {localStorage} = window;
-    if (localStorage) {
-        try {
-            const fromStorage = localStorage.getItem('accessToken');
-            if (!fromStorage) {return null;}
-            return JSON.parse(fromStorage);
-        } catch (error) {
-            // ignore error
-        }
+    try {
+        const fromStorage = localStorage.getItem('accessToken');
+        if (!fromStorage) {return null;}
+        return JSON.parse(fromStorage);
+    } catch (error: unknown) {
+        // ignore error
     }
     return null;
 }
@@ -58,7 +54,7 @@ async function promptAndSignIn(options?:SignInFlowOptions):Promise<boolean> {
     try {
         sessionInfo = await doSignInFlow(options);
         return true;
-    } catch (error) {
+    } catch (error: unknown) {
         await showError('Error', 'Error encountered during sign-in', error);
     }
     return false;
@@ -80,15 +76,15 @@ export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:str
     }
 
     const bodyClone = {...body};
-    let result = await cmd<ResultType|'signInRequired'>(cmdName, spinnerMessage, JSON.stringify(bodyClone));
-    while (result==='signInRequired') {
-        await signIn({force:true, message:'Please sign in to continue.'});
-        if (sessionInfo) {
-            bodyClone.token = sessionInfo.token;
+    let cmdResult = await cmd<ResultType|'signInRequired'>(cmdName, spinnerMessage, JSON.stringify(bodyClone));
+    while (cmdResult==='signInRequired') {
+        const signInResult = await signIn({force:true, message:'Please sign in to continue.'});
+        if (signInResult) {
+            bodyClone.token = signInResult.token;
         }
-        result = await cmd<ResultType|'signInRequired'>(cmdName, spinnerMessage, JSON.stringify(bodyClone));
+        cmdResult = await cmd<ResultType|'signInRequired'>(cmdName, spinnerMessage, JSON.stringify(bodyClone));
     }
-    return result;
+    return cmdResult;
 }
 
 /**
@@ -107,10 +103,11 @@ export async function signIn(options?:SignInOptions):Promise<SessionInfo|null> {
     sessionInfo = null;
 
     if (options?.canCancel === false) {
-        while (!sessionInfo) {
+        let signedIn = false;
+        while (!signedIn) {
             try {
-                await promptAndSignIn(options);
-            } catch (error) {
+                signedIn = await promptAndSignIn(options);
+            } catch (error: unknown) {
                 await showError('Error', 'Error while signing in', error);
             }
         }
@@ -137,12 +134,10 @@ export function signOut():void {
  */
 function storeToken(accessToken:SessionInfo | null):void {
     const {localStorage} = window;
-    if (localStorage) {
-        try {
-            localStorage.setItem('accessToken', JSON.stringify(accessToken));
-        } catch (error) {
-            // ignore error
-        }
+    try {
+        localStorage.setItem('accessToken', JSON.stringify(accessToken));
+    } catch (error: unknown) {
+        // ignore error
     }
 }
 

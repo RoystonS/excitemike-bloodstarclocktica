@@ -1,6 +1,6 @@
 import { bindAttribute, bindCheckbox, bindCollectionById, bindImageDisplay, bindStyle, bindText, Property, PropertyChangeListener, unbindElement } from "./bind/bindings";
 import { ObservableCollection } from "./bind/observable-collection";
-import { showError } from "./dlg/blood-message-dlg";
+import { showErrorNoWait } from "./dlg/blood-message-dlg";
 import {show as getConfirmation} from "./dlg/yes-no-dlg";
 import { BloodTeam } from "./model/blood-team";
 import { Character } from "./model/character";
@@ -112,8 +112,8 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
             if (await getConfirmation('Confirm Delete', `Are you sure you want to delete character "${character.name.get()}"?`)) {
                 await collection.deleteItem(character);
             }
-        } catch (e) {
-            await showError('Error', 'Error encountered during deletion', e);
+        } catch (e: unknown) {
+            showErrorNoWait('Error', 'Error encountered during deletion', e);
         }
     };
     row.appendChild(del);

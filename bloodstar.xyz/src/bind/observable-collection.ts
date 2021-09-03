@@ -21,19 +21,19 @@ export enum ObservableCollectionChangeAction {
 /** describes the change in an ObservableCollection */
 export type ObservableCollectionChangedEvent<T extends ObservableObject<T>> = {
     /** the list in which the change occurred */
-    list:ObservableCollection<T>,
+    list:ObservableCollection<T>;
 
     /** type of change which occurred */
-    action:ObservableCollectionChangeAction,
+    action:ObservableCollectionChangeAction;
 
     /** list of new items after the change */
-    newItems:ReadonlyArray<T>,
+    newItems:readonly T[];
 
     /** index at which the change occurred */
-    newStartingIndex:number,
+    newStartingIndex:number;
 
     /** items affected by a Replace, Remove, or Move action */
-    oldItems:ReadonlyArray<T>,
+    oldItems:readonly T[];
 
     /** index at which a Move, Remove, or Replace action occurred */
     oldStartingIndex:number;
@@ -41,11 +41,17 @@ export type ObservableCollectionChangedEvent<T extends ObservableObject<T>> = {
 
 /** wrap an item with some additional data */
 class ItemPlus<ItemType extends ObservableObject<ItemType>> {
+    public index:number;
+
+    public item:ItemType;
+
     public listener:PropertyChangedListener<ItemType>|null;
 
-    constructor(changeCb:(itemPlus:ItemPlus<ItemType>, propName:PropKey<ItemType>)=>void, public index:number, public item:ItemType) {
-        this.listener = (propName:PropKey<ItemType>)=>changeCb(this, propName);
-        item?.addPropertyChangedEventListener(this.listener);
+    constructor(changeCb:(itemPlus:ItemPlus<ItemType>, propName:PropKey<ItemType>)=>void, index:number, item:ItemType) {
+        this.listener = (propName:PropKey<ItemType>)=>{ changeCb(this, propName); };
+        this.index = index;
+        this.item = item;
+        item.addPropertyChangedEventListener(this.listener);
     }
 
     destroy():void {
@@ -101,9 +107,9 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** add multiple items to the end of the collection */
-    async addMany(items:ReadonlyArray<ItemType>):Promise<void> {
+    async addMany(items:readonly ItemType[]):Promise<void> {
         const cb = this.notifyItemChangedListeners.bind(this);
-        const itemsPlus:ReadonlyArray<ItemPlus<ItemType>> = items.map(item=>new ItemPlus<ItemType>(cb, this.items.length, item));
+        const itemsPlus:readonly ItemPlus<ItemType>[] = items.map(item=>new ItemPlus<ItemType>(cb, this.items.length, item));
         const oldNumItems = this.items.length;
         this.items.push(...itemsPlus);
         this.updateIndices(oldNumItems);
@@ -143,12 +149,11 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** inverse of serialize */
-    async deserialize(serialized:ReadonlyArray<{[key:string]:unknown}>):Promise<void> {
+    async deserialize(serialized:readonly Record<string, unknown>[]):Promise<void> {
         await this.clear();
         const promises = [];
         for (const itemData of serialized) {
-            if ((itemData !== null) &&
-                (typeof itemData !== 'string') &&
+            if ((typeof itemData !== 'string') &&
                 (typeof itemData !== 'number') &&
                 (typeof itemData !== 'boolean') &&
                 !Array.isArray(itemData) )
@@ -168,13 +173,11 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** get an item in the collection */
     get(i:number):ItemType|null {
-        const x = this.items[i];
-        if (!x) {return null;}
         return this.items[i].item;
     }
 
     /** items in the collection */
-    getItems(): ReadonlyArray<ItemType> { return this.items.map(i=>i.item); }
+    getItems(): readonly ItemType[] { return this.items.map(i=>i.item); }
 
     /** find how many items are in the collection */
     getLength():number {
@@ -282,7 +285,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
      * @param end zero based index before which to stop
      * @param items items to insert where start was.
      */
-    async replaceRange(start:number, end:number, items:ReadonlyArray<ItemType>):Promise<void> {
+    async replaceRange(start:number, end:number, items:readonly ItemType[]):Promise<void> {
         if (end < start) {return;}
 
         const removedItemsPlus = this.items.slice(start, end);
@@ -337,7 +340,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** add/replace/remove to match the passed-in array */
-    set(items:ReadonlyArray<ItemType>):Promise<void> {
+    set(items:readonly ItemType[]):Promise<void> {
         return this.replaceRange(0, this.items.length, items);
     }
 
@@ -358,7 +361,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** notify listeners of a change */
     private async notifyCollectionChangedListeners(event:ObservableCollectionChangedEvent<ItemType>):Promise<void> {
-        return (await Promise.all(this.collectionChangedListeners.map(cb=>cb(event))))[0];
+        await Promise.all(this.collectionChangedListeners.map(cb=>{ cb(event); return null; }));
     }
 
     /**
@@ -391,8 +394,8 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** notify listeners of a change */
     private async notifyItemChangedListeners(itemPlus:ItemPlus<ItemType>, propName:PropKey<ItemType>):Promise<void> {
-        return (await Promise.all(this.itemChangedListeners.map(
-            cb=>cb(itemPlus.index, itemPlus.item, propName)
-        )))[0];
+        await Promise.all(this.itemChangedListeners.map(
+            cb=>{ cb(itemPlus.index, itemPlus.item, propName); return null; }
+        ));
     }
 }

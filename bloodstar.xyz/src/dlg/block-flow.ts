@@ -9,13 +9,13 @@ import {AriaDialog, showDialog} from './aria-dlg';
 import {showError, show as showMessage} from './blood-message-dlg';
 import {show as getConfirmation} from "./yes-no-dlg";
 
-type BlockRequest = {token:string, username:string};
+type BlockRequest = {token:string; username:string};
 type BlockResponse = {error:string}|true;
 
 type GetBlockedRequest = {token:string};
 type GetBlockedResponse = {error:string}|{users:string[]};
 
-type UnblockRequest = {token:string, username:string};
+type UnblockRequest = {token:string; username:string};
 type UnblockResponse = {error:string}|true;
 
 class ManageBlockedDlg extends AriaDialog<void> {
@@ -107,7 +107,7 @@ async function doBlockUser(username:string):Promise<boolean> {
         }
         const {error} = response;
         throw error;
-    } catch (error) {
+    } catch (error: unknown) {
         await showError('Network Error', `Error encountered while blocking`, error);
         return false;
     }
@@ -131,7 +131,7 @@ export async function getBlockList():Promise<string[]|null> {
             throw response.error;
         }
         return response.users;
-    } catch (error) {
+    } catch (error: unknown) {
         await showError('Network Error', `Error encountered while retrieving block list`, error);
     }
     return [];
@@ -237,7 +237,7 @@ export async function showUnblockUser(username:string):Promise<boolean> {
         }
         const {error} = response;
         throw error;
-    } catch (error) {
+    } catch (error: unknown) {
         await showError('Network Error', `Error encountered while unblocking`, error);
         return false;
     }

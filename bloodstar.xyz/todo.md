@@ -19,6 +19,10 @@
 
 ## QoL
 
+- separate linter config files for different tasks
+  - one for usual development
+  - one with only auto-fix rules
+  - strict one for when all I want to work is focus on code quality for a bit
 - rename command
 - saveAs is quite slow :(
 - auto-fill author field on new
@@ -28,4 +32,4 @@
 ## Bugs
 
 - When opening a file, if the opened shared file has no edition synopsis, overview, etc., then your local synopsis or w/e will not get cleared
-- Characters disappearing form character list when you rename them making a new file as a guest
+- Characters disappearing from character list when you rename them making a new file as a guest (mobile only?)

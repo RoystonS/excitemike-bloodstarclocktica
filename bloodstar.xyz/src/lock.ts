@@ -5,9 +5,9 @@
 
 export type WorkCompleteFn = ()=>void;
 type LockEntry = {
-    max:number,
-    queue:StartWorkFn[],
-    running:StartWorkFn[]
+    max:number;
+    queue:StartWorkFn[];
+    running:StartWorkFn[];
 };
 type StartWorkFn = ((value:WorkCompleteFn)=>void);
 

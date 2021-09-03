@@ -11,7 +11,7 @@ import { showError } from "./blood-message-dlg";
 
 type ResolveFn = (value:any)=>void;
 type ButtonCb<T = unknown> = ()=>Promise<T>|T;
-export type ButtonCfg<T = unknown> = {label:string, id?:string, callback?:ButtonCb<T>, disabled?:boolean};
+export type ButtonCfg<T = unknown> = {label:string; id?:string; callback?:ButtonCb<T>; disabled?:boolean};
 
 /** used to make each dialog definitely have a unique id */
 let unique = 1;
@@ -81,7 +81,6 @@ function getCurrentDialog():AriaDialog<unknown>|null {
  * @returns
  */
 function isFocusable(node:Node):boolean {
-    if (!node) {return false;}
     const element = node as any;
 
     if (element.tabIndex > 0 || (element.tabIndex === 0 && element.getAttribute('tabIndex') !== null)) {
@@ -166,7 +165,6 @@ export class AriaDialog<ResultType> {
             this.postNode = null;
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         disappear(this.root as HTMLElement);
     }
 
@@ -179,7 +177,7 @@ export class AriaDialog<ResultType> {
     private createDialog(
         debugName:string,
         body:CreateElementsOptions = [],
-        buttons:ButtonCfg[] = [{label:'OK'}]
+        buttons:ButtonCfg<ResultType|null>[] = [{label:'OK'}]
     ):Element {
         const id = `${debugName}${unique++}`;
         const root = document.createElement('div');
@@ -209,10 +207,12 @@ export class AriaDialog<ResultType> {
                 btn.addEventListener('click', async () => {
                     try {
                         const result = callback ? await callback() : null;
-                        return this.close(result as any);
-                    } catch (error) {
+                        this.close(result);
+                        return;
+                    } catch (error: unknown) {
                         await showError('Error', `Error when handling ${label}`, error);
-                        return this.close();
+                        this.close();
+
                     }
                 });
                 btn.innerText = label;
@@ -233,7 +233,7 @@ export class AriaDialog<ResultType> {
         this.preNode = root.parentNode.insertBefore(preNode, root);
         preNode.tabIndex = 0;
         const postNode = document.createElement('div');
-        this.postNode = root.parentNode?.insertBefore(postNode, root.nextSibling);
+        this.postNode = root.parentNode.insertBefore(postNode, root.nextSibling);
         postNode.tabIndex = 0;
 
         return root;
@@ -255,7 +255,6 @@ export class AriaDialog<ResultType> {
         buttons:ButtonCfg<ResultType|null>[] = [{label:'OK'}]
     ):Promise<ResultType|null> {
         this.root = this.createDialog(debugName, body, buttons);
-        if (!this.root) {return Promise.resolve(null);}
 
         // we need to replace the previous dialog's listeners
         if (dialogStack.length > 0) {

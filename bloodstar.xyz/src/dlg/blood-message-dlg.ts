@@ -6,7 +6,7 @@ import { CreateElementsOptions } from '../util';
 import {AriaDialog} from './aria-dlg';
 
 class MessageDialog extends AriaDialog<void> {
-    open(focusAfterClose:Element|string|null, titleText:string, messageText?:string, errorMessage?:string):Promise<void|null> {
+    async open(focusAfterClose:Element|string|null, titleText:string, messageText?:string, errorMessage?:string):Promise<null> {
         const body:CreateElementsOptions = [{
             t:'h1',
             txt:titleText
@@ -20,12 +20,13 @@ class MessageDialog extends AriaDialog<void> {
             body.push({t:'pre', txt:errorMessage});
         }
 
-        return this.baseOpen(
+        await this.baseOpen(
             focusAfterClose,
             'message',
             body,
-            [{label:'OK'}]
+            [{ label: 'OK' }]
         );
+        return null;
     }
 }
 
@@ -36,15 +37,34 @@ export function showError(
     title = 'Error',
     message = 'It looks like you encountered a bug! The error message below may help the developers fix it.',
     error:Error|unknown = undefined
-):Promise<void|null> {
+):Promise<null> {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const errorMessage = (error instanceof Error) ? `${error.message}` : (error as any).toString();
+    const errorMessage = (error instanceof Error) ? `${error.message}` : `${error}`;
     return new MessageDialog().open(document.activeElement, title, message, errorMessage);
+}
+/**
+ * bring up the popup showing exception information
+ */
+export function showErrorNoWait(
+    title = 'Error',
+    message = 'It looks like you encountered a bug! The error message below may help the developers fix it.',
+    error:Error|unknown = undefined
+):void {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    showError(title, message, error);
 }
 
 /**
  * bring up the popup showing a message
  */
-export function show(titleText:string, messageText?:string):Promise<void|null> {
+export function show(titleText:string, messageText?:string):Promise<null> {
     return new MessageDialog().open(document.activeElement, titleText, messageText);
+}
+
+/**
+ * bring up the popup showing a message
+ */
+export function showNoWait(titleText:string, messageText?:string):void {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    show(titleText, messageText);
 }

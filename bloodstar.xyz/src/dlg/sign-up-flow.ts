@@ -8,7 +8,7 @@ import {showError, show as showMessage} from './blood-message-dlg';
 import {confirmEmail, resendSignUpConfirmation, SessionInfo, signUp} from '../iam';
 import { updateEmailWarnings, updatePasswordWarnings, updateUsernameWarnings, validateEmail, validatePassword, validateUsername } from '../validate';
 
-export type UserPass = {username:string, password:string};
+export type UserPass = {username:string; password:string};
 
 /**
  * do the sign-up flow
@@ -47,7 +47,7 @@ class ConfirmSignUpDlg extends AriaDialog<string> {
                     if (!(inputElement instanceof HTMLInputElement)) {this.close(); return;}
                     this.close(inputElement.value);
                 }}},
-                {t:'button', txt:'Cancel', events:{click:()=>this.close('')}}
+                {t:'button', txt:'Cancel', events:{click:()=>{ this.close(''); }}}
             ]},
             {t:'p', txt:"Didn't receive a code? ", a:{style:'align-self:center;'}, children:[
                 {t:'a', a:{href:'#'}, txt:'Send a new one', events:{click:()=>resendSignUpConfirmation(email)}}
@@ -60,7 +60,7 @@ class ConfirmSignUpDlg extends AriaDialog<string> {
 /** show dialog for confirm step */
 async function showConfirmStep(email:string):Promise<SessionInfo|null> {
     let warn = false;
-    // eslint-disable-next-line no-constant-condition
+    // eslint-disable-next-line no-constant-condition, @typescript-eslint/no-unnecessary-condition
     while (true) {
         const code = await new ConfirmSignUpDlg().open(email, warn);
         if (!code) {return null;}
@@ -69,7 +69,7 @@ async function showConfirmStep(email:string):Promise<SessionInfo|null> {
             const sessionInfo = await confirmEmail(email, code);
             if (!sessionInfo) {continue;}
             return sessionInfo;
-        } catch (error) {
+        } catch (error: unknown) {
             await showError('Error', 'Error confirming email address', error);
         }
     }
@@ -137,7 +137,7 @@ async function showSignUpStep():Promise<string> {
         try {
             const email = await signUp(usernameField.value, passwordField.value, emailField.value);
             return email;
-        } catch (error) {
+        } catch (error: unknown) {
             await showError('Sign Up Error', 'Something went wrong during sign-up:', error);
         }
         return '';

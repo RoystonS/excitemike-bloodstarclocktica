@@ -8,10 +8,10 @@ import { AriaDialog } from '../dlg/aria-dlg';
 import signIn, { signedInCmd } from '../sign-in';
 
 type PublishData = {
-    saveName:string,
-    token:string,
+    saveName:string;
+    token:string;
 };
-type PublishReturn = {error?:string, script:string, almanac:string};
+type PublishReturn = {error?:string; script:string; almanac:string};
 
 /**
  * publish the edition
@@ -30,12 +30,11 @@ export default async function publish(edition:Edition):Promise<boolean> {
 
     let response:PublishReturn;
     try {
-        response = await signedInCmd('publish', `Publishing ${edition.saveName.get()}`, saveData) as PublishReturn;
-    } catch (error) {
+        response = await signedInCmd('publish', `Publishing ${edition.saveName.get()}`, saveData);
+    } catch (error: unknown) {
         await showError('Error', 'Error encountered during publish', error);
         return false;
     }
-    if (!response) {return false;}
     const {error} = response;
     if (error) {
         await showError('Error', 'Error encountered during publish', error);
@@ -50,7 +49,7 @@ export default async function publish(edition:Edition):Promise<boolean> {
             if (evt.target instanceof HTMLButtonElement) {
                 evt.target.innerText = 'Copied!';
             }
-        } catch (e) {
+        } catch (e: unknown) {
             // do nothing
         }
     };

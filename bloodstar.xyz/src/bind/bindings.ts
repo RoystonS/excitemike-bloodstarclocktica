@@ -9,8 +9,8 @@ import {VisibilityBinding} from './visibility-binding';
 import {ObservableCollection} from './observable-collection';
 import {ObservableObject} from './observable-object';
 
-export type DisplayValuePair<ValueType> = {display:string, value:ValueType};
-export type DisplayValuePairs<ValueType> = ReadonlyArray<DisplayValuePair<ValueType>>;
+export type DisplayValuePair<ValueType> = {display:string; value:ValueType};
+export type DisplayValuePairs<ValueType> = readonly DisplayValuePair<ValueType>[];
 
 /** observable property for an enum/select element */
 export class EnumProperty<ValueType> extends Property<ValueType> {

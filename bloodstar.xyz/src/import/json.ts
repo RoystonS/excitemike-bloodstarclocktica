@@ -15,25 +15,25 @@ import { AriaDialog } from "../dlg/aria-dlg";
 import { ChooseCharactersDlg } from './choose-characters-dlg';
 
 export type MetaEntry = {
-    id:'_meta',
-    name?:string,
-    author?:string,
-    logo?:string
+    id:'_meta';
+    name?:string;
+    author?:string;
+    logo?:string;
 };
 export type CharacterEntry = {
-    id:string,
-    image?:string,
-    edition?:string,
-    firstNight?:number,
-    firstNightReminder?:string,
-    otherNight?:number,
-    otherNightReminder?:string,
-    reminders?:string[],
-    remindersGlobal?:string[],
-    setup?:boolean,
-    name?:string,
-    team?:string,
-    ability?:string,
+    id:string;
+    image?:string;
+    edition?:string;
+    firstNight?:number;
+    firstNightReminder?:string;
+    otherNight?:number;
+    otherNightReminder?:string;
+    reminders?:string[];
+    remindersGlobal?:string[];
+    setup?:boolean;
+    name?:string;
+    team?:string;
+    ability?:string;
 };
 export type ScriptEntry = MetaEntry|CharacterEntry;
 type NightOrderTracker = Map<number, Character[]>;
@@ -66,8 +66,8 @@ function chooseJsonFile():Promise<File|null> {
         [
             {t:'h1', txt:'Choose file'},
             {t:'div', css:['dialogBtnGroup'], children:[
-                {t:'button', txt:'Choose File', events:{click:()=>chooseFile()}},
-                {t:'button', txt:'Cancel', events:{click:()=>dlg.close()}}
+                {t:'button', txt:'Choose File', events:{click:()=>{ chooseFile(); }}},
+                {t:'button', txt:'Cancel', events:{click:()=>{ dlg.close(); }}}
             ]}
         ],
         []
@@ -154,7 +154,7 @@ function importEntry(entry:ScriptEntry, edition:Edition, firstNightOrder:NightOr
 /** import a whole script */
 async function importScript(json:ScriptEntry[], edition:Edition):Promise<boolean> {
     const choices = await new ChooseCharactersDlg().open(json);
-    if (!choices) {return false;}
+    if (!choices.length) {return false;}
 
     const oldLength = edition.firstNightOrder.getLength();
     const firstNightOrder:NightOrderTracker = new Map<number, Character[]>();

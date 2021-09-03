@@ -58,7 +58,7 @@ export default async function importOfficial(edition:Edition):Promise<boolean> {
         const character = await edition.addNewCharacter();
         try {
             return await _importOfficial(choice, character, edition);
-        } catch (error) {
+        } catch (error: unknown) {
             await edition.characterList.deleteItem(character);
             throw error;
         }
