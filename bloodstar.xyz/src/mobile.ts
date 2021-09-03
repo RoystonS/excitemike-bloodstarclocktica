@@ -44,6 +44,7 @@ function openCurtainMenu(id:string):void {
 import {init} from "./bloodstar";
 import './styles/mobile.css';
 
-void init({mobile:true}).then(()=>{
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
+init({mobile:true}).then(()=>{
     initMobileBindings();
 });

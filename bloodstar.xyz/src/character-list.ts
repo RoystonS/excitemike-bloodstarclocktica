@@ -20,7 +20,7 @@ export function bindCharacterList(id:string, characterList:ObservableCollection<
     );
     // autoselect a character when none selected
     characterList.addCollectionChangedListener(async ():Promise<void>=>{
-        if (null === selectedCharacterProperty.get()) {
+        if (selectedCharacterProperty.get() === null) {
             if (characterList.getLength() > 0) {
                 await selectedCharacterProperty.set(characterList.get(0));
             }

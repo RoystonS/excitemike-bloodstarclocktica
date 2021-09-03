@@ -56,7 +56,7 @@ class ConfirmAndChoosePasswordDlg extends AriaDialog<ResetPasswordData|null> {
             if (!(inputElement instanceof HTMLInputElement)){return;}
             const buttonElement = this.querySelector('#setPasswordBtn');
             if (!(buttonElement instanceof HTMLButtonElement)){return;}
-            const codeValue = parseInt(inputElement.value);
+            const codeValue = parseInt(inputElement.value, 10);
             buttonElement.disabled = isNaN(codeValue) || !(validatePassword(passwordField.value) && (passwordField.value === confirmField.value));
         };
         const passwordWarn = ()=>{

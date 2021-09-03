@@ -101,7 +101,7 @@ class SharingDlg extends AriaDialog<void> {
         };
         try {
             const response = await signedInCmd<UnshareResponse>('unshare', 'Unsharing', request);
-            if (true !== response){
+            if (response !== true){
                 await showError('Network Error', `Error encountered while unsharing`, response.error);
                 console.error(response.error);
                 return;
@@ -133,7 +133,7 @@ class SharingDlg extends AriaDialog<void> {
         };
         try {
             const response = await signedInCmd<ShareResponse>('share', 'Sharing', request);
-            if (true !== response) {
+            if (response !== true) {
                 await showError('Network Error', `Error encountered while sharing`, response.error);
                 console.error(response.error);
                 return;

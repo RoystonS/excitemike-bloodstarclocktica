@@ -110,7 +110,6 @@ export class Character extends ObservableObject<Character> {
             if ((styled === null) || !styled.startsWith('data:')) {
                 // TODO: we could copy these on the server instead of this expensive regen
                 await this.regenerateStyledImage();
-                return;
             }
         });
     }

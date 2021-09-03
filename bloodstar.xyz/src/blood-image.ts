@@ -521,8 +521,8 @@ export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean):Promi
     const controller = new AbortController();
     const timeoutId = setTimeout(()=>{
         controller.abort();
-        // intentional floating promise - TODO: something to prevent getting many of these at once
-        void showMessage('Network Error', `Request timed out trying to reach ${url}`);
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        showMessage('Network Error', `Request timed out trying to reach ${url}`);
     }, 30*1000);
     try {
         const proxiedUrl = useCorsProxy ? getCorsProxyUrl(url) : url;
@@ -571,8 +571,7 @@ export async function urlToCanvas(url:string, width:number, height:number, useCo
                 ctx.drawImage(image,0,0,canvas.width,canvas.height);
                 resolve(canvas);
             } else {
-                reject('no context 2d');
-                return;
+                reject(new Error('no context 2d'));
             }
         };
         image.src = proxyUrl;

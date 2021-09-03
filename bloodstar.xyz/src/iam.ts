@@ -166,7 +166,7 @@ export async function signUp(
     };
     const payload = JSON.stringify(signUpData);
     const response = await cmd('signup', 'Signing up', payload) as SignUpResponse;
-    if (true === response) {
+    if (response === true) {
         return email||'';
     }
     if (response === 'usernameTaken') {

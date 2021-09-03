@@ -58,7 +58,7 @@ async function confirmClobber(saveData:SaveData):Promise<SaveResult> {
  */
  export async function saveAs(edition:Edition):Promise<boolean> {
     const name = await promptForName(edition.saveName.get());
-    if (null === name) {return false;}
+    if (name === null) {return false;}
     const sessionInfo = await signIn({
         title:'Sign In to Save',
         message:'You must first sign in if you wish to save.'

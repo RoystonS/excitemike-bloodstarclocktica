@@ -46,7 +46,7 @@ export async function deleteAccount():Promise<boolean> {
     };
     const result = await signedInCmd('deleteaccount', 'Deleting account', commandData) as DeleteAccountResult;
     
-    if (true === result) {
+    if (result === true) {
         await showMessage('Done', 'Account deleted');
         signOut();
         return Boolean(await signIn());

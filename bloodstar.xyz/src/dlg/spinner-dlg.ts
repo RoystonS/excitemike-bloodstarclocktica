@@ -13,10 +13,10 @@ class SpinnerDialog extends AriaDialog<null> {
 
     private bumpListSize():void {
         if (!this.listElement){return;}
-        if (!this.listElement.style.minWidth || (this.listElement.offsetWidth > Number.parseInt(this.listElement.style.minWidth))){
+        if (!this.listElement.style.minWidth || (this.listElement.offsetWidth > Number.parseInt(this.listElement.style.minWidth, 10))){
             this.listElement.style.minWidth = `${this.listElement.offsetWidth}px`;
         }
-        if (!this.listElement.style.minHeight || (this.listElement.offsetHeight > Number.parseInt(this.listElement.style.minHeight))){
+        if (!this.listElement.style.minHeight || (this.listElement.offsetHeight > Number.parseInt(this.listElement.style.minHeight, 10))){
             this.listElement.style.minHeight = `${this.listElement.offsetHeight}px`;
         }
     }
@@ -57,7 +57,7 @@ class SpinnerDialog extends AriaDialog<null> {
         // remove the message
         stack.splice(i,1);
 
-        if (0===stack.length) {
+        if (stack.length===0) {
             // no more messages for this key. remove list item and delete from map
             this.messages.delete(key);
             listItem.remove();
@@ -88,8 +88,8 @@ class SpinnerDialog extends AriaDialog<null> {
             this.listElement
         ];
 
-        // intentional floating promise
-        void this.baseOpen(document.activeElement, 'spinner', body, []);
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        this.baseOpen(document.activeElement, 'spinner', body, []);
     }
 }
 

@@ -159,8 +159,8 @@ export class AriaDialog<ResultType> {
             this.postNode = null;
         }
 
-        // intentional floating promise
-        void disappear(this.root as HTMLElement);
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        disappear(this.root as HTMLElement);
     }
 
     /**

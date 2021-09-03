@@ -59,7 +59,7 @@ async function deleteFile(name:string):Promise<boolean>{
     };
     try {
         const response = await signedInCmd<DeleteResponse>('delete', `Deleting ${name}`, deleteData);
-        if (true === response) {return true;}
+        if (response === true) {return true;}
         const {error} = response;
         await showError('Error', `Error encountered while trying to delete file ${name}`, error);
         return false;

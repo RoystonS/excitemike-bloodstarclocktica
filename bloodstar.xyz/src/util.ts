@@ -100,8 +100,8 @@ export async function fetchJson<T>(uri:string):Promise<T|null> {
     const controller = new AbortController();
     const timeoutId = setTimeout(()=>{
         controller.abort();
-        // intentional floating promise - TODO: something to prevent getting many of these at once
-        void showMessage('Network Error', `Request timed out trying to reach ${uri}`);
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        showMessage('Network Error', `Request timed out trying to reach ${uri}`);
     }, 15*1000);
     try {
         response = await fetch(uri, {
@@ -115,14 +115,14 @@ export async function fetchJson<T>(uri:string):Promise<T|null> {
         
         if (!response.ok) {
             console.error(`${response.status}: (${response.type}) ${response.statusText}`);
-            // intentional floating promise - TODO: something to prevent getting many of these at once
-            void showMessage('Network Error', `Something went wrong while trying to reach ${uri}`);
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            showMessage('Network Error', `Something went wrong while trying to reach ${uri}`);
             return null;
         }
     } catch (error) {
         console.error(error);
-        // intentional floating promise - TODO: something to prevent getting many of these at once
-        void showMessage('Network Error', `Something went wrong while trying to reach ${uri}`);
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        showMessage('Network Error', `Something went wrong while trying to reach ${uri}`);
         return null;
     } finally {
         clearTimeout(timeoutId);

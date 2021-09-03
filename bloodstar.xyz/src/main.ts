@@ -13,5 +13,6 @@ const mobileSite = 'm.html';
 if(isMobile) {
     (window as any).location=mobileSite;
 } else {
-    void init();
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    init();
 }

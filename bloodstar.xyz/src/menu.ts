@@ -104,7 +104,7 @@ export default function init(edition:Edition):void {
     ];
     const translatedMapping:[string,(e:Event)=>void][] = mapping.map(x=>{
         const [name,f] = x;
-        return [name, ()=>void f(edition)];
+        return [name, ()=>f(edition)];
     });
     hookupClickEvents(translatedMapping);
 }

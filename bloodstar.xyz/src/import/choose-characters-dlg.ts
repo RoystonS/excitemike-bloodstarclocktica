@@ -164,7 +164,7 @@ function passesFilter(filterString:string, entry:ScriptEntry):boolean {
     const loweredFilterString = filterString.toLowerCase();
     for (const haystack of Object.values(entry)){
         if (typeof haystack === 'string') {
-            if (-1 !== haystack.toLowerCase().indexOf(loweredFilterString)) {return true;}
+            if (haystack.toLowerCase().indexOf(loweredFilterString) !== -1) {return true;}
         }
     }
     return false;

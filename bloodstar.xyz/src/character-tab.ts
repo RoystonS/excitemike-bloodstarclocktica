@@ -66,8 +66,8 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
 
     if (unbindCharacterTabControls) {
         const message = 'binding character tab controls without clearing previous bindings';
-        // intentional floating promise
-        void showError('Programmer Error', message, new Error(message));
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        showError('Programmer Error', message, new Error(message));
     }
 
     return () => {

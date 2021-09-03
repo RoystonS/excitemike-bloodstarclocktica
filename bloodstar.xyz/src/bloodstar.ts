@@ -226,7 +226,8 @@ export function init(options?:BloodstarOptions):Promise<void> {
             // `DOMContentLoaded` already fired
             
             // intentional floating promise
-            void _init(options).then(resolve);
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
+            _init(options).then(resolve);
         }
     });
 }

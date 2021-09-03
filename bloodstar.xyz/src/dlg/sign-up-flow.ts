@@ -31,7 +31,7 @@ class ConfirmSignUpDlg extends AriaDialog<string> {
             if (!(inputElement instanceof HTMLInputElement)){return;}
             const buttonElement = document.getElementById('continueBtn');
             if (!(buttonElement instanceof HTMLButtonElement)){return;}
-            const codeValue = parseInt(inputElement.value);
+            const codeValue = parseInt(inputElement.value, 10);
             buttonElement.disabled = isNaN(codeValue);
         };
         body.splice(body.length,0,...[

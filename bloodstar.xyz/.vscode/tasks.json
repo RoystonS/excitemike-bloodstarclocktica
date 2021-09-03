@@ -47,6 +47,14 @@
 			"group": "build",
 			"label": "lint",
 			"detail": "lint project using eslint"
+		},
+		{
+			"type":"shell",
+			"group": "build",
+			"label": "lint with autofix",
+			"detail": "autofix eslint issues",
+			"command": "node_modules/.bin/eslint . --fix",
+			"problemMatcher": "$eslint-stylish"
 		}
 	]
 }

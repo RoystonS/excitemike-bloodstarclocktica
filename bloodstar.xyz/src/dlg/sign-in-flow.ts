@@ -95,7 +95,7 @@ class SignInDlg extends AriaDialog<SessionInfo> {
         });
         
         // forgot password link
-        const includeForgotPasswordLink = false !== (options?.includeForgotPasswordLink);
+        const includeForgotPasswordLink = (options?.includeForgotPasswordLink) !== false;
         if (includeForgotPasswordLink) {
             body.push({
                 t:'a',
@@ -122,7 +122,7 @@ class SignInDlg extends AriaDialog<SessionInfo> {
         }
 
         // sign up link
-        const includeSignUpLink = false !== (options?.includeSignUpLink);
+        const includeSignUpLink = (options?.includeSignUpLink) !== false;
         if (includeSignUpLink){
             body.push({
                 t:'div',
