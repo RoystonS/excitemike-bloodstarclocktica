@@ -10,9 +10,7 @@
 - handout pdf
 - almanac pdf
 - mobile support
-  - detect mobile and/or prompt to go to mobile version
   - menu and title on separate rows on narrow screens
-  - dragging
   - drag and drop
 - minion info, demon info in list
   - if before minion info, night order >=1, <4
@@ -29,5 +27,5 @@
 
 ## Bugs
 
-- Potential bug: we might need to check that you are still the same user after a sign-in popup
-- When opening a file, if the opened shared file has no edition synopsis, overview, etc. set, they will not get cleared from whatever you had before
+- When opening a file, if the opened shared file has no edition synopsis, overview, etc., then your local synopsis or w/e will not get cleared
+- Characters disappearing form character list when you rename them making a new file as a guest
