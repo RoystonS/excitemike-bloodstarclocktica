@@ -272,7 +272,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
         }
     }
 
-    /** 
+    /**
      * add/replace/remove to replace the specified range with the passed-in array
      * After calling this, the collection will consist of
      *      items before `start`

@@ -48,13 +48,13 @@ class BloodImporter {
         const zip = await spinner('zip', `Extracting ${file.name}`, loadZipAsync(file));
         const allPaths:string[] = [];
         zip.forEach(relativePath=>allPaths.push(relativePath));
-        
+
         // do some of them now, defer others until after
         const deferred:string[] = await this.firstPassImport(zip, allPaths);
 
         // do deferred ones
         await this.remainingImports(zip, deferred);
-    
+
         await this.finalizeNightOrder();
 
         return true;
@@ -210,7 +210,7 @@ class BloodImporter {
         const fno = this.firstNightOrderTracker.get(firstNightNumber) || [];
         fno.push(character);
         this.firstNightOrderTracker.set(firstNightNumber, fno);
-        
+
         const otherNightNumber = json.otherNight || 0;
         const ono = this.otherNightOrderTracker.get(otherNightNumber) || [];
         ono.push(character);
@@ -247,7 +247,7 @@ function chooseBloodFile():Promise<File|null> {
             dlg.close(null)
         }
     }
-    
+
     return dlg.baseOpen(
         document.activeElement,
         'chooseBloodFile',

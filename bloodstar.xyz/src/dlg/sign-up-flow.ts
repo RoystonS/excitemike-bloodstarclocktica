@@ -142,7 +142,7 @@ async function showSignUpStep():Promise<string>{
         }
         return '';
     };
-    
+
     const buttons:ButtonCfg<string>[] = [
         {label:'Sign up', callback:getResult, disabled:true, id:'signupBtn'},
         {label:'I already have an account', callback:()=>''}];

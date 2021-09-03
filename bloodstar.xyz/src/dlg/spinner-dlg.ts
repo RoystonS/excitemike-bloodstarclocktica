@@ -22,7 +22,7 @@ class SpinnerDialog extends AriaDialog<null> {
         }
     }
 
-    /** 
+    /**
      * create or add to a spinner.
      * @returns a promise that resolves to a function for you to call when work completes */
     add(key:string, message:string):void {
@@ -32,17 +32,17 @@ class SpinnerDialog extends AriaDialog<null> {
         if (!this.listElement){return;}
 
         const entry = this.messages.get(key);
-        if (!entry) {
+        if (entry) {
+            const {listItem, stack} = entry;
+            stack.push(message);
+            listItem.innerText = message;
+        } else {
             const listItem = this.listElement.appendChild(createElement({
                 t:'li',
                 txt:message,
                 a:{tabindex:'0', role:'alert'}
             }));
             this.messages.set(key, {listItem, stack:[message]});
-        } else {
-            const {listItem, stack} = entry;
-            stack.push(message);
-            listItem.innerText = message;
         }
         this.bumpListSize();
     }

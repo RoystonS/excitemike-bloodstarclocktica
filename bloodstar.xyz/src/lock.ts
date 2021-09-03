@@ -68,17 +68,17 @@ export class LockSet<KeyType> {
             const startWorkFn = entry.queue.shift();
             if (!startWorkFn) {return;}
             entry.running.push(startWorkFn);
-    
+
             // start work, get notified when it is done
             let released = false;
             startWorkFn(() => {
                 if (released) {return;}
                 released = true;
-    
+
                 // remove to unlock next
                 const index = entry.running.indexOf(startWorkFn);
                 entry.running.splice(index, 1);
-    
+
                 // don't hold on to keys we aren't using
                 if ((entry.running.length === 0)&&(entry.queue.length===0)) {
                     this.locks.delete(key);

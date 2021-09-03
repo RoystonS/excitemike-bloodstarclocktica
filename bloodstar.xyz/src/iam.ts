@@ -126,8 +126,8 @@ export async function sendPasswordResetCode(usernameOrEmail:string):Promise<stri
 
 /**
  * do sign in
- * @param username 
- * @param password 
+ * @param username
+ * @param password
  * @returns Promise that resolves to session information
  */
 export async function signIn(usernameOrEmail:string, password:string):Promise<SessionInfo|null>{

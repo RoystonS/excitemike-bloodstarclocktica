@@ -28,7 +28,7 @@ async function fetchWithTimeout(cmdName:string, body:BodyInit|undefined, timeout
         timedOut = true;
         controller.abort();
     }, timeout);
-    
+
     try {
         return await fetch(`https://www.bloodstar.xyz/api/${cmdName}.php`, {
             method: 'POST',
@@ -69,7 +69,7 @@ async function _cmd<ResultType = unknown>(cmdName:string, body:BodyInit|undefine
         timeout,
         maxRetries
     );
-    
+
     if (!response.ok) {
         throw new Error(`${response.status}: (${response.type}) ${response.statusText}`);
     }
@@ -80,7 +80,7 @@ async function _cmd<ResultType = unknown>(cmdName:string, body:BodyInit|undefine
     } catch (error) {
         throw new Error(`Error reading server response.`);
     }
-    
+
     try {
         return JSON.parse(responseText);
     } catch (error) {

@@ -11,7 +11,7 @@ export type YesNoOptions = {
     /** how to label the No button. default: 'No' */
     noLabel?:string,
     /**
-     * Label to place on the checkbox. 
+     * Label to place on the checkbox.
      * If present and not empty, a checkbox is present and must be checked in order for the dialog to result in true.
      * If not present or empty, no checkbox appears
      */
@@ -28,7 +28,7 @@ class YesNoDialog extends AriaDialog<boolean> {
             t:'h1',
             txt:titleText
         }];
-        
+
         if (messageText) {
             body.push({t:'p', txt:messageText});
         }

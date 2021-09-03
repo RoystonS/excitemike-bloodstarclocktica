@@ -11,11 +11,11 @@ class MessageDialog extends AriaDialog<void> {
             t:'h1',
             txt:titleText
         }];
-        
+
         if (messageText) {
             body.push({t:'p', txt:messageText});
         }
-        
+
         if (errorMessage) {
             body.push({t:'pre', txt:errorMessage});
         }

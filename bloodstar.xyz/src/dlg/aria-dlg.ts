@@ -24,7 +24,7 @@ let pauseFocusTrap = false;
 
 /**
  * try to focus the node
- * @param node 
+ * @param node
  * @returns whether focus was successfully set
  */
 function attemptFocus(node:Node):boolean {
@@ -40,7 +40,7 @@ function attemptFocus(node:Node):boolean {
 
 /**
  * search tree under element and set focus on the first thing it can
- * @param node 
+ * @param node
  * @returns true if focus was successfully set
  */
 function focusFirstDescendant(node:Node):boolean {
@@ -55,7 +55,7 @@ function focusFirstDescendant(node:Node):boolean {
 
 /**
  * search tree under element and set focus on the last thing it can
- * @param node 
+ * @param node
  * @returns true if focus was successfully set
  */
 function focusLastDescendant(node:Node):boolean {
@@ -77,8 +77,8 @@ function getCurrentDialog():AriaDialog<unknown>|null {
 
 /**
  * see if the node looks like a focusable element
- * @param node 
- * @returns 
+ * @param node
+ * @returns
  */
 function isFocusable(node:Node):boolean {
     if (!node){return false;}
@@ -87,11 +87,11 @@ function isFocusable(node:Node):boolean {
     if (element.tabIndex > 0 || (element.tabIndex === 0 && element.getAttribute('tabIndex') !== null)) {
         return true;
     }
-  
+
     if (element.disabled) {
         return false;
     }
-  
+
     switch (element.nodeName) {
         case 'A':
             return element.href && element.rel !== 'ignore';
@@ -189,7 +189,7 @@ export class AriaDialog<ResultType> {
         root.setAttribute('aria-modal', 'true');
         const box = document.createElement('div');
         box.className = 'dialogBox';
-    
+
         // add body elements to box
         for (const child of body) {
             if (child instanceof Node) {
@@ -198,12 +198,12 @@ export class AriaDialog<ResultType> {
                 box.appendChild(createElement(child));
             }
         }
-    
+
         // followed by buttons
         if (buttons.length) {
             const btnGroup = document.createElement('div');
             btnGroup.className = 'dialogBtnGroup';
-        
+
             for (const {label, id:btnId, callback, disabled} of buttons) {
                 const btn = document.createElement('button');
                 btn.addEventListener('click', async () => {
@@ -222,7 +222,7 @@ export class AriaDialog<ResultType> {
             }
             box.appendChild(btnGroup);
         }
-    
+
         // box in dlg, dlg in document.
         root.appendChild(box);
         document.body.appendChild(root);
@@ -267,7 +267,7 @@ export class AriaDialog<ResultType> {
         } else {
             this.focusAfterClose = focusAfterClose;
         }
-        
+
         // disable scroll on body
         document.body.classList.add('hasDialog');
 
@@ -327,7 +327,7 @@ export class AriaDialog<ResultType> {
     private static trapFocus():void {
         document.addEventListener('focus', AriaDialog.staticTrapFocus, true);
     }
-    
+
     /**
      * if the dialog is cancellable, close it
      * @returns whether it was closed

@@ -22,7 +22,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
 
     /** collection we keep the DOM in sync with */
     private collection:ObservableCollection<T>;
-    
+
     /** how to create a DOM element for an item in the list */
     private renderFn:RenderFn<T>;
 
@@ -125,7 +125,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
             listItemElement.classList.add('dropBefore');
         }
     }
-    
+
     /** event handler for dragleave */
     private dragleave(e:DragEvent) {
         if (!(e.target instanceof Element)) { return; }
@@ -140,7 +140,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
         try {
             if (!this.dragVerify(e)) { return; }
             e.preventDefault();
-            
+
             const listItemElement = e.target instanceof Element && e.target.closest('li');
             if (!listItemElement) { return; }
             if (!listItemElement.dataset.index) { return; }
@@ -155,7 +155,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
                 ? (insertAfter ? dropIndex : dropIndex-1)
                 : (insertAfter ? dropIndex+1 : dropIndex);
 
-            // change the collection, our collection change listener will 
+            // change the collection, our collection change listener will
             // update the DOM to reflect the change
             await this.collection.move(fromIndex, toIndex);
 

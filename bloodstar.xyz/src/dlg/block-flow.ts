@@ -38,16 +38,16 @@ class ManageBlockedDlg extends AriaDialog<void> {
                 this.update();
             }
         });
-    
+
         const body:CreateElementsOptions = [
             {t:'h1', txt:'Manage Blocked Users'},
             {t:'p', txt:'Currently blocked users:'},
             this.listDiv,
             {t:'div', css:['column'], children:[this.addButton]}
         ];
-    
+
         this.update();
-        
+
         await this.baseOpen(
             document.activeElement,
             'manage-blocked-dlg',
@@ -88,7 +88,7 @@ class ManageBlockedDlg extends AriaDialog<void> {
 
 /**
  * do the actual command to block a user
- * 
+ *
  */
 async function doBlockUser(username:string):Promise<boolean> {
     const sessionInfo = await signIn({
@@ -224,7 +224,7 @@ export async function showUnblockUser(username:string):Promise<boolean> {
         `Are you sure you'd like to unblock ${username}?`,
     ))
     { return false; }
-    
+
     const request:UnblockRequest = {
         token:sessionInfo.token,
         username,

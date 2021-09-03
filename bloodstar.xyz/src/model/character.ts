@@ -38,28 +38,28 @@ export class Character extends ObservableObject<Character> {
 
     @observableProperty('')
     readonly notes!: Property<string>;
-    
+
     @observableChild(CharacterAlmanac)
     readonly almanac!: CharacterAlmanac;
-    
+
     @observableProperty('')
     readonly characterReminderTokens!: Property<string>;
-    
+
     @observableProperty(true)
     readonly export!: Property<boolean>;
 
     @observableProperty('-', { read: false, write: false })
     readonly firstNightOrdinal!: Property<string>;
-    
+
     @observableProperty('')
     readonly firstNightReminder!:Property<string>;
-    
+
     @observableProperty('')
     readonly globalReminderTokens!:Property<string>;
-    
+
     @observableProperty('newcharacter', {saveDefault:true})
     readonly id!: Property<string>;
-    
+
     @observableChild(CharacterImageSettings)
     readonly imageSettings!: CharacterImageSettings;
 
@@ -68,22 +68,22 @@ export class Character extends ObservableObject<Character> {
 
     @observableProperty('-', {read:false, write:false})
     readonly otherNightOrdinal!:Property<string>;
-    
+
     @observableProperty('')
     readonly otherNightReminder!:Property<string>;
-    
+
     @observableProperty(false)
     readonly setup!:Property<boolean>;
-    
+
     @observableProperty(null)
     readonly styledImage!: Property<string | null>;
-    
+
     @observableEnumProperty(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS, {saveDefault:true})
     readonly team!: EnumProperty<BloodTeam>;
-    
+
     @observableProperty(null, {customDeserialize: safelyConvertImage})
     readonly unStyledImage!: Property<string | null>;
-    
+
     @observableProperty(false, {read:false, write:false})
     readonly isLoading!: Property<boolean>;
 
@@ -149,7 +149,7 @@ export class Character extends ObservableObject<Character> {
         if (!unstyledImage || !imageSettings.shouldRestyle.get()) {
             return this.styledImage.set(unstyledImage);
         }
-        
+
         // start from the unstyled image
         let bloodImage = await urlToBloodImage(unstyledImage, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, false);
 
@@ -186,7 +186,7 @@ export class Character extends ObservableObject<Character> {
         }
         const dstX = (ProcessImageSettings.FULL_WIDTH - dstW) * imageSettings.horizontalPlacement.get();
         const dstY = (ProcessImageSettings.FULL_HEIGHT - dstH) * imageSettings.verticalPlacement.get();
-        
+
         bloodImage =
             new BloodImage([ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT])
                 .pasteZoomed(bloodImage, dstX, dstY, dstW, dstH);

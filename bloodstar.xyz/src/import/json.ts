@@ -59,7 +59,7 @@ function chooseJsonFile():Promise<File|null> {
             dlg.close(null)
         }
     }
-    
+
     return dlg.baseOpen(
         document.activeElement,
         'chooseJsonFile',

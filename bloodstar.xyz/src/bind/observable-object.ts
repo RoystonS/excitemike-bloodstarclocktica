@@ -124,7 +124,7 @@ export abstract class ObservableObject<T> {
         if (!prototype) {return;}
         this.obsObjCfg = observableObjectData.get(prototype);
         if (!this.obsObjCfg) {return;}
-        
+
         // properties
         for (const [_key, {defaultValue}] of this.obsObjCfg.properties) {
             const key = _key as PropKey<T>;
@@ -151,9 +151,9 @@ export abstract class ObservableObject<T> {
             collection.addItemChangedListener(()=>this.notifyPropertyChangedEventListeners(key));
         }
         // children
-        for (const [_key, {ctor}] of this.obsObjCfg.children) {
+        for (const [_key, {ctor:Ctor}] of this.obsObjCfg.children) {
             const key = _key as PropKey<T>;
-            const child = new ctor();
+            const child = new Ctor();
             (this as any)[key] = child;
             this.children.set(key, child as ObservableObject<any>);
             child.addPropertyChangedEventListener(()=>this.notifyPropertyChangedEventListeners(key));
@@ -227,7 +227,7 @@ export abstract class ObservableObject<T> {
             this.deserializeNonCustomProperties(data)
         ]);
     }
-    
+
     /** do non-customized deserialization of child observables */
     deserializeNonCustomChildren(data:{[key:string]:unknown}):Promise<unknown> {
         const promises = [];

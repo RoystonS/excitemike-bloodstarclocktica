@@ -13,7 +13,7 @@ function initMobileBindings():void {
         ['mobileImportButton', ()=>openCurtainMenu('mobileImportMenu')],
         ['mobilePublishButton', ()=>openCurtainMenu('mobilePublishMenu')],
         ['mobileSharingButton', ()=>openCurtainMenu('mobileSharingMenu')],
-        
+
         ['charlistTabBtn', ()=>tabClicked('charlistTabBtn', 'characterlisttab')],
     ]);
 

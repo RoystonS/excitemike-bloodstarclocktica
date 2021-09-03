@@ -21,7 +21,7 @@ class ChooseOfficialCharDlg extends ChooseCharactersDlg {
     sectsAndVioletsSection!:HTMLElement;
 
     otherEditionsSection!:HTMLElement;
-    
+
     /** override for custom layout */
     protected addElementForCharacter(character:CharacterEntry, _container:HTMLElement, characterElement:HTMLElement):void {
         switch (character.edition) {
@@ -31,7 +31,7 @@ class ChooseOfficialCharDlg extends ChooseCharactersDlg {
             default: this.otherEditionsSection.appendChild(characterElement); break;
         }
     }
-    
+
     /** override for custom layout */
     protected makeContainer():HTMLElement {
         this.troubleBrewingSection = createElement({t:'details', children:[{t:'summary', txt:'Trouble Brewing'}], a:{open:''}});
@@ -40,7 +40,7 @@ class ChooseOfficialCharDlg extends ChooseCharactersDlg {
         this.otherEditionsSection = createElement({t:'details', children:[{t:'summary', txt:'Other'}], a:{open:''}});
         return createElement({t:'div', css:['importOfficialList'], children:[
             this.troubleBrewingSection,
-            this.badMoonRisingSection, 
+            this.badMoonRisingSection,
             this.sectsAndVioletsSection,
             this.otherEditionsSection]});
     }
@@ -53,7 +53,7 @@ export default async function importOfficial(edition:Edition):Promise<boolean> {
     const json = await spinner('importOfficial', 'Fetching official characters', fetchJson<CharacterEntry[]>('https://raw.githubusercontent.com/bra1n/townsquare/main/src/roles.json'));
     if (!json) {return false;}
     const choices = await new ChooseOfficialCharDlg().open(json);
-    
+
     const results = await Promise.all(choices.map(async choice=>{
         const character = await edition.addNewCharacter();
         try {

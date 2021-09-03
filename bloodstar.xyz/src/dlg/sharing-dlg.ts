@@ -36,16 +36,16 @@ class SharingDlg extends AriaDialog<void> {
         this.listDiv = createElement({t:'div', css:['shareDlgList']});
         this.addUserButton = createElement({t:'button', txt:'Add User'});
         this.addUserButton.addEventListener('click', ()=>this.showShareWithUser());
-    
+
         const body:CreateElementsOptions = [
             {t:'h1', txt:'Sharing settings'},
             {t:'p', txt:`Currently sharing "${editionName}" with:`},
             this.listDiv,
             {t:'div', css:['column'], children:[this.addUserButton]}
         ];
-    
+
         this.updateSharingDlg();
-        
+
         await this.baseOpen(
             document.activeElement,
             'sharing-dlg',
@@ -86,7 +86,7 @@ class SharingDlg extends AriaDialog<void> {
     /** remove a user */
     async removeUser(user:string):Promise<void> {
         if (!await getConfirmation(
-            'Unshare with user?', 
+            'Unshare with user?',
             `Are you sure you'd like to stop sharing with user "${user}"?`,
         ))
         { return; }
@@ -145,7 +145,7 @@ class SharingDlg extends AriaDialog<void> {
             await showError('Network Error', `Error encountered while unsharing`, error);
             return;
         }
-        
+
         this.shareList.push(user);
         this.updateSharingDlg();
     }

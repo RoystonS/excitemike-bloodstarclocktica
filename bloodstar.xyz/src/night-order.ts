@@ -118,7 +118,7 @@ async function updateOrdinals(
         const place = hasReminder ? getOrdinalString(ordNumber) : '-';
         const parenned = willExport ? place : `(${place})`;
         await character.setPropertyValue(ordinalPropName, parenned);
-        
+
         if (willExport && hasReminder) {
             ordNumber++;
         }

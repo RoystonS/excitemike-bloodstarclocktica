@@ -64,7 +64,7 @@ export async function saveAs(edition:Edition):Promise<boolean> {
         message:'You must first sign in if you wish to save.'
     });
     if (!sessionInfo){return false;}
-    
+
     if (!validateSaveName(name)) {
         await showMessage('Invalid File Name', `"${name}" is not a valid filename.`);
         return false;
@@ -149,7 +149,7 @@ async function separateImages(username:string, edition:Edition):Promise<Separate
     if (logo && logo.startsWith('data:')) {
         meta.logo = `https://www.bloodstar.xyz/usersave/${username}/${saveName}/_meta.png`;
     }
-    
+
     return {
         edition:editionSerialized,
         logo,
@@ -172,7 +172,7 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
 
     // save JSON
     const saveName = edition.saveName.get();
-    
+
     const saveData:SaveData = {
         token: sessionInfo.token,
         saveName: saveName,
@@ -183,7 +183,7 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
     if (response==='clobber'){
         response = await confirmClobber(saveData);
     }
-    
+
     // surface the error, if any
     if (response==='cancel'){return false;}
     if (response==='clobber'){return false;}
@@ -259,7 +259,7 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
 
     // mark things as up to date
     await edition.markClean();
-    
+
     // update recent file
     setRecentFile(saveName, sessionInfo.email);
     return true;

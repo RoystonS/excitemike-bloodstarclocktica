@@ -62,7 +62,7 @@ export default class BloodImage {
     private canvas:HTMLCanvasElement;
 
     private ctx:CanvasRenderingContext2D;
-    
+
     public get width() : number {
         return this.canvas.width;
     }
@@ -70,7 +70,7 @@ export default class BloodImage {
     public get height() : number {
         return this.canvas.height;
     }
-    
+
     /** create BloodImage from canvas, image data, size, or data URI */
     constructor(imageData:HTMLCanvasElement|ImageData|[number, number]) {
         if (imageData instanceof HTMLCanvasElement) {
@@ -78,7 +78,7 @@ export default class BloodImage {
         } else {
             this.canvas = document.createElement('canvas');
         }
-        
+
         const ctx = this.canvas.getContext('2d');
         if (!ctx) { throw new Error('Could not get CanvasRenderingContext2D'); }
         this.ctx = ctx;
@@ -243,7 +243,7 @@ export default class BloodImage {
         destination.ctx.putImageData(dstImageData, 0, 0);
         return destination;
     }
-    
+
     /**
      * create a copy cropped to the given rectangle
      * @returns cropped copy of this
@@ -290,7 +290,7 @@ export default class BloodImage {
         return image;
     }
 
-    /** 
+    /**
      * resize, adding extra spacing to preserve the aspect ratio
      * @returns a new BloodImage
      */

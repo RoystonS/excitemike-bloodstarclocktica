@@ -1,6 +1,6 @@
 /**
  * Base definitions from which bindings are built
- * 
+ *
  * @module BaseBinding
  */
 

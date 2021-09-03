@@ -33,7 +33,7 @@ class SaveDiscardCancelDlg extends AriaDialog<boolean> {
 
 /**
  * if dirty, prompt for a save.
- * @param edition 
+ * @param edition
  * @returns promise that resolves to true if the user did not cancel
  */
 export async function savePromptIfDirty(edition:Edition):Promise<boolean> {

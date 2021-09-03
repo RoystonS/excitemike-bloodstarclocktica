@@ -24,7 +24,7 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
     protected static addElementForCharacter(_character:ScriptEntry, container:HTMLElement, characterElement:HTMLElement):void {
         container.appendChild(characterElement);
     }
-    
+
     /** override for custom layout */
     protected static makeContainer():HTMLElement {
         return createElement({t:'div', css:['importOfficialList']});

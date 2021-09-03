@@ -56,10 +56,10 @@ async function cleanupListItem(element: Node, character: Character, selectedChar
  */
 function makeCharacterListItem(character: Character, collection:ObservableCollection<Character>, selectedCharacterProperty:Property<Character|null>):HTMLElement {
     const row = document.createElement("div");
-    
+
     row.className = "characterListItem";
     row.tabIndex = 0;
-    row.onclick = async e => { 
+    row.onclick = async e => {
         if (e.target === row) {
             await selectedCharacterProperty.set(character);
         }

@@ -70,7 +70,7 @@ export class Edition extends ObservableObject<Edition> {
     /** contains the same Character objects as characterList, but ordered for night order */
     @observableCollection(Character.asyncNew, {customSerialize:serializeJustIds, customDeserialize:deserializeFromIds})
     readonly otherNightOrder!:ObservableCollection<Character>;
-    
+
     /** whether to render preview on a character token background like you would see on clocktower.online */
     @observableProperty(true, {read:false, write:false})
     readonly previewOnToken!:Property<boolean>;
@@ -278,10 +278,10 @@ export class Edition extends ObservableObject<Edition> {
         if (!data) {await this.reset(); return false;}
         await this.saveName.set(saveName);
         await spinner('edition.open', 'Deserializing edition', this.deserialize(data));
-        
+
         // mark all as up to date
         await this.markClean();
-        
+
         // THEN fix any ids that need it
         await this.fixDuplicateIds();
 

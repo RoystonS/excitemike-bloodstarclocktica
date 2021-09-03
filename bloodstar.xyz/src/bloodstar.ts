@@ -51,18 +51,18 @@ export function tabClicked(btnId:string, tabId:string):void {
         const tabBtn = allTabBtns[i];
         tabBtn.classList.remove('selectedTabBtn');
     }
-    
+
     const allTabs = document.getElementsByClassName("tab");
     for (let i = 0; i < allTabs.length; i++) {
         const tabBtn = allTabs[i];
         tabBtn.classList.remove('activeTab');
     }
-    
+
     const tabBtn = document.getElementById(btnId);
     if (tabBtn) {
         tabBtn.classList.add('selectedTabBtn');
     }
-    
+
     const tabDiv = document.getElementById(tabId);
     if (tabDiv) {
         tabDiv.classList.add('activeTab');
@@ -117,7 +117,7 @@ async function initBindings():Promise<void> {
     bindCharacterList('characterList', edition.characterList, selectedCharacter);
 
     await initNightOrderBindings(edition);
-    
+
     // tie selected character to character tab
     selectedCharacter.addListener(v=>{
         CharacterTab.setSelectedCharacter(v);
@@ -224,7 +224,7 @@ export function init(options?:BloodstarOptions):Promise<void> {
             });
         } else {
             // `DOMContentLoaded` already fired
-            
+
             // intentional floating promise
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             _init(options).then(resolve);

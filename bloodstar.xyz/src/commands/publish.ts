@@ -59,7 +59,7 @@ export default async function publish(edition:Edition):Promise<boolean> {
 
     await new AriaDialog<void>().baseOpen(
         null,
-        'publishComplete', 
+        'publishComplete',
         [
             {t:'h1', txt:'Publish Complete'},
             {

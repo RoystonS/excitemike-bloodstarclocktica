@@ -105,6 +105,18 @@
       "lines-between-class-members":"warn",
       "max-depth":["warn", 6],
       "max-len":["warn", 200],
+      "max-nested-callbacks":"warn",
+      "multiline-ternary": ["error", "always-multiline"],
+      "new-cap":"warn",
+      "new-parens":"warn",
+      "newline-per-chained-call":"warn",
+      "no-array-constructor":"warn",
+      "no-lonely-if":"warn",
+      "no-multiple-empty-lines":"warn",
+      "no-negated-condition":"warn",
+      "no-new-object":"warn",
+      "no-restricted-syntax":"warn",
+      "no-trailing-spaces":"warn",
       "yoda":"warn",
 
       // addition typescript rules

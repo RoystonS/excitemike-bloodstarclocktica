@@ -113,7 +113,7 @@ class ChooseFileDlg extends AriaDialog<string|[string, string]> {
                 }
             }
         }
-        
+
         return await this.baseOpen(
             document.activeElement,
             'open',
@@ -264,7 +264,7 @@ async function showLeave(owner:string, edition:string):Promise<boolean> {
         `Are you sure you'd like to leave "${owner} / ${edition}"? You will no longer be able to import from this file.`,
     ))
     { return false; }
-    
+
     const request:LeaveRequest = {
         token:sessionInfo.token,
         owner,

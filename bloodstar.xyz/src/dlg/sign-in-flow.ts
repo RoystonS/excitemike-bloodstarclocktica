@@ -93,7 +93,7 @@ class SignInDlg extends AriaDialog<SessionInfo> {
                 events:{keyup:submitOnEnter as unknown as EventListener}
             }]
         });
-        
+
         // forgot password link
         const includeForgotPasswordLink = (options?.includeForgotPasswordLink) !== false;
         if (includeForgotPasswordLink) {

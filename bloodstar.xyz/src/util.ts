@@ -112,7 +112,7 @@ export async function fetchJson<T>(uri:string):Promise<T|null> {
             mode: 'cors',
             signal: controller.signal
         });
-        
+
         if (!response.ok) {
             console.error(`${response.status}: (${response.type}) ${response.statusText}`);
             // eslint-disable-next-line @typescript-eslint/no-floating-promises

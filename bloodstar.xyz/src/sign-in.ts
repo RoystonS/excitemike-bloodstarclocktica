@@ -106,9 +106,7 @@ export async function signIn(options?:SignInOptions):Promise<SessionInfo|null> {
     clearStoredToken();
     sessionInfo = null;
 
-    if (options?.canCancel !== false) {
-        await promptAndSignIn(options);
-    } else {
+    if (options?.canCancel === false) {
         while (!sessionInfo) {
             try {
                 await promptAndSignIn(options);
@@ -116,6 +114,8 @@ export async function signIn(options?:SignInOptions):Promise<SessionInfo|null> {
                 await showError('Error', 'Error while signing in', error);
             }
         }
+    } else {
+        await promptAndSignIn(options);
     }
 
     storeToken(sessionInfo);
