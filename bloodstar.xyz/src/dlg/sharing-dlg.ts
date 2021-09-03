@@ -5,8 +5,8 @@
 import signIn, { signedInCmd } from '../sign-in';
 import { createElement, CreateElementsOptions } from '../util';
 import { updateUsernameWarnings, validateUsername } from '../validate';
-import {AriaDialog, showDialog} from './aria-dlg'
-import {show as showMessage, showError} from './blood-message-dlg';
+import {AriaDialog, showDialog} from './aria-dlg';
+import {showError, show as showMessage} from './blood-message-dlg';
 import {show as getConfirmation} from "./yes-no-dlg";
 
 type GetSharedRequest = {token:string, saveName:string};
@@ -32,7 +32,7 @@ class SharingDlg extends AriaDialog<void> {
         this.editionName = editionName;
         if (!this.editionName) {return;}
         this.shareList = await this.getShareList();
-        if (!this.shareList){return;}
+        if (!this.shareList) {return;}
         this.listDiv = createElement({t:'div', css:['shareDlgList']});
         this.addUserButton = createElement({t:'button', txt:'Add User'});
         this.addUserButton.addEventListener('click', ()=>this.showShareWithUser());
@@ -63,8 +63,8 @@ class SharingDlg extends AriaDialog<void> {
             title:'Sign In',
             message:'You must sign in to change sharing settings.'
         });
-        if (!sessionInfo){return this.shareList;}
-        if (!this.editionName){return this.shareList;}
+        if (!sessionInfo) {return this.shareList;}
+        if (!this.editionName) {return this.shareList;}
         const request:GetSharedRequest={
             token:sessionInfo.token,
             saveName:this.editionName
@@ -104,7 +104,7 @@ class SharingDlg extends AriaDialog<void> {
         };
         try {
             const response = await signedInCmd<UnshareResponse>('unshare', 'Unsharing', request);
-            if (response !== true){
+            if (response !== true) {
                 await showError('Network Error', `Error encountered while unsharing`, response.error);
                 console.error(response.error);
                 return;
@@ -218,6 +218,6 @@ class SharingDlg extends AriaDialog<void> {
 }
 
 /** show sharing dialog */
-export default async function show(editionSaveName:string):Promise<void>{
+export default async function show(editionSaveName:string):Promise<void> {
     await new SharingDlg().open(editionSaveName);
 }

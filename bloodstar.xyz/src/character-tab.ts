@@ -145,7 +145,7 @@ function disableCharacterTab():void {
     const tags:ReadonlyArray<TagsThatCanBeDisabled> = ['button', 'fieldset', 'optgroup', 'option', 'select', 'textarea', 'input'];
     for (const tag of tags) {
         const elements = tabDiv.getElementsByTagName(tag);
-        for (let i=0;i<elements.length;i++){
+        for (let i=0; i<elements.length; i++) {
             const item = elements.item(i);
             if (item) {
                 item.disabled = true;
@@ -161,7 +161,7 @@ function enableCharacterTab():void {
     const tags:ReadonlyArray<TagsThatCanBeDisabled> = ['button', 'fieldset', 'optgroup', 'option', 'select', 'textarea', 'input'];
     for (const tag of tags) {
         const elements = tabDiv.getElementsByTagName(tag);
-        for (let i=0;i<elements.length;i++){
+        for (let i=0; i<elements.length; i++) {
             const item = elements.item(i);
             if (item) {
                 item.disabled = false;
@@ -196,7 +196,7 @@ const teamColorStyleMap = new Map<BloodTeam, string>([
 ]);
 
 /** sync team color style to the actual team */
-function setTeamColorStyle(actualTeam:BloodTeam, classList:DOMTokenList):void{
+function setTeamColorStyle(actualTeam:BloodTeam, classList:DOMTokenList):void {
     for (const [team, style] of teamColorStyleMap) {
         if (actualTeam === team) {
             classList.add(style);

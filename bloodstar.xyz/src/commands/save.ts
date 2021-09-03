@@ -4,7 +4,7 @@
  */
 import {show as inputDlg} from '../dlg/blood-string-dlg';
 import { Edition } from '../model/edition';
-import { show as showMessage, showError } from '../dlg/blood-message-dlg';
+import { showError, show as showMessage } from '../dlg/blood-message-dlg';
 import Locks from '../lock';
 import {spinner} from '../dlg/spinner-dlg';
 import { AriaDialog } from '../dlg/aria-dlg';
@@ -63,7 +63,7 @@ export async function saveAs(edition:Edition):Promise<boolean> {
         title:'Sign In to Save',
         message:'You must first sign in if you wish to save.'
     });
-    if (!sessionInfo){return false;}
+    if (!sessionInfo) {return false;}
 
     if (!validateSaveName(name)) {
         await showMessage('Invalid File Name', `"${name}" is not a valid filename.`);
@@ -104,7 +104,7 @@ export async function save(edition:Edition):Promise<boolean> {
                     title:'Sign In to Save',
                     message:'You must first sign in if you wish to save.'
                 });
-                if (!sessionInfo){return false;}
+                if (!sessionInfo) {return false;}
                 return await _save(sessionInfo, edition, true);
             }
         }
@@ -129,7 +129,7 @@ async function separateImages(username:string, edition:Edition):Promise<Separate
     const sourceImages = new Map<string, string>();
     const finalImages = new Map<string, string>();
     for (const character of characters) {
-        const id = character.id;
+        const {id} = character;
         if (!id) {continue;}
 
         const unStyledImageStr = character.unStyledImage;
@@ -145,7 +145,7 @@ async function separateImages(username:string, edition:Edition):Promise<Separate
         }
     }
     const meta = editionSerialized.meta as {logo?:string};
-    const logo:string|undefined = meta.logo;
+    const {logo} = meta;
     if (logo && logo.startsWith('data:')) {
         meta.logo = `https://www.bloodstar.xyz/usersave/${username}/${saveName}/_meta.png`;
     }
@@ -180,14 +180,14 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
         edition: toSave.edition
     };
     let response = await signedInCmd<SaveResult>('save', `Saving edition data`, saveData);
-    if (response==='clobber'){
+    if (response==='clobber') {
         response = await confirmClobber(saveData);
     }
 
     // surface the error, if any
-    if (response==='cancel'){return false;}
-    if (response==='clobber'){return false;}
-    if ('error' in response){
+    if (response==='cancel') {return false;}
+    if (response==='clobber') {return false;}
+    if ('error' in response) {
         await showError('Error', `Error encountered while trying to save ${saveName}`, response.error);
         return false;
     }
@@ -229,7 +229,7 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
     if (toSave.logo && edition.isLogoDirty()) {
         const sourceUrl = new URL(toSave.logo);
         const isDataUri = sourceUrl.protocol === 'data:';
-        let logo = toSave.logo;
+        let {logo} = toSave;
         if (!isDataUri) {
             const useCors = sourceUrl.hostname !== window.location.hostname;
             logo = await imageUrlToDataUri(toSave.logo, useCors);

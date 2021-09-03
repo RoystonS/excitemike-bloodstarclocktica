@@ -89,7 +89,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
         if (!this.dragged) { return false; }
 
         // must be over/dropping onto an element
-        const target = e.target;
+        const {target} = e;
         if (!(target instanceof Element)) { return false; }
 
         // must be in a listitem
@@ -169,7 +169,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     static dragstart(e:DragEvent):void {
         if (e.target instanceof Element) {
             const listItemElement = e.target.closest('li');
-            if (!listItemElement){return;}
+            if (!listItemElement) {return;}
             listItemElement.classList.add('dragging');
             Animate.shrinkOutMaxHeight(listItemElement);
         }
@@ -179,7 +179,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     static dragend(e:DragEvent):void {
         if (e.target instanceof Element) {
             const listItemElement = e.target.closest('li');
-            if (!listItemElement){return;}
+            if (!listItemElement) {return;}
             listItemElement?.classList.remove('dragging');
             Animate.growInMaxHeight(listItemElement);
         }
@@ -298,7 +298,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
         for (let i=0; i<this.listElement.childNodes.length; ++i) {
             const child = this.listElement.childNodes[i];
             const data = this.collection.get(i);
-            if (!data){continue;}
+            if (!data) {continue;}
             this.cleanupListItem(child, data);
         }
         this.listElement.innerText = '';

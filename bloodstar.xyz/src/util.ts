@@ -2,7 +2,7 @@
  * Miscellaneous useful things
  * @module Util
  */
-import {show as showMessage, showError} from './dlg/blood-message-dlg';
+import {showError, show as showMessage} from './dlg/blood-message-dlg';
 
 /** configuration used to create DOM elements */
 export type CreateElementOptions<K extends keyof HTMLElementTagNameMap> = {
@@ -167,7 +167,7 @@ export function hookupClickEvents(data: [string, (e: Event) => void][]):()=>void
                 element.removeEventListener("click", listener);
             }
         }
-    }
+    };
 }
 
 /** show/hide the element */
@@ -207,7 +207,7 @@ export function walkHTMLElements(element:HTMLElement, f:(e:HTMLElement)=>void):v
         const htmlElement = stack.pop();
         if (htmlElement) {
             f(htmlElement);
-            for (let i=0; i<htmlElement.children.length;i++) {
+            for (let i=0; i<htmlElement.children.length; i++) {
                 const child = htmlElement.children[i];
                 if (child instanceof HTMLElement) {
                     stack.push(child);

@@ -39,7 +39,7 @@ async function fetchWithTimeout(cmdName:string, body:BodyInit|undefined, timeout
     } catch (error) {
         throw new Error(timedOut?`Command "${cmdName} timed out`:`Network error during command "${cmdName}"`);
     } finally {
-        clearTimeout(timeoutId)
+        clearTimeout(timeoutId);
     }
 }
 

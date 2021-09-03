@@ -22,7 +22,7 @@ export class LockSet<KeyType> {
      * */
     private acquire(key:KeyType, max = 1):Promise<WorkCompleteFn> {
         let entry = this.locks.get(key);
-        if (!entry){
+        if (!entry) {
             entry = {running:[], queue:[], max};
             this.locks.set(key, entry);
         }
@@ -30,7 +30,7 @@ export class LockSet<KeyType> {
 
         // promise to block on before work is executed. resolves when previous work in queue completes
         const promise = new Promise<WorkCompleteFn>(resolve=>{
-            if (!entry){return;}
+            if (!entry) {return;}
             entry.queue.push(resolve);
         });
 

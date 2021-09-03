@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {BaseBinding, Property, PropertyChangeListener} from './base-binding'
-import AttributeBinding from './attribute-binding'
-import {CollectionBinding, RenderFn, CleanupFn} from './collection-binding'
+import {BaseBinding, Property, PropertyChangeListener} from './base-binding';
+import AttributeBinding from './attribute-binding';
+import {CleanupFn, CollectionBinding, RenderFn} from './collection-binding';
 import {ImageChooserBinding, ImageDisplayBinding} from './image-binding';
 import SliderBinding from './slider-binding';
 import {StyleBinding} from './style-binding';
@@ -99,7 +99,7 @@ class ComboBoxBinding<T> extends BaseBinding<T> {
 /** add a binding for the given element to be later cleaned up with unbindElement */
 function addBinding(element:Node, binding:Binding):void {
     let bindingsForElement = bindings.get(element);
-    if (!bindingsForElement){
+    if (!bindingsForElement) {
         bindingsForElement = [];
         bindings.set(element, bindingsForElement);
     }
@@ -245,7 +245,7 @@ export function bindVisibilityById(id:string, property:Property<boolean>):void {
 /** clear element's current binding, if any */
 export function unbindElement(element:Node):void {
     const bindingsForElement = bindings.get(element);
-    if (!bindingsForElement){return;}
+    if (!bindingsForElement) {return;}
     for (const binding of bindingsForElement) {
         binding.destroy();
     }

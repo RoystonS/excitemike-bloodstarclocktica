@@ -29,7 +29,7 @@ export type SignInFlowOptions = {
 };
 
 class SignInDlg extends AriaDialog<SessionInfo> {
-    canCancel():boolean{return this._canCancel;}
+    canCancel():boolean {return this._canCancel;}
 
     /** get a value from a field by id */
     private getValue(id:string):string {
@@ -101,7 +101,7 @@ class SignInDlg extends AriaDialog<SessionInfo> {
                 t:'a',
                 a:{href:'#', style:'align-self:center'},
                 txt:'Forgot your password?',
-                events:{click:async()=>this.close(await showResetPasswordFlow())}
+                events:{click:async ()=>this.close(await showResetPasswordFlow())}
             });
         }
 
@@ -123,7 +123,7 @@ class SignInDlg extends AriaDialog<SessionInfo> {
 
         // sign up link
         const includeSignUpLink = (options?.includeSignUpLink) !== false;
-        if (includeSignUpLink){
+        if (includeSignUpLink) {
             body.push({
                 t:'div',
                 txt:'Need an account? ',
@@ -138,7 +138,8 @@ class SignInDlg extends AriaDialog<SessionInfo> {
                             this.close(signUpResult);
                         }
                     }}
-                }]});
+                }]
+            });
         }
 
         return this.baseOpen(
@@ -153,7 +154,7 @@ class SignInDlg extends AriaDialog<SessionInfo> {
     private signIn():Promise<SessionInfo|null> {
         const username = this.getValue('signInDlgUsername');
         const password = this.getValue('signInDlgPassword');
-        return signIn(username, password)
+        return signIn(username, password);
     }
 }
 

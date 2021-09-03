@@ -170,7 +170,7 @@ async function openNoPrompts(edition:Edition, name:string|[string, string]):Prom
             title:'Sign In to Open',
             message:'You must first sign in to open a file.'
         });
-        if (!sessionInfo){return false;}
+        if (!sessionInfo) {return false;}
         const openData:OpenRequest = {
             saveName: name,
             token: sessionInfo.token,

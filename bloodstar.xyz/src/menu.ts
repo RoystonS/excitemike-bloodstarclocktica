@@ -2,9 +2,8 @@
  * Code related to menu commands
  * @module Menu
  */
-
 import * as bloodstar from "./bloodstar";
-import {show as showMessage, showError } from "./dlg/blood-message-dlg";
+import {showError, show as showMessage } from "./dlg/blood-message-dlg";
 import { Edition } from "./model/edition";
 import { hookupClickEvents, showHideElement } from "./util";
 import { importBlood } from './import/blood-file';
@@ -140,7 +139,7 @@ export async function saveFileAsClicked(edition:Edition):Promise<boolean> {
         title:'Sign In to Save',
         message:'You must be signed in to save.'
     });
-    if (!sessionInfo){return false;}
+    if (!sessionInfo) {return false;}
     if (await saveAs(edition)) {
         setRecentFile(edition.saveName.get(), sessionInfo.email);
         return true;
@@ -202,6 +201,6 @@ export function updateUserDisplay(session:SessionInfo|null):void {
     }
 
     const username = document.getElementById('userName');
-    if (!(username instanceof HTMLSpanElement)){return;}
+    if (!(username instanceof HTMLSpanElement)) {return;}
     username.innerText = session ? session.username : '';
 }

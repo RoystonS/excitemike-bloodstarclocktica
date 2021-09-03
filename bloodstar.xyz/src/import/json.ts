@@ -56,7 +56,7 @@ function chooseJsonFile():Promise<File|null> {
             };
             fileInput.click();
         } else {
-            dlg.close(null)
+            dlg.close(null);
         }
     }
 
@@ -100,37 +100,37 @@ async function importCharacter(entry:CharacterEntry, edition:Edition, firstNight
     fnoList.push(character);
     firstNightOrder.set(firstNightNumber, fnoList);
 
-    if (entry.firstNightReminder){
+    if (entry.firstNightReminder) {
         await character.firstNightReminder.set(entry.firstNightReminder);
     }
 
     const otherNightsNumber = entry.otherNight || 0;
     const onoList = otherNightOrder.get(otherNightsNumber) || [];
     onoList.push(character);
-    otherNightOrder.set(otherNightsNumber, onoList)
+    otherNightOrder.set(otherNightsNumber, onoList);
 
-    if (entry.otherNightReminder){
+    if (entry.otherNightReminder) {
         await character.otherNightReminder.set(entry.otherNightReminder);
     }
-    if (entry.reminders){
+    if (entry.reminders) {
         await character.characterReminderTokens.set(entry.reminders.join('\n'));
     }
-    if (entry.remindersGlobal){
+    if (entry.remindersGlobal) {
         await character.globalReminderTokens.set(entry.remindersGlobal.join('\n'));
     }
-    if (entry.setup){
+    if (entry.setup) {
         await character.setup.set(entry.setup);
     }
-    if (entry.name){
+    if (entry.name) {
         await character.name.set(entry.name);
     }
-    if (entry.team){
+    if (entry.team) {
         await character.team.set(parseBloodTeam(entry.team));
     }
-    if (entry.ability){
+    if (entry.ability) {
         await character.ability.set(entry.ability);
     }
-    if (entry.image){
+    if (entry.image) {
         const canvas = await spinner(entry.id, `Downloading image for ${entry.name}`, urlToCanvas(entry.image, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, true));
         const dataUrl = canvas.toDataURL('image/png');
         await spinner(entry.id, `Setting character image for ${entry.name}`, character.imageSettings.shouldRestyle.set(false));
@@ -205,14 +205,14 @@ export async function importJson(fileOrStringOrArray:File|string|ScriptEntry[], 
 /** user chose to import character(s) from a json file */
 export async function importJsonFromFile(edition:Edition):Promise<boolean> {
     const file = await chooseJsonFile();
-    if (!file){return false;}
+    if (!file) {return false;}
     return importJson(file, edition);
 }
 
 /** user chose to import character(s) from a json file */
 export async function importJsonFromUrl(edition:Edition):Promise<boolean> {
     const url = await StringDlg.show('Enter URL', 'Enter URL to a custom-script.json file.');
-    if (!url){return false;}
+    if (!url) {return false;}
     const json = await spinner('importJsonFromUrl', 'Fetching custom script JSON', fetchJson<ScriptEntry[]>(url));
     if (!json) {return false;}
     return importJson(json, edition);

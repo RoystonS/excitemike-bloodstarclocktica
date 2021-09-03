@@ -5,8 +5,8 @@
 import signIn, { signedInCmd } from '../sign-in';
 import { createElement, CreateElementsOptions } from '../util';
 import { updateUsernameWarnings, validateUsername } from '../validate';
-import {AriaDialog, showDialog} from './aria-dlg'
-import {show as showMessage, showError} from './blood-message-dlg';
+import {AriaDialog, showDialog} from './aria-dlg';
+import {showError, show as showMessage} from './blood-message-dlg';
 import {show as getConfirmation} from "./yes-no-dlg";
 
 type BlockRequest = {token:string, username:string};
@@ -28,7 +28,7 @@ class ManageBlockedDlg extends AriaDialog<void> {
     /** create the dialog */
     async open():Promise<void> {
         this.blockList = await getBlockList();
-        if (!this.blockList){return;}
+        if (!this.blockList) {return;}
         this.listDiv = createElement({t:'div', css:['shareDlgList']});
         this.addButton = createElement({t:'button', txt:'Block a User'});
         this.addButton.addEventListener('click', async ()=>{
@@ -95,7 +95,7 @@ async function doBlockUser(username:string):Promise<boolean> {
         title:'Sign In',
         message:'You must sign in to manage your block list.'
     });
-    if (!sessionInfo){return false;}
+    if (!sessionInfo) {return false;}
     const request:BlockRequest = {
         token:sessionInfo.token,
         username,
@@ -123,7 +123,7 @@ export async function getBlockList():Promise<string[]|null> {
         title:'Sign In',
         message:'You must sign in to manage your block list.'
     });
-    if (!sessionInfo){return null;}
+    if (!sessionInfo) {return null;}
     const request:GetBlockedRequest={token:sessionInfo.token};
     try {
         const response = await signedInCmd<GetBlockedResponse>('get-blocked', 'Retrieving block list', request);
@@ -203,7 +203,7 @@ export async function showBlockUser(username:string):Promise<boolean> {
 }
 
 /** show dialog for managing block list */
-export async function showManageBlocked():Promise<void>{
+export async function showManageBlocked():Promise<void> {
     await new ManageBlockedDlg().open();
 }
 

@@ -16,7 +16,7 @@ const teamColorStyleMap = new Map<BloodTeam, string>([
 ]);
 
 /** sync team color style to the actual team */
-export function setTeamColorStyle(actualTeam:BloodTeam, classList:DOMTokenList):void{
+export function setTeamColorStyle(actualTeam:BloodTeam, classList:DOMTokenList):void {
     for (const [team, style] of teamColorStyleMap) {
         if (actualTeam === team) {
             classList.add(style);

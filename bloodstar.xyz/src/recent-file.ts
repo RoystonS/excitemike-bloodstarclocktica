@@ -10,7 +10,7 @@
  */
 export function clearRecentFile(name:string):void {
     try {
-        const localStorage = window.localStorage;
+        const {localStorage} = window;
         if (!localStorage) {return;}
         const file = localStorage.getItem('recentFile');
         if (file!==name) {return;}
@@ -25,11 +25,11 @@ export function clearRecentFile(name:string):void {
  * otherwise, return the empty string
  */
 export function getRecentFile(userEmail:string):string {
-    if (userEmail !== localStorage.getItem('recentFileUser')){
+    if (userEmail !== localStorage.getItem('recentFileUser')) {
         return '';
     }
     try {
-        const localStorage = window.localStorage;
+        const {localStorage} = window;
         if (!localStorage) {return '';}
         return localStorage.getItem('recentFile') || '';
     } catch {
@@ -44,7 +44,7 @@ export function getRecentFile(userEmail:string):string {
  */
 export function setRecentFile(name:string, userEmail:string):void {
     try {
-        const localStorage = window.localStorage;
+        const {localStorage} = window;
         if (!localStorage) {return;}
         localStorage.setItem('recentFile', name);
         localStorage.setItem('recentFileUser', userEmail);

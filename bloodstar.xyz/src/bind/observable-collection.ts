@@ -1,4 +1,4 @@
-import {ObservableObject, PropKey, PropertyChangedListener} from './observable-object';
+import {ObservableObject, PropertyChangedListener, PropKey} from './observable-object';
 
 export type ObservableCollectionListener<T extends ObservableObject<T>> = (event:ObservableCollectionChangedEvent<T>)=>void;
 export type ItemPropertyChangedListener<T> = (index:number, item:T, propName:PropKey<T>) => void;
@@ -43,7 +43,7 @@ export type ObservableCollectionChangedEvent<T extends ObservableObject<T>> = {
 class ItemPlus<ItemType extends ObservableObject<ItemType>> {
     public listener:PropertyChangedListener<ItemType>|null;
 
-    constructor (changeCb:(itemPlus:ItemPlus<ItemType>, propName:PropKey<ItemType>)=>void, public index:number, public item:ItemType){
+    constructor(changeCb:(itemPlus:ItemPlus<ItemType>, propName:PropKey<ItemType>)=>void, public index:number, public item:ItemType) {
         this.listener = (propName:PropKey<ItemType>)=>changeCb(this, propName);
         item?.addPropertyChangedEventListener(this.listener);
     }
@@ -208,7 +208,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** move the item from one index to another */
     async move(oldIndex:number, newIndex:number):Promise<void> {
-        if (oldIndex===newIndex){return;}
+        if (oldIndex===newIndex) {return;}
         const item = this.items[oldIndex];
         this.items.splice(oldIndex, 1);
         this.items.splice(newIndex, 0, item);
@@ -287,7 +287,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
         const removedItemsPlus = this.items.slice(start, end);
         const removedItems = removedItemsPlus.map(itemPlus=>itemPlus.item);
-        for (const itemPlus of removedItemsPlus){
+        for (const itemPlus of removedItemsPlus) {
             itemPlus.destroy();
         }
         const newItemsPlus = items.map((item, i)=>new ItemPlus<ItemType>(this.notifyItemChangedListeners.bind(this), i+start, item));
@@ -369,7 +369,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     private updateIndices(begin?:number, end?:number):void {
         const fixedBegin = begin||0;
         const fixedEnd = end||this.items.length;
-        for (let i=fixedBegin; i<fixedEnd; i++){
+        for (let i=fixedBegin; i<fixedEnd; i++) {
             this.items[i].index = i;
         }
     }

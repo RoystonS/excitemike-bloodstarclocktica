@@ -2,7 +2,7 @@ import {BaseBinding, Property} from './base-binding';
 
 function updateValueLabel(element:HTMLInputElement, valueLabel:HTMLElement|null) {
     if (valueLabel) {
-        const places = valueLabel.dataset.places;
+        const {places} = valueLabel.dataset;
         if (places === undefined) {
             valueLabel.innerText = element.value;
         } else {

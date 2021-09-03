@@ -63,7 +63,7 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
         if (e.target === row) {
             await selectedCharacterProperty.set(character);
         }
-    }
+    };
     row.onkeyup = async e => {
         switch (e.code) {
             case 'Space':
@@ -75,7 +75,7 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
                 // others ignored
                 break;
         }
-    }
+    };
     bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);
     bindAttribute(row, 'title', character.ability);
 

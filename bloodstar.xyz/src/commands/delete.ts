@@ -2,7 +2,7 @@
  * Code related to deleting files
  * @module Delete
  */
-import { show as showMessage, showError } from '../dlg/blood-message-dlg';
+import { showError, show as showMessage } from '../dlg/blood-message-dlg';
 import {spinner} from '../dlg/spinner-dlg';
 import {show as getConfirmation} from "../dlg/yes-no-dlg";
 import {chooseFile} from "../dlg/open-flow";
@@ -36,7 +36,7 @@ export async function chooseAndDeleteFile():Promise<string> {
     if (Array.isArray(name)) {return '';}
 
     if (!await confirmDelete(name)) {return '';}
-    if (!await spinner('delete', 'Choose file to delete', deleteFile(name))){return '';}
+    if (!await spinner('delete', 'Choose file to delete', deleteFile(name))) {return '';}
     clearRecentFile(name);
     await showMessage(`Deleted`, `File "${name}" deleted`);
     return name;
@@ -47,12 +47,12 @@ export async function chooseAndDeleteFile():Promise<string> {
  * @param name name of the file to open
  * @returns true if nothing went terribly wrong
  */
-async function deleteFile(name:string):Promise<boolean>{
+async function deleteFile(name:string):Promise<boolean> {
     const sessionInfo = await signIn({
         title:'Sign In to Delete',
         message:'You must be signed in to delete a file.'
     });
-    if (!sessionInfo){return false;}
+    if (!sessionInfo) {return false;}
     const deleteData:DeleteRequest = {
         token:sessionInfo.token,
         saveName: name
@@ -65,6 +65,6 @@ async function deleteFile(name:string):Promise<boolean>{
         return false;
     } catch (error) {
         await showError('Error', `Error encountered while trying to delete file ${name}`, error);
-        return false
+        return false;
     }
 }

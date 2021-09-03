@@ -12,11 +12,11 @@ import {observableChild, observableCollection, ObservableObject, observablePrope
 
 function serializeJustIds(_:ObservableObject<Edition>, nightOrder:ObservableType):unknown {
     if (!(nightOrder instanceof ObservableCollection)) {return [];}
-    return nightOrder.map((c:Character)=>c.id.get())
+    return nightOrder.map((c:Character)=>c.id.get());
 }
 async function deserializeFromIds(object:ObservableObject<Edition>, nightOrder:ObservableType, data:unknown):Promise<void> {
     if (!(nightOrder instanceof ObservableCollection)) {return;}
-    if (!Array.isArray(data)){return;}
+    if (!Array.isArray(data)) {return;}
     const characterList = object.getCollection('characterList');
     if (!(characterList instanceof ObservableCollection)) {return;}
 
@@ -32,7 +32,7 @@ async function deserializeFromIds(object:ObservableObject<Edition>, nightOrder:O
     const orderedCharacters = [];
     for (const id of data) {
         const character = charactersById.get(String(id));
-        if (!character){
+        if (!character) {
             console.error(`deserializeFromIds: no character found for id ${id}`);
             continue;
         }
@@ -185,7 +185,7 @@ export class Edition extends ObservableObject<Edition> {
             }
         });
 
-        return edition
+        return edition;
     }
 
     /** add a new character to the set */
@@ -235,8 +235,8 @@ export class Edition extends ObservableObject<Edition> {
         const ids = new Set<string>();
         for (const character of this.characterList) {
             let id = character.id.get();
-            if (ids.has(id)){
-                while (ids.has(id)){
+            if (ids.has(id)) {
+                while (ids.has(id)) {
                     id = this.generateValidId(character.name.get());
                 }
                 await character.id.set(id);
@@ -246,13 +246,13 @@ export class Edition extends ObservableObject<Edition> {
     }
 
     /** check whether image needs saving */
-    isCharacterFinalImageDirty(id:string):boolean{return this.dirtyFinalImages.has(id);}
+    isCharacterFinalImageDirty(id:string):boolean {return this.dirtyFinalImages.has(id);}
 
     /** check whether image needs saving */
-    isCharacterSourceImageDirty(id:string):boolean{return this.dirtySourceImages.has(id);}
+    isCharacterSourceImageDirty(id:string):boolean {return this.dirtySourceImages.has(id);}
 
     /** check whether image needs saving */
-    isLogoDirty():boolean{return this.dirtyLogo;}
+    isLogoDirty():boolean {return this.dirtyLogo;}
 
     /** edition was just opened or saved */
     async markClean():Promise<void> {

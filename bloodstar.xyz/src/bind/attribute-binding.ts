@@ -1,7 +1,7 @@
 /**
  * @module AttributeBinding
  */
-import {BaseBinding, Property} from './base-binding'
+import {BaseBinding, Property} from './base-binding';
 
 /** one way binding to map a string property to an attribute of an element */
 export default class AttributeBinding extends BaseBinding<string> {

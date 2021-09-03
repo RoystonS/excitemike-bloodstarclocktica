@@ -138,7 +138,7 @@ class BloodImporter {
                 this.charactersById.set(id, character);
             }
             return character;
-        }, 1)
+        }, 1);
     }
 
     /** import part of a .blood file */
@@ -200,10 +200,10 @@ class BloodImporter {
             await character.team.set(parseBloodTeam(json.team));
         }
         if (json.reminders) {
-            await character.characterReminderTokens.set(json.reminders.join('\n'))
+            await character.characterReminderTokens.set(json.reminders.join('\n'));
         }
         if (json.globalReminders) {
-            await character.globalReminderTokens.set(json.globalReminders.join('\n'))
+            await character.globalReminderTokens.set(json.globalReminders.join('\n'));
         }
 
         const firstNightNumber = json.firstNight || 0;
@@ -244,7 +244,7 @@ function chooseBloodFile():Promise<File|null> {
             };
             fileInput.click();
         } else {
-            dlg.close(null)
+            dlg.close(null);
         }
     }
 
@@ -273,7 +273,7 @@ export async function importBlood(edition:Edition):Promise<boolean> {
 export async function importBloodFile(edition:Edition):Promise<boolean> {
     if (!await savePromptIfDirty(edition)) {return false;}
     const file = await chooseBloodFile();
-    if (!file){return false;}
+    if (!file) {return false;}
     await edition.reset();
     await edition.characterList.clear();
     const importer = new BloodImporter(edition);

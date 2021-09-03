@@ -48,7 +48,7 @@ export function growInMaxHeight(element:HTMLElement):void {
         element.addEventListener('transitionend', ()=>{
             element.classList.remove('transitionMaxHeight');
             element.style.maxHeight = '';
-        }, {once:true})
+        }, {once:true});
     });
 }
 
@@ -60,6 +60,6 @@ export function shrinkOutMaxHeight(element:HTMLElement):void {
         element.style.maxHeight = '0';
         element.addEventListener('transitionend', ()=>{
             element.classList.remove('transitionMaxHeight');
-        }, {once:true})
+        }, {once:true});
     });
 }

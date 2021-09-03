@@ -21,7 +21,7 @@ export default async function publish(edition:Edition):Promise<boolean> {
         title:'Sign In to Publish',
         message:'You must be signed in to publish.'
     });
-    if (!sessionInfo){return false;}
+    if (!sessionInfo) {return false;}
     const saveName = edition.saveName.get();
     const saveData:PublishData = {
         token:sessionInfo.token,

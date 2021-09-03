@@ -61,7 +61,7 @@ export default async function importShared(edition:Edition):Promise<boolean> {
     const label = Array.isArray(file) ? file.join(' / ') : file;
 
     try {
-        return await _importShared(edition, file)
+        return await _importShared(edition, file);
     } catch (error) {
         await showError('Error', `Error encountered while trying to import ${label}`, error);
         return false;
@@ -74,7 +74,7 @@ async function _importShared(edition:Edition, file:string|[string, string]):Prom
         title:'Sign In to Open',
         message:'You must first sign in to import.'
     });
-    if (!sessionInfo){return false;}
+    if (!sessionInfo) {return false;}
     const label = Array.isArray(file) ? file.join(' / ') : file;
     const openData:OpenRequest = {
         saveName: file,

@@ -161,7 +161,7 @@ export abstract class ObservableObject<T> {
     }
 
     /** check for speical behavior for a field */
-    private _canNotifyField(key:PropKey<T>):boolean{
+    private _canNotifyField(key:PropKey<T>):boolean {
         if (!this.obsObjCfg) {return true;}
         const cfg = this.obsObjCfg.exceptions.get(key as string|symbol);
         if (!cfg) {return true;}
@@ -169,7 +169,7 @@ export abstract class ObservableObject<T> {
     }
 
     /** check for speical behavior for a field */
-    private _canReadField(key:PropKey<T>):boolean{
+    private _canReadField(key:PropKey<T>):boolean {
         if (!this.obsObjCfg) {return true;}
         const cfg = this.obsObjCfg.exceptions.get(key as string|symbol);
         if (!cfg) {return true;}
@@ -177,7 +177,7 @@ export abstract class ObservableObject<T> {
     }
 
     /** check for speical behavior for a field */
-    private _canWriteField(key:PropKey<T>):boolean{
+    private _canWriteField(key:PropKey<T>):boolean {
         if (!this.obsObjCfg) {return true;}
         const cfg = this.obsObjCfg.exceptions.get(key as string|symbol);
         if (!cfg) {return true;}
@@ -185,7 +185,7 @@ export abstract class ObservableObject<T> {
     }
 
     /** check for special behavior for a field */
-    private _saveDefault(key:PropKey<T>):boolean{
+    private _saveDefault(key:PropKey<T>):boolean {
         if (!this.obsObjCfg) {return false;}
         const cfg = this.obsObjCfg.exceptions.get(key as string|symbol);
         if (!cfg) {return false;}
@@ -255,7 +255,7 @@ export abstract class ObservableObject<T> {
             if (!this._canReadField(key)) { continue; }
             const collectionData = data[String(key)];
             if (Array.isArray(collectionData)) {
-                if (!this._getCustomDeserialize(key)){
+                if (!this._getCustomDeserialize(key)) {
                     promises.push(collection.deserialize(collectionData));
                 }
             }
@@ -270,7 +270,7 @@ export abstract class ObservableObject<T> {
             if (!this._canReadField(key)) { continue; }
             const stringKey = String(key);
             const propertyData = Object.prototype.hasOwnProperty.call(data, stringKey) ? data[stringKey] : property.getDefault();
-            if (!this._getCustomDeserialize(key)){
+            if (!this._getCustomDeserialize(key)) {
                 promises.push(property.set(propertyData));
             }
         }
@@ -278,7 +278,7 @@ export abstract class ObservableObject<T> {
             if (!this._canReadField(key)) { continue; }
             const stringKey = String(key);
             const propertyData = Object.prototype.hasOwnProperty.call(data, stringKey) ? data[stringKey] : property.getDefault();
-            if (!this._getCustomDeserialize(key)){
+            if (!this._getCustomDeserialize(key)) {
                 promises.push(property.set(propertyData));
             }
         }

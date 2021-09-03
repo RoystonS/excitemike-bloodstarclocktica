@@ -16,16 +16,16 @@ type SignInOptions = SignInFlowOptions & {
 let sessionInfo:SessionInfo|null = null;
 
 /** true when we have don't have an accesstoken or it is expired */
-function accessTokenExpired():boolean{
-    if (!sessionInfo){return true;}
+function accessTokenExpired():boolean {
+    if (!sessionInfo) {return true;}
     const timestamp = Date.now() / 1000 | 0;
     const leeway = 60;
-    if ((timestamp - leeway) >= sessionInfo.expiration){return true;}
+    if ((timestamp - leeway) >= sessionInfo.expiration) {return true;}
     return false;
 }
 
-function clearStoredToken():void{
-    const localStorage = window.localStorage;
+function clearStoredToken():void {
+    const {localStorage} = window;
     if (localStorage) {
         try {
             localStorage.removeItem('accessToken');
@@ -35,8 +35,8 @@ function clearStoredToken():void{
     }
 }
 
-function getStoredToken():SessionInfo|null{
-    const localStorage = window.localStorage;
+function getStoredToken():SessionInfo|null {
+    const {localStorage} = window;
     if (localStorage) {
         try {
             const fromStorage = localStorage.getItem('accessToken');
@@ -54,7 +54,7 @@ function getStoredToken():SessionInfo|null{
  * updates sessionInfo
  * @returns Promise that resolves to whether user successfully signed in
  */
-async function promptAndSignIn(options?:SignInFlowOptions):Promise<boolean>{
+async function promptAndSignIn(options?:SignInFlowOptions):Promise<boolean> {
     try {
         sessionInfo = await doSignInFlow(options);
         return true;
@@ -74,7 +74,7 @@ export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:str
     sessionInfo = sessionInfo || getStoredToken();
     while (!sessionInfo || accessTokenExpired()) {
         await signIn({force:true, message:'Please sign in to continue.'});
-        if (sessionInfo){
+        if (sessionInfo) {
             body.token = sessionInfo.token;
         }
     }
@@ -83,7 +83,7 @@ export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:str
     let result = await cmd<ResultType|'signInRequired'>(cmdName, spinnerMessage, JSON.stringify(bodyClone));
     while (result==='signInRequired') {
         await signIn({force:true, message:'Please sign in to continue.'});
-        if (sessionInfo){
+        if (sessionInfo) {
             bodyClone.token = sessionInfo.token;
         }
         result = await cmd<ResultType|'signInRequired'>(cmdName, spinnerMessage, JSON.stringify(bodyClone));
@@ -99,7 +99,7 @@ export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:str
 export async function signIn(options?:SignInOptions):Promise<SessionInfo|null> {
     const force = Boolean(options?.force);
     sessionInfo = sessionInfo || getStoredToken();
-    if (!force && sessionInfo && !accessTokenExpired()){
+    if (!force && sessionInfo && !accessTokenExpired()) {
         updateUserDisplay(sessionInfo);
         return sessionInfo;
     }
@@ -126,7 +126,7 @@ export async function signIn(options?:SignInOptions):Promise<SessionInfo|null> {
 }
 
 /** clear session info */
-export function signOut():void{
+export function signOut():void {
     sessionInfo = null;
     clearStoredToken();
     updateUserDisplay(null);
@@ -136,7 +136,7 @@ export function signOut():void{
  * store auth info for next time
  */
 function storeToken(accessToken:SessionInfo | null):void {
-    const localStorage = window.localStorage;
+    const {localStorage} = window;
     if (localStorage) {
         try {
             localStorage.setItem('accessToken', JSON.stringify(accessToken));

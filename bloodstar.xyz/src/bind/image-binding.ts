@@ -1,4 +1,4 @@
-import {BaseBinding, Property} from './base-binding'
+import {BaseBinding, Property} from './base-binding';
 
 /** one-way binding to display an image in an img tag */
 export class ImageDisplayBinding extends BaseBinding<string|null> {
@@ -24,7 +24,7 @@ async function syncFileElemToProperty(element:HTMLInputElement, property:Propert
     const objectURL = URL.createObjectURL(element.files[0]);
     const dataURI = await toDataUri(objectURL, maxWidth, maxHeight);
     URL.revokeObjectURL(objectURL);
-    await property.set(dataURI)
+    await property.set(dataURI);
 }
 
 /** convert a url to a data uri */
@@ -39,7 +39,7 @@ function toDataUri(url:string, maxWidth:number, maxHeight:number):Promise<string
                 canvas.height = (scale * image.height) | 0;
                 canvas.getContext('2d')?.drawImage(image, 0, 0, canvas.width, canvas.height);
                 resolve(canvas.toDataURL('image/png'));
-            }
+            };
             image.src = url;
         } catch (error) {
             reject(error);

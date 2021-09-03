@@ -72,7 +72,7 @@ export function tabClicked(btnId:string, tabId:string):void {
 /** initialize listeners and data bindings */
 async function initBindings():Promise<void> {
     window.addEventListener('beforeunload', (event):string|undefined=>{
-        if (!edition.dirty.get()){return undefined;}
+        if (!edition.dirty.get()) {return undefined;}
         event.preventDefault();
         const message = "Are you sure you want to leave? Unsaved changes will be lost.";
         event.returnValue = message;
@@ -188,7 +188,7 @@ function collectStatusBarData():StatusBarData {
     data.set(BloodTeam.DEMON, {id:'demonsStatus', exported:0, total:0});
     data.set(BloodTeam.TRAVELER, {id:'travelersStatus', exported:0, total:0});
     data.set(BloodTeam.FABLED, {id:'fabledStatus', exported:0, total:0});
-    if (edition){
+    if (edition) {
         for (const character of edition.characterList) {
             const exported = character.export.get();
             for (const teamKey of ['all', character.team.get()]) {

@@ -2,7 +2,7 @@
  * code related to night order lists
  * @module NightOrder
  */
-import {bindCollectionById, bindText, bindStyle, unbindElement, Property, bindAttribute, bindImageDisplay} from './bind/bindings';
+import {bindAttribute, bindCollectionById, bindImageDisplay, bindStyle, bindText, Property, unbindElement} from './bind/bindings';
 import {ObservableCollection} from './bind/observable-collection';
 import {PropKey} from './bind/observable-object';
 import { BloodTeam } from './model/blood-team';

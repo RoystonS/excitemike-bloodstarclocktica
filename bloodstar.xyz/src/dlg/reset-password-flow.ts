@@ -15,7 +15,7 @@ type ResetPasswordData = {
 };
 
 class ConfirmAndChoosePasswordDlg extends AriaDialog<ResetPasswordData|null> {
-    open(email:string, doWarning:boolean):Promise<ResetPasswordData|null>{
+    open(email:string, doWarning:boolean):Promise<ResetPasswordData|null> {
         const codeField = createElement({
             t:'input',
             a:{type:'text', minlength:'6', maxlength:'6', autocomplete:'off', required:'', pattern:'[0-9]{6}', title:'six-digit code from your email'},
@@ -61,9 +61,9 @@ class ConfirmAndChoosePasswordDlg extends AriaDialog<ResetPasswordData|null> {
 
         const syncButton = ()=>{
             const inputElement = this.querySelector('#codeFromEmail');
-            if (!(inputElement instanceof HTMLInputElement)){return;}
+            if (!(inputElement instanceof HTMLInputElement)) {return;}
             const buttonElement = this.querySelector('#setPasswordBtn');
-            if (!(buttonElement instanceof HTMLButtonElement)){return;}
+            if (!(buttonElement instanceof HTMLButtonElement)) {return;}
             const codeValue = parseInt(inputElement.value, 10);
             buttonElement.disabled = isNaN(codeValue) || !(validatePassword(passwordField.value) && (passwordField.value === confirmField.value));
         };
@@ -88,7 +88,7 @@ class ConfirmAndChoosePasswordDlg extends AriaDialog<ResetPasswordData|null> {
  */
 async function show():Promise<SessionInfo|null> {
     const email = await showEnterEmailStep();
-    if (!email){return null;}
+    if (!email) {return null;}
     return showCodeAndNewPasswordStep(email);
 }
 
@@ -97,16 +97,16 @@ async function show():Promise<SessionInfo|null> {
  * @param email email for the user whose password we are resetting
  * @returns SessionInfo if password is sucessfully reset and we are logged in. otherwise null.
  */
-async function showCodeAndNewPasswordStep(email:string):Promise<SessionInfo|null>{
+async function showCodeAndNewPasswordStep(email:string):Promise<SessionInfo|null> {
     let warn = false;
     // eslint-disable-next-line no-constant-condition
     while (true) {
         const resetData = await new ConfirmAndChoosePasswordDlg().open(email, warn);
-        if (!resetData){return null;}
+        if (!resetData) {return null;}
         warn = true;
         try {
             const sessionInfo = await resetPassword(resetData);
-            if (!sessionInfo){continue;}
+            if (!sessionInfo) {continue;}
             return sessionInfo;
         } catch (error) {
             await showError('Error', 'Error resetting password', error);
@@ -125,7 +125,7 @@ async function showEnterEmailStep():Promise<string> {
             event.preventDefault();
             await sendPasswordResetCode(usernameField.value);
             const element = document.getElementById('idSubmitRequest');
-            if (!(element instanceof HTMLButtonElement)){return;}
+            if (!(element instanceof HTMLButtonElement)) {return;}
             element.click();
         }
     };

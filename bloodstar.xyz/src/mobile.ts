@@ -1,5 +1,7 @@
-import { tabClicked } from './bloodstar';
+import './styles/mobile.css';
 import { hookupClickEvents } from './util';
+import { init } from "./bloodstar";
+import { tabClicked } from './bloodstar';
 
 /** track currently open curtain menu */
 let currentCurtain: Element|null = null;
@@ -18,7 +20,7 @@ function initMobileBindings():void {
     ]);
 
     // find ALL `closeCurtainBtn`
-    const allCloseBtns = document.getElementsByClassName('closeCurtainBtn')
+    const allCloseBtns = document.getElementsByClassName('closeCurtainBtn');
     for (let i = 0; i < allCloseBtns.length; i++) {
         const btn = allCloseBtns[i];
         btn.addEventListener("click", closeCurtain);
@@ -40,9 +42,6 @@ function openCurtainMenu(id:string):void {
     currentCurtain = document.getElementById(id);
     currentCurtain?.setAttribute('open', 'true');
 }
-
-import {init} from "./bloodstar";
-import './styles/mobile.css';
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises
 init({mobile:true}).then(()=>{

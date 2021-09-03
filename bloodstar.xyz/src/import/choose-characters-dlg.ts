@@ -11,7 +11,7 @@ import { setTeamColorStyle } from "../team-color";
 /** convert list of entries to map by id */
 function toMap(entries:ScriptEntry[]):Map<string, ScriptEntry> {
     const map = new Map<string, ScriptEntry>();
-    for (const entry of entries){
+    for (const entry of entries) {
         map.set(entry.id, entry);
     }
     return map;
@@ -37,7 +37,7 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
             if (e.target instanceof HTMLInputElement) {
                 const filterString = e.target.value;
                 walkHTMLElements(container, e=>{
-                    doFilter(filterString, entriesById, e)
+                    doFilter(filterString, entriesById, e);
                 });
             }
         };
@@ -51,12 +51,12 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
         const doImport = ():ScriptEntry[]=>{
             const selected = container.querySelectorAll('input:checked');
             const selectedCharacters = [];
-            for (let i=0;i<selected.length;++i){
+            for (let i=0; i<selected.length; ++i) {
                 const checkbox = selected[i] as HTMLElement;
                 const characterId = checkbox.dataset.id;
                 if (!characterId) {continue;}
                 const characterEntry = entriesById.get(characterId);
-                if (!characterEntry){continue;}
+                if (!characterEntry) {continue;}
                 selectedCharacters.push(characterEntry);
             }
             return selectedCharacters;
@@ -80,7 +80,7 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
                 // select all button
                 {t:'button', txt:'Select All', events:{click:()=>{
                     const checkBoxes = container.querySelectorAll('input[type=checkbox]');
-                    for (let i=0;i<checkBoxes.length;++i){
+                    for (let i=0; i<checkBoxes.length; ++i) {
                         const checkbox = checkBoxes[i] as HTMLInputElement;
                         checkbox.checked=true;
                     }
@@ -89,13 +89,14 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
                 // unselect all button
                 {t:'button', txt:'Unselect All', events:{click:()=>{
                     const checkBoxes = container.querySelectorAll('input[type=checkbox]');
-                    for (let i=0;i<checkBoxes.length;++i){
+                    for (let i=0; i<checkBoxes.length; ++i) {
                         const checkbox = checkBoxes[i] as HTMLInputElement;
                         checkbox.checked=false;
                     }
                     updateButton();
                 }}},
-            ]});
+            ]
+        });
 
         for (const character of json) {
             const characterElement = ChooseCharactersDlg.createElementforCharacter(character, updateButton);
@@ -147,7 +148,7 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
  * hide characters who don't pass the filter
  */
 function doFilter(filterString:string, characters:Map<string, ScriptEntry>, element:HTMLElement):void {
-    const id = element.dataset.id;
+    const {id} = element.dataset;
     if (!id) {return;}
     const character = characters.get(id);
     if (!character) {return;}
@@ -162,7 +163,7 @@ function doFilter(filterString:string, characters:Map<string, ScriptEntry>, elem
 function passesFilter(filterString:string, entry:ScriptEntry):boolean {
     if (!filterString) {return true;}
     const loweredFilterString = filterString.toLowerCase();
-    for (const haystack of Object.values(entry)){
+    for (const haystack of Object.values(entry)) {
         if (typeof haystack === 'string') {
             if (haystack.toLowerCase().indexOf(loweredFilterString) !== -1) {return true;}
         }

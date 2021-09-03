@@ -44,7 +44,7 @@ function attemptFocus(node:Node):boolean {
  * @returns true if focus was successfully set
  */
 function focusFirstDescendant(node:Node):boolean {
-    for (let i=0;i<node.childNodes.length;i++){
+    for (let i=0; i<node.childNodes.length; i++) {
         const child = node.childNodes[i];
         if (attemptFocus(child) || focusFirstDescendant(child)) {
             return true;
@@ -59,7 +59,7 @@ function focusFirstDescendant(node:Node):boolean {
  * @returns true if focus was successfully set
  */
 function focusLastDescendant(node:Node):boolean {
-    for (let i=node.childNodes.length-1;i>=0;i--){
+    for (let i=node.childNodes.length-1; i>=0; i--) {
         const child = node.childNodes[i];
         if (attemptFocus(child) || focusLastDescendant(child)) {
             return true;
@@ -81,7 +81,7 @@ function getCurrentDialog():AriaDialog<unknown>|null {
  * @returns
  */
 function isFocusable(node:Node):boolean {
-    if (!node){return false;}
+    if (!node) {return false;}
     const element = node as any;
 
     if (element.tabIndex > 0 || (element.tabIndex === 0 && element.getAttribute('tabIndex') !== null)) {
@@ -125,11 +125,11 @@ export class AriaDialog<ResultType> {
     protected _canCancel = true;
 
     /** whether escape can close the dialog */
-    canCancel():boolean{return this._canCancel;}
+    canCancel():boolean {return this._canCancel;}
 
     /** close the dialog early. resolve result promise with specified value */
     close(value:ResultType|null = null):void {
-        if (!this.resolveFn){return;}
+        if (!this.resolveFn) {return;}
         this.resolveFn(value);
 
         // remove from dialog stack
@@ -228,7 +228,7 @@ export class AriaDialog<ResultType> {
         document.body.appendChild(root);
 
         // bracket the dialog in invisible, focusable nodes that we use to keep focus from leaving
-        if (!root.parentNode){return root;}
+        if (!root.parentNode) {return root;}
         const preNode = document.createElement('div');
         this.preNode = root.parentNode.insertBefore(preNode, root);
         preNode.tabIndex = 0;
@@ -297,7 +297,7 @@ export class AriaDialog<ResultType> {
 
     /** find an element within the popup */
     public querySelector<E extends Element = Element>(selector:string):E|null {
-        if (!this.root){return null;}
+        if (!this.root) {return null;}
         return this.root.querySelector<E>(selector);
     }
 
@@ -307,7 +307,7 @@ export class AriaDialog<ResultType> {
     }
 
     /** force focus back if it goes outside of dialog */
-    private static staticTrapFocus(event:FocusEvent):void{
+    private static staticTrapFocus(event:FocusEvent):void {
         if (pauseFocusTrap) {return;}
         const dlg = getCurrentDialog();
         if (!dlg) {return;}
@@ -366,7 +366,7 @@ document.addEventListener('keyup', (event:KeyboardEvent) => {
     if (event.code !== 'Escape') {return;}
     const dlg = getCurrentDialog();
     if (!dlg) {return;}
-    if (dlg.tryCancel()){
+    if (dlg.tryCancel()) {
         event.stopPropagation();
     }
 });

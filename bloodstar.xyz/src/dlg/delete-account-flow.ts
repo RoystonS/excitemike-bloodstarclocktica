@@ -2,7 +2,7 @@
  * dialog chain for deleting your account
  * @module DeleteAccountFlow
  */
-import { show as showMessage, showError } from "../dlg/blood-message-dlg";
+import { showError, show as showMessage } from "../dlg/blood-message-dlg";
 import signIn, { signedInCmd, signOut } from "../sign-in";
 import { show as getConfirmation } from "../dlg/yes-no-dlg";
 import { AriaDialog } from "../dlg/aria-dlg";
@@ -12,13 +12,14 @@ type DeleteAccountData = {token:string, password:string};
 type DeleteAccountResult = {error:string}|true;
 
 /** make sure the user really really wants to do that */
-async function confirmDeleteAccount():Promise<SessionInfo|null>{
+async function confirmDeleteAccount():Promise<SessionInfo|null> {
     const sessionInfo = await signIn({
         canCancel:true,
         title:'Confirm Account',
         message:'Sign in again to confirm account deletion',
         includeForgotPasswordLink:false,
-        includeSignUpLink:false});
+        includeSignUpLink:false
+    });
     if (!sessionInfo) {return null;}
     if (!await getConfirmation(
         'Confirm Delete',
@@ -35,10 +36,10 @@ async function confirmDeleteAccount():Promise<SessionInfo|null>{
 /** user chose to delete their account */
 export async function deleteAccount():Promise<boolean> {
     const sessionInfo = await confirmDeleteAccount();
-    if (!sessionInfo){return false;}
+    if (!sessionInfo) {return false;}
 
     const password = await getPassword();
-    if (!password){return false;}
+    if (!password) {return false;}
 
     const commandData:DeleteAccountData = {
         token:sessionInfo.token,
@@ -91,6 +92,6 @@ class PasswordDlg extends AriaDialog<string> {
 }
 
 /** prompt user for their password before letting them delete an account */
-function getPassword():Promise<string>{
+function getPassword():Promise<string> {
     return new PasswordDlg().open();
 }

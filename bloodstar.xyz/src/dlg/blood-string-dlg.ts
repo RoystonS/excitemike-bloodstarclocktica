@@ -3,7 +3,7 @@
  * @module StringDlg
  */
 import { createElement, CreateElementsOptions } from '../util';
-import {ButtonCfg, AriaDialog} from './aria-dlg';
+import {AriaDialog, ButtonCfg} from './aria-dlg';
 
 type Validation = {
     pattern:string,
@@ -55,7 +55,7 @@ class StringDialog extends AriaDialog<string> {
 
         // tie validation to button's "disabled" attribute
         const validateFn = validation?.validateFn;
-        if (validateFn){
+        if (validateFn) {
             const syncToButton = ()=>{
                 const buttonElem = document.getElementById('stringOkButton');
                 if (!(buttonElem instanceof HTMLButtonElement)) {return;}

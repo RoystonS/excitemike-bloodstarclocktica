@@ -8,7 +8,7 @@ import {CreateElementsOptions} from '../util';
 import {AriaDialog, ButtonCfg} from './aria-dlg';
 
 class SaveDiscardCancelDlg extends AriaDialog<boolean> {
-    async open(edition:Edition):Promise<boolean>{
+    async open(edition:Edition):Promise<boolean> {
         const body:CreateElementsOptions = [{
             t:'h1',
             txt:'Unsaved Changes'

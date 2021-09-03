@@ -36,10 +36,10 @@ function makeGaussianKernel(radius:number):number[][] {
     const size = 2 * Math.ceil(radius) + 1;
     const result:number[][] = Array(size);
     let sum = 0;
-    for (let y=0;y<size;++y) {
+    for (let y=0; y<size; ++y) {
         const row:number[] = Array(size);
         const g1 = gaussian(y, radius, sigma);
-        for (let x=0;x<size;++x){
+        for (let x=0; x<size; ++x) {
             const g2 = gaussian(x, radius, sigma);
             const a = g1*g2;
             row[x]=a;
@@ -48,12 +48,12 @@ function makeGaussianKernel(radius:number):number[][] {
         result[y] = row;
     }
     // normalize
-    for (let y=0;y<size;++y) {
-        for (let x=0;x<size;++x){
+    for (let y=0; y<size; ++y) {
+        for (let x=0; x<size; ++x) {
             result[y][x] /= sum;
         }
     }
-    return result
+    return result;
 }
 
 /** wraps a canvas, providing convenient methods for customizing image */
@@ -84,8 +84,7 @@ export default class BloodImage {
         this.ctx = ctx;
 
         if (Array.isArray(imageData)) {
-            this.canvas.width = imageData[0];
-            this.canvas.height = imageData[1];
+            [this.canvas.width, this.canvas.height] = imageData;
         } else if (imageData instanceof ImageData) {
             this.canvas.width = imageData.width;
             this.canvas.height = imageData.height;
@@ -128,7 +127,7 @@ export default class BloodImage {
             .gaussianBlur(size * 0.25)
             .scaled(4)
             .offset(offsetX, offsetY);
-        image.transformChannel(3, alpha => opacity * alpha)
+        image.transformChannel(3, alpha => opacity * alpha);
         image.alphaComposite(this);
         return image;
     }
@@ -357,7 +356,7 @@ export default class BloodImage {
                 }
             }
         }
-        this.ctx.putImageData(dstImageData, 0, 0)
+        this.ctx.putImageData(dstImageData, 0, 0);
     }
 
     /** create a new image by offsetting the pixels in this one */
@@ -441,7 +440,7 @@ export default class BloodImage {
                 pixels[i + 2] = blueByte;
             }
         }
-        this.ctx.putImageData(imageData, 0, 0)
+        this.ctx.putImageData(imageData, 0, 0);
     }
 
     /**

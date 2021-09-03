@@ -12,7 +12,7 @@ const VALID_URL_PART = /^[A-Za-z0-9\-_]+$/;
 const VALID_EMAIL_RE = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 
 /** update container contents to warn if email does not look valid */
-export function updateEmailWarnings(email:string, container:HTMLElement):void{
+export function updateEmailWarnings(email:string, container:HTMLElement):void {
     container.innerText = '';
     if (!validateEmail(email)) {
         container.appendChild(createElement({t:'span', txt:`× Invalid email`}));
@@ -22,14 +22,14 @@ export function updateEmailWarnings(email:string, container:HTMLElement):void{
 /** update container contents to warn if any password requirement is not met */
 export function updatePasswordWarnings(password:string, passwordConfirm:string, container:HTMLElement):void {
     container.innerText = '';
-    function warn(txt:string){container.appendChild(createElement({t:'span', txt:`× ${txt}`}));}
+    function warn(txt:string) {container.appendChild(createElement({t:'span', txt:`× ${txt}`}));}
     if (password.length < 8) {warn('Password must contain at least 8 characters');}
     if (password.length < 24) {
         if (!/[a-z]/.test(password)) {warn('Passwords, if short, must contain a lower case letter');}
         if (!/[A-Z]/.test(password)) {warn('Passwords, if short, must contain an upper case letter');}
         if (!/[0-9]/.test(password)) {warn('Passwords, if short, must contain a number');}
     }
-    if (password !== passwordConfirm) {warn(`Passwords must match`)}
+    if (password !== passwordConfirm) {warn(`Passwords must match`);}
 }
 
 /** update container contents to warn if save name does not look valid */
@@ -43,7 +43,7 @@ export function updateUsernameWarnings(username:string, container:HTMLElement, f
     if (username.length < 2) {
         container.appendChild(createElement({t:'span', txt:`× ${fieldName} too short`}));
     }
-    if (!VALID_URL_PART.test(username)){
+    if (!VALID_URL_PART.test(username)) {
         container.appendChild(createElement({t:'span', txt:`× ${fieldName} should contain only letters, numbers, hyphens (-), and underscores (_)`}));
     }
 }

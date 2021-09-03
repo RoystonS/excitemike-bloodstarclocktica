@@ -5,7 +5,7 @@
 import {CharacterAlmanac} from './character-almanac';
 import {EnumProperty, Property} from '../bind/bindings';
 import {observableChild, observableEnumProperty, ObservableObject, observableProperty, ObservableType} from '../bind/observable-object';
-import {BLOODTEAM_OPTIONS, BloodTeam} from '../model/blood-team';
+import {BloodTeam, BLOODTEAM_OPTIONS} from '../model/blood-team';
 import {CharacterImageSettings} from '../model/character-image-settings';
 import BloodImage, { getGradientForTeam, imageUrlToDataUri, ProcessImageSettings, urlToBloodImage } from '../blood-image';
 import Images from '../images';
@@ -145,7 +145,7 @@ export class Character extends ObservableObject<Character> {
     /** generate styled image from unstyled image and image settings */
     async _regenerateStyledImage():Promise<void> {
         const unstyledImage = this.unStyledImage.get();
-        const imageSettings = this.imageSettings;
+        const {imageSettings} = this;
         if (!unstyledImage || !imageSettings.shouldRestyle.get()) {
             return this.styledImage.set(unstyledImage);
         }

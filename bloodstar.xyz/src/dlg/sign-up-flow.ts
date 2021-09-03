@@ -4,7 +4,7 @@
  */
 import { createElement, CreateElementsOptions } from '../util';
 import {AriaDialog, ButtonCfg, showDialog} from './aria-dlg';
-import {show as showMessage, showError} from './blood-message-dlg';
+import {showError, show as showMessage} from './blood-message-dlg';
 import {confirmEmail, resendSignUpConfirmation, SessionInfo, signUp} from '../iam';
 import { updateEmailWarnings, updatePasswordWarnings, updateUsernameWarnings, validateEmail, validatePassword, validateUsername } from '../validate';
 
@@ -14,23 +14,23 @@ export type UserPass = {username:string, password:string};
  * do the sign-up flow
  * @returns Promise that resolves to SessionInfo if sign-up completes
  */
-async function show():Promise<SessionInfo|null>{
+async function show():Promise<SessionInfo|null> {
     const email = await showSignUpStep();
     if (!email) {return null;}
     return showConfirmStep(email);
 }
 
 class ConfirmSignUpDlg extends AriaDialog<string> {
-    async open(email:string, doWarning:boolean):Promise<string>{
+    async open(email:string, doWarning:boolean):Promise<string> {
         const body:CreateElementsOptions = [{t:'h1', txt:'Confirm email address'}];
         if (doWarning) {
             body.push({t:'p', a:{style:'color:red;max-width:400px'}, txt:'Your account must be confirmed before you can continue. Please check your email for the six-digit code.'});
         }
         const syncButton = ()=>{
             const inputElement = document.getElementById('codeFromEmail');
-            if (!(inputElement instanceof HTMLInputElement)){return;}
+            if (!(inputElement instanceof HTMLInputElement)) {return;}
             const buttonElement = document.getElementById('continueBtn');
-            if (!(buttonElement instanceof HTMLButtonElement)){return;}
+            if (!(buttonElement instanceof HTMLButtonElement)) {return;}
             const codeValue = parseInt(inputElement.value, 10);
             buttonElement.disabled = isNaN(codeValue);
         };
@@ -44,7 +44,7 @@ class ConfirmSignUpDlg extends AriaDialog<string> {
             {t:'div', css:['dialogBtnGroup'], children:[
                 {t:'button', id:'continueBtn', txt:'Continue', a:{disabled:true}, events:{click:()=>{
                     const inputElement = document.getElementById('codeFromEmail');
-                    if (!(inputElement instanceof HTMLInputElement)){this.close(); return;}
+                    if (!(inputElement instanceof HTMLInputElement)) {this.close(); return;}
                     this.close(inputElement.value);
                 }}},
                 {t:'button', txt:'Cancel', events:{click:()=>this.close('')}}
@@ -58,16 +58,16 @@ class ConfirmSignUpDlg extends AriaDialog<string> {
 }
 
 /** show dialog for confirm step */
-async function showConfirmStep(email:string):Promise<SessionInfo|null>{
+async function showConfirmStep(email:string):Promise<SessionInfo|null> {
     let warn = false;
     // eslint-disable-next-line no-constant-condition
     while (true) {
         const code = await new ConfirmSignUpDlg().open(email, warn);
-        if (!code){return null;}
+        if (!code) {return null;}
         warn = true;
         try {
             const sessionInfo = await confirmEmail(email, code);
-            if (!sessionInfo){continue;}
+            if (!sessionInfo) {continue;}
             return sessionInfo;
         } catch (error) {
             await showError('Error', 'Error confirming email address', error);
@@ -79,7 +79,7 @@ async function showConfirmStep(email:string):Promise<SessionInfo|null>{
  * show dialog for initial sign up
  * @returns email address to which a confirmation email was sent, or the empty string
  */
-async function showSignUpStep():Promise<string>{
+async function showSignUpStep():Promise<string> {
     const usernameField = createElement({t:'input', a:{type:'text', required:'true', placeholder:'Username', autocomplete:'username'}, id:'signUpDlgUsername'});
     const usernameWarnings = createElement({t:'div', css:['column'], a:{style:'color:red;grid-column-start:span 2'}});
     const emailField = createElement({t:'input', a:{type:'email', required:'true', placeholder:'name@host.com', autocomplete:'email'}, id:'signUpDlgEmail'});

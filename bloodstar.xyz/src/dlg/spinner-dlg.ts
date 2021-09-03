@@ -13,11 +13,11 @@ class SpinnerDialog extends AriaDialog<null> {
     isOpen():boolean {return Boolean(this.listElement);}
 
     private bumpListSize():void {
-        if (!this.listElement){return;}
-        if (!this.listElement.style.minWidth || (this.listElement.offsetWidth > Number.parseInt(this.listElement.style.minWidth, 10))){
+        if (!this.listElement) {return;}
+        if (!this.listElement.style.minWidth || (this.listElement.offsetWidth > Number.parseInt(this.listElement.style.minWidth, 10))) {
             this.listElement.style.minWidth = `${this.listElement.offsetWidth}px`;
         }
-        if (!this.listElement.style.minHeight || (this.listElement.offsetHeight > Number.parseInt(this.listElement.style.minHeight, 10))){
+        if (!this.listElement.style.minHeight || (this.listElement.offsetHeight > Number.parseInt(this.listElement.style.minHeight, 10))) {
             this.listElement.style.minHeight = `${this.listElement.offsetHeight}px`;
         }
     }
@@ -26,10 +26,10 @@ class SpinnerDialog extends AriaDialog<null> {
      * create or add to a spinner.
      * @returns a promise that resolves to a function for you to call when work completes */
     add(key:string, message:string):void {
-        if (!this.listElement){
+        if (!this.listElement) {
             this.open();
         }
-        if (!this.listElement){return;}
+        if (!this.listElement) {return;}
 
         const entry = this.messages.get(key);
         if (entry) {
@@ -50,10 +50,10 @@ class SpinnerDialog extends AriaDialog<null> {
     /** undo add */
     remove(key:string, message:string):void {
         const entry = this.messages.get(key);
-        if (!entry){return;}
+        if (!entry) {return;}
         const {listItem, stack} = entry;
         const i = Array.prototype.lastIndexOf.call(stack, message);
-        if (i<0){return;}
+        if (i<0) {return;}
 
         // remove the message
         stack.splice(i, 1);

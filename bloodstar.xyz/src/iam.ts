@@ -4,7 +4,7 @@
  */
 
 import cmd from "./commands/cmd";
-import { show as showMessage, showError } from "./dlg/blood-message-dlg";
+import { showError, show as showMessage } from "./dlg/blood-message-dlg";
 
 export type SessionInfo = {token:string, expiration:number, username:string, email:string};
 type ConfirmEmailData = {code:string, email:string};
@@ -37,11 +37,11 @@ type SignUpData = {
  * last step of creating an account
  * @returns Promise that resolves to session information if sign-up for the specified user completes
  */
-export async function confirmEmail(email:string, code:string):Promise<SessionInfo|null>{
+export async function confirmEmail(email:string, code:string):Promise<SessionInfo|null> {
     const data:ConfirmEmailData = {code, email};
     const payload = JSON.stringify(data);
     const response = await cmd('confirm', 'Checking sign up confirmation', payload) as ConfirmEmailResponse;
-    if (typeof response === 'string'){
+    if (typeof response === 'string') {
         switch (response) {
             // treat like success
             case 'alreadyConfirmed':
@@ -71,7 +71,7 @@ export async function confirmEmail(email:string, code:string):Promise<SessionInf
  * Do the password reseting
  * @returns Promise that resolves to true if the user's password is ok
  */
-export async function resetPassword(resetData:ResetPasswordData):Promise<SessionInfo|null>{
+export async function resetPassword(resetData:ResetPasswordData):Promise<SessionInfo|null> {
     const payload = JSON.stringify(resetData);
     const response = await cmd('reset', 'Confirming password reset', payload) as ResetPasswordResponse;
     if (typeof response === 'string') {
@@ -98,7 +98,7 @@ export async function resetPassword(resetData:ResetPasswordData):Promise<Session
  * send the sign up confirmation email again
  * @returns email address to which a confirmation email was sent, or the empty string
  */
-export async function resendSignUpConfirmation(email:string):Promise<string>{
+export async function resendSignUpConfirmation(email:string):Promise<string> {
     const data:ResendSignUpConfirmationData = {email};
     const payload = JSON.stringify(data);
     const response = await cmd<EmailResponse>('resendconf', 'Requesting signup confirmation email', payload);
@@ -113,7 +113,7 @@ export async function resendSignUpConfirmation(email:string):Promise<string>{
  * send the reset message
  * @returns promise that resolves to the email address to which the password reset message was sent, or the empty string
  */
-export async function sendPasswordResetCode(usernameOrEmail:string):Promise<string>{
+export async function sendPasswordResetCode(usernameOrEmail:string):Promise<string> {
     const passwordResetData:RequestResetData = {usernameOrEmail};
     const payload = JSON.stringify(passwordResetData);
     const response = await cmd('requestreset', 'Requesting password reset', payload) as EmailResponse;
@@ -130,7 +130,7 @@ export async function sendPasswordResetCode(usernameOrEmail:string):Promise<stri
  * @param password
  * @returns Promise that resolves to session information
  */
-export async function signIn(usernameOrEmail:string, password:string):Promise<SessionInfo|null>{
+export async function signIn(usernameOrEmail:string, password:string):Promise<SessionInfo|null> {
     const signInData:SignInData = {
         usernameOrEmail,
         password
@@ -158,7 +158,7 @@ export async function signUp(
     username:string,
     password:string,
     email:string
-):Promise<string>{
+):Promise<string> {
     const signUpData:SignUpData = {
         username,
         password,
