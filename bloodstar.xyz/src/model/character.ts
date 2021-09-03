@@ -134,7 +134,7 @@ export class Character extends ObservableObject<Character> {
         if (this.imageRegenSuspended) {return;}
         try {
             await this.isLoading.set(true);
-            return await this._regenerateStyledImage();
+            await this._regenerateStyledImage();
         } catch (error) {
             await this.styledImage.set('');
             throw error;
@@ -213,6 +213,6 @@ export class Character extends ObservableObject<Character> {
                 imageSettings.dropShadowOffsetY.get(),
                 imageSettings.dropShadowOpacity.get());
         }
-        await this.styledImage.set(bloodImage.toDataUri());
+        return this.styledImage.set(bloodImage.toDataUri());
     }
 }

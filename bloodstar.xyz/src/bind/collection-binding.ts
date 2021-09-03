@@ -78,6 +78,8 @@ export class CollectionBinding<T extends ObservableObject<T>> {
             case ObservableCollectionChangeAction.Remove:
                 this.remove(event.oldStartingIndex, event.oldItems);
                 break;
+            default:
+                throw new Error(`invalid action ${event.action}`);
         }
     }
 
@@ -164,7 +166,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     }
 
     /** dragging of an item began */
-    private dragstart(e:DragEvent):void {
+    static dragstart(e:DragEvent):void {
         if (e.target instanceof Element) {
             const listItemElement = e.target.closest('li');
             if (!listItemElement){return;}
@@ -174,7 +176,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     }
 
     /** dragging ended on an item */
-    private dragend(e:DragEvent):void {
+    static dragend(e:DragEvent):void {
         if (e.target instanceof Element) {
             const listItemElement = e.target.closest('li');
             if (!listItemElement){return;}
@@ -250,8 +252,8 @@ export class CollectionBinding<T extends ObservableObject<T>> {
         li.draggable = true;
         li.dataset.index = String(i);
         li.addEventListener('drag', ()=>this.dragged = li);
-        li.addEventListener('dragstart', e=>this.dragstart(e));
-        li.addEventListener('dragend', e=>this.dragend(e));
+        li.addEventListener('dragstart', CollectionBinding.dragstart);
+        li.addEventListener('dragend', CollectionBinding.dragend);
         li.addEventListener('dragover', e=>this.dragover(e));
         li.addEventListener('dragleave', e=>this.dragleave(e));
         li.addEventListener('drop', async e => await this.drop(e));

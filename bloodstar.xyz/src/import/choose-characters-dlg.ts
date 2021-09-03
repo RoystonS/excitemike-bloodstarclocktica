@@ -21,18 +21,18 @@ function toMap(entries:ScriptEntry[]):Map<string, ScriptEntry> {
 export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
 
     /** override for custom layout */
-    protected addElementForCharacter(_character:ScriptEntry, container:HTMLElement, characterElement:HTMLElement):void {
+    protected static addElementForCharacter(_character:ScriptEntry, container:HTMLElement, characterElement:HTMLElement):void {
         container.appendChild(characterElement);
     }
     
     /** override for custom layout */
-    protected makeContainer():HTMLElement {
+    protected static makeContainer():HTMLElement {
         return createElement({t:'div',css:['importOfficialList']});
     }
 
     async open(json:ScriptEntry[]):Promise<ScriptEntry[]> {
         const entriesById = toMap(json);
-        const container = this.makeContainer();
+        const container = ChooseCharactersDlg.makeContainer();
         const onFilterChange=(e:Event)=>{
             if (e.target instanceof HTMLInputElement) {
                 const filterString = e.target.value;
@@ -98,8 +98,8 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
             ]});
 
         for (const character of json) {
-            const characterElement = this.createElementforCharacter(character, updateButton);
-            this.addElementForCharacter(character, container, characterElement);
+            const characterElement = ChooseCharactersDlg.createElementforCharacter(character, updateButton);
+            ChooseCharactersDlg.addElementForCharacter(character, container, characterElement);
         }
 
         return await this.baseOpen(
@@ -115,7 +115,7 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
     }
 
     /** create the row for hte given entry */
-    protected createElementforCharacter(scriptEntry:ScriptEntry, updateCb:()=>void):HTMLElement {
+    protected static createElementforCharacter(scriptEntry:ScriptEntry, updateCb:()=>void):HTMLElement {
         if ('ability' in scriptEntry) {
             const element = createElement({
                 t:'div',

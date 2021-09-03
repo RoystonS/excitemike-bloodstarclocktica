@@ -38,6 +38,7 @@ class StringDialog extends AriaDialog<string> {
         ,warningsContainer];
 
         // submit on enter
+        // TODO: DRY: wrap in function and move to base class. find other dialogs doing the same
         inputField.addEventListener('keyup', (event:KeyboardEvent):void=>{
             switch (event.code)
             {
@@ -45,6 +46,9 @@ class StringDialog extends AriaDialog<string> {
                 case 'Enter':
                     event.preventDefault();
                     this.close(inputField.value);
+                    break;
+                default:
+                    // others ignored
                     break;
             }
         });

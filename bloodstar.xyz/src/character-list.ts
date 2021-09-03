@@ -73,6 +73,9 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
                 case 'NumpadEnter':
                     await selectedCharacterProperty.set(character);
                     break;
+                default:
+                    // others ignored
+                    break;
             }
         }
         bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);

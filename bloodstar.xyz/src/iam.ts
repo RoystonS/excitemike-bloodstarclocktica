@@ -55,6 +55,9 @@ export async function confirmEmail(email:string, code:string):Promise<SessionInf
             case 'notSignedUp':
                 await showMessage('Error', 'User not found.');
                 return null;
+            default:
+                await showMessage('Error', `Error: ${response}`);
+                return null;
         }
     }
     if ('error' in response) {
@@ -78,6 +81,9 @@ export async function resetPassword(resetData:ResetPasswordData):Promise<Session
                 return null;
             case 'expired':
                 await showMessage('Error', 'Confirmation code is expired.');
+                return null;
+            default:
+                await showMessage('Error', `Error: ${response}`);
                 return null;
         }
     }

@@ -125,6 +125,9 @@ async function showEnterEmailStep():Promise<string> {
                     element.click();
                 }
                 break;
+            default:
+                // others ignored
+                break;
         }
     };
     const usernameField = createElement({

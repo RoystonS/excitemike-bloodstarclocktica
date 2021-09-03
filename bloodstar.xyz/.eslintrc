@@ -18,6 +18,15 @@
       "no-useless-backreference":"warn",
       "require-atomic-updates":"warn",
       "require-await":"error",
+
+      "accessor-pairs":"warn",
+      "array-callback-return":"warn",
+      "block-scoped-var":"warn",
+      "class-methods-use-this":"warn",
+      "complexity":"warn",
+      "consistent-return":"warn",
+      "default-case":"warn",
+
       "@typescript-eslint/no-floating-promises": "error"
     }
 }

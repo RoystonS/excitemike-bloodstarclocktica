@@ -8,7 +8,6 @@ import {AriaDialog} from './aria-dlg';
 class SpinnerDialog extends AriaDialog<null> {
     private listElement:HTMLUListElement|null = null;
     private messages = new Map<string, {listItem:HTMLLIElement, stack:string[]}>();
-    canCancel():boolean {return false;}
 
     isOpen():boolean {return !!this.listElement;}
 
@@ -79,6 +78,7 @@ class SpinnerDialog extends AriaDialog<null> {
 
     /** create the spinner dialog */
     private open():void {
+        this._canCancel = false;
         this.listElement = createElement({
             t:'ul',
             css:['spinnerMessages']

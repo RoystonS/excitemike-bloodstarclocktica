@@ -130,6 +130,9 @@ export class Edition extends ObservableObject<Edition> {
                 case 'styledImage':
                     edition.dirtyFinalImages.add(character.id.get());
                     break;
+                default:
+                    // others ignored
+                    break;
             }
         });
 

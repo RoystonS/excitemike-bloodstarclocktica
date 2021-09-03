@@ -29,8 +29,6 @@ export type SignInFlowOptions = {
 };
 
 class SignInDlg extends AriaDialog<SessionInfo> {
-    private _canCancel = true;
-
     canCancel():boolean{return this._canCancel;}
 
     /** get a value from a field by id */
@@ -49,6 +47,9 @@ class SignInDlg extends AriaDialog<SessionInfo> {
                 case 'Enter':
                     event.preventDefault();
                     this.close(await this.signIn());
+                    break;
+                default:
+                    // others ignored
                     break;
             }
         };

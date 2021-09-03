@@ -39,11 +39,20 @@ export type ObservableCollectionChangedEvent<T extends ObservableObject<T>> = {
     oldStartingIndex:number;
 };
 
-type ItemPlus<ItemType> = {
-    listener:PropertyChangedListener<ItemType>,
-    index:number,
-    item:ItemType
-};
+/** wrap an item with some additional data */
+class ItemPlus<ItemType extends ObservableObject<ItemType>> {
+    public listener:PropertyChangedListener<ItemType>|null;
+    constructor (changeCb:(itemPlus:ItemPlus<ItemType>, propName:PropKey<ItemType>)=>void, public index:number, public item:ItemType){
+        this.listener = (propName:PropKey<ItemType>)=>changeCb(this, propName);
+        item?.addPropertyChangedEventListener(this.listener);
+    }
+    destroy():void {
+        if (this.listener) {
+            this.item.removePropertyChangedEventListener(this.listener);
+            this.listener = null;
+        }
+    }
+}
 
 /** observe a collection of things */
 export class ObservableCollection<ItemType extends ObservableObject<ItemType>> implements Iterable<ItemType> {
@@ -75,7 +84,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** add an item to the end of the collection */
     async add(item:ItemType):Promise<void> {
-        const itemPlus:ItemPlus<ItemType> = this.makeItemPlus(this.items.length, item);
+        const itemPlus:ItemPlus<ItemType> = new ItemPlus<ItemType>(this.notifyItemChangedListeners.bind(this), this.items.length, item);
         this.items.push(itemPlus);
         await this.notifyCollectionChangedListeners({
             list: this,
@@ -89,7 +98,8 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** add multiple items to the end of the collection */
     async addMany(items:ReadonlyArray<ItemType>):Promise<void> {
-        const itemsPlus:ReadonlyArray<ItemPlus<ItemType>> = items.map(item=>this.makeItemPlus(this.items.length, item));
+        const cb = this.notifyItemChangedListeners.bind(this);
+        const itemsPlus:ReadonlyArray<ItemPlus<ItemType>> = items.map(item=>new ItemPlus<ItemType>(cb, this.items.length, item));
         const oldNumItems = this.items.length;
         this.items.push(...itemsPlus);
         this.updateIndices(oldNumItems);
@@ -108,7 +118,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
         if (!this.items.length) {return;}
         const oldItems = this.items.map(i=>i.item);
         for (const itemPlus of this.items) {
-            this.cleanupItemPlus(itemPlus);
+            itemPlus.destroy();
         }
         this.items = [];
         await this.notifyCollectionChangedListeners({
@@ -174,7 +184,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** insert an item at the specified index */
     async insert(i:number, item:ItemType):Promise<void> {
-        const itemPlus:ItemPlus<ItemType> = this.makeItemPlus(i, item);
+        const itemPlus:ItemPlus<ItemType> = new ItemPlus<ItemType>(this.notifyItemChangedListeners.bind(this), i, item);
         this.items.splice(i, 0, itemPlus);
         this.updateIndices(i+1);
         await this.notifyCollectionChangedListeners({
@@ -226,7 +236,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     /** remove an item from the collection */
     async remove(i:number):Promise<void> {
         const itemPlus = this.items[i];
-        this.cleanupItemPlus(itemPlus);
+        itemPlus.destroy();
         this.items.splice(i, 1);
         this.updateIndices(i);
         await this.notifyCollectionChangedListeners({
@@ -244,15 +254,16 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
         const oldItem = this.items[i];
         if (newItem !== oldItem.item) {
             const oldItemPlus = this.items[i];
-            this.cleanupItemPlus(oldItemPlus);
-            const newItemPlus:ItemPlus<ItemType> = this.makeItemPlus(i, newItem);
+            const oldItem = oldItemPlus.item;
+            oldItemPlus.destroy();
+            const newItemPlus:ItemPlus<ItemType> = new ItemPlus<ItemType>(this.notifyItemChangedListeners.bind(this), i, newItem);
             this.items[i] = newItemPlus;
             await this.notifyCollectionChangedListeners({
                 list: this,
                 action: ObservableCollectionChangeAction.Replace,
                 newItems: [newItem],
                 newStartingIndex: i,
-                oldItems: [oldItemPlus.item],
+                oldItems: [oldItem],
                 oldStartingIndex: i
             });
         }
@@ -274,9 +285,9 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
         const removedItemsPlus = this.items.slice(start, end);
         const removedItems = removedItemsPlus.map(itemPlus=>itemPlus.item);
         for (const itemPlus of removedItemsPlus){
-            this.cleanupItemPlus(itemPlus);
+            itemPlus.destroy();
         }
-        const newItemsPlus = items.map((item,i)=>this.makeItemPlus(i+start, item));
+        const newItemsPlus = items.map((item,i)=>new ItemPlus<ItemType>(this.notifyItemChangedListeners.bind(this), i+start, item));
         this.items.splice(start, end-start, ...newItemsPlus);
         this.updateIndices(start + newItemsPlus.length);
 
@@ -380,21 +391,5 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
         return (await Promise.all(this.itemChangedListeners.map(
             cb=>cb(itemPlus.index, itemPlus.item, propName)
         )))[0];
-    }
-
-    /** wrap up an item with extra bookkeeping */
-    private makeItemPlus(i:number, item:ItemType):ItemPlus<ItemType> {
-        const itemPlus = {
-            listener: (propName:PropKey<ItemType>)=>this.notifyItemChangedListeners(itemPlus, propName),
-            index: i,
-            item:item
-        }
-        item.addPropertyChangedEventListener(itemPlus.listener);
-        return itemPlus;
-    }
-
-    /** clean up bookkeeping object */
-    private cleanupItemPlus(itemPlus:ItemPlus<ItemType>):void {
-        itemPlus.item.removePropertyChangedEventListener(itemPlus.listener);
     }
 }

@@ -76,8 +76,8 @@ export function tabClicked(btnId:string, tabId:string):void {
 
 /** initialize listeners and data bindings */
 async function initBindings():Promise<void> {
-    window.addEventListener('beforeunload',(event):string|void=>{
-        if (!edition.dirty.get()){return;}
+    window.addEventListener('beforeunload',(event):string|undefined=>{
+        if (!edition.dirty.get()){return undefined;}
         event.preventDefault();
         const message = "Are you sure you want to leave? Unsaved changes will be lost.";
         event.returnValue = message;

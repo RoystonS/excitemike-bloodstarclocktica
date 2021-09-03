@@ -115,9 +115,10 @@ export class AriaDialog<ResultType> {
     private promise:Promise<ResultType|null>|null = null;
     private resolveFn:ResolveFn|null = null;
     private lastFocus:Node|null = null;
+    protected _canCancel = true;
 
     /** whether escape can close the dialog */
-    canCancel():boolean{return true;}
+    canCancel():boolean{return this._canCancel;}
 
     /** close the dialog early. resolve result promise with specified value */
     close(value:ResultType|null = null):void {
@@ -132,9 +133,9 @@ export class AriaDialog<ResultType> {
                 // if this was the current dialog
                 // remove focus trap and restore focus
                 if (i === dialogStack.length-1) {
-                    this.removeFocusTrap();
+                    AriaDialog.removeFocusTrap();
                     if (i > 0) {
-                        dialogStack[i-1].trapFocus();
+                        AriaDialog.trapFocus();
                     }
                     if (this.focusAfterClose) {
                         (this.focusAfterClose as unknown as HTMLOrSVGElement).focus();
@@ -252,7 +253,7 @@ export class AriaDialog<ResultType> {
 
         // we need to replace the previous dialog's listeners
         if (dialogStack.length > 0) {
-            getCurrentDialog()?.removeFocusTrap();
+            AriaDialog.removeFocusTrap();
         }
 
         if (typeof focusAfterClose === 'string') {
@@ -265,7 +266,7 @@ export class AriaDialog<ResultType> {
         document.body.classList.add('hasDialog');
 
         // trap focus
-        this.trapFocus();
+        AriaDialog.trapFocus();
 
         // this is the most recent dialog
         dialogStack.push(this);
@@ -295,7 +296,7 @@ export class AriaDialog<ResultType> {
     }
 
     /** clear focus trap for this dialog */
-    private removeFocusTrap():void {
+    private static removeFocusTrap():void {
         document.removeEventListener('focus', AriaDialog.staticTrapFocus, true);
     }
 
@@ -317,7 +318,7 @@ export class AriaDialog<ResultType> {
     }
 
     /** prevent focus from leaving the dialog */
-    private trapFocus():void {
+    private static trapFocus():void {
         document.addEventListener('focus', AriaDialog.staticTrapFocus, true);
     }
     

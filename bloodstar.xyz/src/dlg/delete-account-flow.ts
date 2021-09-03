@@ -71,6 +71,9 @@ class PasswordDlg extends AriaDialog<string> {
                     event.preventDefault();
                     this.close(passwordField.value);
                     break;
+                default:
+                    // others ignored
+                    break;
             }
         });
         return await this.baseOpen(

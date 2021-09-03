@@ -10,8 +10,8 @@ import {newEdition} from '../commands/new';
 import { promptAndOpen } from "../dlg/open-flow";
 
 class NewOpenDlg extends AriaDialog<boolean> {
-    canCancel():boolean{return false;}
     async open(edition:Edition):Promise<boolean> {
+        this._canCancel = false;
         const body:CreateElementsOptions = [{
             t:'h1',
             txt: 'Welcome'

@@ -212,6 +212,15 @@ export abstract class ObservableObject<T> {
 
     /** first pass of deserialization */
     async deserializeNonCustom(data:{[key:string]:unknown}):Promise<void> {
+        await Promise.all([
+            this.deserializeNonCustomChildren(data),
+            this.deserializeNonCustomCollections(data),
+            this.deserializeNonCustomProperties(data)
+        ]);
+    }
+    
+    /** do non-customized deserialization of child observables */
+    deserializeNonCustomChildren(data:{[key:string]:unknown}):Promise<unknown> {
         const promises = [];
         for (const [key, child] of this.children) {
             if (!this._canReadField(key)) { continue; }
@@ -227,6 +236,12 @@ export abstract class ObservableObject<T> {
                 }
             }
         }
+        return Promise.all(promises);
+    }
+
+    /** do non-customized deserialization of properties */
+    deserializeNonCustomCollections(data:{[key:string]:unknown}):Promise<unknown> {
+        const promises = [];
         for (const [key, collection] of this.collections) {
             if (!this._canReadField(key)) { continue; }
             const collectionData = data[String(key)];
@@ -236,6 +251,12 @@ export abstract class ObservableObject<T> {
                 }
             }
         }
+        return Promise.all(promises);
+    }
+
+    /** do non-customized deserialization of properties */
+    deserializeNonCustomProperties(data:{[key:string]:unknown}):Promise<unknown> {
+        const promises = [];
         for (const [key, property] of this.properties) {
             if (!this._canReadField(key)) { continue; }
             const stringKey = String(key);
@@ -252,10 +273,20 @@ export abstract class ObservableObject<T> {
                 promises.push(property.set(propertyData));
             }
         }
-        await Promise.all(promises);
+        return Promise.all(promises);
     }
+
     /** second pass of deserialization */
     async deserializeCustom(data:{[key:string]:unknown}):Promise<void> {
+        await Promise.all([
+            this.deserializeCustomChildren(data),
+            this.deserializeCustomCollections(data),
+            this.deserializeCustomProperties(data)
+        ]);
+    }
+
+    /** do customized deserialization of child observables */
+    deserializeCustomChildren(data:{[key:string]:unknown}):Promise<unknown> {
         const promises = [];
         for (const [key, child] of this.children) {
             if (!this._canReadField(key)) { continue; }
@@ -272,6 +303,12 @@ export abstract class ObservableObject<T> {
                 }
             }
         }
+        return Promise.all(promises);
+    }
+
+    /** do customized deserialization of collections */
+    deserializeCustomCollections(data:{[key:string]:unknown}):Promise<unknown> {
+        const promises = [];
         for (const [key, collection] of this.collections) {
             if (!this._canReadField(key)) { continue; }
             const collectionData = data[String(key)];
@@ -282,6 +319,12 @@ export abstract class ObservableObject<T> {
                 }
             }
         }
+        return Promise.all(promises);
+    }
+
+    /** do customized deserialization of properties */
+    deserializeCustomProperties(data:{[key:string]:unknown}):Promise<unknown> {
+        const promises = [];
         for (const [key, property] of this.properties) {
             if (!this._canReadField(key)) { continue; }
             const stringKey = String(key);
@@ -300,7 +343,7 @@ export abstract class ObservableObject<T> {
                 promises.push(fn(this, property, propertyData));
             }
         }
-        await Promise.all(promises);
+        return Promise.all(promises);
     }
 
     /** call callback for each child observable */
