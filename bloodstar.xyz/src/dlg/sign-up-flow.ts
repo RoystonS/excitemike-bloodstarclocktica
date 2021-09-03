@@ -36,7 +36,11 @@ class ConfirmSignUpDlg extends AriaDialog<string> {
         };
         body.splice(body.length, 0, ...[
             {t:'p', a:{style:'max-width:400px'}, txt:`We have sent an email to "${email}" containing a 6-digit code. Please enter the code below, then click the button below to continue.`},
-            {t:'input', a:{type:'text', minlength:'6', maxlength:'6', autocomplete:'off', required:'', pattern:'[0-9]{6}', title:'six-digit code from your email'}, id:'codeFromEmail', events:{input:syncButton, change:syncButton}},
+            {
+                t:'input',
+                a:{type:'text', minlength:'6', maxlength:'6', autocomplete:'off', required:'', pattern:'[0-9]{6}', title:'six-digit code from your email'},
+                id:'codeFromEmail', events:{input:syncButton, change:syncButton}
+            },
             {t:'div', css:['dialogBtnGroup'], children:[
                 {t:'button', id:'continueBtn', txt:'Continue', a:{disabled:true}, events:{click:()=>{
                     const inputElement = document.getElementById('codeFromEmail');

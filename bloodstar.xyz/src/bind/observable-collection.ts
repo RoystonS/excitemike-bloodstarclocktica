@@ -42,10 +42,12 @@ export type ObservableCollectionChangedEvent<T extends ObservableObject<T>> = {
 /** wrap an item with some additional data */
 class ItemPlus<ItemType extends ObservableObject<ItemType>> {
     public listener:PropertyChangedListener<ItemType>|null;
+
     constructor (changeCb:(itemPlus:ItemPlus<ItemType>, propName:PropKey<ItemType>)=>void, public index:number, public item:ItemType){
         this.listener = (propName:PropKey<ItemType>)=>changeCb(this, propName);
         item?.addPropertyChangedEventListener(this.listener);
     }
+
     destroy():void {
         if (this.listener) {
             this.item.removePropertyChangedEventListener(this.listener);
@@ -57,8 +59,11 @@ class ItemPlus<ItemType extends ObservableObject<ItemType>> {
 /** observe a collection of things */
 export class ObservableCollection<ItemType extends ObservableObject<ItemType>> implements Iterable<ItemType> {
     private items:ItemPlus<ItemType>[];
+
     private collectionChangedListeners:ObservableCollectionListener<ItemType>[];
+
     private itemChangedListeners:ItemPropertyChangedListener<ItemType>[];
+
     private itemCtor:()=>Promise<ItemType>;
 
     constructor(itemCtor:()=>Promise<ItemType>) {

@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable no-useless-escape */
 import {init} from "./bloodstar";
@@ -10,7 +11,7 @@ const agentPrefix = agent.substr(0, 4);
 const isMobile = mobileRegex1.test(agent) || mobileRegex2.test(agentPrefix);
 const mobileSite = 'm.html';
 
-if(isMobile) {
+if (isMobile) {
     (window as any).location=mobileSite;
 } else {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises

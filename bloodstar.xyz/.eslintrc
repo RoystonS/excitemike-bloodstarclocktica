@@ -101,6 +101,10 @@
       "consistent-this":"warn",
       "func-call-spacing":"warn",
       "indent":["warn", 4, {"SwitchCase": 1}],
+      "keyword-spacing":"warn",
+      "lines-between-class-members":"warn",
+      "max-depth":["warn", 6],
+      "max-len":["warn", 200],
       "yoda":"warn",
 
       // addition typescript rules

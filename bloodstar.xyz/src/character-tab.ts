@@ -2,7 +2,19 @@
  * code for character tab
  * @module CharacterTab
  */
-import {bindCheckboxById, bindComboBoxById, bindImageChooserById, bindImageDisplayById, bindSliderById, bindStyleById, bindTextById, bindVisibilityById, EnumProperty, Property, unbindElementById} from './bind/bindings';
+import {
+    bindCheckboxById,
+    bindComboBoxById,
+    bindImageChooserById,
+    bindImageDisplayById,
+    bindSliderById,
+    bindStyleById,
+    bindTextById,
+    bindVisibilityById,
+    EnumProperty,
+    Property,
+    unbindElementById
+} from './bind/bindings';
 import {showError} from "./dlg/blood-message-dlg";
 import { ProcessImageSettings } from './blood-image';
 import { BloodTeam, parseBloodTeam } from './model/blood-team';

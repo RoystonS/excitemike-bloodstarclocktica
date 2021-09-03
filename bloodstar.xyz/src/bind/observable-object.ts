@@ -43,9 +43,13 @@ type ChildEntry = {
 
 class ObservableObjectConfig {
     properties = new Map<string|symbol, PropertyEntry>();
+
     enumProperties = new Map<string|symbol, EnumPropertyEntry>();
+
     collections = new Map<string|symbol, CollectionEntry>();
+
     children = new Map<string|symbol, ChildEntry>();
+
     exceptions = new Map<string|symbol, PropertyCfg>();
 }
 
@@ -103,10 +107,15 @@ export function observableChild(ctor:new ()=>ObservableObject<any>, cfg?:Propert
 /** extend this to advertise your properties and changes to them */
 export abstract class ObservableObject<T> {
     private collections = new Map<PropKey<T>, ObservableCollection<any>>();
+
     private children = new Map<PropKey<T>, ObservableObject<any>>();
+
     private properties = new Map<PropKey<T>, Property<unknown>>();
+
     private enumProperties = new Map<PropKey<T>, Property<unknown>>();
+
     private propertyChangedListeners:PropertyChangedListener<T>[] = [];
+
     private obsObjCfg:ObservableObjectConfig|undefined;
 
     /** set up listening */

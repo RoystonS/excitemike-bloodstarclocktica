@@ -142,8 +142,8 @@ export function getCorsProxyUrl(url:string):string {
 export function hookupClickEvents(data: [string, (e: Event) => void][]):()=>void {
     function wrapCb(cb:(e: Event) => void):(e: Event) => void {
         return async (e: Event)=>{
-            try{cb(e);}
-            catch(error){
+            try {cb(e);}
+            catch (error) {
                 await showError('Error', 'Something went wrong', error);
             }
         };

@@ -20,8 +20,11 @@ type UnshareResponse = {error:string}|true;
 
 class SharingDlg extends AriaDialog<void> {
     shareList:string[] = [];
+
     editionName:string|null = null;
+
     listDiv:HTMLDivElement|null = null;
+
     addUserButton:HTMLButtonElement|null = null;
 
     /** create the dialog */

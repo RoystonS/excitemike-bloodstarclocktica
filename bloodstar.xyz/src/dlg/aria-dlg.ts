@@ -109,12 +109,19 @@ function isFocusable(node:Node):boolean {
 /** base class for dialogs */
 export class AriaDialog<ResultType> {
     private root:Element|null = null;
+
     private focusAfterClose:Element|null = null;
+
     private preNode:Node|null = null;
+
     private postNode:Node|null = null;
+
     private promise:Promise<ResultType|null>|null = null;
+
     private resolveFn:ResolveFn|null = null;
+
     private lastFocus:Node|null = null;
+
     protected _canCancel = true;
 
     /** whether escape can close the dialog */

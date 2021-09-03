@@ -21,7 +21,11 @@ export function cleanupNightOrderItem(element: Node): void {
 }
 
 /** initialize listeners and data bindings */
-async function initNightOrderBinding(id:string, collection:ObservableCollection<Character>, ordinalPropName:'firstNightOrdinal'|'otherNightOrdinal', reminderTextPropName:'firstNightReminder'|'otherNightReminder'):Promise<void> {
+async function initNightOrderBinding(
+    id:string, collection:ObservableCollection<Character>,
+    ordinalPropName:'firstNightOrdinal'|'otherNightOrdinal',
+    reminderTextPropName:'firstNightReminder'|'otherNightReminder'
+):Promise<void> {
     bindCollectionById(
         id,
         collection,
@@ -53,7 +57,12 @@ export async function initNightOrderBindings(edition:Edition):Promise<void> {
  * @param character character for which we are making a list item
  * @returns HTMLElement to represent that character
  */
-export function makeNightOrderItem(character: Character, collection:ObservableCollection<Character>, ordinalPropertyName:'firstNightOrdinal'|'otherNightOrdinal', reminderPropertyName:'firstNightReminder'|'otherNightReminder'):HTMLElement {
+export function makeNightOrderItem(
+    character: Character,
+    collection:ObservableCollection<Character>,
+    ordinalPropertyName:'firstNightOrdinal'|'otherNightOrdinal',
+    reminderPropertyName:'firstNightReminder'|'otherNightReminder'
+):HTMLElement {
     const row = createElement({t:'div', css:['nightOrderItem']});
     bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);
     bindAttribute(row, 'title', character.getProperty<string>(reminderPropertyName));
@@ -93,7 +102,11 @@ export function makeNightOrderItem(character: Character, collection:ObservableCo
 }
 
 /** keep ordinal fields up to date as things change */
-async function updateOrdinals(collection:ObservableCollection<Character>, ordinalPropName:'firstNightOrdinal'|'otherNightOrdinal', reminderTextPropName:'firstNightReminder'|'otherNightReminder'):Promise<void> {
+async function updateOrdinals(
+    collection:ObservableCollection<Character>,
+    ordinalPropName:'firstNightOrdinal'|'otherNightOrdinal',
+    reminderTextPropName:'firstNightReminder'|'otherNightReminder'
+):Promise<void> {
     // set ordinal strings
     let ordNumber = 1;
     for (const character of collection) {

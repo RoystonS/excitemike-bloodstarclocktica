@@ -14,8 +14,11 @@ import { ScriptEntry } from './json';
 /** dialog subclass for choosing an official character to clone */
 class ChooseCharacterFromEditionDlg extends ChooseCharactersDlg {
     troubleBrewingSection!:HTMLElement;
+
     badMoonRisingSection!:HTMLElement;
+
     sectsAndVioletsSection!:HTMLElement;
+
     otherEditionsSection!:HTMLElement;
 
     /** bring up the dialog, return chosen characters */

@@ -60,11 +60,13 @@ function makeGaussianKernel(radius:number):number[][] {
 export default class BloodImage {
 
     private canvas:HTMLCanvasElement;
+
     private ctx:CanvasRenderingContext2D;
     
     public get width() : number {
         return this.canvas.width;
     }
+
     public get height() : number {
         return this.canvas.height;
     }

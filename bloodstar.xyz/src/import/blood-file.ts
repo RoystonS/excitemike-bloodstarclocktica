@@ -32,8 +32,11 @@ function spinAndThrottle<T>(key:string, message:string, work:()=>Promise<T>, max
 
 class BloodImporter {
     private readonly firstNightOrderTracker = new Map<number, Character[]>();
+
     private readonly otherNightOrderTracker = new Map<number, Character[]>();
+
     private readonly charactersById = new Map<string, Character>();
+
     private readonly edition:Edition;
 
     constructor(edition:Edition) {
@@ -90,7 +93,10 @@ class BloodImporter {
 
     /** once all characters are loaded, correct the night order */
     private async finalizeNightOrder():Promise<void> {
-        const data:[Map<number, Character[]>, ObservableCollection<Character>][] = [[this.firstNightOrderTracker, this.edition.firstNightOrder], [this.otherNightOrderTracker, this.edition.otherNightOrder]];
+        const data:[Map<number, Character[]>, ObservableCollection<Character>][] = [
+            [this.firstNightOrderTracker, this.edition.firstNightOrder],
+            [this.otherNightOrderTracker, this.edition.otherNightOrder]
+        ];
         for (const [nightMap, collection] of data) {
             const keys = Array.from(nightMap.keys()).sort((a, b) => a - b);
             await collection.clear();

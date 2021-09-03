@@ -298,7 +298,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
         for (let i=0; i<this.listElement.childNodes.length; ++i) {
             const child = this.listElement.childNodes[i];
             const data = this.collection.get(i);
-            if(!data){continue;}
+            if (!data){continue;}
             this.cleanupListItem(child, data);
         }
         this.listElement.innerText = '';

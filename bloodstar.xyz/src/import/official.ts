@@ -15,8 +15,11 @@ import { parseBloodTeam } from '../model/blood-team';
 /** dialog subclass for choosing an official character to clone */
 class ChooseOfficialCharDlg extends ChooseCharactersDlg {
     troubleBrewingSection!:HTMLElement;
+
     badMoonRisingSection!:HTMLElement;
+
     sectsAndVioletsSection!:HTMLElement;
+
     otherEditionsSection!:HTMLElement;
     
     /** override for custom layout */

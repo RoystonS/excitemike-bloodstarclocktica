@@ -20,7 +20,9 @@ type UnblockResponse = {error:string}|true;
 
 class ManageBlockedDlg extends AriaDialog<void> {
     blockList:string[]|null = null;
+
     listDiv:HTMLDivElement|null = null;
+
     addButton:HTMLButtonElement|null = null;
 
     /** create the dialog */

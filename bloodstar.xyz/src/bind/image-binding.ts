@@ -57,6 +57,7 @@ export class ImageChooserBinding extends BaseBinding<string|null> {
             ()=>syncFileElemToProperty(element, property, maxWidth, maxHeight),
             null);
     }
+
     destroy():void {
         super.destroy();
     }

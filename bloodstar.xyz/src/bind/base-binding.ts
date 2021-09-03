@@ -9,7 +9,9 @@ export type PropertyChangeListener<T> = (value:T)=>Promise<void>|void;
 /** generic observable property */
 export class Property<T> {
     private defaultValue:T;
+
     private value:T;
+
     private listeners:PropertyChangeListener<T>[];
 
     constructor(value:T) {
@@ -17,29 +19,38 @@ export class Property<T> {
         this.value = value;
         this.listeners = [];
     }
+
     async set(value:T):Promise<void> {
         if (this.value !== value) {
             this.value = value;
             await this.notifyListeners();
         }
     }
+
     get():T {
         return this.value;
     }
+
     addListener(cb:PropertyChangeListener<T>):void {
         this.listeners.push(cb);
     }
+
     getDefault():T {return this.defaultValue;}
+
     isDefault():boolean { return this.value === this.defaultValue; }
+
     removeListener(cb:PropertyChangeListener<T>):void {
         this.listeners = this.listeners.filter(i=>i!==cb);
     }
+
     removeAllListeners():void {
         this.listeners = [];
     }
+
     async reset():Promise<void> {
         await this.set(this.defaultValue);
     }
+
     private async notifyListeners():Promise<void> {
         await Promise.all(this.listeners.map(cb=>cb(this.value)));
     }
@@ -51,9 +62,13 @@ export type SyncFromPropertyToElementFn<ValueType> = ((v:ValueType)=>void) | nul
 /** shared code between binding classes */
 export class BaseBinding<ValueType> {
     private htmlElement:HTMLElement|null;
+
     private property:Property<ValueType>|null;
+
     private eventName:string;
+
     private syncFromElementToProperty:SyncFromElementToPropertyFn;
+
     private syncFromPropertyToElement:SyncFromPropertyToElementFn<ValueType>;
 
     /** set up the binding and bookkeeping for cleanup */

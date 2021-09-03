@@ -16,7 +16,11 @@ type ResetPasswordData = {
 
 class ConfirmAndChoosePasswordDlg extends AriaDialog<ResetPasswordData|null> {
     open(email:string, doWarning:boolean):Promise<ResetPasswordData|null>{
-        const codeField = createElement({t:'input', a:{type:'text', minlength:'6', maxlength:'6', autocomplete:'off', required:'', pattern:'[0-9]{6}', title:'six-digit code from your email'}, id:'codeFromEmail'});
+        const codeField = createElement({
+            t:'input',
+            a:{type:'text', minlength:'6', maxlength:'6', autocomplete:'off', required:'', pattern:'[0-9]{6}', title:'six-digit code from your email'},
+            id:'codeFromEmail'
+        });
         const passwordField = createElement({t:'input', a:{type:'password', required:'true', placeholder:'New Password', autocomplete:'new-password'}, 'id':'passwordInput'});
         const passwordWarnings = createElement({t:'div', css:['column'], a:{style:'color:red;grid-column-start:span 2'}});
         const confirmField = createElement({t:'input', a:{type:'password', required:'true', placeholder:'Confirm Password', autocomplete:'new-password'}, 'id':'resetPasswordConfirm'});
@@ -26,7 +30,11 @@ class ConfirmAndChoosePasswordDlg extends AriaDialog<ResetPasswordData|null> {
             body.push({t:'p', a:{style:'color:red;max-width:400px'}, txt:'You must enter the correct confirmation code to reset your password. Please check your email for the six-digit code.'});
         }
         body.splice(body.length, 0, ...[
-            {t:'p', a:{style:'max-width:400px'}, txt:`We have sent an email to "${email}" containing a 6-digit code. Please enter the code below, enter new password, then click the button below to continue.`},
+            {
+                t:'p',
+                a:{style:'max-width:400px'},
+                txt:`We have sent an email to "${email}" containing a 6-digit code. Please enter the code below, enter new password, then click the button below to continue.`
+            },
             {t:'div', css:['twoColumnGrid'], children:[
                 {t:'label', a:{for:'codeFromEmail', title:'six-digit code from your email'}, txt:'Code from email'},
                 codeField,

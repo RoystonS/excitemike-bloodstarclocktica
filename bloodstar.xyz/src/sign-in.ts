@@ -27,7 +27,7 @@ function accessTokenExpired():boolean{
 function clearStoredToken():void{
     const localStorage = window.localStorage;
     if (localStorage) {
-        try{
+        try {
             localStorage.removeItem('accessToken');
         } catch (error) {
             console.error(error);
@@ -38,7 +38,7 @@ function clearStoredToken():void{
 function getStoredToken():SessionInfo|null{
     const localStorage = window.localStorage;
     if (localStorage) {
-        try{
+        try {
             const fromStorage = localStorage.getItem('accessToken');
             if (!fromStorage) {return null;}
             return JSON.parse(fromStorage);
@@ -138,7 +138,7 @@ export function signOut():void{
 function storeToken(accessToken:SessionInfo | null):void {
     const localStorage = window.localStorage;
     if (localStorage) {
-        try{
+        try {
             localStorage.setItem('accessToken', JSON.stringify(accessToken));
         } catch (error) {
             // ignore error
