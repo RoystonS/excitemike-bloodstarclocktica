@@ -81,14 +81,14 @@ async function importSharedClicked(edition:Edition):Promise<boolean> {
 
 /** hook up menu commands to html elements */
 export default function init(edition:Edition):void {
-    const mapping:[string,(edition:Edition)=>Promise<boolean>][] = [
+    const mapping:[string, (e:Edition)=>Promise<boolean>][] = [
         ['signInBtn', signInClicked],
         ['signOutBtn', signOutClicked],
         ['changePasswordBtn', changePasswordClicked],
         ['deleteAccountBtn', deleteAccount],
         ['addCharacterButton', addCharacterClicked],
         ['newFileButton', newFileClicked],
-        ['openFileButton', (edition:Edition)=>promptAndOpen(edition, {includeShared:true, copyWarning:true})],
+        ['openFileButton', (ed:Edition)=>promptAndOpen(ed, {includeShared:true, copyWarning:true})],
         ['deleteFileButton', deleteFileClicked],
         ['saveFileButton', save],
         ['saveFileAsButton', saveFileAsClicked],
@@ -102,8 +102,8 @@ export default function init(edition:Edition):void {
         ['importSharedButton', importSharedClicked],
         ['blockedUsersButton', blockedUsersClicked]
     ];
-    const translatedMapping:[string,(e:Event)=>void][] = mapping.map(x=>{
-        const [name,f] = x;
+    const translatedMapping:[string, (e:Event)=>void][] = mapping.map(x=>{
+        const [name, f] = x;
         return [name, ()=>f(edition)];
     });
     hookupClickEvents(translatedMapping);
@@ -188,13 +188,13 @@ async function signOutClicked(edition:Edition):Promise<boolean> {
 
 /** show who is signed in and a sign out button */
 export function updateUserDisplay(session:SessionInfo|null):void {
-    for (const id of ['signedInLabel','signOutBtn','changePasswordBtn','deleteAccountBtn']) {
+    for (const id of ['signedInLabel', 'signOutBtn', 'changePasswordBtn', 'deleteAccountBtn']) {
         const element = document.getElementById(id);
         if (element) {
             showHideElement(element, Boolean(session));
         }
     }
-    for (const id of ['signedOutLabel','signInBtn']) {
+    for (const id of ['signedOutLabel', 'signInBtn']) {
         const element = document.getElementById(id);
         if (element) {
             showHideElement(element, !session);

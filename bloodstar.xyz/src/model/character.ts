@@ -57,16 +57,16 @@ export class Character extends ObservableObject<Character> {
     @observableProperty('')
     readonly globalReminderTokens!:Property<string>;
     
-    @observableProperty('newcharacter',{saveDefault:true})
+    @observableProperty('newcharacter', {saveDefault:true})
     readonly id!: Property<string>;
     
     @observableChild(CharacterImageSettings)
     readonly imageSettings!: CharacterImageSettings;
 
-    @observableProperty('New Character',{saveDefault:true})
+    @observableProperty('New Character', {saveDefault:true})
     readonly name!: Property<string>;
 
-    @observableProperty('-',{read:false,write:false})
+    @observableProperty('-', {read:false, write:false})
     readonly otherNightOrdinal!:Property<string>;
     
     @observableProperty('')
@@ -84,7 +84,7 @@ export class Character extends ObservableObject<Character> {
     @observableProperty(null, {customDeserialize: safelyConvertImage})
     readonly unStyledImage!: Property<string | null>;
     
-    @observableProperty(false, {read:false,write:false})
+    @observableProperty(false, {read:false, write:false})
     readonly isLoading!: Property<boolean>;
 
     /** prevent extraneous image processing during deserialization */
@@ -169,7 +169,7 @@ export class Character extends ObservableObject<Character> {
                 bloodImage.width,
                 bloodImage.height
             );
-            bloodImage.setRGB(255,255,255);
+            bloodImage.setRGB(255, 255, 255);
             bloodImage.multiply(gradientImage.resized(bloodImage.width, bloodImage.height));
         }
 

@@ -71,7 +71,7 @@ export function observableEnumProperty<T>(defaultValue:T, displayValuePairs: Dis
             objectEntry = new ObservableObjectConfig();
             observableObjectData.set(prototype, objectEntry);
         }
-        objectEntry.enumProperties.set(propertyKey, {defaultValue,displayValuePairs});
+        objectEntry.enumProperties.set(propertyKey, {defaultValue, displayValuePairs});
         if (cfg) { objectEntry.exceptions.set(propertyKey, cfg); }
     };
 }
@@ -88,7 +88,7 @@ export function observableCollection(ctor:()=>Promise<unknown>, cfg?:PropertyCfg
     };
 }
 /** decorator to make the ObservableObject manage a property */
-export function observableChild(ctor:new ()=>ObservableObject<any>,cfg?:PropertyCfg):PropertyDecorator {
+export function observableChild(ctor:new ()=>ObservableObject<any>, cfg?:PropertyCfg):PropertyDecorator {
     return (prototype:any, propertyKey:string|symbol):void => {
         let objectEntry = observableObjectData.get(prototype);
         if (!objectEntry) {
@@ -96,7 +96,7 @@ export function observableChild(ctor:new ()=>ObservableObject<any>,cfg?:Property
             observableObjectData.set(prototype, objectEntry);
         }
         objectEntry.children.set(propertyKey, {ctor});
-        if (cfg) { objectEntry.exceptions.set(propertyKey,cfg); }
+        if (cfg) { objectEntry.exceptions.set(propertyKey, cfg); }
     };
 }
 
@@ -117,7 +117,7 @@ export abstract class ObservableObject<T> {
         if (!this.obsObjCfg) {return;}
         
         // properties
-        for (const [_key,{defaultValue}] of this.obsObjCfg.properties) {
+        for (const [_key, {defaultValue}] of this.obsObjCfg.properties) {
             const key = _key as PropKey<T>;
             const property = new Property<unknown>(defaultValue);
             (this as any)[key] = property;
@@ -125,7 +125,7 @@ export abstract class ObservableObject<T> {
             property.addListener(()=>this.notifyPropertyChangedEventListeners(key));
         }
         // enum properties
-        for (const [_key,{defaultValue,displayValuePairs}] of this.obsObjCfg.enumProperties) {
+        for (const [_key, {defaultValue, displayValuePairs}] of this.obsObjCfg.enumProperties) {
             const key = _key as PropKey<T>;
             const enumProperty = new EnumProperty<unknown>(defaultValue, displayValuePairs);
             (this as any)[key] = enumProperty;
@@ -133,7 +133,7 @@ export abstract class ObservableObject<T> {
             enumProperty.addListener(()=>this.notifyPropertyChangedEventListeners(key));
         }
         // collections
-        for (const [_key,{ctor}] of this.obsObjCfg.collections) {
+        for (const [_key, {ctor}] of this.obsObjCfg.collections) {
             const key = _key as PropKey<T>;
             const collection = new ObservableCollection<any>(ctor);
             (this as any)[key] = collection;
@@ -142,7 +142,7 @@ export abstract class ObservableObject<T> {
             collection.addItemChangedListener(()=>this.notifyPropertyChangedEventListeners(key));
         }
         // children
-        for (const [_key,{ctor}] of this.obsObjCfg.children) {
+        for (const [_key, {ctor}] of this.obsObjCfg.children) {
             const key = _key as PropKey<T>;
             const child = new ctor();
             (this as any)[key] = child;

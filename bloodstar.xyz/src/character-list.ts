@@ -84,11 +84,11 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
     bindCheckbox(checkbox, character.export);
     row.appendChild(checkbox);
 
-    const icon = createElement({t:'img',css:['characterListThumbnail']});
+    const icon = createElement({t:'img', css:['characterListThumbnail']});
     bindImageDisplay(icon, character.styledImage);
     row.appendChild(icon);
 
-    const nameElement = createElement({t:'span',css:['characterListName','nowrap']});
+    const nameElement = createElement({t:'span', css:['characterListName', 'nowrap']});
     bindText(nameElement, character.name);
     row.appendChild(nameElement);
 

@@ -250,8 +250,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** replace an item in the collection */
     async replace(i:number, newItem:ItemType):Promise<void> {
-        const oldItem = this.items[i];
-        if (newItem !== oldItem.item) {
+        if (newItem !== this.items[i].item) {
             const oldItemPlus = this.items[i];
             const oldItem = oldItemPlus.item;
             oldItemPlus.destroy();
@@ -286,7 +285,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
         for (const itemPlus of removedItemsPlus){
             itemPlus.destroy();
         }
-        const newItemsPlus = items.map((item,i)=>new ItemPlus<ItemType>(this.notifyItemChangedListeners.bind(this), i+start, item));
+        const newItemsPlus = items.map((item, i)=>new ItemPlus<ItemType>(this.notifyItemChangedListeners.bind(this), i+start, item));
         this.items.splice(start, end-start, ...newItemsPlus);
         this.updateIndices(start + newItemsPlus.length);
 

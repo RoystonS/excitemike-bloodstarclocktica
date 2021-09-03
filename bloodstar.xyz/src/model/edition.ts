@@ -32,12 +32,12 @@ async function deserializeFromIds(object:ObservableObject<Edition>, nightOrder:O
     const orderedCharacters = [];
     for (const id of data) {
         const character = charactersById.get(String(id));
-        if (character===undefined){
+        if (!character){
             console.error(`deserializeFromIds: no character found for id ${id}`);
-        } else {
-            missingCharacters.delete(character);
-            orderedCharacters.push(character);
+            continue;
         }
+        missingCharacters.delete(character);
+        orderedCharacters.push(character);
     }
 
     // characters left out. probably due to duplicate ids. stick them at the end
@@ -56,11 +56,11 @@ export class Edition extends ObservableObject<Edition> {
     readonly characterList!:ObservableCollection<Character>;
 
     /** true when there are unsaved changes */
-    @observableProperty(false, {read:false,write:false})
+    @observableProperty(false, {read:false, write:false})
     readonly dirty!:Property<boolean>;
 
     /** contains the same Character objects as characterList, but ordered for night order */
-    @observableCollection(Character.asyncNew, {customSerialize:serializeJustIds,customDeserialize:deserializeFromIds})
+    @observableCollection(Character.asyncNew, {customSerialize:serializeJustIds, customDeserialize:deserializeFromIds})
     readonly firstNightOrder!:ObservableCollection<Character>;
 
     /** data about the edition */
@@ -68,19 +68,19 @@ export class Edition extends ObservableObject<Edition> {
     readonly meta!:EditionMeta;
 
     /** contains the same Character objects as characterList, but ordered for night order */
-    @observableCollection(Character.asyncNew, {customSerialize:serializeJustIds,customDeserialize:deserializeFromIds})
+    @observableCollection(Character.asyncNew, {customSerialize:serializeJustIds, customDeserialize:deserializeFromIds})
     readonly otherNightOrder!:ObservableCollection<Character>;
     
     /** whether to render preview on a character token background like you would see on clocktower.online */
-    @observableProperty(true, {read:false,write:false})
+    @observableProperty(true, {read:false, write:false})
     readonly previewOnToken!:Property<boolean>;
 
     /** name to use when saving */
-    @observableProperty('', {read:false,write:false})
+    @observableProperty('', {read:false, write:false})
     readonly saveName!:Property<string>;
 
     /** what to show as the current file and its status */
-    @observableProperty('Bloodstar Clocktica', {read:false,write:false})
+    @observableProperty('Bloodstar Clocktica', {read:false, write:false})
     readonly windowTitle!:Property<string>;
 
     /** source images that need to be saved */

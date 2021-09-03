@@ -81,15 +81,15 @@ class SignInDlg extends AriaDialog<SessionInfo> {
             },
             {
                 t:'input',
-                a:{type:'text',required:'true',id:'signInDlgUsername',placeholder:'Username or email',autocomplete:'username',autofocus:'true'},
+                a:{type:'text', required:'true', id:'signInDlgUsername', placeholder:'Username or email', autocomplete:'username', autofocus:'true'},
                 events:{keyup:submitOnEnter as unknown as EventListener}
-            },{
+            }, {
                 t:'label',
                 a:{'for':'signInDlgPassword'},
                 txt:'Password'
-            },{
+            }, {
                 t:'input',
-                a:{type:'password',required:'true',id:'signInDlgPassword',placeholder:'Password',autocomplete:'current-password'},
+                a:{type:'password', required:'true', id:'signInDlgPassword', placeholder:'Password', autocomplete:'current-password'},
                 events:{keyup:submitOnEnter as unknown as EventListener}
             }]
         });
@@ -99,7 +99,7 @@ class SignInDlg extends AriaDialog<SessionInfo> {
         if (includeForgotPasswordLink) {
             body.push({
                 t:'a',
-                a:{href:'#',style:'align-self:center'},
+                a:{href:'#', style:'align-self:center'},
                 txt:'Forgot your password?',
                 events:{click:async()=>this.close(await showResetPasswordFlow())}
             });

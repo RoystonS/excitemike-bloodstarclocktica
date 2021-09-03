@@ -64,10 +64,10 @@ function chooseJsonFile():Promise<File|null> {
         document.activeElement,
         'chooseJsonFile',
         [
-            {t:'h1',txt:'Choose file'},
-            {t:'div',css:['dialogBtnGroup'],children:[
-                {t:'button',txt:'Choose File',events:{click:()=>chooseFile()}},
-                {t:'button',txt:'Cancel',events:{click:()=>dlg.close()}}
+            {t:'h1', txt:'Choose file'},
+            {t:'div', css:['dialogBtnGroup'], children:[
+                {t:'button', txt:'Choose File', events:{click:()=>chooseFile()}},
+                {t:'button', txt:'Cancel', events:{click:()=>dlg.close()}}
             ]}
         ],
         []
@@ -148,7 +148,7 @@ function importEntry(entry:ScriptEntry, edition:Edition, firstNightOrder:NightOr
     if (entry.id === '_meta') {
         return spinner(entry.id, 'Importing _meta', importMeta(entry as MetaEntry, edition));
     }
-    return spinner(entry.id,`Importing ${entry.name}`, importCharacter(entry as CharacterEntry, edition, firstNightOrder, otherNightOrder));
+    return spinner(entry.id, `Importing ${entry.name}`, importCharacter(entry as CharacterEntry, edition, firstNightOrder, otherNightOrder));
 }
 
 /** import a whole script */
@@ -164,11 +164,11 @@ async function importScript(json:ScriptEntry[], edition:Edition):Promise<boolean
 
     const importResults = await spinner('importJsonFromUrl', 'Importing', Promise.all(promises));
 
-    const allImported = importResults.reduce((a,b)=>a&&b, true);
+    const allImported = importResults.reduce((a, b)=>a&&b, true);
     if (!allImported) { return false; }
 
     // set night order
-    const data:[NightOrderTracker, ObservableCollection<Character>][] = [[firstNightOrder, edition.firstNightOrder],[otherNightOrder, edition.otherNightOrder]];
+    const data:[NightOrderTracker, ObservableCollection<Character>][] = [[firstNightOrder, edition.firstNightOrder], [otherNightOrder, edition.otherNightOrder]];
     for (const [nightMap, collection] of data) {
         let dst = oldLength;
         const keys = Array.from(nightMap.keys()).sort((a, b) => a - b);

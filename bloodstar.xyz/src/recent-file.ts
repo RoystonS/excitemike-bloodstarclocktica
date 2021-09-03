@@ -42,12 +42,12 @@ export function getRecentFile(userEmail:string):string {
  * maintain a list of recent files - both in the menu and in local storage
  * @param name file name
  */
-export function setRecentFile(name:string,userEmail:string):void {
+export function setRecentFile(name:string, userEmail:string):void {
     try {
         const localStorage = window.localStorage;
         if (!localStorage) {return;}
-        localStorage.setItem('recentFile',name);
-        localStorage.setItem('recentFileUser',userEmail);
+        localStorage.setItem('recentFile', name);
+        localStorage.setItem('recentFileUser', userEmail);
     } catch {
         // ignore
     }

@@ -23,7 +23,7 @@ export class LockSet<KeyType> {
     private acquire(key:KeyType, max = 1):Promise<WorkCompleteFn> {
         let entry = this.locks.get(key);
         if (!entry){
-            entry = {running:[],queue:[],max};
+            entry = {running:[], queue:[], max};
             this.locks.set(key, entry);
         }
         entry.max = max;

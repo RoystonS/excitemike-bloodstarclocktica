@@ -14,9 +14,9 @@ import { SessionInfo } from '../iam';
 import {show as getConfirmation} from "./yes-no-dlg";
 import {showBlockUser} from './block-flow';
 
-type LeaveRequest = {token:string,owner:string,saveName:string};
+type LeaveRequest = {token:string, owner:string, saveName:string};
 type LeaveResponse = {error:string}|true;
-type ListRequest = {token:string,includeShared?:boolean};
+type ListRequest = {token:string, includeShared?:boolean};
 type ListFilesResponse = {
     error?:string,
     files:string[],
@@ -57,10 +57,10 @@ class ChooseFileDlg extends AriaDialog<string|[string, string]> {
         });
         if (!sessionInfo) {return '';}
 
-        const fileListDiv = createElement({t:'div',css:['openDlgList']});
+        const fileListDiv = createElement({t:'div', css:['openDlgList']});
         const body:CreateElementsOptions = [
-            {t:'h1',txt:options?.title||'Choose File'},
-            {t:'p',txt:options?.message||'Choose an existing file to open:'},
+            {t:'h1', txt:options?.title||'Choose File'},
+            {t:'p', txt:options?.message||'Choose an existing file to open:'},
             fileListDiv
         ];
 
@@ -69,39 +69,39 @@ class ChooseFileDlg extends AriaDialog<string|[string, string]> {
 
         // list your files (perhaps with label)
         if (owners.length) {
-            fileListDiv.appendChild(createElement({t:'p',txt:'Your files:'}));
+            fileListDiv.appendChild(createElement({t:'p', txt:'Your files:'}));
         }
         if (yourFiles.length) {
             for (const name of yourFiles) {
-                const button = createElement({t:'button',txt:name,events:{click:()=>this.close(name)}});
+                const button = createElement({t:'button', txt:name, events:{click:()=>this.close(name)}});
                 fileListDiv.appendChild(button);
             }
         } else {
-            fileListDiv.appendChild(createElement({t:'p',txt:'No files found.',a:{role:'alert'}}));
+            fileListDiv.appendChild(createElement({t:'p', txt:'No files found.', a:{role:'alert'}}));
         }
 
         // list shared files
         if (owners.length && sharedFiles) {
             const sharedLabel = options?.copyWarning ? 'Copy a file shared with you:' : 'Files shared with you:';
-            fileListDiv.appendChild(createElement({t:'p',txt:sharedLabel}));
-            const sharedList = createElement({t:'div',css:['openSharedList']});
+            fileListDiv.appendChild(createElement({t:'p', txt:sharedLabel}));
+            const sharedList = createElement({t:'div', css:['openSharedList']});
             fileListDiv.appendChild(sharedList);
             for (const owner of owners) {
                 const editions = sharedFiles[owner];
                 for (const edition of editions) {
                     const label = `${owner} / ${edition}`;
-                    const openButton = createElement({t:'button',txt:label,events:{click:()=>this.close([owner,edition])}});
-                    const leaveButton = createElement({t:'button',txt:'Leave'});
-                    const blockButton = createElement({t:'button',txt:'Block'});
-                    leaveButton.addEventListener('click',async ()=>{
-                        if (await showLeave(owner,edition)) {
+                    const openButton = createElement({t:'button', txt:label, events:{click:()=>this.close([owner, edition])}});
+                    const leaveButton = createElement({t:'button', txt:'Leave'});
+                    const blockButton = createElement({t:'button', txt:'Block'});
+                    leaveButton.addEventListener('click', async ()=>{
+                        if (await showLeave(owner, edition)) {
                             // Row can be removed
                             openButton.remove();
                             leaveButton.remove();
                             blockButton.remove();
                         }
                     });
-                    blockButton.addEventListener('click',async ()=>{
+                    blockButton.addEventListener('click', async ()=>{
                         if (await showBlockUser(owner)) {
                             // Any number of rows could be wrong now. Bail on the whole popup.
                             this.close(null);
@@ -164,7 +164,7 @@ async function listFiles(sessionInfo:SessionInfo, includeShared:boolean):Promise
  * @param name name of the file to open
  * @returns promise that resolves to whether a file was successfully opened
  */
- async function openNoPrompts(edition:Edition, name:string|[string,string]):Promise<boolean> {
+ async function openNoPrompts(edition:Edition, name:string|[string, string]):Promise<boolean> {
     try {
         const sessionInfo = await signIn({
             title:'Sign In to Open',
@@ -211,7 +211,7 @@ async function openPromptNoSavePrompt(edition:Edition, options?:ChooseFileOption
  * @param options optional ChooseFileOptions for the dialog
  * @returns whether a file was successfully opened
  */
-function openExistingNoSavePrompt(edition:Edition, name:string|[string,string]):Promise<boolean> {
+function openExistingNoSavePrompt(edition:Edition, name:string|[string, string]):Promise<boolean> {
     if (Array.isArray(name)) {
         const label = name.join(' / ');
         return spinner('open', `Opening shared file "${label}"`, openNoPrompts(edition, name));

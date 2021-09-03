@@ -35,11 +35,11 @@ class SpinnerDialog extends AriaDialog<null> {
             const listItem = this.listElement.appendChild(createElement({
                 t:'li',
                 txt:message,
-                a:{tabindex:'0',role:'alert'}
+                a:{tabindex:'0', role:'alert'}
             }));
-            this.messages.set(key, {listItem,stack:[message]});
+            this.messages.set(key, {listItem, stack:[message]});
         } else {
-            const {listItem,stack} = entry;
+            const {listItem, stack} = entry;
             stack.push(message);
             listItem.innerText = message;
         }
@@ -50,12 +50,12 @@ class SpinnerDialog extends AriaDialog<null> {
     remove(key:string, message:string):void {
         const entry = this.messages.get(key);
         if (!entry){return;}
-        const {listItem,stack} = entry;
+        const {listItem, stack} = entry;
         const i = Array.prototype.lastIndexOf.call(stack, message);
         if (i<0){return;}
 
         // remove the message
-        stack.splice(i,1);
+        stack.splice(i, 1);
 
         if (stack.length===0) {
             // no more messages for this key. remove list item and delete from map
@@ -84,7 +84,7 @@ class SpinnerDialog extends AriaDialog<null> {
             css:['spinnerMessages']
         });
         const body:CreateElementsOptions = [
-            {t:'div',css:['spinner']},
+            {t:'div', css:['spinner']},
             this.listElement
         ];
 

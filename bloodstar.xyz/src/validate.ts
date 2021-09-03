@@ -15,14 +15,14 @@ import { createElement } from "./util";
 export function updateEmailWarnings(email:string, container:HTMLElement):void{
     container.innerText = '';
     if (!validateEmail(email)) {
-        container.appendChild(createElement({t:'span',txt:`× Invalid email`}));
+        container.appendChild(createElement({t:'span', txt:`× Invalid email`}));
     }
 }
 
 /** update container contents to warn if any password requirement is not met */
 export function updatePasswordWarnings(password:string, passwordConfirm:string, container:HTMLElement):void {
     container.innerText = '';
-    function warn(txt:string){container.appendChild(createElement({t:'span',txt:`× ${txt}`}));}
+    function warn(txt:string){container.appendChild(createElement({t:'span', txt:`× ${txt}`}));}
     if (password.length < 8) {warn('Password must contain at least 8 characters');}
     if (password.length < 24) {
         if (!/[a-z]/.test(password)) {warn('Passwords, if short, must contain a lower case letter');}
@@ -41,10 +41,10 @@ export function updateSaveNameWarnings(name:string, container:HTMLElement, field
 export function updateUsernameWarnings(username:string, container:HTMLElement, fieldName:string):void {
     container.innerText = '';
     if (username.length < 2) {
-        container.appendChild(createElement({t:'span',txt:`× ${fieldName} too short`}));
+        container.appendChild(createElement({t:'span', txt:`× ${fieldName} too short`}));
     }
     if (!VALID_URL_PART.test(username)){
-        container.appendChild(createElement({t:'span',txt:`× ${fieldName} should contain only letters, numbers, hyphens (-), and underscores (_)`}));
+        container.appendChild(createElement({t:'span', txt:`× ${fieldName} should contain only letters, numbers, hyphens (-), and underscores (_)`}));
     }
 }
 

@@ -31,11 +31,11 @@ class ChooseOfficialCharDlg extends ChooseCharactersDlg {
     
     /** override for custom layout */
     protected makeContainer():HTMLElement {
-        this.troubleBrewingSection = createElement({t:'details',children:[{t:'summary',txt:'Trouble Brewing'}],a:{open:''}});
-        this.badMoonRisingSection = createElement({t:'details',children:[{t:'summary',txt:'Bad Moon Rising'}],a:{open:''}});
-        this.sectsAndVioletsSection = createElement({t:'details',children:[{t:'summary',txt:'Sects and Violets'}],a:{open:''}});
-        this.otherEditionsSection = createElement({t:'details',children:[{t:'summary',txt:'Other'}],a:{open:''}});
-        return createElement({t:'div',css:['importOfficialList'],children:[
+        this.troubleBrewingSection = createElement({t:'details', children:[{t:'summary', txt:'Trouble Brewing'}], a:{open:''}});
+        this.badMoonRisingSection = createElement({t:'details', children:[{t:'summary', txt:'Bad Moon Rising'}], a:{open:''}});
+        this.sectsAndVioletsSection = createElement({t:'details', children:[{t:'summary', txt:'Sects and Violets'}], a:{open:''}});
+        this.otherEditionsSection = createElement({t:'details', children:[{t:'summary', txt:'Other'}], a:{open:''}});
+        return createElement({t:'div', css:['importOfficialList'], children:[
             this.troubleBrewingSection,
             this.badMoonRisingSection, 
             this.sectsAndVioletsSection,
@@ -60,7 +60,7 @@ export default async function importOfficial(edition:Edition):Promise<boolean> {
             throw error;
         }
     }));
-    return results.reduce((a,b)=>a&&b, true);
+    return results.reduce((a, b)=>a&&b, true);
 }
 
 /** load from the character entry to the character object */

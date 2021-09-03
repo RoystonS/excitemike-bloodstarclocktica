@@ -9,7 +9,7 @@ import {VisibilityBinding} from './visibility-binding';
 import {ObservableCollection} from './observable-collection';
 import {ObservableObject} from './observable-object';
 
-export type DisplayValuePair<ValueType> = {display:string,value:ValueType};
+export type DisplayValuePair<ValueType> = {display:string, value:ValueType};
 export type DisplayValuePairs<ValueType> = ReadonlyArray<DisplayValuePair<ValueType>>;
 
 /** observable property for an enum/select element */
@@ -24,7 +24,7 @@ export class EnumProperty<ValueType> extends Property<ValueType> {
     /** get the display string for the current value */
     getDisplay():string {
         const myValue = this.get();
-        for (const {display,value} of this.options) {
+        for (const {display, value} of this.options) {
             if (value === myValue) {
                 return display;
             }

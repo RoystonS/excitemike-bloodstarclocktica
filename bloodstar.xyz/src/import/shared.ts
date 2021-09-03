@@ -53,7 +53,7 @@ class ChooseCharacterFromEditionDlg extends ChooseCharactersDlg {
  * let the user choose and import a character from a Bloodstar save
  */
 export default async function importShared(edition:Edition):Promise<boolean> {
-    const file = await chooseFile({title:'Import',message:'Choose a file to import from',includeShared:true});
+    const file = await chooseFile({title:'Import', message:'Choose a file to import from', includeShared:true});
     if (!file) {return false;}
     const label = Array.isArray(file) ? file.join(' / ') : file;
 
@@ -66,7 +66,7 @@ export default async function importShared(edition:Edition):Promise<boolean> {
 }
 
 /** import character from chosen save */
-async function _importShared(edition:Edition, file:string|[string,string]):Promise<boolean> {
+async function _importShared(edition:Edition, file:string|[string, string]):Promise<boolean> {
     const sessionInfo = await signIn({
         title:'Sign In to Open',
         message:'You must first sign in to import.'

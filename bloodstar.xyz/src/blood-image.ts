@@ -22,7 +22,7 @@ export const enum ProcessImageSettings {
 }
 
 /** clamp and force to int */
-function toByte(x:number):number { return Math.max(0,Math.min(255,x))|0; }
+function toByte(x:number):number { return Math.max(0, Math.min(255, x))|0; }
 
 /** Gaussian function */
 function gaussian(x:number, mu:number, sigma:number):number {
@@ -70,7 +70,7 @@ export default class BloodImage {
     }
     
     /** create BloodImage from canvas, image data, size, or data URI */
-    constructor(imageData:HTMLCanvasElement|ImageData|[number,number]) {
+    constructor(imageData:HTMLCanvasElement|ImageData|[number, number]) {
         if (imageData instanceof HTMLCanvasElement) {
             this.canvas = imageData;
         } else {
@@ -104,7 +104,7 @@ export default class BloodImage {
             // even though edge detect in theory left everything white, HTML canvas uses premultiplied alpha
             // and getting that color back out is lossy, so this has to change RGB to white as well
             if (intensity > 1) {
-                overlay.transform((_r:number,_g:number,_b:number,a:number) => [
+                overlay.transform((_r:number, _g:number, _b:number, a:number) => [
                     255,
                     255,
                     255,
@@ -119,8 +119,8 @@ export default class BloodImage {
      * create a new image that looks like the original with a dropshadow effect
      */
     addDropShadow(size:number, offsetX:number, offsetY:number, opacity:number):BloodImage {
-        let image = new BloodImage(this.ctx.getImageData(0,0,this.width, this.height));
-        image.setRGB(0,0,0);
+        let image = new BloodImage(this.ctx.getImageData(0, 0, this.width, this.height));
+        image.setRGB(0, 0, 0);
         image = image
             .scaled(0.25)
             .gaussianBlur(size * 0.25)
@@ -247,7 +247,7 @@ export default class BloodImage {
      * @returns cropped copy of this
      */
     crop(x:number, y:number, w:number, h:number):BloodImage {
-        return new BloodImage(this.ctx.getImageData(x,y,w,h));
+        return new BloodImage(this.ctx.getImageData(x, y, w, h));
     }
 
     /**
@@ -256,9 +256,9 @@ export default class BloodImage {
      */
     edgeDetect():BloodImage {
         const image = new BloodImage([this.width, this.height]);
-        const srcImageData = this.ctx.getImageData(0,0,this.width,this.height);
+        const srcImageData = this.ctx.getImageData(0, 0, this.width, this.height);
         const srcPixels = srcImageData.data;
-        const dstImageData = image.ctx.getImageData(0,0,this.width,this.height);
+        const dstImageData = image.ctx.getImageData(0, 0, this.width, this.height);
         const dstPixels = dstImageData.data;
         const w = this.width;
         const h = this.height;
@@ -267,8 +267,8 @@ export default class BloodImage {
                 const i = (x + y * this.width) * 4;
                 const thisAlpha = srcPixels[i + 3];
                 let edgeFound = false;
-                for (let y2 = Math.max(0,y-1); y2 < Math.min(h, y+2) && !edgeFound; ++y2) {
-                    for (let x2 = Math.max(0,x-1); x2 < Math.min(w, x+2) && !edgeFound; ++x2) {
+                for (let y2 = Math.max(0, y-1); y2 < Math.min(h, y+2) && !edgeFound; ++y2) {
+                    for (let x2 = Math.max(0, x-1); x2 < Math.min(w, x+2) && !edgeFound; ++x2) {
                         const i2 = (x2 + y2 * this.width) * 4;
                         const neighborAlpha = srcPixels[i2 + 3];
                         if ((thisAlpha > 127) !== (neighborAlpha > 127)) {
@@ -308,7 +308,7 @@ export default class BloodImage {
 
     /** get [x,y,width,height] describing region of image with visible pixels */
     getBoundingBox():[number, number, number, number] {
-        const imageData = this.ctx.getImageData(0,0,this.width,this.height);
+        const imageData = this.ctx.getImageData(0, 0, this.width, this.height);
         const pixels = imageData.data;
         let left = imageData.width;
         let top = imageData.height;
@@ -337,9 +337,9 @@ export default class BloodImage {
      * mutliply-blends in the specified image
      */
     multiply(mult:BloodImage):void {
-        const dstImageData = this.ctx.getImageData(0,0,this.width,this.height);
+        const dstImageData = this.ctx.getImageData(0, 0, this.width, this.height);
         const dstPixels = dstImageData.data;
-        const multImageData = mult.ctx.getImageData(0,0,this.width,this.height);
+        const multImageData = mult.ctx.getImageData(0, 0, this.width, this.height);
         const multPixels = multImageData.data;
         const w = Math.min(dstImageData.width, multImageData.width);
         const h = Math.min(dstImageData.height, multImageData.height);
@@ -429,7 +429,7 @@ export default class BloodImage {
         const redByte = toByte(red);
         const greenByte = toByte(green);
         const blueByte = toByte(blue);
-        const imageData = this.ctx.getImageData(0,0,this.width,this.height);
+        const imageData = this.ctx.getImageData(0, 0, this.width, this.height);
         const pixels = imageData.data;
         for (let y = 0; y < imageData.height; ++y) {
             for (let x = 0; x < imageData.width; ++x) {
@@ -469,7 +469,7 @@ export default class BloodImage {
     }
 
     /** edit pixel values in place */
-    transform(cb:(r:number, g:number, b:number, a:number)=>[number,number,number,number]):void {
+    transform(cb:(r:number, g:number, b:number, a:number)=>[number, number, number, number]):void {
         const imageData = this.ctx.getImageData(0, 0, this.width, this.height);
         const pixels = imageData.data;
 
@@ -478,7 +478,7 @@ export default class BloodImage {
         for (let y = 0; y < h; ++y) {
             for (let x = 0; x < w; ++x) {
                 const i = (x + y * this.width) * 4;
-                const [r,g,b,a] = cb(
+                const [r, g, b, a] = cb(
                     pixels[i + 0],
                     pixels[i + 1],
                     pixels[i + 2],
@@ -510,7 +510,7 @@ export async function urlToBloodImage(url:string, maxWidth:number, maxHeight:num
 
 /** get image data from the url and convert it to a dataUri, throttled */
 export function imageUrlToDataUri(url:string, useCorsProxy:boolean):Promise<string> {
-    return Locks.enqueue('imageRequest', ()=>_imageUrlToDataUri(url,useCorsProxy), MAX_SIMULTANEOUS_IMAGE_REQUESTS);
+    return Locks.enqueue('imageRequest', ()=>_imageUrlToDataUri(url, useCorsProxy), MAX_SIMULTANEOUS_IMAGE_REQUESTS);
 }
 
 /** used to limit messages about download errors */
@@ -561,14 +561,14 @@ export async function urlToCanvas(url:string, width:number, height:number, useCo
     const image = new Image();
     const canvas = document.createElement('canvas');
 
-    return new Promise((resolve,reject)=>{
+    return new Promise((resolve, reject)=>{
         image.onload = function() {
             const scale = Math.min(1.0, width / image.width, height / image.height);
             canvas.width = (scale * image.width) | 0;
             canvas.height = (scale * image.height) | 0;
             const ctx = canvas.getContext('2d');
             if (ctx) {
-                ctx.drawImage(image,0,0,canvas.width,canvas.height);
+                ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
                 resolve(canvas);
             } else {
                 reject(new Error('no context 2d'));

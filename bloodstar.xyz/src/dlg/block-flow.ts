@@ -9,13 +9,13 @@ import {AriaDialog, showDialog} from './aria-dlg'
 import {show as showMessage, showError} from './blood-message-dlg';
 import {show as getConfirmation} from "./yes-no-dlg";
 
-type BlockRequest = {token:string,username:string};
+type BlockRequest = {token:string, username:string};
 type BlockResponse = {error:string}|true;
 
 type GetBlockedRequest = {token:string};
 type GetBlockedResponse = {error:string}|{users:string[]};
 
-type UnblockRequest = {token:string,username:string};
+type UnblockRequest = {token:string, username:string};
 type UnblockResponse = {error:string}|true;
 
 class ManageBlockedDlg extends AriaDialog<void> {
@@ -27,8 +27,8 @@ class ManageBlockedDlg extends AriaDialog<void> {
     async open():Promise<void> {
         this.blockList = await getBlockList();
         if (!this.blockList){return;}
-        this.listDiv = createElement({t:'div',css:['shareDlgList']});
-        this.addButton = createElement({t:'button',txt:'Block a User'});
+        this.listDiv = createElement({t:'div', css:['shareDlgList']});
+        this.addButton = createElement({t:'button', txt:'Block a User'});
         this.addButton.addEventListener('click', async ()=>{
             const username = await showBlockPrompt();
             if (username && await doBlockUser(username)) {
@@ -38,10 +38,10 @@ class ManageBlockedDlg extends AriaDialog<void> {
         });
     
         const body:CreateElementsOptions = [
-            {t:'h1',txt:'Manage Blocked Users'},
-            {t:'p',txt:'Currently blocked users:'},
+            {t:'h1', txt:'Manage Blocked Users'},
+            {t:'p', txt:'Currently blocked users:'},
             this.listDiv,
-            {t:'div',css:['column'],children:[this.addButton]}
+            {t:'div', css:['column'], children:[this.addButton]}
         ];
     
         this.update();
@@ -57,12 +57,12 @@ class ManageBlockedDlg extends AriaDialog<void> {
     /** add a row to the list */
     addRow(name:string):void {
         if (!this.listDiv) {return;}
-        this.listDiv.appendChild(createElement({t:'span',txt:name}));
-        this.listDiv.appendChild(createElement({t:'button',txt:'Unblock',events:{click:async ()=>{
+        this.listDiv.appendChild(createElement({t:'span', txt:name}));
+        this.listDiv.appendChild(createElement({t:'button', txt:'Unblock', events:{click:async ()=>{
             if (this.blockList && await showUnblockUser(name)) {
                 const i = this.blockList.indexOf(name);
                 if (i !== -1) {
-                    this.blockList.splice(i,1);
+                    this.blockList.splice(i, 1);
                     this.update();
                 }
             }
@@ -140,8 +140,8 @@ export async function getBlockList():Promise<string[]|null> {
  * @returns Promise that resolves to the name to blockor the empty string if cancelled
  */
 async function showBlockPrompt():Promise<string> {
-    const usernameField = createElement({t:'input',a:{type:'text',required:'true',placeholder:'Username',autocomplete:'username'},id:'blockPromptUsername'});
-    const usernameWarnings = createElement({t:'div',css:['column'],a:{style:'color:red'}});
+    const usernameField = createElement({t:'input', a:{type:'text', required:'true', placeholder:'Username', autocomplete:'username'}, id:'blockPromptUsername'});
+    const usernameWarnings = createElement({t:'div', css:['column'], a:{style:'color:red'}});
     const syncToButton = ()=>{
         const buttonElem = document.getElementById('blockUserButton');
         if (!(buttonElem instanceof HTMLButtonElement)) {return;}
@@ -151,8 +151,8 @@ async function showBlockPrompt():Promise<string> {
         updateUsernameWarnings(usernameField.value, usernameWarnings, 'Username');
         syncToButton();
     };
-    usernameField.addEventListener('change',usernameWarn);
-    usernameField.addEventListener('input',usernameWarn);
+    usernameField.addEventListener('change', usernameWarn);
+    usernameField.addEventListener('input', usernameWarn);
     const blockUser = async ():Promise<string>=>{
         if (!validateUsername(usernameField.value)) {
             await showMessage('Block Error', 'Username not valid.');
@@ -161,7 +161,7 @@ async function showBlockPrompt():Promise<string> {
         return usernameField.value;
     };
     const buttons = [
-        {label:'Block',id:'blockUserButton',callback:blockUser,disabled:true},
+        {label:'Block', id:'blockUserButton', callback:blockUser, disabled:true},
         {label:'Cancel'}
     ];
 
@@ -169,9 +169,9 @@ async function showBlockPrompt():Promise<string> {
         document.activeElement,
         'block-prompt',
         [
-            {t:'h1',txt:'Block User'},
-            {t:'div',css:['twoColumnGrid'],children:[
-                {t:'label',a:{'for':'blockPromptUsername'},txt:'Username'},
+            {t:'h1', txt:'Block User'},
+            {t:'div', css:['twoColumnGrid'], children:[
+                {t:'label', a:{'for':'blockPromptUsername'}, txt:'Username'},
                 usernameField,
             ]},
             usernameWarnings

@@ -8,7 +8,7 @@ import {show as showMessage, showError} from './blood-message-dlg';
 import {confirmEmail, resendSignUpConfirmation, SessionInfo, signUp} from '../iam';
 import { updateEmailWarnings, updatePasswordWarnings, updateUsernameWarnings, validateEmail, validatePassword, validateUsername } from '../validate';
 
-export type UserPass = {username:string,password:string};
+export type UserPass = {username:string, password:string};
 
 /**
  * do the sign-up flow
@@ -21,10 +21,10 @@ async function show():Promise<SessionInfo|null>{
 }
 
 class ConfirmSignUpDlg extends AriaDialog<string> {
-    async open(email:string,doWarning:boolean):Promise<string>{
-        const body:CreateElementsOptions = [{t:'h1',txt:'Confirm email address'}];
+    async open(email:string, doWarning:boolean):Promise<string>{
+        const body:CreateElementsOptions = [{t:'h1', txt:'Confirm email address'}];
         if (doWarning) {
-            body.push({t:'p',a:{style:'color:red;max-width:400px'},txt:'Your account must be confirmed before you can continue. Please check your email for the six-digit code.'});
+            body.push({t:'p', a:{style:'color:red;max-width:400px'}, txt:'Your account must be confirmed before you can continue. Please check your email for the six-digit code.'});
         }
         const syncButton = ()=>{
             const inputElement = document.getElementById('codeFromEmail');
@@ -34,22 +34,22 @@ class ConfirmSignUpDlg extends AriaDialog<string> {
             const codeValue = parseInt(inputElement.value, 10);
             buttonElement.disabled = isNaN(codeValue);
         };
-        body.splice(body.length,0,...[
-            {t:'p',a:{style:'max-width:400px'},txt:`We have sent an email to "${email}" containing a 6-digit code. Please enter the code below, then click the button below to continue.`},
-            {t:'input',a:{type:'text',minlength:'6',maxlength:'6',autocomplete:'off',required:'',pattern:'[0-9]{6}',title:'six-digit code from your email'},id:'codeFromEmail',events:{input:syncButton,change:syncButton}},
-            {t:'div',css:['dialogBtnGroup'],children:[
-                {t:'button',id:'continueBtn',txt:'Continue',a:{disabled:true},events:{click:()=>{
+        body.splice(body.length, 0, ...[
+            {t:'p', a:{style:'max-width:400px'}, txt:`We have sent an email to "${email}" containing a 6-digit code. Please enter the code below, then click the button below to continue.`},
+            {t:'input', a:{type:'text', minlength:'6', maxlength:'6', autocomplete:'off', required:'', pattern:'[0-9]{6}', title:'six-digit code from your email'}, id:'codeFromEmail', events:{input:syncButton, change:syncButton}},
+            {t:'div', css:['dialogBtnGroup'], children:[
+                {t:'button', id:'continueBtn', txt:'Continue', a:{disabled:true}, events:{click:()=>{
                     const inputElement = document.getElementById('codeFromEmail');
                     if (!(inputElement instanceof HTMLInputElement)){this.close(); return;}
                     this.close(inputElement.value);
                 }}},
-                {t:'button',txt:'Cancel',events:{click:()=>this.close('')}}
+                {t:'button', txt:'Cancel', events:{click:()=>this.close('')}}
             ]},
-            {t:'p',txt:"Didn't receive a code? ",a:{style:'align-self:center;'},children:[
-                {t:'a',a:{href:'#'},txt:'Send a new one',events:{click:()=>resendSignUpConfirmation(email)}}
+            {t:'p', txt:"Didn't receive a code? ", a:{style:'align-self:center;'}, children:[
+                {t:'a', a:{href:'#'}, txt:'Send a new one', events:{click:()=>resendSignUpConfirmation(email)}}
             ]}
         ] as CreateElementsOptions);
-        return await this.baseOpen(null,'confirm-sign-up',body,[])||'';
+        return await this.baseOpen(null, 'confirm-sign-up', body, [])||'';
     }
 }
 
@@ -58,7 +58,7 @@ async function showConfirmStep(email:string):Promise<SessionInfo|null>{
     let warn = false;
     // eslint-disable-next-line no-constant-condition
     while (true) {
-        const code = await new ConfirmSignUpDlg().open(email,warn);
+        const code = await new ConfirmSignUpDlg().open(email, warn);
         if (!code){return null;}
         warn = true;
         try {
@@ -76,25 +76,25 @@ async function showConfirmStep(email:string):Promise<SessionInfo|null>{
  * @returns email address to which a confirmation email was sent, or the empty string
  */
 async function showSignUpStep():Promise<string>{
-    const usernameField = createElement({t:'input',a:{type:'text',required:'true',placeholder:'Username',autocomplete:'username'},id:'signUpDlgUsername'});
-    const usernameWarnings = createElement({t:'div',css:['column'],a:{style:'color:red;grid-column-start:span 2'}});
-    const emailField = createElement({t:'input',a:{type:'email',required:'true',placeholder:'name@host.com',autocomplete:'email'},id:'signUpDlgEmail'});
-    const emailWarnings = createElement({t:'div',css:['column'],a:{style:'color:red;grid-column-start:span 2'}});
-    const passwordField = createElement({t:'input',a:{type:'password',required:'true',placeholder:'Password',autocomplete:'new-password'},'id':'signInDlgPassword'});
-    const passwordWarnings = createElement({t:'div',css:['column'],a:{style:'color:red;grid-column-start:span 2'}});
-    const confirmField = createElement({t:'input',a:{type:'password',required:'true',placeholder:'Password',autocomplete:'new-password'},'id':'signInDlgPasswordConfirm'});
+    const usernameField = createElement({t:'input', a:{type:'text', required:'true', placeholder:'Username', autocomplete:'username'}, id:'signUpDlgUsername'});
+    const usernameWarnings = createElement({t:'div', css:['column'], a:{style:'color:red;grid-column-start:span 2'}});
+    const emailField = createElement({t:'input', a:{type:'email', required:'true', placeholder:'name@host.com', autocomplete:'email'}, id:'signUpDlgEmail'});
+    const emailWarnings = createElement({t:'div', css:['column'], a:{style:'color:red;grid-column-start:span 2'}});
+    const passwordField = createElement({t:'input', a:{type:'password', required:'true', placeholder:'Password', autocomplete:'new-password'}, 'id':'signInDlgPassword'});
+    const passwordWarnings = createElement({t:'div', css:['column'], a:{style:'color:red;grid-column-start:span 2'}});
+    const confirmField = createElement({t:'input', a:{type:'password', required:'true', placeholder:'Password', autocomplete:'new-password'}, 'id':'signInDlgPasswordConfirm'});
     const body:CreateElementsOptions = [
-        {t:'h1',a:{role:'alert'},txt:'Create an Account'},
-        {t:'div',css:['twoColumnGrid'],children:[
-            {t:'label',a:{'for':'signUpDlgUsername'},txt:'Username'},
+        {t:'h1', a:{role:'alert'}, txt:'Create an Account'},
+        {t:'div', css:['twoColumnGrid'], children:[
+            {t:'label', a:{'for':'signUpDlgUsername'}, txt:'Username'},
             usernameField,
             usernameWarnings,
-            {t:'label',a:{'for':'signUpDlgEmail'},txt:'Email'},
+            {t:'label', a:{'for':'signUpDlgEmail'}, txt:'Email'},
             emailField,
             emailWarnings,
-            {t:'label',a:{'for':'signInDlgPassword'},txt:'Password'},
+            {t:'label', a:{'for':'signInDlgPassword'}, txt:'Password'},
             passwordField,
-            {t:'label',a:{'for':'signInDlgPasswordConfirm'},txt:'Confirm Password'},
+            {t:'label', a:{'for':'signInDlgPasswordConfirm'}, txt:'Confirm Password'},
             confirmField,
         ]},
         passwordWarnings,
@@ -113,17 +113,17 @@ async function showSignUpStep():Promise<string>{
         syncToButton();
     };
     const passwordWarn = ()=>{
-        updatePasswordWarnings(passwordField.value,confirmField.value,passwordWarnings);
+        updatePasswordWarnings(passwordField.value, confirmField.value, passwordWarnings);
         syncToButton();
     };
-    usernameField.addEventListener('change',usernameWarn);
-    usernameField.addEventListener('input',usernameWarn);
-    emailField.addEventListener('change',emailWarn);
-    emailField.addEventListener('input',emailWarn);
-    passwordField.addEventListener('change',passwordWarn);
-    passwordField.addEventListener('input',passwordWarn);
-    confirmField.addEventListener('change',passwordWarn);
-    confirmField.addEventListener('input',passwordWarn);
+    usernameField.addEventListener('change', usernameWarn);
+    usernameField.addEventListener('input', usernameWarn);
+    emailField.addEventListener('change', emailWarn);
+    emailField.addEventListener('input', emailWarn);
+    passwordField.addEventListener('change', passwordWarn);
+    passwordField.addEventListener('input', passwordWarn);
+    confirmField.addEventListener('change', passwordWarn);
+    confirmField.addEventListener('input', passwordWarn);
 
     const getResult = async ():Promise<string>=>{
         if (!validateUsername(usernameField.value)) {await showMessage('Sign Up Error', 'Username not valid.'); return '';}
@@ -140,8 +140,8 @@ async function showSignUpStep():Promise<string>{
     };
     
     const buttons:ButtonCfg<string>[] = [
-        {label:'Sign up',callback:getResult,disabled:true,id:'signupBtn'},
-        {label:'I already have an account',callback:()=>''}];
+        {label:'Sign up', callback:getResult, disabled:true, id:'signupBtn'},
+        {label:'I already have an account', callback:()=>''}];
 
     return await showDialog<string>(
         document.activeElement,

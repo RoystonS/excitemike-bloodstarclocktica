@@ -15,7 +15,7 @@ class NewOpenDlg extends AriaDialog<boolean> {
         const body:CreateElementsOptions = [{
             t:'h1',
             txt: 'Welcome'
-        },{
+        }, {
             t:'p',
             txt:'To get started, open an existing edition or create a new one.'
         }];

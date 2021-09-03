@@ -6,8 +6,8 @@
 import cmd from "./commands/cmd";
 import { show as showMessage, showError } from "./dlg/blood-message-dlg";
 
-export type SessionInfo = {token:string,expiration:number,username:string,email:string};
-type ConfirmEmailData = {code:string,email:string};
+export type SessionInfo = {token:string, expiration:number, username:string, email:string};
+type ConfirmEmailData = {code:string, email:string};
 type RequestResetData = {usernameOrEmail:string};
 type ResendSignUpConfirmationData = {email:string};
 type ResetPasswordData = {
@@ -15,8 +15,8 @@ type ResetPasswordData = {
     email:string,
     password:string
 };
-type ConfirmEmailResponse = {error:string}|{token:string,expiration:number,username:string,email:string}|'alreadyConfirmed'|'notSignedUp'|'expired'|'badCode';
-type ResetPasswordResponse = {error:string}|{token:string,expiration:number,username:string,email:string}|'badCode'|'expired';
+type ConfirmEmailResponse = {error:string}|{token:string, expiration:number, username:string, email:string}|'alreadyConfirmed'|'notSignedUp'|'expired'|'badCode';
+type ResetPasswordResponse = {error:string}|{token:string, expiration:number, username:string, email:string}|'badCode'|'expired';
 type EmailResponse = {error:string}|{email:string};
 type SignUpResponse = {error:string}|'usernameTaken'|'emailTaken'|true;
 type SignInData = {
@@ -25,8 +25,8 @@ type SignInData = {
 };
 type SignInResponse
     = {error:string}
-    | {message:string,title:string}
-    | {token:string,expiration:number,username:string,email:string};
+    | {message:string, title:string}
+    | {token:string, expiration:number, username:string, email:string};
 type SignUpData = {
     username:string,
     password:string,
@@ -145,9 +145,9 @@ export async function signIn(usernameOrEmail:string, password:string):Promise<Se
         await showMessage(response.title, response.message);
         return null;
     }
-    const {token,expiration,username,email} = response;
+    const {token, expiration, username, email} = response;
     if (!token || !expiration || !username || !email) {return null;}
-    return {token,expiration,username,email};
+    return {token, expiration, username, email};
 }
 
 /**

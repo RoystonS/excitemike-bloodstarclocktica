@@ -27,7 +27,7 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
     
     /** override for custom layout */
     protected static makeContainer():HTMLElement {
-        return createElement({t:'div',css:['importOfficialList']});
+        return createElement({t:'div', css:['importOfficialList']});
     }
 
     async open(json:ScriptEntry[]):Promise<ScriptEntry[]> {
@@ -65,20 +65,20 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
             t:'div',
             css:['row'],
             children:[
-                {t:'label',a:{'for':'chooseOfficialFilter'},txt:'Filter'},
+                {t:'label', a:{'for':'chooseOfficialFilter'}, txt:'Filter'},
                 {
-                    t:'input',id:'chooseOfficialFilter',a:{name:'chooseOfficialFilter'},
-                    events:{change:onFilterChange,input:onFilterChange},
+                    t:'input', id:'chooseOfficialFilter', a:{name:'chooseOfficialFilter'},
+                    events:{change:onFilterChange, input:onFilterChange},
                 },
                 // clear filter button
-                {t:'button',txt:'Clear Filter',events:{click:()=>{
+                {t:'button', txt:'Clear Filter', events:{click:()=>{
                     const filterTextBox = filterRow.querySelector('#chooseOfficialFilter');
                     if (!(filterTextBox instanceof HTMLInputElement)) {return;}
                     filterTextBox.value = '';
                     filterTextBox.dispatchEvent(new Event('change'));
                 }}},
                 // select all button
-                {t:'button',txt:'Select All',events:{click:()=>{
+                {t:'button', txt:'Select All', events:{click:()=>{
                     const checkBoxes = container.querySelectorAll('input[type=checkbox]');
                     for (let i=0;i<checkBoxes.length;++i){
                         const checkbox = checkBoxes[i] as HTMLInputElement;
@@ -87,7 +87,7 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
                     updateButton();
                 }}},
                 // unselect all button
-                {t:'button',txt:'Unselect All',events:{click:()=>{
+                {t:'button', txt:'Unselect All', events:{click:()=>{
                     const checkBoxes = container.querySelectorAll('input[type=checkbox]');
                     for (let i=0;i<checkBoxes.length;++i){
                         const checkbox = checkBoxes[i] as HTMLInputElement;
@@ -106,11 +106,11 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
             document.activeElement,
             'importOfficial',
             [
-                {t:'h1',txt:'Choose character(s) to import'},
+                {t:'h1', txt:'Choose character(s) to import'},
                 filterRow,
                 container
             ],
-            [{label:'Import 0 Characters',id:'importButton',callback:doImport,disabled:true},{label:'Cancel'}]
+            [{label:'Import 0 Characters', id:'importButton', callback:doImport, disabled:true}, {label:'Cancel'}]
         )||[];
     }
 
@@ -120,10 +120,10 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
             const element = createElement({
                 t:'div',
                 css:['importCharacter'],
-                a:{title:scriptEntry.ability||'','data-id':scriptEntry.id},
+                a:{title:scriptEntry.ability||'', 'data-id':scriptEntry.id},
                 children:[
-                    {t:'input',a:{type:'checkbox','data-id':scriptEntry.id},id:`${scriptEntry.id}-checkbox`,events:{change:updateCb}},
-                    {t:'label',a:{for:`${scriptEntry.id}-checkbox`},txt:scriptEntry.name}
+                    {t:'input', a:{type:'checkbox', 'data-id':scriptEntry.id}, id:`${scriptEntry.id}-checkbox`, events:{change:updateCb}},
+                    {t:'label', a:{for:`${scriptEntry.id}-checkbox`}, txt:scriptEntry.name}
                 ]
             });
             setTeamColorStyle(parseBloodTeam(scriptEntry.team || ''), element.classList);
@@ -134,10 +134,10 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
         return createElement({
             t:'div',
             css:['importCharacter'],
-            a:{title:'Meta information about the custom script, such as name, author, and logo.','data-id':scriptEntry.id},
+            a:{title:'Meta information about the custom script, such as name, author, and logo.', 'data-id':scriptEntry.id},
             children:[
-                {t:'input',a:{type:'checkbox','data-id':scriptEntry.id},id:`${scriptEntry.id}-checkbox`,events:{change:updateCb}},
-                {t:'label',a:{for:`${scriptEntry.id}-checkbox`},txt:`Meta (Name, Author, Edition Logo, etc.)`}
+                {t:'input', a:{type:'checkbox', 'data-id':scriptEntry.id}, id:`${scriptEntry.id}-checkbox`, events:{change:updateCb}},
+                {t:'label', a:{for:`${scriptEntry.id}-checkbox`}, txt:`Meta (Name, Author, Edition Logo, etc.)`}
             ]
         });
     }

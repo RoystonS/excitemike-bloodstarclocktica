@@ -9,8 +9,8 @@ import {AriaDialog, showDialog} from './aria-dlg'
 import {show as showMessage, showError} from './blood-message-dlg';
 import {show as getConfirmation} from "./yes-no-dlg";
 
-type GetSharedRequest = {token:string,saveName:string};
-type GetSharedResponse = {error?:string,users:string[]};
+type GetSharedRequest = {token:string, saveName:string};
+type GetSharedResponse = {error?:string, users:string[]};
 
 type ShareRequest = GetSharedRequest & {user:string};
 type ShareResponse = {error:string}|true;
@@ -30,15 +30,15 @@ class SharingDlg extends AriaDialog<void> {
         if (!this.editionName) {return;}
         this.shareList = await this.getShareList();
         if (!this.shareList){return;}
-        this.listDiv = createElement({t:'div',css:['shareDlgList']});
-        this.addUserButton = createElement({t:'button',txt:'Add User'});
+        this.listDiv = createElement({t:'div', css:['shareDlgList']});
+        this.addUserButton = createElement({t:'button', txt:'Add User'});
         this.addUserButton.addEventListener('click', ()=>this.showShareWithUser());
     
         const body:CreateElementsOptions = [
-            {t:'h1',txt:'Sharing settings'},
-            {t:'p',txt:`Currently sharing "${editionName}" with:`},
+            {t:'h1', txt:'Sharing settings'},
+            {t:'p', txt:`Currently sharing "${editionName}" with:`},
             this.listDiv,
-            {t:'div',css:['column'],children:[this.addUserButton]}
+            {t:'div', css:['column'], children:[this.addUserButton]}
         ];
     
         this.updateSharingDlg();
@@ -67,7 +67,7 @@ class SharingDlg extends AriaDialog<void> {
             saveName:this.editionName
         };
         try {
-            const {error,users} = await signedInCmd<GetSharedResponse>('get-shared', 'Retrieving share list', request);
+            const {error, users} = await signedInCmd<GetSharedResponse>('get-shared', 'Retrieving share list', request);
             if (error) {
                 console.error(error);
                 await showError('Network Error', `Error encountered while retrieving share list`, error);
@@ -149,8 +149,8 @@ class SharingDlg extends AriaDialog<void> {
 
     /** bring up subdialog for sharing with a specific person */
     async showShareWithUser():Promise<void> {
-        const usernameField = createElement({t:'input',a:{type:'text',required:'true',placeholder:'Username',autocomplete:'username'},id:'shareWithUserDlgUsername'});
-        const usernameWarnings = createElement({t:'div',css:['column'],a:{style:'color:red'}});
+        const usernameField = createElement({t:'input', a:{type:'text', required:'true', placeholder:'Username', autocomplete:'username'}, id:'shareWithUserDlgUsername'});
+        const usernameWarnings = createElement({t:'div', css:['column'], a:{style:'color:red'}});
         const syncToButton = ()=>{
             const buttonElem = document.getElementById('shareWithUserButton');
             if (!(buttonElem instanceof HTMLButtonElement)) {return;}
@@ -160,8 +160,8 @@ class SharingDlg extends AriaDialog<void> {
             updateUsernameWarnings(usernameField.value, usernameWarnings, 'Username');
             syncToButton();
         };
-        usernameField.addEventListener('change',usernameWarn);
-        usernameField.addEventListener('input',usernameWarn);
+        usernameField.addEventListener('change', usernameWarn);
+        usernameField.addEventListener('input', usernameWarn);
         const shareWithUser = async ():Promise<void>=>{
             if (!validateUsername(usernameField.value)) {
                 await showMessage('Share Error', 'Username not valid.');
@@ -174,7 +174,7 @@ class SharingDlg extends AriaDialog<void> {
             }
         };
         const buttons = [
-            {label:'Share',id:'shareWithUserButton',callback:shareWithUser,disabled:true},
+            {label:'Share', id:'shareWithUserButton', callback:shareWithUser, disabled:true},
             {label:'Cancel'}
         ];
 
@@ -182,9 +182,9 @@ class SharingDlg extends AriaDialog<void> {
             document.activeElement,
             'share-with-user',
             [
-                {t:'h1',txt:'Share with User'},
-                {t:'div',css:['twoColumnGrid'],children:[
-                    {t:'label',a:{'for':'shareWithUserDlgUsername'},txt:'Username'},
+                {t:'h1', txt:'Share with User'},
+                {t:'div', css:['twoColumnGrid'], children:[
+                    {t:'label', a:{'for':'shareWithUserDlgUsername'}, txt:'Username'},
                     usernameField,
                 ]},
                 usernameWarnings
@@ -204,8 +204,8 @@ class SharingDlg extends AriaDialog<void> {
         } else {
             this.listDiv.innerText = '';
             for (const name of this.shareList) {
-                this.listDiv.appendChild(createElement({t:'span',txt:name}));
-                this.listDiv.appendChild(createElement({t:'button',txt:'Remove',events:{click:async ()=>{
+                this.listDiv.appendChild(createElement({t:'span', txt:name}));
+                this.listDiv.appendChild(createElement({t:'button', txt:'Remove', events:{click:async ()=>{
                     await this.removeUser(name);
                 }}}));
             }

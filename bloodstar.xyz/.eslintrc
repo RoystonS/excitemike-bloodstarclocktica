@@ -71,11 +71,15 @@
       "no-return-assign":"warn",
       "no-return-await":"warn",
       "no-script-url":"warn",
+      //"no-shadow":"warn", // has an issue with typescript enums
       "no-self-compare":"warn",
       "no-sequences":"warn",
       "no-throw-literal":"warn",
+      //"no-undefined":"warn",
+      "no-undef-init":"warn",
       "no-unmodified-loop-condition":"warn",
       "no-unused-expressions":"warn",
+      //"no-use-before-define":"warn",
       "no-useless-call":"warn",
       "no-useless-concat":"warn",
       "no-useless-return":"warn",
@@ -88,6 +92,12 @@
       //"require-unicode-regexp":"warn",
       "vars-on-top":"warn",
       "wrap-iife":"warn",
+
+      // styling
+      "array-bracket-spacing":"warn",
+      "camelcase":"warn",
+      "comma-spacing":"warn",
+      "comma-style":"warn",
       "yoda":"warn",
 
       // addition typescript rules

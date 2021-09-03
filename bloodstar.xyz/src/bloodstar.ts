@@ -71,7 +71,7 @@ export function tabClicked(btnId:string, tabId:string):void {
 
 /** initialize listeners and data bindings */
 async function initBindings():Promise<void> {
-    window.addEventListener('beforeunload',(event):string|undefined=>{
+    window.addEventListener('beforeunload', (event):string|undefined=>{
         if (!edition.dirty.get()){return undefined;}
         event.preventDefault();
         const message = "Are you sure you want to leave? Unsaved changes will be lost.";
@@ -88,10 +88,10 @@ async function initBindings():Promise<void> {
         }
     });
     hookupClickEvents([
-        ['metaTabBtn', ()=>tabClicked('metaTabBtn','metatab')],
-        ['charTabBtn', ()=>tabClicked('charTabBtn','charactertab')],
-        ['firstNightTabBtn', ()=>tabClicked('firstNightTabBtn','firstNightOrderTab')],
-        ['otherNightTabBtn', ()=>tabClicked('otherNightTabBtn','otherNightOrderTab')],
+        ['metaTabBtn', ()=>tabClicked('metaTabBtn', 'metatab')],
+        ['charTabBtn', ()=>tabClicked('charTabBtn', 'charactertab')],
+        ['firstNightTabBtn', ()=>tabClicked('firstNightTabBtn', 'firstNightOrderTab')],
+        ['otherNightTabBtn', ()=>tabClicked('otherNightTabBtn', 'otherNightOrderTab')],
         ['metaLogoRemoveBtn', ()=>edition && edition.meta.logo.set(null)],
     ]);
 
@@ -122,7 +122,7 @@ async function initBindings():Promise<void> {
     selectedCharacter.addListener(v=>{
         CharacterTab.setSelectedCharacter(v);
         if (v) {
-            tabClicked('charTabBtn','charactertab');
+            tabClicked('charTabBtn', 'charactertab');
         }
     });
     await selectedCharacter.set(edition.characterList.get(0) || null);
@@ -176,18 +176,18 @@ async function _init(options?:BloodstarOptions) {
     }
 }
 
-type StatusBarData = Map<string, {id:string,exported:number,total:number}>;
+type StatusBarData = Map<string, {id:string, exported:number, total:number}>;
 
 /** update status bar text */
 function collectStatusBarData():StatusBarData {
     const data:StatusBarData = new Map();
-    data.set('all', {id:'charactersStatus',exported:0,total:0});
-    data.set(BloodTeam.TOWNSFOLK, {id:'townsfolkStatus',exported:0,total:0});
-    data.set(BloodTeam.OUTSIDER, {id:'outsidersStatus',exported:0,total:0});
-    data.set(BloodTeam.MINION, {id:'minionsStatus',exported:0,total:0});
-    data.set(BloodTeam.DEMON, {id:'demonsStatus',exported:0,total:0});
-    data.set(BloodTeam.TRAVELER, {id:'travelersStatus',exported:0,total:0});
-    data.set(BloodTeam.FABLED, {id:'fabledStatus',exported:0,total:0});
+    data.set('all', {id:'charactersStatus', exported:0, total:0});
+    data.set(BloodTeam.TOWNSFOLK, {id:'townsfolkStatus', exported:0, total:0});
+    data.set(BloodTeam.OUTSIDER, {id:'outsidersStatus', exported:0, total:0});
+    data.set(BloodTeam.MINION, {id:'minionsStatus', exported:0, total:0});
+    data.set(BloodTeam.DEMON, {id:'demonsStatus', exported:0, total:0});
+    data.set(BloodTeam.TRAVELER, {id:'travelersStatus', exported:0, total:0});
+    data.set(BloodTeam.FABLED, {id:'fabledStatus', exported:0, total:0});
     if (edition){
         for (const character of edition.characterList) {
             const exported = character.export.get();
@@ -206,7 +206,7 @@ function collectStatusBarData():StatusBarData {
 
 /** update status bar text */
 function updateStatusbar():void {
-    for (const {id,exported,total} of collectStatusBarData().values()) {
+    for (const {id, exported, total} of collectStatusBarData().values()) {
         const element = document.getElementById(id);
         if (element) {
             element.innerText = `${exported}/${total}`;

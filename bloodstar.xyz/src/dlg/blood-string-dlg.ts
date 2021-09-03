@@ -19,23 +19,23 @@ class StringDialog extends AriaDialog<string> {
         defaultValue:string,
         validation?:Validation
     ):Promise<string|null> {
-        const inputField = createElement({t:'input',a:{
+        const inputField = createElement({t:'input', a:{
             required:'true',
             type:'text',
             value:defaultValue,
             pattern:(validation && validation.pattern) ? validation.pattern : '',
             title:(validation && validation.hint) ? validation.hint : ''
         }});
-        const warningsContainer = createElement({t:'div',css:['column'],a:{style:'color:red;width:400px;'}});
+        const warningsContainer = createElement({t:'div', css:['column'], a:{style:'color:red;width:400px;'}});
         const body:CreateElementsOptions = [{
             t:'h1',
             txt:title
-        },{
+        }, {
             t:'span',
             a:{role:'alert'},
             txt:prompt
-        },inputField
-        ,warningsContainer];
+        }, inputField,
+        warningsContainer];
 
         // submit on enter
         // TODO: DRY: wrap in function and move to base class. find other dialogs doing the same
@@ -61,19 +61,19 @@ class StringDialog extends AriaDialog<string> {
                 if (!(buttonElem instanceof HTMLButtonElement)) {return;}
                 buttonElem.disabled = !(validateFn(inputField.value));
             };
-            inputField.addEventListener('change',syncToButton);
-            inputField.addEventListener('input',syncToButton);
+            inputField.addEventListener('change', syncToButton);
+            inputField.addEventListener('input', syncToButton);
         }
 
         // if there is a warnings function, hook it up
         const warningsFn = validation?.warningsFn;
         if (warningsFn) {
-            const syncWarnings = ()=> warningsFn(inputField.value,warningsContainer);
-            inputField.addEventListener('change',syncWarnings);
-            inputField.addEventListener('input',syncWarnings);
+            const syncWarnings = ()=> warningsFn(inputField.value, warningsContainer);
+            inputField.addEventListener('change', syncWarnings);
+            inputField.addEventListener('input', syncWarnings);
         }
         const buttons:ButtonCfg<string|null>[] = [
-            {label:'OK', callback:() => inputField.value,id:'stringOkButton',disabled:Boolean(validateFn)},
+            {label:'OK', callback:() => inputField.value, id:'stringOkButton', disabled:Boolean(validateFn)},
             {label:'Cancel'}
         ];
 

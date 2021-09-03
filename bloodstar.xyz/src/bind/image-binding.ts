@@ -29,7 +29,7 @@ async function syncFileElemToProperty(element:HTMLInputElement, property:Propert
 
 /** convert a url to a data uri */
 function toDataUri(url:string, maxWidth:number, maxHeight:number):Promise<string> {
-    return new Promise((resolve,reject)=>{
+    return new Promise((resolve, reject)=>{
         try {
             const image = new Image();
             image.onload = ()=>{
@@ -37,7 +37,7 @@ function toDataUri(url:string, maxWidth:number, maxHeight:number):Promise<string
                 const scale = Math.min(1.0, maxWidth / image.width, maxHeight / image.height);
                 canvas.width = (scale * image.width) | 0;
                 canvas.height = (scale * image.height) | 0;
-                canvas.getContext('2d')?.drawImage(image,0,0,canvas.width,canvas.height);
+                canvas.getContext('2d')?.drawImage(image, 0, 0, canvas.width, canvas.height);
                 resolve(canvas.toDataURL('image/png'));
             }
             image.src = url;

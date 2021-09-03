@@ -11,7 +11,7 @@ import { showError } from "./blood-message-dlg";
 
 type ResolveFn = (value:any)=>void;
 type ButtonCb<T = unknown> = ()=>Promise<T>|T;
-export type ButtonCfg<T = unknown> = {label:string,id?:string,callback?:ButtonCb<T>,disabled?:boolean};
+export type ButtonCfg<T = unknown> = {label:string, id?:string, callback?:ButtonCb<T>, disabled?:boolean};
 
 /** used to make each dialog definitely have a unique id */
 let unique = 1;
@@ -129,7 +129,7 @@ export class AriaDialog<ResultType> {
         if (dialogStack.length) {
             const i = dialogStack.indexOf(this);
             if (i>=0) {
-                dialogStack.splice(i,1);
+                dialogStack.splice(i, 1);
                 // if this was the current dialog
                 // remove focus trap and restore focus
                 if (i === dialogStack.length-1) {
@@ -197,7 +197,7 @@ export class AriaDialog<ResultType> {
             const btnGroup = document.createElement('div');
             btnGroup.className = 'dialogBtnGroup';
         
-            for (const {label, id, callback, disabled} of buttons) {
+            for (const {label, id:btnId, callback, disabled} of buttons) {
                 const btn = document.createElement('button');
                 btn.addEventListener('click', async () => {
                     try {
@@ -209,7 +209,7 @@ export class AriaDialog<ResultType> {
                     }
                 });
                 btn.innerText = label;
-                if (id) {btn.id=id;}
+                if (btnId) {btn.id=btnId;}
                 btn.disabled = Boolean(disabled);
                 btnGroup.appendChild(btn);
             }

@@ -9,7 +9,7 @@ import {chooseFile} from "../dlg/open-flow";
 import signIn, { signedInCmd } from '../sign-in';
 import { clearRecentFile } from '../recent-file';
 
-type DeleteRequest = {token:string,saveName:string};
+type DeleteRequest = {token:string, saveName:string};
 type DeleteResponse = {error:string}|true;
 
 /** confirm deletion */

@@ -90,7 +90,7 @@ class BloodImporter {
 
     /** once all characters are loaded, correct the night order */
     private async finalizeNightOrder():Promise<void> {
-        const data:[Map<number, Character[]>, ObservableCollection<Character>][] = [[this.firstNightOrderTracker, this.edition.firstNightOrder],[this.otherNightOrderTracker, this.edition.otherNightOrder]];
+        const data:[Map<number, Character[]>, ObservableCollection<Character>][] = [[this.firstNightOrderTracker, this.edition.firstNightOrder], [this.otherNightOrderTracker, this.edition.otherNightOrder]];
         for (const [nightMap, collection] of data) {
             const keys = Array.from(nightMap.keys()).sort((a, b) => a - b);
             await collection.clear();
@@ -227,7 +227,7 @@ class BloodImporter {
 
 /** promise for choosing a .blood file */
 function chooseBloodFile():Promise<File|null> {
-    const fileInput = createElement({t:'input',a:{type:'file',accept:'.blood'},css:['hidden']});
+    const fileInput = createElement({t:'input', a:{type:'file', accept:'.blood'}, css:['hidden']});
     if (!(fileInput instanceof HTMLInputElement)) {return Promise.resolve(null);}
     const dlg = new AriaDialog<File|null>();
 
@@ -246,11 +246,11 @@ function chooseBloodFile():Promise<File|null> {
         document.activeElement,
         'chooseBloodFile',
         [
-            {t:'h1',txt:'Choose file'},
-            {t:'p',txt:'Choose a .blood file to import.'},
-            {t:'div',css:['dialogBtnGroup'],children:[
-                {t:'button',txt:'Choose File',events:{click:()=>chooseFile()}},
-                {t:'button',txt:'Cancel',events:{click:()=>dlg.close()}}
+            {t:'h1', txt:'Choose file'},
+            {t:'p', txt:'Choose a .blood file to import.'},
+            {t:'div', css:['dialogBtnGroup'], children:[
+                {t:'button', txt:'Choose File', events:{click:()=>chooseFile()}},
+                {t:'button', txt:'Cancel', events:{click:()=>dlg.close()}}
             ]}
         ],
         []

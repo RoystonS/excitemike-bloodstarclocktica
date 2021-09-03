@@ -8,7 +8,7 @@ import { show as getConfirmation } from "../dlg/yes-no-dlg";
 import { AriaDialog } from "../dlg/aria-dlg";
 import { createElement } from "../util";
 import { SessionInfo } from "../iam";
-type DeleteAccountData = {token:string,password:string};
+type DeleteAccountData = {token:string, password:string};
 type DeleteAccountResult = {error:string}|true;
 
 /** make sure the user really really wants to do that */
@@ -61,7 +61,7 @@ class PasswordDlg extends AriaDialog<string> {
     async open():Promise<string> {
         const passwordField = createElement({
             t:'input',
-            a:{type:'password',required:'true',placeholder:'Password',autocomplete:'current-password'}
+            a:{type:'password', required:'true', placeholder:'Password', autocomplete:'current-password'}
         });
         passwordField.addEventListener('keyup', (event:KeyboardEvent):void=>{
             switch (event.code)
@@ -80,10 +80,10 @@ class PasswordDlg extends AriaDialog<string> {
             document.activeElement,
             'pwd-for-del-accnt',
             [
-                {t:'h1',txt:'Enter Password'},
-                {t:'p',txt:'Enter your password to continue deleting your account.'},
+                {t:'h1', txt:'Enter Password'},
+                {t:'p', txt:'Enter your password to continue deleting your account.'},
                 passwordField],
-            [{label:'OK',id:'pwdOkButton',callback:()=>passwordField.value},
+            [{label:'OK', id:'pwdOkButton', callback:()=>passwordField.value},
             {label:'Cancel'}]
         )||'';
     }

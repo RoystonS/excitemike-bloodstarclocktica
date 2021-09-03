@@ -41,13 +41,13 @@ class YesNoDialog extends AriaDialog<boolean> {
                 if (!buttonElem) {return;}
                 buttonElem.disabled = !checkboxElem.checked;
             };
-            body.push({t:'div',css:['twoColumnGrid'],children:[
+            body.push({t:'div', css:['twoColumnGrid'], children:[
                 {
                     t:'input',
-                    a:{type:'checkbox',id:'confirmCheckbox',name:'confirmCheckbox'},
+                    a:{type:'checkbox', id:'confirmCheckbox', name:'confirmCheckbox'},
                     events:{change:syncToButton}
                 },
-                {t:'label',a:{'for':'confirmCheckbox'},txt:checkboxMessage}
+                {t:'label', a:{'for':'confirmCheckbox'}, txt:checkboxMessage}
             ]});
         }
 
@@ -62,7 +62,7 @@ class YesNoDialog extends AriaDialog<boolean> {
             'message',
             body,
             [
-                {label:yesLabel,id:'yesButton',callback:yesCallback,disabled:Boolean(checkboxMessage)},
+                {label:yesLabel, id:'yesButton', callback:yesCallback, disabled:Boolean(checkboxMessage)},
                 {label:noLabel, callback:() => false}
             ]
         );

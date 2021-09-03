@@ -14,7 +14,7 @@ function initMobileBindings():void {
         ['mobilePublishButton', ()=>openCurtainMenu('mobilePublishMenu')],
         ['mobileSharingButton', ()=>openCurtainMenu('mobileSharingMenu')],
         
-        ['charlistTabBtn', ()=>tabClicked('charlistTabBtn','characterlisttab')],
+        ['charlistTabBtn', ()=>tabClicked('charlistTabBtn', 'characterlisttab')],
     ]);
 
     // find ALL `closeCurtainBtn`
@@ -38,7 +38,7 @@ function closeCurtain() {
 function openCurtainMenu(id:string):void {
     closeCurtain();
     currentCurtain = document.getElementById(id);
-    currentCurtain?.setAttribute('open','true');
+    currentCurtain?.setAttribute('open', 'true');
 }
 
 import {init} from "./bloodstar";

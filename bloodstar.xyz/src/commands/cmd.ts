@@ -8,7 +8,7 @@ import { spinner } from "../dlg/spinner-dlg";
 const TIMEOUT = 15*1000;
 const MAXRETRIES = 1;
 
-export type UserPass = {username:string,password:string};
+export type UserPass = {username:string, password:string};
 
 /**
  * send a command to the server, await response

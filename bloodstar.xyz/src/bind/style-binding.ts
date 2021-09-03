@@ -8,6 +8,6 @@ export class StyleBinding<ValueType> extends BaseBinding<ValueType> {
             property,
             '',
             null,
-            v=>cb(v,element.classList));
+            v=>cb(v, element.classList));
     }
 }

@@ -73,7 +73,7 @@ export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:str
     // TODO: I always wrap this in a try. Let's move the try in here.
     sessionInfo = sessionInfo || getStoredToken();
     while (!sessionInfo || accessTokenExpired()) {
-        await signIn({force:true,message:'Please sign in to continue.'});
+        await signIn({force:true, message:'Please sign in to continue.'});
         if (sessionInfo){
             body.token = sessionInfo.token;
         }
@@ -82,7 +82,7 @@ export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:str
     const bodyClone = {...body};
     let result = await cmd<ResultType|'signInRequired'>(cmdName, spinnerMessage, JSON.stringify(bodyClone));
     while (result==='signInRequired') {
-        await signIn({force:true,message:'Please sign in to continue.'});
+        await signIn({force:true, message:'Please sign in to continue.'});
         if (sessionInfo){
             bodyClone.token = sessionInfo.token;
         }

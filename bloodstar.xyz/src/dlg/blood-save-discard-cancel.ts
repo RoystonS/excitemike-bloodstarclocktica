@@ -12,7 +12,7 @@ class SaveDiscardCancelDlg extends AriaDialog<boolean> {
         const body:CreateElementsOptions = [{
             t:'h1',
             txt:'Unsaved Changes'
-        },{
+        }, {
             t:'p',
             txt:'You have unsaved changes! Would you like to save now or discard them?'
         }];

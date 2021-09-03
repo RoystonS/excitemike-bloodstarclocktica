@@ -11,7 +11,7 @@ type PublishData = {
     saveName:string,
     token:string,
 };
-type PublishReturn = {error?:string,script:string,almanac:string};
+type PublishReturn = {error?:string, script:string, almanac:string};
 
 /**
  * publish the edition
@@ -41,7 +41,7 @@ export default async function publish(edition:Edition):Promise<boolean> {
         await showError('Error', 'Error encountered during publish', error);
         return false;
     }
-    const {script,almanac} = response;
+    const {script, almanac} = response;
     const cacheTrickingScriptLink = `${script}?${(Date.now() % (31*24*60*60*1000)).toString(16)}`;
 
     const copyLink = async (evt: Event, link:string)=>{
@@ -61,17 +61,17 @@ export default async function publish(edition:Edition):Promise<boolean> {
         null,
         'publishComplete', 
         [
-            {t:'h1',txt:'Publish Complete'},
+            {t:'h1', txt:'Publish Complete'},
             {
                 t:'div',
                 css:['uploadCompleteGrid'],
                 children:[
-                    {t:'span',txt:'script:'},
-                    {t:'a',a:{href:cacheTrickingScriptLink,target:'_blank'},txt:cacheTrickingScriptLink},
-                    {t:'button',txt:'copy',events:{click:copyScriptLink}},
-                    {t:'span',txt:'almanac:'},
-                    {t:'a',a:{href:almanac,target:'_blank'},txt:almanac},
-                    {t:'button',txt:'copy',events:{click:copyAlmanacLink}},
+                    {t:'span', txt:'script:'},
+                    {t:'a', a:{href:cacheTrickingScriptLink, target:'_blank'}, txt:cacheTrickingScriptLink},
+                    {t:'button', txt:'copy', events:{click:copyScriptLink}},
+                    {t:'span', txt:'almanac:'},
+                    {t:'a', a:{href:almanac, target:'_blank'}, txt:almanac},
+                    {t:'button', txt:'copy', events:{click:copyAlmanacLink}},
                 ]
             }
         ],

@@ -180,7 +180,7 @@ export function showHideElement(element:Element, visible:boolean):void {
 }
 
 /** ordinal string based on number */
-export function ordinal(n:number):string {
+export function getOrdinalString(n:number):string {
     if (n <= 0) { return n.toFixed(0); }
     switch (n)
     {
@@ -200,7 +200,7 @@ export function ordinal(n:number):string {
 }
 
 /** go through a HTMLElement and all its child HTMLElements, and call the function on them */
-export function walkHTMLElements(element:HTMLElement, f:(element:HTMLElement)=>void):void {
+export function walkHTMLElements(element:HTMLElement, f:(e:HTMLElement)=>void):void {
     if (!(element instanceof HTMLElement)) {return;}
     const stack:HTMLElement[] = [element];
     while (stack.length) {

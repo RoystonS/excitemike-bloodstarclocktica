@@ -38,10 +38,10 @@ async function confirmClobber(saveData:SaveData):Promise<SaveResult> {
     const okToClobber = await new AriaDialog<boolean>().baseOpen(
         null,
         'okToClobber',
-        [{t:'p',txt:`There is already a save file named ${saveData.saveName}. Would you like to replace it?`}],
+        [{t:'p', txt:`There is already a save file named ${saveData.saveName}. Would you like to replace it?`}],
         [
-            {label:`Yes, Replace ${saveData.saveName}`,callback:()=>true},
-            {label:'No, Cancel Save',callback:()=>false},
+            {label:`Yes, Replace ${saveData.saveName}`, callback:()=>true},
+            {label:'No, Cancel Save', callback:()=>false},
         ]
     );
     if (!okToClobber) {return 'cancel';}
@@ -117,12 +117,12 @@ export async function save(edition:Edition):Promise<boolean> {
 type Separated = {
     edition:unknown,
     logo?:string,
-    sourceImages:Map<string,string>,
-    finalImages:Map<string,string>
+    sourceImages:Map<string, string>,
+    finalImages:Map<string, string>
 };
 
 /** separate the edition json and images for saving as separate files */
-async function separateImages(username:string,edition:Edition):Promise<Separated> {
+async function separateImages(username:string, edition:Edition):Promise<Separated> {
     const saveName = edition.saveName.get();
     const editionSerialized = await edition.serialize();
     const characters = editionSerialized.characterList as {id:string, unStyledImage?:string, styledImage?:string}[];
@@ -196,33 +196,33 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
 
     const promises = [];
 
-    for (const [id,imageString] of toSave.sourceImages) {
+    for (const [id, imageString] of toSave.sourceImages) {
         if (!imageString.startsWith('data:')) {continue;}
         if (!edition.isCharacterSourceImageDirty(id)) {continue;}
         promises.push(Locks.enqueue('saveImage', ()=>{
-            const saveData:SaveImgData = {
+            const saveImgData:SaveImgData = {
                 token: sessionInfo.token,
                 saveName: saveName,
                 id: id,
                 isSource:true,
                 image: imageString
             };
-            return signedInCmd('save-img', `Saving ${id}.src.png`, saveData);
+            return signedInCmd('save-img', `Saving ${id}.src.png`, saveImgData);
         }, MAX_SIMULTANEOUS_IMAGE_SAVES));
     }
 
-    for (const [id,imageString] of toSave.finalImages) {
+    for (const [id, imageString] of toSave.finalImages) {
         if (!imageString.startsWith('data:')) {continue;}
         if (!edition.isCharacterFinalImageDirty(id)) {continue;}
         promises.push(Locks.enqueue('saveImage', ()=>{
-            const saveData:SaveImgData = {
+            const saveImgData:SaveImgData = {
                 token: sessionInfo.token,
                 saveName: saveName,
                 id: id,
                 isSource:false,
                 image: imageString
             };
-            return signedInCmd('save-img', `Saving ${id}.png`, saveData);
+            return signedInCmd('save-img', `Saving ${id}.png`, saveImgData);
         }, MAX_SIMULTANEOUS_IMAGE_SAVES));
     }
 
@@ -236,23 +236,23 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
         }
         if (logo && logo.startsWith('data:')) {
             promises.push(Locks.enqueue('saveImage', ()=>{
-                const saveData:SaveImgData = {
+                const saveImgData:SaveImgData = {
                     token: sessionInfo.token,
                     saveName: saveName,
                     id: '_meta',
                     isSource:false,
                     image: logo||''
                 };
-                return signedInCmd('save-img', `Saving _meta.png`, saveData);
+                return signedInCmd('save-img', `Saving _meta.png`, saveImgData);
             }, MAX_SIMULTANEOUS_IMAGE_SAVES));
         }
     }
 
     // await results
     const results = await spinner('save', `Saving as ${saveName}`, Promise.all(promises)) as SaveImgResult[];
-    for (const response of results) {
-        if ('error' in response) {
-            await showError('Error', `Error encountered while trying to save ${saveName}`, response.error);
+    for (const imgSaveResponse of results) {
+        if ('error' in imgSaveResponse) {
+            await showError('Error', `Error encountered while trying to save ${saveName}`, imgSaveResponse.error);
             return false;
         }
     }
@@ -277,6 +277,6 @@ function promptForName(defaultName:string):Promise<string|null> {
             pattern:'[A-Za-z0-9\\-_]{1,25}',
             hint: 'Name should contain only letters, numbers, hyphens (-), and underscores (_)',
             validateFn: validateSaveName,
-            warningsFn: (input:string,container:HTMLElement)=>updateSaveNameWarnings(input,container,'Save name')
+            warningsFn: (input:string, container:HTMLElement)=>updateSaveNameWarnings(input, container, 'Save name')
         });
 }
