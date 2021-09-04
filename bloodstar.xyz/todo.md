@@ -28,4 +28,4 @@
 ## Bugs
 
 - When opening a file, if the opened shared file has no edition synopsis, overview, etc., then your local synopsis or w/e will not get cleared
-- Characters disappearing from character list when you rename them making a new file as a guest (mobile only?)
+- When using site as guest, default character is not in night order

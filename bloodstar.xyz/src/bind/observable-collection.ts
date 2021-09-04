@@ -1,3 +1,4 @@
+import { arrayGet } from '../util';
 import {ObservableObject, PropertyChangedListener, PropKey} from './observable-object';
 
 export type ObservableCollectionListener<T extends ObservableObject<T>> = (event:ObservableCollectionChangedEvent<T>)=>void;
@@ -173,10 +174,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** get an item in the collection */
     get(i:number):ItemType|null {
-        if ((i>=0)&&(i<this.items.length)) {
-            return this.items[i].item;
-        }
-        return null;
+        return arrayGet(this.items, i)?.item??null;
     }
 
     /** items in the collection */
@@ -245,7 +243,8 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** remove an item from the collection */
     async remove(i:number):Promise<void> {
-        const itemPlus = this.items[i];
+        const itemPlus = arrayGet(this.items, i);
+        if (!itemPlus) {return;}
         itemPlus.destroy();
         this.items.splice(i, 1);
         this.updateIndices(i);
@@ -261,9 +260,10 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** replace an item in the collection */
     async replace(i:number, newItem:ItemType):Promise<void> {
-        if (newItem !== this.items[i].item) {
-            const oldItemPlus = this.items[i];
-            const oldItem = oldItemPlus.item;
+        const oldItemPlus = arrayGet(this.items, i);
+        if (!oldItemPlus) {return;}
+        const oldItem = oldItemPlus.item;
+        if (newItem !== oldItem) {
             oldItemPlus.destroy();
             const newItemPlus:ItemPlus<ItemType> = new ItemPlus<ItemType>(this.notifyItemChangedListeners.bind(this), i, newItem);
             this.items[i] = newItemPlus;

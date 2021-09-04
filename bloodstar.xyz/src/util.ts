@@ -213,3 +213,17 @@ export function walkHTMLElements(element:HTMLElement, f:(e:HTMLElement)=>void):v
         }
     }
 }
+
+/** check that the index is valid for the arraylike item */
+export function arrayGet<T>(arr:ArrayLike<T>, i:number):T|null {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    return arr[i]??null;
+}
+
+/** check that the index is valid for the arraylike item */
+export function boundsCheck(i:unknown, arr:ArrayLike<unknown>):boolean {
+    return (typeof i === 'number') 
+        && !isNaN(i)
+        && (i>=0)
+        && (i<arr.length);
+}
