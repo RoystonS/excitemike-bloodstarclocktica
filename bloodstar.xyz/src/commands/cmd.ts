@@ -14,14 +14,14 @@ export type UserPass = {username:string; password:string};
  * send a command to the server, await response
  * Brings up the loading spinner during the operation
  */
-export default function cmd<ResultType = unknown>(cmdName:string, spinnerMessage:string, body?:BodyInit):Promise<ResultType> {
+export default async function cmd<ResultType = unknown>(cmdName:string, spinnerMessage:string, body?:BodyInit):Promise<ResultType> {
     return spinner<ResultType>('command', spinnerMessage, _cmd<ResultType>(cmdName, body, TIMEOUT, MAXRETRIES));
 }
 
 /**
  * wrap fetch with a timeout
  */
-function fetchWithTimeout(cmdName:string, body:BodyInit|undefined, timeout:number):Promise<Response> {
+async function fetchWithTimeout(cmdName:string, body:BodyInit|undefined, timeout:number):Promise<Response> {
     const controller = new AbortController();
     let timedOut = false;
     const timeoutId = setTimeout(()=>{

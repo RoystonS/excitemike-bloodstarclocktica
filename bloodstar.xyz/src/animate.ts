@@ -5,7 +5,7 @@
 import './styles/animate.css';
 
 /** animate element away and remove */
-export function animateAndRemove(element:HTMLElement, cssClass:string, animName:string):Promise<void> {
+export async function animateAndRemove(element:HTMLElement, cssClass:string, animName:string):Promise<void> {
     return new Promise(resolve=>{animateAndRemoveNoWait(element, cssClass, animName, resolve);});
 }
 /** animate element away and remove */

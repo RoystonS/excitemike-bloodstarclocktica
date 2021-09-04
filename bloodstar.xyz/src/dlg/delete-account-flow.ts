@@ -9,7 +9,7 @@ import { AriaDialog } from "../dlg/aria-dlg";
 import { createElement } from "../util";
 import { SessionInfo } from "../iam";
 type DeleteAccountData = {token:string; password:string};
-type DeleteAccountResult = {error:string}|true;
+type DeleteAccountResult = true | {error:string};
 
 /** make sure the user really really wants to do that */
 async function confirmDeleteAccount():Promise<SessionInfo|null> {
@@ -92,6 +92,6 @@ class PasswordDlg extends AriaDialog<string> {
 }
 
 /** prompt user for their password before letting them delete an account */
-function getPassword():Promise<string> {
+async function getPassword():Promise<string> {
     return new PasswordDlg().open();
 }

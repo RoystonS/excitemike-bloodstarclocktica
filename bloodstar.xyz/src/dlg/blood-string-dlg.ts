@@ -13,7 +13,7 @@ type Validation = {
 };
 
 class StringDialog extends AriaDialog<string> {
-    open(
+    async open(
         title:string,
         prompt:string,
         defaultValue:string,
@@ -91,6 +91,6 @@ class StringDialog extends AriaDialog<string> {
  * returns a promise that resolves to the entered
  * string or null if the user cancelled
  */
-export function show(title:string, prompt:string, defaultValue?:string, validation?:Validation):Promise<string|null> {
+export async function show(title:string, prompt:string, defaultValue?:string, validation?:Validation):Promise<string|null> {
     return new StringDialog().open(title, prompt, defaultValue??'', validation);
 }

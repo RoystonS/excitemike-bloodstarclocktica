@@ -20,7 +20,7 @@ export class LockSet<KeyType> {
      * @max maximum number of instances of running tasks in this group
      * @returns Promise for work result
      * */
-    private acquire(key:KeyType, max = 1):Promise<WorkCompleteFn> {
+    private async acquire(key:KeyType, max = 1):Promise<WorkCompleteFn> {
         let entry = this.locks.get(key);
         if (!entry) {
             entry = {running:[], queue:[], max};

@@ -17,7 +17,7 @@ class SaveDiscardCancelDlg extends AriaDialog<boolean> {
             txt:'You have unsaved changes! Would you like to save now or discard them?'
         }];
         const buttons:ButtonCfg<boolean>[] = [
-            {label:'Save', callback:()=>save(edition)},
+            {label:'Save', callback:async ()=>save(edition)},
             {label:'Discard', callback:()=>true},
             {label:'Cancel', callback:()=>false},
         ];

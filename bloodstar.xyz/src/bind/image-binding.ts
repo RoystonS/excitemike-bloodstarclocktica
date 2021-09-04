@@ -28,7 +28,7 @@ async function syncFileElemToProperty(element:HTMLInputElement, property:Propert
 }
 
 /** convert a url to a data uri */
-function toDataUri(url:string, maxWidth:number, maxHeight:number):Promise<string> {
+async function toDataUri(url:string, maxWidth:number, maxHeight:number):Promise<string> {
     return new Promise((resolve, reject)=>{
         try {
             const image = new Image();
@@ -54,7 +54,7 @@ export class ImageChooserBinding extends BaseBinding<string|null> {
             element,
             property,
             'change',
-            ()=>syncFileElemToProperty(element, property, maxWidth, maxHeight),
+            async ()=>syncFileElemToProperty(element, property, maxWidth, maxHeight),
             null);
     }
 

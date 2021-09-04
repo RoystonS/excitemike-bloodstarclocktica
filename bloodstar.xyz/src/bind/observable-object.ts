@@ -2,7 +2,7 @@
 import { DisplayValuePairs, EnumProperty, Property } from "./bindings";
 import { ObservableCollection } from "./observable-collection";
 
-export type PropKey<T> = keyof T & string;
+export type PropKey<T> = string & keyof T;
 export type ObservableType = ObservableCollection<any>|ObservableObject<any>|Property<any>;
 export type CustomSerializeFn = (object:ObservableObject<any>, field:ObservableType)=>unknown;
 export type CustomDeserializeFn = (object:ObservableObject<any>, field:ObservableType, data:unknown)=>Promise<void>;
@@ -131,7 +131,7 @@ export abstract class ObservableObject<T> {
             const property = new Property<unknown>(defaultValue);
             (this as any)[key] = property;
             this.properties.set(key, property);
-            property.addListener(()=>this.notifyPropertyChangedEventListeners(key));
+            property.addListener(async ()=>this.notifyPropertyChangedEventListeners(key));
         }
         // enum properties
         for (const [_key, {defaultValue, displayValuePairs}] of this.obsObjCfg.enumProperties) {
@@ -139,7 +139,7 @@ export abstract class ObservableObject<T> {
             const enumProperty = new EnumProperty<unknown>(defaultValue, displayValuePairs);
             (this as any)[key] = enumProperty;
             this.enumProperties.set(key, enumProperty);
-            enumProperty.addListener(()=>this.notifyPropertyChangedEventListeners(key));
+            enumProperty.addListener(async ()=>this.notifyPropertyChangedEventListeners(key));
         }
         // collections
         for (const [_key, {ctor}] of this.obsObjCfg.collections) {
@@ -147,8 +147,8 @@ export abstract class ObservableObject<T> {
             const collection = new ObservableCollection<any>(ctor);
             (this as any)[key] = collection;
             this.collections.set(key, collection);
-            collection.addCollectionChangedListener(()=>this.notifyPropertyChangedEventListeners(key));
-            collection.addItemChangedListener(()=>this.notifyPropertyChangedEventListeners(key));
+            collection.addCollectionChangedListener(async ()=>this.notifyPropertyChangedEventListeners(key));
+            collection.addItemChangedListener(async ()=>this.notifyPropertyChangedEventListeners(key));
         }
         // children
         for (const [_key, {ctor:Ctor}] of this.obsObjCfg.children) {
@@ -156,7 +156,7 @@ export abstract class ObservableObject<T> {
             const child = new Ctor();
             (this as any)[key] = child;
             this.children.set(key, child as ObservableObject<any>);
-            child.addPropertyChangedEventListener(()=>this.notifyPropertyChangedEventListeners(key));
+            child.addPropertyChangedEventListener(async ()=>this.notifyPropertyChangedEventListeners(key));
         }
     }
 
@@ -229,7 +229,7 @@ export abstract class ObservableObject<T> {
     }
 
     /** do non-customized deserialization of child observables */
-    deserializeNonCustomChildren(data:Record<string, unknown>):Promise<unknown> {
+    async deserializeNonCustomChildren(data:Record<string, unknown>):Promise<unknown> {
         const promises = [];
         for (const [key, child] of this.children) {
             if (!this._canReadField(key)) { continue; }
@@ -248,7 +248,7 @@ export abstract class ObservableObject<T> {
     }
 
     /** do non-customized deserialization of properties */
-    deserializeNonCustomCollections(data:Record<string, unknown>):Promise<unknown> {
+    async deserializeNonCustomCollections(data:Record<string, unknown>):Promise<unknown> {
         const promises = [];
         for (const [key, collection] of this.collections) {
             if (!this._canReadField(key)) { continue; }
@@ -263,7 +263,7 @@ export abstract class ObservableObject<T> {
     }
 
     /** do non-customized deserialization of properties */
-    deserializeNonCustomProperties(data:Record<string, unknown>):Promise<unknown> {
+    async deserializeNonCustomProperties(data:Record<string, unknown>):Promise<unknown> {
         const promises = [];
         for (const [key, property] of this.properties) {
             if (!this._canReadField(key)) { continue; }
@@ -294,7 +294,7 @@ export abstract class ObservableObject<T> {
     }
 
     /** do customized deserialization of child observables */
-    deserializeCustomChildren(data:Record<string, unknown>):Promise<unknown> {
+    async deserializeCustomChildren(data:Record<string, unknown>):Promise<unknown> {
         const promises = [];
         for (const [key, child] of this.children) {
             if (!this._canReadField(key)) { continue; }
@@ -314,7 +314,7 @@ export abstract class ObservableObject<T> {
     }
 
     /** do customized deserialization of collections */
-    deserializeCustomCollections(data:Record<string, unknown>):Promise<unknown> {
+    async deserializeCustomCollections(data:Record<string, unknown>):Promise<unknown> {
         const promises = [];
         for (const [key, collection] of this.collections) {
             if (!this._canReadField(key)) { continue; }
@@ -330,7 +330,7 @@ export abstract class ObservableObject<T> {
     }
 
     /** do customized deserialization of properties */
-    deserializeCustomProperties(data:Record<string, unknown>):Promise<unknown> {
+    async deserializeCustomProperties(data:Record<string, unknown>):Promise<unknown> {
         const promises = [];
         for (const [key, property] of this.properties) {
             if (!this._canReadField(key)) { continue; }

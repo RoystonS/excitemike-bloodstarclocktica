@@ -37,7 +37,7 @@ class SignInDlg extends AriaDialog<SessionInfo> {
         return inputElement ? inputElement.value : '';
     }
 
-    open(options?:SignInFlowOptions):Promise<SessionInfo|null> {
+    async open(options?:SignInFlowOptions):Promise<SessionInfo|null> {
         this._canCancel = options?.canCancel !== false;
         const title = options?.title ?? 'Sign In';
         const submitOnEnter = async (event:KeyboardEvent):Promise<void>=>{
@@ -151,7 +151,7 @@ class SignInDlg extends AriaDialog<SessionInfo> {
     }
 
     /** look at input elements to get dialog result value */
-    private signIn():Promise<SessionInfo|null> {
+    private async signIn():Promise<SessionInfo|null> {
         const username = this.getValue('signInDlgUsername');
         const password = this.getValue('signInDlgPassword');
         return signIn(username, password);
@@ -163,6 +163,6 @@ class SignInDlg extends AriaDialog<SessionInfo> {
  * returns a promise that resolves to the entered
  * string or null if the user cancelled
  */
-export function show(options?:SignInFlowOptions):Promise<SessionInfo|null> {
+export async function show(options?:SignInFlowOptions):Promise<SessionInfo|null> {
     return new SignInDlg().open(options);
 }

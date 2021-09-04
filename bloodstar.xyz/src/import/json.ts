@@ -35,7 +35,7 @@ export type CharacterEntry = {
     team?:string;
     ability?:string;
 };
-export type ScriptEntry = MetaEntry|CharacterEntry;
+export type ScriptEntry = CharacterEntry | MetaEntry;
 type NightOrderTracker = Map<number, Character[]>;
 
 // sizes here based on what what I see clocktower.online using
@@ -43,7 +43,7 @@ const MAX_LOGO_WIDTH = 1661;
 const MAX_LOGO_HEIGHT = 709;
 
 /** promise for choosing a JSON file */
-function chooseJsonFile():Promise<File|null> {
+async function chooseJsonFile():Promise<File|null> {
     const fileInput = document.getElementById('jsonFileInput');
     if (!(fileInput instanceof HTMLInputElement)) {return Promise.resolve(null);}
     fileInput.value = '';
@@ -141,7 +141,7 @@ async function importCharacter(entry:CharacterEntry, edition:Edition, firstNight
 }
 
 /** import one entry of a script */
-function importEntry(entry:ScriptEntry, edition:Edition, firstNightOrder:NightOrderTracker, otherNightOrder:NightOrderTracker):Promise<boolean> {
+async function importEntry(entry:ScriptEntry, edition:Edition, firstNightOrder:NightOrderTracker, otherNightOrder:NightOrderTracker):Promise<boolean> {
     if (!entry.id) {
         return Promise.resolve(false);
     }
@@ -160,7 +160,7 @@ async function importScript(json:ScriptEntry[], edition:Edition):Promise<boolean
     const firstNightOrder:NightOrderTracker = new Map<number, Character[]>();
     const otherNightOrder:NightOrderTracker = new Map<number, Character[]>();
 
-    const promises = choices.map(characterJson=>importEntry(characterJson, edition, firstNightOrder, otherNightOrder));
+    const promises = choices.map(async characterJson=>importEntry(characterJson, edition, firstNightOrder, otherNightOrder));
 
     const importResults = await spinner('importJsonFromUrl', 'Importing', Promise.all(promises));
 
@@ -187,7 +187,7 @@ async function importScript(json:ScriptEntry[], edition:Edition):Promise<boolean
 }
 
 /** import a json file, replacing the edition's current contents */
-export async function importJson(fileOrStringOrArray:File|string|ScriptEntry[], edition:Edition):Promise<boolean> {
+export async function importJson(fileOrStringOrArray:File | ScriptEntry[] | string, edition:Edition):Promise<boolean> {
     let json:ScriptEntry[];
     if (fileOrStringOrArray instanceof File) {
         const text = await spinner('importJson', 'Retrieving response text', fileOrStringOrArray.text());

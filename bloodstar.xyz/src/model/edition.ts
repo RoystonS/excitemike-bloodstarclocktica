@@ -225,7 +225,7 @@ export class Edition extends ObservableObject<Edition> {
     async regenAllIds():Promise<void> {
         await Promise.all(
             this.characterList.map(
-                character=>character.id.set(this.generateValidId(character.name.get()))
+                async character=>character.id.set(this.generateValidId(character.name.get()))
             )
         );
     }

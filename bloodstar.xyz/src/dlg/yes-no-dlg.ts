@@ -71,6 +71,6 @@ class YesNoDialog extends AriaDialog<boolean> {
 }
 
 /** bring up the confirmation dialog */
-export function show(titleText:string, messageText?:string, options?:YesNoOptions):Promise<boolean> {
+export async function show(titleText:string, messageText?:string, options?:YesNoOptions):Promise<boolean> {
     return new YesNoDialog().open(titleText, messageText, options);
 }

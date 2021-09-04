@@ -87,7 +87,7 @@ export default function init(edition:Edition):void {
         ['deleteAccountBtn', deleteAccount],
         ['addCharacterButton', addCharacterClicked],
         ['newFileButton', newFileClicked],
-        ['openFileButton', (ed:Edition)=>promptAndOpen(ed, {includeShared:true, copyWarning:true})],
+        ['openFileButton', async (ed:Edition)=>promptAndOpen(ed, {includeShared:true, copyWarning:true})],
         ['deleteFileButton', deleteFileClicked],
         ['saveFileButton', save],
         ['saveFileAsButton', saveFileAsClicked],
@@ -103,7 +103,7 @@ export default function init(edition:Edition):void {
     ];
     const translatedMapping:[string, (e:Event)=>void][] = mapping.map(x=>{
         const [name, f] = x;
-        return [name, ()=>f(edition)];
+        return [name, async ()=>f(edition)];
     });
     hookupClickEvents(translatedMapping);
 }

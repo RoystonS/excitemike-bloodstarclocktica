@@ -92,7 +92,7 @@ async function initBindings():Promise<void> {
         ['charTabBtn', ()=>{ tabClicked('charTabBtn', 'charactertab'); }],
         ['firstNightTabBtn', ()=>{ tabClicked('firstNightTabBtn', 'firstNightOrderTab'); }],
         ['otherNightTabBtn', ()=>{ tabClicked('otherNightTabBtn', 'otherNightOrderTab'); }],
-        ['metaLogoRemoveBtn', ()=>edition.meta.logo.set(null)],
+        ['metaLogoRemoveBtn', async ()=>edition.meta.logo.set(null)],
     ]);
 
     BloodBind.bindTextById('windowTitle', edition.windowTitle);
@@ -212,7 +212,7 @@ function updateStatusbar():void {
     }
 }
 
-export function init(options?:BloodstarOptions):Promise<void> {
+export async function init(options?:BloodstarOptions):Promise<void> {
     return new Promise((resolve)=>{
         // wait for dom to load
         if (document.readyState === "loading") {

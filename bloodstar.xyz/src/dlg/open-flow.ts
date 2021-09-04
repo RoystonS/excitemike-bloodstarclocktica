@@ -15,7 +15,7 @@ import {show as getConfirmation} from "./yes-no-dlg";
 import {showBlockUser} from './block-flow';
 
 type LeaveRequest = {token:string; owner:string; saveName:string};
-type LeaveResponse = {error:string}|true;
+type LeaveResponse = true | {error:string};
 type ListRequest = {token:string; includeShared?:boolean};
 type ListFilesResponse = {
     error?:string;
@@ -31,7 +31,7 @@ export type OpenRequest = {
     token: string;
     username: string;
 };
-export type OpenResponse = {error:string}|{data:Record<string, unknown>};
+export type OpenResponse = {data:Record<string, unknown>} | {error:string};
 
 type ChooseFileOptions = {
     /** customize prompt title */
@@ -125,7 +125,7 @@ class ChooseFileDlg extends AriaDialog<string|[string, string]> {
 
 /** share file chooser with the delete command */
 // TODO: simplify return type
-export function chooseFile(options?:ChooseFileOptions):Promise<string|[string, string]> {
+export async function chooseFile(options?:ChooseFileOptions):Promise<string|[string, string]> {
     return new ChooseFileDlg().open(options);
 }
 
@@ -211,7 +211,7 @@ async function openPromptNoSavePrompt(edition:Edition, options?:ChooseFileOption
  * @param options optional ChooseFileOptions for the dialog
  * @returns whether a file was successfully opened
  */
-function openExistingNoSavePrompt(edition:Edition, name:string|[string, string]):Promise<boolean> {
+async function openExistingNoSavePrompt(edition:Edition, name:string|[string, string]):Promise<boolean> {
     if (Array.isArray(name)) {
         const label = name.join(' / ');
         return spinner('open', `Opening shared file "${label}"`, openNoPrompts(edition, name));

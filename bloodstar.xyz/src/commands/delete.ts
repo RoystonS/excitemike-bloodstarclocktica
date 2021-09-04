@@ -10,10 +10,10 @@ import signIn, { signedInCmd } from '../sign-in';
 import { clearRecentFile } from '../recent-file';
 
 type DeleteRequest = {token:string; saveName:string};
-type DeleteResponse = {error:string}|true;
+type DeleteResponse = true | {error:string};
 
 /** confirm deletion */
-function confirmDelete(name:string):Promise<boolean> {
+async function confirmDelete(name:string):Promise<boolean> {
     return getConfirmation(
         'Confirm Delete',
         `Are you sure you'd like to delete "${name}"? This file will be lost forever!`,

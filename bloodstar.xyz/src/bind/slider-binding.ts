@@ -26,7 +26,7 @@ export default class SliderBinding extends BaseBinding<number> {
             element,
             property,
             'change',
-            ()=>syncFromElementToProperty(element, valueLabel, property),
+            async ()=>syncFromElementToProperty(element, valueLabel, property),
             ()=>{ syncFromPropertyToElement(element, valueLabel, property); }
         );
     }

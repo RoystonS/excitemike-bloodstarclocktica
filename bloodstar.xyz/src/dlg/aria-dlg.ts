@@ -249,7 +249,7 @@ export class AriaDialog<ResultType> {
      * @param buttons buttons to add to the dialog
      * @returns promise that resolves to dialog result, or null
      */
-    baseOpen(
+    async baseOpen(
         focusAfterClose:Element|string|null,
         debugName:string,
         body:CreateElementsOptions,
@@ -350,7 +350,7 @@ export class AriaDialog<ResultType> {
  * @param buttons buttons to add to the dialog
  * @returns promise that resolves to dialog result, or null
  */
-export function showDialog<ResultType = unknown>(
+export async function showDialog<ResultType = unknown>(
     focusAfterClose:Element|string|null,
     debugName:string,
     body:CreateElementsOptions,

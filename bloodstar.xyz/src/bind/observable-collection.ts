@@ -335,12 +335,12 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** convert to something that could be converted to JSON and/or read back with deserialize */
-    serialize():Promise<unknown[]> {
-        return Promise.all(this.items.map(i=>i.item.serialize()));
+    async serialize():Promise<unknown[]> {
+        return Promise.all(this.items.map(async i=>i.item.serialize()));
     }
 
     /** add/replace/remove to match the passed-in array */
-    set(items:readonly ItemType[]):Promise<void> {
+    async set(items:readonly ItemType[]):Promise<void> {
         return this.replaceRange(0, this.items.length, items);
     }
 

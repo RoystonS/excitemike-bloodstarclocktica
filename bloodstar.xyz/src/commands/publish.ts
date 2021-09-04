@@ -53,8 +53,8 @@ export default async function publish(edition:Edition):Promise<boolean> {
             // do nothing
         }
     };
-    const copyScriptLink = (evt: Event)=>copyLink(evt, cacheTrickingScriptLink);
-    const copyAlmanacLink = (evt: Event)=>copyLink(evt, almanac);
+    const copyScriptLink = async (evt: Event)=>copyLink(evt, cacheTrickingScriptLink);
+    const copyAlmanacLink = async (evt: Event)=>copyLink(evt, almanac);
 
     await new AriaDialog<void>().baseOpen(
         null,

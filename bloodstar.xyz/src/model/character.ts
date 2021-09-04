@@ -92,7 +92,7 @@ export class Character extends ObservableObject<Character> {
 
     private constructor() {
         super();
-        const regenCb = ()=>this.regenerateStyledImage();
+        const regenCb = async ()=>this.regenerateStyledImage();
         this.imageSettings.addPropertyChangedEventListener(regenCb);
         this.unStyledImage.addListener(regenCb);
         this.team.addListener(regenCb);

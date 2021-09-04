@@ -16,7 +16,7 @@ export function bindCharacterList(id:string, characterList:ObservableCollection<
         id,
         characterList,
         (character: Character, collection:ObservableCollection<Character>)=>makeCharacterListItem(character, collection, selectedCharacterProperty),
-        (element: Node, character: Character)=>cleanupListItem(element, character, selectedCharacterProperty)
+        async (element: Node, character: Character)=>cleanupListItem(element, character, selectedCharacterProperty)
     );
     // autoselect a character when none selected
     characterList.addCollectionChangedListener(async ():Promise<void>=>{
@@ -95,13 +95,13 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
     const up = document.createElement("button");
     up.className = "characterListButton";
     up.innerText = "▲";
-    up.onclick = () => collection.moveItemUp(character);
+    up.onclick = async () => collection.moveItemUp(character);
     row.appendChild(up);
 
     const down = document.createElement("button");
     down.className = "characterListButton";
     down.innerText = "▼";
-    down.onclick = () => collection.moveItemDown(character);
+    down.onclick = async () => collection.moveItemDown(character);
     row.appendChild(down);
 
     const del = document.createElement("button");

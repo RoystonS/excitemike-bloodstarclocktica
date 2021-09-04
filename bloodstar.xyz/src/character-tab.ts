@@ -72,8 +72,8 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
     sliderHelper('dropShadowOpacity', character.imageSettings.dropShadowOpacity);
 
     const unhookupClickEvents = hookupClickEvents([
-        ['characterImageRemoveBtn', ()=>character.unStyledImage.set(null)],
-        ['resetImageSettings', ()=>character.imageSettings.reset()]
+        ['characterImageRemoveBtn', async ()=>character.unStyledImage.set(null)],
+        ['resetImageSettings', async ()=>character.imageSettings.reset()]
     ]);
 
     if (unbindCharacterTabControls) {

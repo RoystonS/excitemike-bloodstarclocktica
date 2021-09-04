@@ -44,7 +44,7 @@ type Binding = BaseBinding<any> | CollectionBinding<any>;
 /** bindings for a checkbox */
 class CheckboxBinding extends BaseBinding<boolean> {
     constructor(element:HTMLInputElement, property:Property<boolean>) {
-        super(element, property, 'change', ()=>property.set(element.checked), v=>{element.checked=v;});
+        super(element, property, 'change', async ()=>property.set(element.checked), v=>{element.checked=v;});
     }
 }
 
@@ -52,7 +52,7 @@ class CheckboxBinding extends BaseBinding<boolean> {
 class TextBinding extends BaseBinding<string> {
     constructor(node:Node, property:Property<string>) {
         if ((node instanceof HTMLTextAreaElement) || (node instanceof HTMLInputElement)) {
-            super(node, property, 'input', ()=>property.set(node.value), v=>{
+            super(node, property, 'input', async ()=>property.set(node.value), v=>{
                 node.value=v;
                 node.dispatchEvent(new Event('change'));
                 node.dispatchEvent(new Event('input'));
@@ -88,7 +88,7 @@ class ComboBoxBinding<T> extends BaseBinding<T> {
             element.appendChild(optionElement);
         });
 
-        const syncFromElementToProperty = ()=>property.set(stringToEnum(element.value));
+        const syncFromElementToProperty = async ()=>property.set(stringToEnum(element.value));
         const syncFromPropertyToElement = (value:T)=>{element.value=enumToString(value);};
         super(element, property, 'change', syncFromElementToProperty, syncFromPropertyToElement);
 

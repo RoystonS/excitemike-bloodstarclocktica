@@ -13,10 +13,10 @@ type GetSharedRequest = {token:string; saveName:string};
 type GetSharedResponse = {error?:string; users:string[]};
 
 type ShareRequest = GetSharedRequest & {user:string};
-type ShareResponse = {error:string}|true;
+type ShareResponse = true | {error:string};
 
 type UnshareRequest = GetSharedRequest & {user:string};
-type UnshareResponse = {error:string}|true;
+type UnshareResponse = true | {error:string};
 
 class SharingDlg extends AriaDialog<void> {
     shareList:string[] = [];
@@ -34,7 +34,7 @@ class SharingDlg extends AriaDialog<void> {
         this.shareList = await this.getShareList();
         this.listDiv = createElement({t:'div', css:['shareDlgList']});
         this.addUserButton = createElement({t:'button', txt:'Add User'});
-        this.addUserButton.addEventListener('click', ()=>this.showShareWithUser());
+        this.addUserButton.addEventListener('click', async ()=>this.showShareWithUser());
 
         const body:CreateElementsOptions = [
             {t:'h1', txt:'Sharing settings'},

@@ -27,8 +27,8 @@ const MAX_SIMULTANEOUS_EXTRACT = 99;
 const MAX_SIMULTANEOUS_PER_CHARACTER = 99;
 
 /** combine spinner and throttling of work */
-function spinAndThrottle<T>(key:string, message:string, work:()=>Promise<T>, max:number):Promise<T> {
-    return Locks.enqueue(key, ()=>spinner(key, message, work()), max);
+async function spinAndThrottle<T>(key:string, message:string, work:()=>Promise<T>, max:number):Promise<T> {
+    return Locks.enqueue(key, async ()=>spinner(key, message, work()), max);
 }
 
 class BloodImporter {
@@ -109,7 +109,7 @@ class BloodImporter {
 
     /** load from the meta portion of a .blood into the edition */
     private async importMeta(zipEntry:JSZipObject):Promise<boolean> {
-        const text = await spinAndThrottle('zip', `Extracting ${zipEntry.name}`, ()=>zipEntry.async('text'), MAX_SIMULTANEOUS_EXTRACT);
+        const text = await spinAndThrottle('zip', `Extracting ${zipEntry.name}`, async ()=>zipEntry.async('text'), MAX_SIMULTANEOUS_EXTRACT);
         const json = JSON.parse(text);
         await trySet(json.name, this.edition.meta.name);
         await trySet(json.author, this.edition.meta.author);
@@ -122,7 +122,7 @@ class BloodImporter {
     private async importProcessedImage(character:Character, zipEntry:JSZipObject):Promise<boolean> {
         const id = character.id.get();
         if (character.unStyledImage.get()) { return true; } // don't clobber source image
-        const base64 = await spinAndThrottle('zip', `Extracting ${zipEntry.name}`, ()=>zipEntry.async('base64'), MAX_SIMULTANEOUS_EXTRACT);
+        const base64 = await spinAndThrottle('zip', `Extracting ${zipEntry.name}`, async ()=>zipEntry.async('base64'), MAX_SIMULTANEOUS_EXTRACT);
         await spinner(id, `Setting Image for "${id}"`, character.unStyledImage.set(`data:image/png;base64,${base64}`));
         await spinner(id, `Setting Image for "${id}"`, character.imageSettings.shouldRestyle.set(false)); // image is pre-processed
         this.charactersById.set(id, character);
@@ -130,7 +130,7 @@ class BloodImporter {
     }
 
     /** make sure that a character exists in the edition/map before continuing */
-    private ensureCharacter(id:string):Promise<Character> {
+    private async ensureCharacter(id:string):Promise<Character> {
         return spinAndThrottle('ensureCharacter', `Creating ${id}`, async ()=>{
             let character = this.charactersById.get(id);
             if (!character) {
@@ -145,7 +145,7 @@ class BloodImporter {
     /** import part of a .blood file */
     private async importPart(relativePath:string, zipEntry:JSZipObject):Promise<boolean> {
         if (relativePath === 'logo.png') {
-            const base64 = await spinAndThrottle('zip', `Extracting ${relativePath}`, ()=>zipEntry.async('base64'), MAX_SIMULTANEOUS_EXTRACT);
+            const base64 = await spinAndThrottle('zip', `Extracting ${relativePath}`, async ()=>zipEntry.async('base64'), MAX_SIMULTANEOUS_EXTRACT);
             await spinner(relativePath, `Setting logo image`, this.edition.meta.logo.set(`data:image/png;base64,${base64}`));
             return true;
         } else if (relativePath === 'meta.json') {
@@ -160,7 +160,7 @@ class BloodImporter {
             return spinAndThrottle(
                 id,
                 `Importing ${relativePath}`,
-                ()=>this.importSourceImage(character, zipEntry),
+                async ()=>this.importSourceImage(character, zipEntry),
                 MAX_SIMULTANEOUS_PER_CHARACTER
             );
         } else if (relativePath.startsWith('processed_images/') && relativePath.endsWith('.png')) {
@@ -169,7 +169,7 @@ class BloodImporter {
             return spinAndThrottle(
                 id,
                 `Importing ${relativePath}`,
-                ()=>this.importProcessedImage(character, zipEntry),
+                async ()=>this.importProcessedImage(character, zipEntry),
                 MAX_SIMULTANEOUS_PER_CHARACTER
             );
         }
@@ -179,7 +179,7 @@ class BloodImporter {
 
     /** load a json from the roles directory of the .blood file */
     private async importRole(character:Character, zipEntry:JSZipObject):Promise<boolean> {
-        const text = await spinAndThrottle('zip', `Extracting ${zipEntry.name}`, ()=>zipEntry.async('text'), MAX_SIMULTANEOUS_EXTRACT);
+        const text = await spinAndThrottle('zip', `Extracting ${zipEntry.name}`, async ()=>zipEntry.async('text'), MAX_SIMULTANEOUS_EXTRACT);
         const json = JSON.parse(text);
         await trySet(json.name, character.name);
         await trySet(json.setup, character.setup);
@@ -224,7 +224,7 @@ class BloodImporter {
     /** load a source image from the .blood file */
     private async importSourceImage(character:Character, zipEntry:JSZipObject):Promise<boolean> {
         const id = character.id.get();
-        const base64 = await spinAndThrottle('zip', `Extracting "${zipEntry.name}"`, ()=>zipEntry.async('base64'), MAX_SIMULTANEOUS_EXTRACT);
+        const base64 = await spinAndThrottle('zip', `Extracting "${zipEntry.name}"`, async ()=>zipEntry.async('base64'), MAX_SIMULTANEOUS_EXTRACT);
         await character.unStyledImage.set(`data:image/png;base64,${base64}`);
         await character.imageSettings.shouldRestyle.set(true); // restore if set by importProcessedImage
         this.charactersById.set(id, character);
@@ -233,7 +233,7 @@ class BloodImporter {
 }
 
 /** promise for choosing a .blood file */
-function chooseBloodFile():Promise<File|null> {
+async function chooseBloodFile():Promise<File|null> {
     const fileInput = createElement({t:'input', a:{type:'file', accept:'.blood'}, css:['hidden']});
     if (!(fileInput instanceof HTMLInputElement)) {return Promise.resolve(null);}
     const dlg = new AriaDialog<File|null>();

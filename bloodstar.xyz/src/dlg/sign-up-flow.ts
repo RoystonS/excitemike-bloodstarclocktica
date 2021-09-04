@@ -50,7 +50,7 @@ class ConfirmSignUpDlg extends AriaDialog<string> {
                 {t:'button', txt:'Cancel', events:{click:()=>{ this.close(''); }}}
             ]},
             {t:'p', txt:"Didn't receive a code? ", a:{style:'align-self:center;'}, children:[
-                {t:'a', a:{href:'#'}, txt:'Send a new one', events:{click:()=>resendSignUpConfirmation(email)}}
+                {t:'a', a:{href:'#'}, txt:'Send a new one', events:{click:async ()=>resendSignUpConfirmation(email)}}
             ]}
         ] as CreateElementsOptions);
         return await this.baseOpen(null, 'confirm-sign-up', body, []) ?? '';

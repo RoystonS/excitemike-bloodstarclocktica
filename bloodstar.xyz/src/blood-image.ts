@@ -375,7 +375,7 @@ export default class BloodImage {
      * @param h paste location height
      * @returns this
      */
-    pasteZoomed(source:BloodImage, x:number, y:number, w:number, h:number):BloodImage {
+    pasteZoomed(source:BloodImage, x:number, y:number, w:number, h:number):this {
         if ((source.width === 0)||(source.height === 0)||(w === 0)||(h === 0)) {return this;}
         const sourceAspect = source.width / source.height;
         const destinationAspect = w/h;
@@ -510,8 +510,8 @@ export async function urlToBloodImage(url:string, maxWidth:number, maxHeight:num
 }
 
 /** get image data from the url and convert it to a dataUri, throttled */
-export function imageUrlToDataUri(url:string, useCorsProxy:boolean):Promise<string> {
-    return Locks.enqueue('imageRequest', ()=>_imageUrlToDataUri(url, useCorsProxy), MAX_SIMULTANEOUS_IMAGE_REQUESTS);
+export async function imageUrlToDataUri(url:string, useCorsProxy:boolean):Promise<string> {
+    return Locks.enqueue('imageRequest', async ()=>_imageUrlToDataUri(url, useCorsProxy), MAX_SIMULTANEOUS_IMAGE_REQUESTS);
 }
 
 /** used to limit messages about download errors */
@@ -579,7 +579,7 @@ export async function urlToCanvas(url:string, width:number, height:number, useCo
 }
 
 /** find the appropriate gradient image for the team and settings */
-export function getGradientForTeam(team:BloodTeam, useOutsiderAndMinionColors:boolean, width:number, height:number):Promise<BloodImage> {
+export async function getGradientForTeam(team:BloodTeam, useOutsiderAndMinionColors:boolean, width:number, height:number):Promise<BloodImage> {
     let url:string;
     switch (team) {
         case BloodTeam.TOWNSFOLK:

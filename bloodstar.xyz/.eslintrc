@@ -17,7 +17,7 @@
       "no-unsafe-optional-chaining":"warn",
       "no-useless-backreference":"warn",
       "require-atomic-updates":"warn",
-      "require-await":"error",
+      //"require-await":"error",
       "@typescript-eslint/no-floating-promises": "error",
 
       // additional best-practice things
@@ -96,7 +96,6 @@
       // styling
       "array-bracket-spacing":"warn",
       "camelcase":"warn",
-      "comma-spacing":"warn",
       "comma-style":"warn",
       "consistent-this":"warn",
       "func-call-spacing":"warn",
@@ -164,6 +163,16 @@
       "@typescript-eslint/prefer-includes": "warn",
       "@typescript-eslint/prefer-literal-enum-member": "warn",
       "@typescript-eslint/prefer-nullish-coalescing": "warn",
-      "@typescript-eslint/prefer-optional-chain": "warn"
+      "@typescript-eslint/prefer-optional-chain": "warn",
+      "@typescript-eslint/prefer-reduce-type-parameter": "warn",
+      "@typescript-eslint/prefer-return-this-type": "warn",
+      "@typescript-eslint/prefer-string-starts-ends-with": "warn",
+      "@typescript-eslint/promise-function-async": "warn",
+      "@typescript-eslint/require-array-sort-compare": "warn",
+      "@typescript-eslint/sort-type-union-intersection-members": "warn",
+      "@typescript-eslint/switch-exhaustiveness-check": "warn",
+      "@typescript-eslint/typedef": "warn",
+      "@typescript-eslint/unified-signatures": "warn",
+      "@typescript-eslint/comma-spacing": "warn"
     }
 }

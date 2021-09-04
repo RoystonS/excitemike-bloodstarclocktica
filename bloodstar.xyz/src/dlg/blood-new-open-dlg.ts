@@ -20,8 +20,8 @@ class NewOpenDlg extends AriaDialog<boolean> {
             txt:'To get started, open an existing edition or create a new one.'
         }];
         const buttons:ButtonCfg<boolean>[] = [
-            {label:'Open Existing', callback:()=>promptAndOpen(edition, {includeShared:true, copyWarning:true})},
-            {label:'Create New', callback:()=>newEdition(edition)}
+            {label:'Open Existing', callback:async ()=>promptAndOpen(edition, {includeShared:true, copyWarning:true})},
+            {label:'Create New', callback:async ()=>newEdition(edition)}
         ];
         const result = await this.baseOpen(
             document.activeElement,
@@ -37,6 +37,6 @@ class NewOpenDlg extends AriaDialog<boolean> {
  * bring up dialog for picking whether to open an existing file or start a new one
  * @returns promise that resolves to whether the dialog was successful
  */
-export function show(edition:Edition):Promise<boolean> {
+export async function show(edition:Edition):Promise<boolean> {
     return new NewOpenDlg().open(edition);
 }

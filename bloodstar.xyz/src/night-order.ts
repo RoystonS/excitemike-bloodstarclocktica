@@ -90,11 +90,11 @@ export function makeNightOrderItem(
     bindText(reminderElement, character.getProperty(reminderPropertyName));
     row.appendChild(reminderElement);
 
-    const moveItemUp = () => collection.moveItemUp(character);
+    const moveItemUp = async () => collection.moveItemUp(character);
     const up = createElement({t:'button', css:['nightOrderButton'], txt:'▲', events:{click:moveItemUp}});
     row.appendChild(up);
 
-    const moveItemDown = () => collection.moveItemDown(character);
+    const moveItemDown = async () => collection.moveItemDown(character);
     const down = createElement({t:'button', css:['nightOrderButton'], txt:'▼', events:{click:moveItemDown}});
     row.appendChild(down);
 

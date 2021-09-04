@@ -27,7 +27,7 @@ type SaveImgData = {
     isSource:boolean;
     image:string;
 };
-type SaveResult = {error:string}|{success:true}|'clobber'|'cancel';
+type SaveResult = 'cancel' | 'clobber' | {error:string} | {success:true};
 type SaveImgResult = {error:string}|{success:true};
 
 const MAX_SIMULTANEOUS_IMAGE_SAVES = 8;
@@ -197,7 +197,7 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
     for (const [id, imageString] of toSave.sourceImages) {
         if (!imageString.startsWith('data:')) {continue;}
         if (!edition.isCharacterSourceImageDirty(id)) {continue;}
-        promises.push(Locks.enqueue('saveImage', ()=>{
+        promises.push(Locks.enqueue('saveImage', async ()=>{
             const saveImgData:SaveImgData = {
                 token: sessionInfo.token,
                 saveName: saveName,
@@ -212,7 +212,7 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
     for (const [id, imageString] of toSave.finalImages) {
         if (!imageString.startsWith('data:')) {continue;}
         if (!edition.isCharacterFinalImageDirty(id)) {continue;}
-        promises.push(Locks.enqueue('saveImage', ()=>{
+        promises.push(Locks.enqueue('saveImage', async ()=>{
             const saveImgData:SaveImgData = {
                 token: sessionInfo.token,
                 saveName: saveName,
@@ -233,7 +233,7 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
             logo = await imageUrlToDataUri(toSave.logo, useCors);
         }
         if (logo.startsWith('data:')) {
-            promises.push(Locks.enqueue('saveImage', ()=>{
+            promises.push(Locks.enqueue('saveImage', async ()=>{
                 const saveImgData:SaveImgData = {
                     token: sessionInfo.token,
                     saveName: saveName,
@@ -266,7 +266,7 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
 /**
  * prompt the user to enter a name to save as
  */
-function promptForName(defaultName:string):Promise<string|null> {
+async function promptForName(defaultName:string):Promise<string|null> {
     return inputDlg(
         'Save',
         'Enter name to save as.',

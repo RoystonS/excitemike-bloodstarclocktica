@@ -15,10 +15,10 @@ type ResetPasswordData = {
     email:string;
     password:string;
 };
-type ConfirmEmailResponse = {error:string}|{token:string; expiration:number; username:string; email:string}|'alreadyConfirmed'|'notSignedUp'|'expired'|'badCode';
-type ResetPasswordResponse = {error:string}|{token:string; expiration:number; username:string; email:string}|'badCode'|'expired';
-type EmailResponse = {error:string}|{email:string};
-type SignUpResponse = {error:string}|'usernameTaken'|'emailTaken'|true;
+type ConfirmEmailResponse = 'alreadyConfirmed' | 'badCode' | 'expired' | 'notSignedUp' | {error:string} | {token:string; expiration:number; username:string; email:string};
+type ResetPasswordResponse = 'badCode' | 'expired' | {error:string} | {token:string; expiration:number; username:string; email:string};
+type EmailResponse = {email:string} | {error:string};
+type SignUpResponse = 'emailTaken' | 'usernameTaken' | true | {error:string};
 type SignInData = {
     usernameOrEmail:string;
     password:string;

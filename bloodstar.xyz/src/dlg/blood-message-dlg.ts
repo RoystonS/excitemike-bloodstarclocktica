@@ -33,7 +33,7 @@ class MessageDialog extends AriaDialog<void> {
 /**
  * bring up the popup showing exception information
  */
-export function showError(
+export async function showError(
     title = 'Error',
     message = 'It looks like you encountered a bug! The error message below may help the developers fix it.',
     error:Error|unknown = undefined
@@ -57,7 +57,7 @@ export function showErrorNoWait(
 /**
  * bring up the popup showing a message
  */
-export function show(titleText:string, messageText?:string):Promise<null> {
+export async function show(titleText:string, messageText?:string):Promise<null> {
     return new MessageDialog().open(document.activeElement, titleText, messageText);
 }
 

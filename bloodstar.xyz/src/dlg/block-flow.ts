@@ -10,13 +10,13 @@ import {showError, show as showMessage} from './blood-message-dlg';
 import {show as getConfirmation} from "./yes-no-dlg";
 
 type BlockRequest = {token:string; username:string};
-type BlockResponse = {error:string}|true;
+type BlockResponse = true | {error:string};
 
 type GetBlockedRequest = {token:string};
 type GetBlockedResponse = {error:string}|{users:string[]};
 
 type UnblockRequest = {token:string; username:string};
-type UnblockResponse = {error:string}|true;
+type UnblockResponse = true | {error:string};
 
 class ManageBlockedDlg extends AriaDialog<void> {
     blockList:string[]|null = null;

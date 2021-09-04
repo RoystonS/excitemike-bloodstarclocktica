@@ -15,7 +15,7 @@ type ResetPasswordData = {
 };
 
 class ConfirmAndChoosePasswordDlg extends AriaDialog<ResetPasswordData|null> {
-    open(email:string, doWarning:boolean):Promise<ResetPasswordData|null> {
+    async open(email:string, doWarning:boolean):Promise<ResetPasswordData|null> {
         const codeField = createElement({
             t:'input',
             a:{type:'text', minlength:'6', maxlength:'6', autocomplete:'off', required:'', pattern:'[0-9]{6}', title:'six-digit code from your email'},
@@ -55,7 +55,7 @@ class ConfirmAndChoosePasswordDlg extends AriaDialog<ResetPasswordData|null> {
                 {t:'button', txt:'Cancel', events:{click:()=>{ this.close(); }}}
             ]},
             {t:'p', txt:"Didn't receive a code? ", a:{style:'align-self:center;'}, children:[
-                {t:'a', a:{href:'#'}, txt:'Send a new one', events:{click:()=>sendPasswordResetCode(email)}}
+                {t:'a', a:{href:'#'}, txt:'Send a new one', events:{click:async ()=>sendPasswordResetCode(email)}}
             ]}
         ] as CreateElementsOptions);
 
@@ -144,7 +144,7 @@ async function showEnterEmailStep():Promise<string> {
             usernameField
         ],
         [
-            {label:'Reset my password', id:'idSubmitRequest', callback:()=>sendPasswordResetCode(usernameField.value)},
+            {label:'Reset my password', id:'idSubmitRequest', callback:async ()=>sendPasswordResetCode(usernameField.value)},
             {label:'Cancel'}
         ]
     );

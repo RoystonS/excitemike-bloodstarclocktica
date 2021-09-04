@@ -257,7 +257,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
         li.addEventListener('dragend', CollectionBinding.dragend);
         li.addEventListener('dragover', e=>{ this.dragover(e); });
         li.addEventListener('dragleave', e=>{ this.dragleave(e); });
-        li.addEventListener('drop', e => this.drop(e));
+        li.addEventListener('drop', async e => this.drop(e));
         li.appendChild(this.renderFn(itemData, this.collection));
 
         return li;
