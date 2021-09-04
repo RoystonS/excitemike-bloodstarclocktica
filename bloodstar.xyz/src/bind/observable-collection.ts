@@ -173,7 +173,10 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** get an item in the collection */
     get(i:number):ItemType|null {
-        return this.items[i].item;
+        if ((i>=0)&&(i<this.items.length)) {
+            return this.items[i].item;
+        }
+        return null;
     }
 
     /** items in the collection */

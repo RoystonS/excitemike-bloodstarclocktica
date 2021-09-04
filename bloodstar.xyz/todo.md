@@ -10,7 +10,6 @@
 - handout pdf
 - almanac pdf
 - mobile support
-  - menu and title on separate rows on narrow screens
   - drag and drop
 - minion info, demon info in list
   - if before minion info, night order >=1, <4

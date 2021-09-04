@@ -100,7 +100,6 @@
       "semi-spacing":"warn",
       "semi-style":"warn",
       "sort-imports":["warn", {"ignoreCase":true, "ignoreDeclarationSort":true}],
-      "space-before-blocks":"warn",
       "space-before-function-paren":["warn",{"asyncArrow":"always","anonymous":"ignore","named":"never"}],
       "space-unary-ops":["warn",{"words": true, "nonwords": false}],
       
