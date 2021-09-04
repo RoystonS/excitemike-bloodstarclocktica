@@ -59,12 +59,12 @@ class ChooseFileDlg extends AriaDialog<string|[string, string]> {
 
         const fileListDiv = createElement({t:'div', css:['openDlgList']});
         const body:CreateElementsOptions = [
-            {t:'h1', txt:options?.title||'Choose File'},
-            {t:'p', txt:options?.message||'Choose an existing file to open:'},
+            {t:'h1', txt:options?.title ?? 'Choose File'},
+            {t:'p', txt:options?.message ?? 'Choose an existing file to open:'},
             fileListDiv
         ];
 
-        const {yours:yourFiles, shared:sharedFiles} = await listFiles(sessionInfo, options?.includeShared||false);
+        const {yours:yourFiles, shared:sharedFiles} = await listFiles(sessionInfo, options?.includeShared ?? false);
         const owners = (options?.includeShared && sharedFiles) ? Object.keys(sharedFiles) : [];
 
         // list your files (perhaps with label)
@@ -119,7 +119,7 @@ class ChooseFileDlg extends AriaDialog<string|[string, string]> {
             'open',
             body,
             [{label:'Cancel'}]
-        )||'';
+        ) ?? '';
     }
 }
 

@@ -87,7 +87,7 @@ class PasswordDlg extends AriaDialog<string> {
             [
                 {label:'OK', id:'pwdOkButton', callback:()=>passwordField.value},
                 {label:'Cancel'}]
-        )||'';
+        )??'';
     }
 }
 

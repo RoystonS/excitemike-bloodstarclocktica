@@ -133,20 +133,20 @@ async function separateImages(username:string, edition:Edition):Promise<Separate
         if (!id) {continue;}
 
         const unStyledImageStr = character.unStyledImage;
-        if (unStyledImageStr && unStyledImageStr.startsWith('data:')) {
+        if (unStyledImageStr?.startsWith('data:')) {
             character.unStyledImage = `https://www.bloodstar.xyz/usersave/${username}/${saveName}/${id}.src.png`;
             sourceImages.set(id, unStyledImageStr);
         }
 
         const styledImageStr = character.styledImage;
-        if (styledImageStr && styledImageStr.startsWith('data:')) {
+        if (styledImageStr?.startsWith('data:')) {
             character.styledImage = `https://www.bloodstar.xyz/usersave/${username}/${saveName}/${id}.png`;
             finalImages.set(id, styledImageStr);
         }
     }
     const meta = editionSerialized.meta as {logo?:string};
     const {logo} = meta;
-    if (logo && logo.startsWith('data:')) {
+    if (logo?.startsWith('data:')) {
         meta.logo = `https://www.bloodstar.xyz/usersave/${username}/${saveName}/_meta.png`;
     }
 
@@ -232,7 +232,7 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
             const useCors = sourceUrl.hostname !== window.location.hostname;
             logo = await imageUrlToDataUri(toSave.logo, useCors);
         }
-        if (logo && logo.startsWith('data:')) {
+        if (logo.startsWith('data:')) {
             promises.push(Locks.enqueue('saveImage', ()=>{
                 const saveImgData:SaveImgData = {
                     token: sessionInfo.token,

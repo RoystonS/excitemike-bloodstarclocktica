@@ -370,8 +370,8 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
      * @param end - one past the final index to update
      */
     private updateIndices(begin?:number, end?:number):void {
-        const fixedBegin = begin||0;
-        const fixedEnd = end||this.items.length;
+        const fixedBegin = begin??0;
+        const fixedEnd = end??this.items.length;
         for (let i=fixedBegin; i<fixedEnd; i++) {
             this.items[i].index = i;
         }

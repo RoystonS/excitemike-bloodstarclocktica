@@ -28,14 +28,14 @@ class ChooseCharacterFromEditionDlg extends ChooseCharactersDlg {
             id:'_meta',
             name:edition.meta.name.get(),
             author:edition.meta.author.get(),
-            logo:edition.meta.logo.get()||undefined
+            logo:edition.meta.logo.get()??undefined
         });
         for (let i=0; i<edition.characterList.getLength(); ++i) {
             const character = edition.characterList.get(i);
             if (!character) {continue;}
             characters.push({
                 id:character.id.get(),
-                image:character.styledImage.get()||undefined,
+                image:character.styledImage.get()??undefined,
                 edition:character.id.get(),
                 firstNightReminder:character.firstNightReminder.get(),
                 otherNightReminder:character.otherNightReminder.get(),

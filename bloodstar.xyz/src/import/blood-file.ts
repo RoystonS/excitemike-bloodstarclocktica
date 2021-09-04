@@ -102,7 +102,7 @@ class BloodImporter {
             const keys = Array.from(nightMap.keys()).sort((a, b) => a - b);
             await collection.clear();
             for (const key of keys) {
-                await collection.addMany(nightMap.get(key) || []);
+                await collection.addMany(nightMap.get(key) ?? []);
             }
         }
     }
@@ -208,12 +208,12 @@ class BloodImporter {
         }
 
         const firstNightNumber = json.firstNight || 0;
-        const fno = this.firstNightOrderTracker.get(firstNightNumber) || [];
+        const fno = this.firstNightOrderTracker.get(firstNightNumber) ?? [];
         fno.push(character);
         this.firstNightOrderTracker.set(firstNightNumber, fno);
 
         const otherNightNumber = json.otherNight || 0;
-        const ono = this.otherNightOrderTracker.get(otherNightNumber) || [];
+        const ono = this.otherNightOrderTracker.get(otherNightNumber) ?? [];
         ono.push(character);
         this.otherNightOrderTracker.set(otherNightNumber, ono);
 
@@ -241,7 +241,7 @@ function chooseBloodFile():Promise<File|null> {
     function chooseFile():void {
         if (fileInput instanceof HTMLInputElement) {
             fileInput.onchange=()=>{
-                dlg.close(fileInput.files && fileInput.files[0]);
+                dlg.close(fileInput.files?.[0]);
             };
             fileInput.click();
         } else {

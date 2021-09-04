@@ -29,7 +29,7 @@ export function getRecentFile(userEmail:string):string {
     }
     try {
         const {localStorage} = window;
-        return localStorage.getItem('recentFile') || '';
+        return localStorage.getItem('recentFile') ?? '';
     } catch {
         // ignore
     }

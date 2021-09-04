@@ -179,7 +179,7 @@ async function showBlockPrompt():Promise<string> {
             usernameWarnings
         ],
         buttons
-    ) || '';
+    ) ?? '';
 }
 
 /**

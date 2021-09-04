@@ -379,17 +379,17 @@ export abstract class ObservableObject<T> {
 
     /** retrieve a child observable by name */
     getChild(key:PropKey<T>):ObservableObject<any> {
-        return this.children.get(key) || noSuchProperty(this, key);
+        return this.children.get(key) ?? noSuchProperty(this, key);
     }
 
     /** retrieve a collection property by name */
     getCollection(key:PropKey<T>):ObservableCollection<any> {
-        return this.collections.get(key) || noSuchProperty(this, key);
+        return this.collections.get(key) ?? noSuchProperty(this, key);
     }
 
     /** retrieve a property by name */
     getProperty<ValueType = unknown>(key:PropKey<T>):Property<ValueType> {
-        return (this.properties.get(key) || this.enumProperties.get(key) || noSuchProperty(this, key)) as Property<ValueType>;
+        return (this.properties.get(key) ?? this.enumProperties.get(key) ?? noSuchProperty(this, key)) as Property<ValueType>;
     }
 
     /** retrieve a property value by name */

@@ -20,9 +20,9 @@ export type YesNoOptions = {
 
 class YesNoDialog extends AriaDialog<boolean> {
     async open(titleText:string, messageText?:string, options?:YesNoOptions):Promise<boolean> {
-        const yesLabel = options?.yesLabel || 'Yes';
-        const noLabel = options?.noLabel || 'No';
-        const checkboxMessage = options?.checkboxMessage || '';
+        const yesLabel = options?.yesLabel ?? 'Yes';
+        const noLabel = options?.noLabel ?? 'No';
+        const checkboxMessage = options?.checkboxMessage ?? '';
 
         const body:CreateElementsOptions = [{
             t:'h1',

@@ -148,7 +148,7 @@ async function showEnterEmailStep():Promise<string> {
             {label:'Cancel'}
         ]
     );
-    return email||'';
+    return email ?? '';
 }
 
 export default show;

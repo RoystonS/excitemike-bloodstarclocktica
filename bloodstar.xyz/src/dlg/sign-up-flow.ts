@@ -53,7 +53,7 @@ class ConfirmSignUpDlg extends AriaDialog<string> {
                 {t:'a', a:{href:'#'}, txt:'Send a new one', events:{click:()=>resendSignUpConfirmation(email)}}
             ]}
         ] as CreateElementsOptions);
-        return await this.baseOpen(null, 'confirm-sign-up', body, [])||'';
+        return await this.baseOpen(null, 'confirm-sign-up', body, []) ?? '';
     }
 }
 
@@ -152,7 +152,7 @@ async function showSignUpStep():Promise<string> {
         'sign-up-dlg',
         body,
         buttons
-    ) || '';
+    ) ?? '';
 }
 
 export default show;

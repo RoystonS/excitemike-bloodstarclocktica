@@ -11,7 +11,7 @@ export class ImageDisplayBinding extends BaseBinding<string|null> {
             property,
             '',
             null,
-            v=>{element.src = v || '';});
+            v=>{element.src = v??'';});
     }
 }
 

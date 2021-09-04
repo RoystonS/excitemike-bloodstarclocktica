@@ -52,7 +52,7 @@ function chooseJsonFile():Promise<File|null> {
     function chooseFile():void {
         if (fileInput instanceof HTMLInputElement) {
             fileInput.onchange=()=>{
-                dlg.close(fileInput.files && fileInput.files[0]);
+                dlg.close(fileInput.files?.[0]);
             };
             fileInput.click();
         } else {
@@ -92,11 +92,11 @@ async function importMeta(entry:MetaEntry, edition:Edition):Promise<boolean> {
 /** import a character into the edition */
 async function importCharacter(entry:CharacterEntry, edition:Edition, firstNightOrder:NightOrderTracker, otherNightOrder:NightOrderTracker):Promise<boolean> {
     const character = await spinner(entry.id, `Adding new character`, edition.addNewCharacter());
-    const newId = edition.generateValidId(entry.name||'newcharacter');
+    const newId = edition.generateValidId(entry.name ?? 'newcharacter');
     await character.id.set(newId);
 
-    const firstNightNumber = entry.firstNight || 0;
-    const fnoList = firstNightOrder.get(firstNightNumber) || [];
+    const firstNightNumber = entry.firstNight ?? 0;
+    const fnoList = firstNightOrder.get(firstNightNumber) ?? [];
     fnoList.push(character);
     firstNightOrder.set(firstNightNumber, fnoList);
 
@@ -104,8 +104,8 @@ async function importCharacter(entry:CharacterEntry, edition:Edition, firstNight
         await character.firstNightReminder.set(entry.firstNightReminder);
     }
 
-    const otherNightsNumber = entry.otherNight || 0;
-    const onoList = otherNightOrder.get(otherNightsNumber) || [];
+    const otherNightsNumber = entry.otherNight ?? 0;
+    const onoList = otherNightOrder.get(otherNightsNumber) ?? [];
     onoList.push(character);
     otherNightOrder.set(otherNightsNumber, onoList);
 
@@ -174,7 +174,7 @@ async function importScript(json:ScriptEntry[], edition:Edition):Promise<boolean
         const keys = Array.from(nightMap.keys()).sort((a, b) => a - b);
 
         for (const key of keys) {
-            for (const character of nightMap.get(key) || []) {
+            for (const character of nightMap.get(key) ?? []) {
                 const src = collection.indexOf(character);
                 if (src > dst) {
                     await collection.move(src, dst++);

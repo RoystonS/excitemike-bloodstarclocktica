@@ -545,7 +545,7 @@ export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean):Promi
         const reader = new FileReader();
         return await new Promise((resolve)=>{
             reader.onload = ()=>{
-                const base64 = reader.result || '';
+                const base64 = reader.result ?? '';
                 resolve(base64 as string);
             };
             reader.readAsDataURL(new Blob([buffer]));

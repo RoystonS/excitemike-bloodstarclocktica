@@ -39,7 +39,7 @@ export const selectedCharacter = new BloodBind.Property<Character|null>(null);
 
 /** check whether this is the mobile version of the site */
 export function isMobile():boolean {
-    return bloodstarOptions.mobile||false;
+    return bloodstarOptions.mobile??false;
 }
 
 /**
@@ -125,7 +125,7 @@ async function initBindings():Promise<void> {
             tabClicked('charTabBtn', 'charactertab');
         }
     });
-    await selectedCharacter.set(edition.characterList.get(0) || null);
+    await selectedCharacter.set(edition.characterList.get(0));
 
     BloodBind.bindCheckboxById('previewOnToken', edition.previewOnToken);
 
@@ -160,7 +160,7 @@ async function initCustomEdition(email:string):Promise<void> {
 
 /** prepare app */
 async function _init(options?:BloodstarOptions) {
-    bloodstarOptions = options||{};
+    bloodstarOptions = options??{};
 
     edition = await Edition.asyncNew();
 

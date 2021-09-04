@@ -75,7 +75,7 @@ async function _importOfficial(fromCharacter:CharacterEntry, toCharacter:Charact
         await toCharacter.firstNightReminder.set(fromCharacter.firstNightReminder);
     }
     if (fromCharacter.id) {
-        const newId = edition.generateValidId(fromCharacter.name||'newcharacter');
+        const newId = edition.generateValidId(fromCharacter.name??'newcharacter');
         await toCharacter.id.set(newId);
     }
 

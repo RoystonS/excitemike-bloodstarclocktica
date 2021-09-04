@@ -112,7 +112,7 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
                 container
             ],
             [{label:'Import 0 Characters', id:'importButton', callback:doImport, disabled:true}, {label:'Cancel'}]
-        )||[];
+        )??[];
     }
 
     /** create the row for hte given entry */
@@ -121,13 +121,13 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
             const element = createElement({
                 t:'div',
                 css:['importCharacter'],
-                a:{title:scriptEntry.ability||'', 'data-id':scriptEntry.id},
+                a:{title:scriptEntry.ability??'', 'data-id':scriptEntry.id},
                 children:[
                     {t:'input', a:{type:'checkbox', 'data-id':scriptEntry.id}, id:`${scriptEntry.id}-checkbox`, events:{change:updateCb}},
                     {t:'label', a:{for:`${scriptEntry.id}-checkbox`}, txt:scriptEntry.name}
                 ]
             });
-            setTeamColorStyle(parseBloodTeam(scriptEntry.team || ''), element.classList);
+            setTeamColorStyle(parseBloodTeam(scriptEntry.team ?? ''), element.classList);
             return element;
         }
 
@@ -165,7 +165,7 @@ function passesFilter(filterString:string, entry:ScriptEntry):boolean {
     const loweredFilterString = filterString.toLowerCase();
     for (const haystack of Object.values(entry)) {
         if (typeof haystack === 'string') {
-            if (haystack.toLowerCase().indexOf(loweredFilterString) !== -1) {return true;}
+            if (haystack.toLowerCase().includes(loweredFilterString)) {return true;}
         }
     }
     return false;

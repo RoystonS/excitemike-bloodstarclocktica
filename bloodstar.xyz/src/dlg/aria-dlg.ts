@@ -44,6 +44,7 @@ function attemptFocus(node:Node):boolean {
  * @returns true if focus was successfully set
  */
 function focusFirstDescendant(node:Node):boolean {
+    // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let i=0; i<node.childNodes.length; i++) {
         const child = node.childNodes[i];
         if (attemptFocus(child) || focusFirstDescendant(child)) {
@@ -291,7 +292,7 @@ export class AriaDialog<ResultType> {
 
     /** find the first element in the dialog with the given id */
     protected getElementById(id:string):HTMLElement|null {
-        return this.root?.querySelector(`#${id}`)||null;
+        return this.root?.querySelector(`#${id}`)??null;
     }
 
     /** find an element within the popup */

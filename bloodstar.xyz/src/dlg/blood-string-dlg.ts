@@ -23,8 +23,8 @@ class StringDialog extends AriaDialog<string> {
             required:'true',
             type:'text',
             value:defaultValue,
-            pattern:(validation && validation.pattern) ? validation.pattern : '',
-            title:(validation && validation.hint) ? validation.hint : ''
+            pattern:(validation?.pattern) ? validation.pattern : '',
+            title:(validation?.hint) ? validation.hint : ''
         }});
         const warningsContainer = createElement({t:'div', css:['column'], a:{style:'color:red;width:400px;'}});
         const body:CreateElementsOptions = [{
@@ -92,5 +92,5 @@ class StringDialog extends AriaDialog<string> {
  * string or null if the user cancelled
  */
 export function show(title:string, prompt:string, defaultValue?:string, validation?:Validation):Promise<string|null> {
-    return new StringDialog().open(title, prompt, defaultValue||'', validation);
+    return new StringDialog().open(title, prompt, defaultValue??'', validation);
 }

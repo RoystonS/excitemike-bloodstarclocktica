@@ -39,7 +39,7 @@ class SignInDlg extends AriaDialog<SessionInfo> {
 
     open(options?:SignInFlowOptions):Promise<SessionInfo|null> {
         this._canCancel = options?.canCancel !== false;
-        const title = options?.title || 'Sign In';
+        const title = options?.title ?? 'Sign In';
         const submitOnEnter = async (event:KeyboardEvent):Promise<void>=>{
             switch (event.code)
             {
@@ -116,7 +116,7 @@ class SignInDlg extends AriaDialog<SessionInfo> {
         if (this._canCancel) {
             body.push({
                 t:'button',
-                txt:options?.cancelLabel||'Cancel',
+                txt:options?.cancelLabel ?? 'Cancel',
                 events:{click:()=>{ this.close(null); }}
             });
         }

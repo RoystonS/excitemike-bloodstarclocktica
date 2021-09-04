@@ -67,7 +67,7 @@ async function promptAndSignIn(options?:SignInFlowOptions):Promise<boolean> {
  */
 export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:string, body:{token:string}):Promise<ResultType> {
     // TODO: I always wrap this in a try. Let's move the try in here.
-    sessionInfo = sessionInfo || getStoredToken();
+    sessionInfo = sessionInfo ?? getStoredToken();
     while (!sessionInfo || accessTokenExpired()) {
         await signIn({force:true, message:'Please sign in to continue.'});
         if (sessionInfo) {
@@ -94,7 +94,7 @@ export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:str
  */
 export async function signIn(options?:SignInOptions):Promise<SessionInfo|null> {
     const force = Boolean(options?.force);
-    sessionInfo = sessionInfo || getStoredToken();
+    sessionInfo = sessionInfo ?? getStoredToken();
     if (!force && sessionInfo && !accessTokenExpired()) {
         updateUserDisplay(sessionInfo);
         return sessionInfo;

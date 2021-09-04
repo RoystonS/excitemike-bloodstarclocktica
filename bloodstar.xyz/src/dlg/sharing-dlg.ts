@@ -195,7 +195,7 @@ class SharingDlg extends AriaDialog<void> {
             ],
             buttons
         );
-        return result || false;
+        return result ?? false;
     }
 
     /** update dialog after changes */
