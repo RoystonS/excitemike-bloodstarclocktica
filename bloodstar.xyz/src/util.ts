@@ -222,7 +222,7 @@ export function arrayGet<T>(arr:ArrayLike<T>, i:number):T|null {
 
 /** check that the index is valid for the arraylike item */
 export function boundsCheck(i:unknown, arr:ArrayLike<unknown>):boolean {
-    return (typeof i === 'number') 
+    return (typeof i === 'number')
         && !isNaN(i)
         && (i>=0)
         && (i<arr.length);

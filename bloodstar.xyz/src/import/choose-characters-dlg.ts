@@ -36,8 +36,8 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
         const onFilterChange=(e:Event)=>{
             if (e.target instanceof HTMLInputElement) {
                 const filterString = e.target.value;
-                walkHTMLElements(container, e=>{
-                    doFilter(filterString, entriesById, e);
+                walkHTMLElements(container, elem=>{
+                    doFilter(filterString, entriesById, elem);
                 });
             }
         };
