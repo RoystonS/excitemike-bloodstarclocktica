@@ -275,6 +275,7 @@ export class Edition extends ObservableObject<Edition> {
 
     /** set to opened file */
     async open(saveName:string, data:Record<string, unknown>):Promise<boolean> {
+        await this.reset();
         await this.saveName.set(saveName);
         await spinner('edition.open', 'Deserializing edition', this.deserialize(data));
 

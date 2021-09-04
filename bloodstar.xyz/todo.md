@@ -36,4 +36,4 @@
 
 ## Bugs
 
-- When opening a file, if the opened shared file has no edition synopsis, overview, etc., then your local synopsis or w/e will not get cleared
+- All fixed AFAIK!
