@@ -77,7 +77,9 @@
       "camelcase":"warn",
       "comma-style":"warn",
       "consistent-this":"warn",
-      
+      "max-depth":["warn", 6],
+      "max-len":["warn", 200],
+      "max-nested-callbacks":"warn",
       "multiline-ternary": ["error", "always-multiline"],
       "new-cap":"warn",
       "new-parens":"warn",
@@ -103,7 +105,7 @@
       "space-before-blocks":"warn",
       "space-before-function-paren":["warn",{"asyncArrow":"always","anonymous":"ignore","named":"never"}],
       "space-unary-ops":["warn",{"words": true, "nonwords": false}],
-      
+      "yoda":"warn",
       "@typescript-eslint/array-type": "warn",
       "@typescript-eslint/consistent-indexed-object-style": "warn",
       "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
@@ -172,6 +174,9 @@
 
       "no-loop-func":"off",
       "@typescript-eslint/no-loop-func":"warn",
+      
+      "no-shadow":"off",
+      "@typescript-eslint/no-shadow":"warn",
       
       "no-throw-literal":"off",
       "@typescript-eslint/no-throw-literal":"warn",

@@ -51,9 +51,17 @@
 		{
 			"type":"shell",
 			"group": "build",
+			"label": "strict lint",
+			"detail": "more strict eslint",
+			"command": "node_modules/.bin/eslint . --config strict.eslintrc",
+			"problemMatcher": "$eslint-stylish"
+		},
+		{
+			"type":"shell",
+			"group": "build",
 			"label": "lint with autofix",
-			"detail": "autofix eslint issues",
-			"command": "node_modules/.bin/eslint . --fix",
+			"detail": "automatically fix various lint issues",
+			"command": "node_modules/.bin/eslint . --fix --config autofix.eslintrc",
 			"problemMatcher": "$eslint-stylish"
 		}
 	]

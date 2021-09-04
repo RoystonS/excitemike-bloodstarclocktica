@@ -19,10 +19,7 @@
 
 ## QoL
 
-- separate linter config files for different tasks
-  - one for usual development
-  - one with only auto-fix rules
-  - strict one for when all I want to work is focus on code quality for a bit
+- fewer rules in .eslintrc
 - rename command
 - saveAs is quite slow :(
 - auto-fill author field on new
