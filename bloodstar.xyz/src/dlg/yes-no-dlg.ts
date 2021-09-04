@@ -15,7 +15,7 @@ export type YesNoOptions = {
      * If present and not empty, a checkbox is present and must be checked in order for the dialog to result in true.
      * If not present or empty, no checkbox appears
      */
-     checkboxMessage?:string;
+    checkboxMessage?:string;
 };
 
 class YesNoDialog extends AriaDialog<boolean> {

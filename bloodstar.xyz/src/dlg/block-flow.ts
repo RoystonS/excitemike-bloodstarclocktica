@@ -106,7 +106,7 @@ async function doBlockUser(username:string):Promise<boolean> {
             return true;
         }
         const {error} = response;
-        throw error;
+        throw new Error(error);
     } catch (error: unknown) {
         await showError('Network Error', `Error encountered while blocking`, error);
         return false;
@@ -128,7 +128,7 @@ export async function getBlockList():Promise<string[]|null> {
     try {
         const response = await signedInCmd<GetBlockedResponse>('get-blocked', 'Retrieving block list', request);
         if ('error' in response) {
-            throw response.error;
+            throw new Error(response.error);
         }
         return response.users;
     } catch (error: unknown) {
@@ -236,7 +236,7 @@ export async function showUnblockUser(username:string):Promise<boolean> {
             return true;
         }
         const {error} = response;
-        throw error;
+        throw new Error(error);
     } catch (error: unknown) {
         await showError('Network Error', `Error encountered while unblocking`, error);
         return false;

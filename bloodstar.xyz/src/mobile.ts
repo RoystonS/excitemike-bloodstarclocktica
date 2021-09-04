@@ -1,7 +1,6 @@
 import './styles/mobile.css';
 import { hookupClickEvents } from './util';
-import { init } from "./bloodstar";
-import { tabClicked } from './bloodstar';
+import { init, tabClicked } from "./bloodstar";
 
 /** track currently open curtain menu */
 let currentCurtain: Element|null = null;

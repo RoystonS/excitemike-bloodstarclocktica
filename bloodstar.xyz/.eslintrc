@@ -17,7 +17,6 @@
       "no-unsafe-optional-chaining":"warn",
       "no-useless-backreference":"warn",
       "require-atomic-updates":"warn",
-      //"require-await":"error",
       "@typescript-eslint/no-floating-promises": "error",
 
       // additional best-practice things
@@ -30,9 +29,7 @@
       "curly":"warn",
       "default-case":"warn",
       "default-case-last":"warn",
-      "default-param-last":"warn",
       //"dot-location":"warn",
-      "dot-notation":"warn",
       "eqeqeq":"warn",
       "grouped-accessor-pairs":"warn",
       "guard-for-in":"warn",
@@ -51,12 +48,9 @@
       "no-floating-decimal":"warn",
       "no-implicit-coercion":"warn",
       "no-implicit-globals":"warn",
-      "no-implied-eval":"warn",
-      "no-invalid-this":"warn",
       "no-iterator":"warn",
       "no-labels":"warn",
       "no-lone-blocks":"warn",
-      "no-loop-func":"warn",
       //"no-magic-numbers":"warn",
       "no-multi-spaces":"warn",
       "no-multi-str":"warn",
@@ -69,17 +63,13 @@
       "no-proto":"warn",
       "no-restricted-properties":"warn",
       "no-return-assign":"warn",
-      "no-return-await":"warn",
       "no-script-url":"warn",
       //"no-shadow":"warn", // has an issue with typescript enums
       "no-self-compare":"warn",
       "no-sequences":"warn",
-      "no-throw-literal":"warn",
       //"no-undefined":"warn",
       "no-undef-init":"warn",
       "no-unmodified-loop-condition":"warn",
-      "no-unused-expressions":"warn",
-      //"no-use-before-define":"warn",
       "no-useless-call":"warn",
       "no-useless-concat":"warn",
       "no-useless-return":"warn",
@@ -98,10 +88,6 @@
       "camelcase":"warn",
       "comma-style":"warn",
       "consistent-this":"warn",
-      "func-call-spacing":"warn",
-      "indent":["warn", 4, {"SwitchCase": 1}],
-      "keyword-spacing":"warn",
-      "lines-between-class-members":"warn",
       "max-depth":["warn", 6],
       "max-len":["warn", 200],
       "max-nested-callbacks":"warn",
@@ -109,7 +95,6 @@
       "new-cap":"warn",
       "new-parens":"warn",
       //"newline-per-chained-call":"warn",
-      "no-array-constructor":"warn",
       "no-confusing-arrow":"warn",
       "no-lonely-if":"warn",
       "no-multiple-empty-lines":"warn",
@@ -127,7 +112,6 @@
       "prefer-rest-params":"warn",
       "prefer-spread":"warn",
       "prefer-template":"warn",
-      "semi":"warn",
       "semi-spacing":"warn",
       "semi-style":"warn",
       "sort-imports":["warn", {"ignoreCase":true, "ignoreDeclarationSort":true}],
@@ -173,6 +157,50 @@
       "@typescript-eslint/switch-exhaustiveness-check": "warn",
       "@typescript-eslint/typedef": "warn",
       "@typescript-eslint/unified-signatures": "warn",
-      "@typescript-eslint/comma-spacing": "warn"
+      
+      "comma-spacing":"off",
+      "@typescript-eslint/comma-spacing": "warn",
+
+      "default-param-last":"off",
+      "@typescript-eslint/default-param-last": "warn",
+
+      "dot-notation":"off",
+      "@typescript-eslint/dot-notation": "warn",
+
+      "func-call-spacing":"off",
+      "@typescript-eslint/func-call-spacing": "warn",
+
+      "indent":"off",
+      "@typescript-eslint/indent": ["warn", 4, {"SwitchCase": 1}],
+
+      "keyword-spacing":"off",
+      "@typescript-eslint/keyword-spacing":"warn",
+
+      "lines-between-class-members":"off",
+      "@typescript-eslint/lines-between-class-members":"warn",
+
+      "no-dupe-class-members":"off",
+      "@typescript-eslint/no-dupe-class-members":"warn",
+
+      "no-duplicate-imports":"off",
+      "@typescript-eslint/no-duplicate-imports":"warn",
+
+      "no-invalid-this":"off",
+      "@typescript-eslint/no-invalid-this":"warn",
+
+      "no-loop-func":"off",
+      "@typescript-eslint/no-loop-func":"warn",
+      
+      "no-throw-literal":"off",
+      "@typescript-eslint/no-throw-literal":"warn",
+      
+      "no-unused-expressions":"off",
+      "@typescript-eslint/no-unused-expressions":"warn",
+      
+      "return-await":"off",
+      "@typescript-eslint/return-await":"warn",
+
+      "semi":"off",
+      "@typescript-eslint/semi":"warn"
     }
 }

@@ -29,11 +29,11 @@ function noSuchProperty<T>(object:any, key:PropKey<T>):never {
     throw error;
 }
 
-type PropertyEntry = {defaultValue:unknown}
+type PropertyEntry = {defaultValue:unknown};
 type EnumPropertyEntry = {
     defaultValue:unknown;
     displayValuePairs: DisplayValuePairs<unknown>;
-}
+};
 type CollectionEntry = {
     ctor:()=>Promise<unknown>;
 };
