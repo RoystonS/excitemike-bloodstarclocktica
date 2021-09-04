@@ -1,6 +1,7 @@
 import * as Animate from '../animate';
 import {ObservableCollection, ObservableCollectionChangeAction, ObservableCollectionChangedEvent} from '../bind/observable-collection';
 import {ObservableObject} from '../bind/observable-object';
+import { isMobile } from '../bloodstar';
 
 export type RenderFn<T extends ObservableObject<T>> = (itemData:T, collection:ObservableCollection<T>)=>Element;
 export type CleanupFn<T> = (renderedElement:Element, itemData:T)=>void;
@@ -252,12 +253,14 @@ export class CollectionBinding<T extends ObservableObject<T>> {
         const li = document.createElement('li');
         li.draggable = true;
         li.dataset.index = String(i);
-        li.addEventListener('drag', ()=>{this.dragged = li;});
-        li.addEventListener('dragstart', CollectionBinding.dragstart);
-        li.addEventListener('dragend', CollectionBinding.dragend);
-        li.addEventListener('dragover', e=>{ this.dragover(e); });
-        li.addEventListener('dragleave', e=>{ this.dragleave(e); });
-        li.addEventListener('drop', async e => this.drop(e));
+        if (!isMobile()) {
+            li.addEventListener('drag', ()=>{this.dragged = li;});
+            li.addEventListener('dragstart', CollectionBinding.dragstart);
+            li.addEventListener('dragend', CollectionBinding.dragend);
+            li.addEventListener('dragover', e=>{ this.dragover(e); });
+            li.addEventListener('dragleave', e=>{ this.dragleave(e); });
+            li.addEventListener('drop', async e => this.drop(e));
+        }
         li.appendChild(this.renderFn(itemData, this.collection));
 
         return li;
