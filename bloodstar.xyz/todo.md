@@ -28,4 +28,3 @@
 ## Bugs
 
 - When opening a file, if the opened shared file has no edition synopsis, overview, etc., then your local synopsis or w/e will not get cleared
-- When using site as guest, default character is not in night order

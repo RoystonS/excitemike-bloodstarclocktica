@@ -34,7 +34,6 @@ type BloodstarOptions = {
 
 let bloodstarOptions:BloodstarOptions = {};
 
-let edition:Edition = new Edition();
 export const selectedCharacter = new BloodBind.Property<Character|null>(null);
 
 /** check whether this is the mobile version of the site */
@@ -70,7 +69,7 @@ export function tabClicked(btnId:string, tabId:string):void {
 }
 
 /** initialize listeners and data bindings */
-async function initBindings():Promise<void> {
+async function initBindings(edition:Edition):Promise<void> {
     window.addEventListener('beforeunload', (event):string|undefined=>{
         if (!edition.dirty.get()) {return undefined;}
         event.preventDefault();
@@ -131,16 +130,16 @@ async function initBindings():Promise<void> {
 
     edition.addPropertyChangedEventListener(key => {
         if (key === 'characterList') {
-            updateStatusbar();
+            updateStatusbar(edition);
         }
     });
-    updateStatusbar();
+    updateStatusbar(edition);
 }
 
 /** initialize CustomEdition object to bind to */
-async function initCustomEdition(email:string):Promise<void> {
+async function initCustomEdition(edition:Edition, email?:string):Promise<void> {
     try {
-        const rememberedFile = getRecentFile(email);
+        const rememberedFile = email?getRecentFile(email):'';
         if (rememberedFile) {
             if (await openExisting(edition, rememberedFile)) {
                 return;
@@ -152,7 +151,6 @@ async function initCustomEdition(email:string):Promise<void> {
         while (!await BloodNewOpen.show(edition)) {
         }
     } catch (e: unknown) {
-        console.error(e);
         await edition.reset();
         showErrorNoWait('Error', 'Error encountered during initialization', e);
     }
@@ -162,24 +160,22 @@ async function initCustomEdition(email:string):Promise<void> {
 async function _init(options?:BloodstarOptions) {
     bloodstarOptions = options??{};
 
-    edition = await Edition.asyncNew();
+    const edition = await Edition.asyncNew();
 
-    await initBindings();
+    await initBindings(edition);
 
     menuInit(edition);
 
     updateUserDisplay(null);
     const sessionInfo = await signIn({cancelLabel:'Continue as Guest'});
 
-    if (sessionInfo) {
-        await initCustomEdition(sessionInfo.email);
-    }
+    await initCustomEdition(edition, sessionInfo?.email);
 }
 
 type StatusBarData = Map<string, {id:string; exported:number; total:number}>;
 
 /** update status bar text */
-function collectStatusBarData():StatusBarData {
+function collectStatusBarData(edition:Edition):StatusBarData {
     const data:StatusBarData = new Map();
     data.set('all', {id:'charactersStatus', exported:0, total:0});
     data.set(BloodTeam.TOWNSFOLK, {id:'townsfolkStatus', exported:0, total:0});
@@ -203,8 +199,8 @@ function collectStatusBarData():StatusBarData {
 }
 
 /** update status bar text */
-function updateStatusbar():void {
-    for (const {id, exported, total} of collectStatusBarData().values()) {
+function updateStatusbar(edition:Edition):void {
+    for (const {id, exported, total} of collectStatusBarData(edition).values()) {
         const element = document.getElementById(id);
         if (element) {
             element.innerText = `${exported}/${total}`;
