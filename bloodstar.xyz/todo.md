@@ -1,6 +1,6 @@
 # TO DO list
 
-## Feature requests
+## Features
 
 - collaboration
   - option 1: co-author same save
@@ -10,7 +10,17 @@
 - handout pdf
 - almanac pdf
 - mobile support
-  - drag and drop
+  - redirect to m.bloodstar.xyz
+    - m.bloodstar.xyz serves m.html
+  - extra space at the bottom on mobile
+  - sign-in status, buttons on menu curtain
+  - responsive, scrollable menu curtain
+  - close curtain when you click a curtain button
+  - character list should have an edit button instead of automatically jumping tabs
+  - move button which goes to move mode
+    - selected item gets a 'cancel' button
+    - others get a 'move here' button
+    - changing tabs or any character list change ends move mode
 - minion info, demon info in list
   - if before minion info, night order >=1, <4
   - if between minion info & demon info, night order >=4, <7
