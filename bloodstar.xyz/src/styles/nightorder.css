@@ -28,7 +28,7 @@
 }
 .ordinal {
     text-align: center;
-    min-width:24px;
+    min-width:36px;
 }
 .nightOrderItem::before{
     content: '∙';

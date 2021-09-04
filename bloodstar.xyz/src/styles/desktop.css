@@ -11,6 +11,11 @@
 }
 
 /* character list */
+@media only screen and (max-width:1100px){
+    .characterListItemSelected > .characterListName {
+        text-shadow: 1px 1px 0 #222;
+    }
+}
 @media only screen and (max-width:900px){
     .characterListThumbnail {
         position:unset;
@@ -18,14 +23,14 @@
         max-height: 31px;
         margin: -10px 0 -15px 0;
     }
+    .characterListItemSelected > .characterListName {
+        text-shadow: unset;
+    }
     .characterListName {
         font-weight:normal;
     }
     .characterListButton {
         padding:1px 4px;
-    }
-    .characterListItemSelected > .characterListThumbnail {
-        opacity: 0.75 !important;
     }
     .characterListItem > span
     ,.characterListItem > button {
