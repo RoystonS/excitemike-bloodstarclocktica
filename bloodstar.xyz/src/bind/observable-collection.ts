@@ -1,8 +1,8 @@
 import { arrayGet } from '../util';
 import {ObservableObject, PropertyChangedListener, PropKey} from './observable-object';
 
-export type ObservableCollectionListener<T extends ObservableObject<T>> = (event:ObservableCollectionChangedEvent<T>)=>void;
-export type ItemPropertyChangedListener<T> = (index:number, item:T, propName:PropKey<T>) => void;
+export type ObservableCollectionListener<T extends ObservableObject<T>> = (event:ObservableCollectionChangedEvent<T>)=>Promise<void>;
+export type ItemPropertyChangedListener<T> = (index:number, item:T, propName:PropKey<T>) => Promise<void>;
 
 /** types of changes to ObservableCollections */
 export enum ObservableCollectionChangeAction {
@@ -48,8 +48,8 @@ class ItemPlus<ItemType extends ObservableObject<ItemType>> {
 
     public listener:PropertyChangedListener<ItemType>|null;
 
-    constructor(changeCb:(itemPlus:ItemPlus<ItemType>, propName:PropKey<ItemType>)=>void, index:number, item:ItemType) {
-        this.listener = (propName:PropKey<ItemType>)=>{ changeCb(this, propName); };
+    constructor(changeCb:(itemPlus:ItemPlus<ItemType>, propName:PropKey<ItemType>)=>Promise<void>, index:number, item:ItemType) {
+        this.listener = async (propName:PropKey<ItemType>)=>changeCb(this, propName);
         this.index = index;
         this.item = item;
         item.addPropertyChangedEventListener(this.listener);
@@ -152,7 +152,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     /** inverse of serialize */
     async deserialize(serialized:readonly Record<string, unknown>[]):Promise<void> {
         await this.clear();
-        const promises = [];
+        const promises:Promise<ItemType>[] = [];
         for (const itemData of serialized) {
             if ((typeof itemData !== 'string') &&
                 (typeof itemData !== 'number') &&
@@ -161,8 +161,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
             {
                 promises.push(
                     this.itemCtor()
-                        .then(async item=>{
-                            await item.deserialize(itemData);
+                        .then(async item=>{await item.deserialize(itemData);
                             return item;
                         })
                 );
@@ -178,7 +177,9 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** items in the collection */
-    getItems(): readonly ItemType[] { return this.items.map(i=>i.item); }
+    getItems(): readonly ItemType[] { 
+        return this.items.map(i=>i.item);
+    }
 
     /** find how many items are in the collection */
     getLength():number {
@@ -364,7 +365,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** notify listeners of a change */
     private async notifyCollectionChangedListeners(event:ObservableCollectionChangedEvent<ItemType>):Promise<void> {
-        await Promise.all(this.collectionChangedListeners.map(cb=>{ cb(event); return null; }));
+        await Promise.all(this.collectionChangedListeners.map(cb=>cb(event)));
     }
 
     /**
@@ -397,8 +398,6 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** notify listeners of a change */
     private async notifyItemChangedListeners(itemPlus:ItemPlus<ItemType>, propName:PropKey<ItemType>):Promise<void> {
-        await Promise.all(this.itemChangedListeners.map(
-            cb=>{ cb(itemPlus.index, itemPlus.item, propName); return null; }
-        ));
+        await Promise.all(this.itemChangedListeners.map(cb=>cb(itemPlus.index, itemPlus.item, propName)));
     }
 }

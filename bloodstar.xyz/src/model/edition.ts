@@ -177,6 +177,7 @@ export class Edition extends ObservableObject<Edition> {
 
         // changing save name needs to mark all images as needing re-saving
         edition.saveName.addListener(()=>{
+            // TODO: I seem to be reaching here when opening a new file
             edition.dirtyLogo = true;
             for (const existingCharacter of edition.characterList) {
                 const id = existingCharacter.id.get();

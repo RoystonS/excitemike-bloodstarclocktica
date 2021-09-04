@@ -48,7 +48,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
         this.dragged = null;
         this.dragOvers = new Set();
 
-        collection.addCollectionChangedListener((e)=>{ this.collectionChanged(e); });
+        collection.addCollectionChangedListener((e)=>{ this.collectionChanged(e); return Promise.resolve();});
 
         // sync DOM to current value
         this.clear();

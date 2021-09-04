@@ -249,7 +249,7 @@ export abstract class ObservableObject<T> {
 
     /** do non-customized deserialization of properties */
     async deserializeNonCustomCollections(data:Record<string, unknown>):Promise<unknown> {
-        const promises = [];
+        const promises:Promise<void>[] = [];
         for (const [key, collection] of this.collections) {
             if (!this._canReadField(key)) { continue; }
             const collectionData = data[String(key)];
@@ -295,7 +295,7 @@ export abstract class ObservableObject<T> {
 
     /** do customized deserialization of child observables */
     async deserializeCustomChildren(data:Record<string, unknown>):Promise<unknown> {
-        const promises = [];
+        const promises:Promise<void>[] = [];
         for (const [key, child] of this.children) {
             if (!this._canReadField(key)) { continue; }
             const childData = data[String(key)] as Record<string, unknown>;
@@ -315,7 +315,7 @@ export abstract class ObservableObject<T> {
 
     /** do customized deserialization of collections */
     async deserializeCustomCollections(data:Record<string, unknown>):Promise<unknown> {
-        const promises = [];
+        const promises:Promise<void>[] = [];
         for (const [key, collection] of this.collections) {
             if (!this._canReadField(key)) { continue; }
             const collectionData = data[String(key)];
@@ -427,7 +427,6 @@ export abstract class ObservableObject<T> {
     }
 
     /** convert to an object ready for JSON conversion and that could be read back with deserialize */
-    // eslint-disable-next-line require-await
     async serialize():Promise<Record<string, unknown>> {
         const converted:Record<string, unknown> = {};
 

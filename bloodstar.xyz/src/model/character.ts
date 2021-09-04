@@ -114,8 +114,7 @@ export class Character extends ObservableObject<Character> {
         });
     }
 
-    static async asyncNew():Promise<Character>
-    {
+    static async asyncNew():Promise<Character> {
         const character = new Character();
         // set up auto-regen of styled images
         await character.regenerateStyledImage();

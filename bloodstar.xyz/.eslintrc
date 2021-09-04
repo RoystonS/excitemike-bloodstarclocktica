@@ -96,7 +96,6 @@
       "prefer-rest-params":"warn",
       "prefer-spread":"warn",
       "prefer-template":"warn",
-      "semi-spacing":"warn",
       "semi-style":"warn",
       "sort-imports":["warn", {"ignoreCase":true, "ignoreDeclarationSort":true}],
       "space-before-function-paren":["warn",{"asyncArrow":"always","anonymous":"ignore","named":"never"}],
@@ -130,7 +129,6 @@
       "@typescript-eslint/prefer-reduce-type-parameter": "warn",
       "@typescript-eslint/prefer-return-this-type": "warn",
       "@typescript-eslint/prefer-string-starts-ends-with": "warn",
-      "@typescript-eslint/promise-function-async": "warn",
       "@typescript-eslint/require-array-sort-compare": "warn",
       "@typescript-eslint/sort-type-union-intersection-members": "warn",
       "@typescript-eslint/switch-exhaustiveness-check": "warn",
@@ -166,9 +164,6 @@
 
       "no-invalid-this":"off",
       "@typescript-eslint/no-invalid-this":"warn",
-
-      "no-loop-func":"off",
-      "@typescript-eslint/no-loop-func":"warn",
       
       "no-throw-literal":"off",
       "@typescript-eslint/no-throw-literal":"warn",
