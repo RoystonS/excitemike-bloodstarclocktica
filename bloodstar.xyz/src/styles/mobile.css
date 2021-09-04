@@ -45,6 +45,10 @@
     height: calc(100vh - 110px);
 }
 
+#tabHolder {
+    padding-bottom: 64px;
+}
+
 #characterPane {
     position:unset;
 }

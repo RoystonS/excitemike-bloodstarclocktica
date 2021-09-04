@@ -12,7 +12,6 @@
 - mobile support
   - redirect to m.bloodstar.xyz
     - m.bloodstar.xyz serves m.html
-  - extra space at the bottom on mobile
   - sign-in status, buttons on menu curtain
   - responsive, scrollable menu curtain
   - close curtain when you click a curtain button
