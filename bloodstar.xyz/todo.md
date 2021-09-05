@@ -10,7 +10,6 @@
 - handout pdf
 - almanac pdf
 - mobile support
-  - sign-in status, buttons on menu curtain
   - character list should have an edit button instead of automatically jumping tabs
   - move button which goes to move mode
     - selected item gets a 'cancel' button
