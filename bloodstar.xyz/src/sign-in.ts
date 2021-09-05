@@ -7,6 +7,7 @@ import {showError} from "./dlg/blood-message-dlg";
 import {show as doSignInFlow, SignInFlowOptions} from "./dlg/sign-in-flow";
 import { SessionInfo } from "./iam";
 import { updateUserDisplay } from "./menu";
+import { isRecord } from "./util";
 
 type SignInOptions = SignInFlowOptions & {
     /** true to force a new sign-in instead of reusing existing token */
@@ -38,7 +39,11 @@ function getStoredToken():SessionInfo|null {
     try {
         const fromStorage = localStorage.getItem('accessToken');
         if (!fromStorage) {return null;}
-        return JSON.parse(fromStorage);
+        const x = JSON.parse(fromStorage);
+        if (!isRecord(x)) {
+            return null;
+        }
+        return x as SessionInfo;
     } catch (error: unknown) {
         // ignore error
     }

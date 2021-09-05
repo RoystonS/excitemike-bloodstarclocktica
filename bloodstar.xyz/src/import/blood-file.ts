@@ -7,7 +7,7 @@ import {spinner} from '../dlg/spinner-dlg';
 import {Edition} from '../model/edition';
 import { JSZipObject, loadAsync as loadZipAsync} from 'jszip';
 import { AriaDialog } from '../dlg/aria-dlg';
-import { createElement } from '../util';
+import { createElement, isRecord } from '../util';
 import { Character } from '../model/character';
 import { Property } from '../bind/bindings';
 import { ObservableCollection } from '../bind/observable-collection';
@@ -17,9 +17,9 @@ import { parseBloodTeam } from '../model/blood-team';
 import JSZip = require('jszip');
 
 /** set property if the value is not undefined */
-async function trySet<T>(value:T|undefined, property:Property<T>):Promise<void> {
-    if (value !== undefined) {
-        await property.set(value);
+async function trySet<T>(sourceRecord:Record<string, unknown>, key:string, property:Property<T>):Promise<void> {
+    if (key in sourceRecord) {
+        await property.set(sourceRecord[key] as T);
     }
 }
 
@@ -111,10 +111,11 @@ class BloodImporter {
     private async importMeta(zipEntry:JSZipObject):Promise<boolean> {
         const text = await spinAndThrottle('zip', `Extracting ${zipEntry.name}`, async ()=>zipEntry.async('text'), MAX_SIMULTANEOUS_EXTRACT);
         const json = JSON.parse(text);
-        await trySet(json.name, this.edition.meta.name);
-        await trySet(json.author, this.edition.meta.author);
-        await trySet(json.synopsis, this.edition.almanac.synopsis);
-        await trySet(json.overview, this.edition.almanac.overview);
+        if (!isRecord(json)) {return false;}
+        await trySet(json, 'name', this.edition.meta.name);
+        await trySet(json, 'author', this.edition.meta.author);
+        await trySet(json, 'synopsis', this.edition.almanac.synopsis);
+        await trySet(json, 'overview', this.edition.almanac.overview);
         return true;
     }
 
@@ -181,20 +182,20 @@ class BloodImporter {
     private async importRole(character:Character, zipEntry:JSZipObject):Promise<boolean> {
         const text = await spinAndThrottle('zip', `Extracting ${zipEntry.name}`, async ()=>zipEntry.async('text'), MAX_SIMULTANEOUS_EXTRACT);
         const json = JSON.parse(text);
-        await trySet(json.name, character.name);
-        await trySet(json.setup, character.setup);
-        await trySet(json.ability, character.ability);
-        await trySet(json.firstNightReminder, character.firstNightReminder);
-        await trySet(json.otherNightReminder, character.otherNightReminder);
-        await trySet(json.includeInExport, character.export);
+        await trySet(json, 'name', character.name);
+        await trySet(json, 'setup', character.setup);
+        await trySet(json, 'ability', character.ability);
+        await trySet(json, 'firstNightReminder', character.firstNightReminder);
+        await trySet(json, 'otherNightReminder', character.otherNightReminder);
+        await trySet(json, 'includeInExport', character.export);
 
         const almanac = json.almanacEntry;
         if (almanac) {
-            await trySet(almanac.flavor, character.almanac.flavor);
-            await trySet(almanac.overview, character.almanac.overview);
-            await trySet(almanac.examples, character.almanac.examples);
-            await trySet(almanac.howToRun, character.almanac.howToRun);
-            await trySet(almanac.tip, character.almanac.tip);
+            await trySet(almanac, 'flavor', character.almanac.flavor);
+            await trySet(almanac, 'overview', character.almanac.overview);
+            await trySet(almanac, 'examples', character.almanac.examples);
+            await trySet(almanac, 'howToRun', character.almanac.howToRun);
+            await trySet(almanac, 'tip', character.almanac.tip);
         }
 
         if (json.team) {

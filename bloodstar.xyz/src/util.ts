@@ -227,3 +227,22 @@ export function boundsCheck(i:unknown, arr:ArrayLike<unknown>):boolean {
         && (i>=0)
         && (i<arr.length);
 }
+
+/** test whether you have a thing with string keys */
+export function isRecord(x:unknown): x is Record<string, unknown> {
+    if (x === null) {return false;}
+    switch (typeof x) {
+        case 'object':
+            return true;
+        case 'bigint':
+        case 'boolean':
+        case 'function':
+        case 'number':
+        case 'string':
+        case 'symbol':
+        case 'undefined':
+            return false;
+        default:
+            throw new Error(`unhandled type in isRecord: ${typeof x}`);
+    }
+}
