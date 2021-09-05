@@ -12,6 +12,9 @@
 .characterListItem::after, .nightOrderItem::before{
     content:none;
 }
+.characterListThumbnail{
+    left: calc(50% - 75px);
+}
 .nightOrderButton {
     margin-right:0;
 }
