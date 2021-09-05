@@ -24,6 +24,7 @@ import showResetPasswordFlow from './dlg/reset-password-flow';
 import showHelp from './dlg/help-dlg';
 import showSharing from './dlg/sharing-dlg';
 import {showManageBlocked} from './dlg/block-flow';
+import { closeAllCurtains } from "./curtain";
 
 /** add a new character to the custom edition */
 async function addCharacterClicked(edition:Edition):Promise<boolean> {
@@ -106,6 +107,15 @@ export default function init(edition:Edition):void {
         return [name, async ()=>f(edition)];
     });
     hookupClickEvents(translatedMapping);
+
+    // on mobile, menu options should also close the curtain
+    if (bloodstar.isMobile()) {
+        const curtainCloseMapping:[string, (e:Event)=>void][] = mapping.map(x=>{
+            const [name] = x;
+            return [name, closeAllCurtains];
+        });
+        hookupClickEvents(curtainCloseMapping);
+    }
 }
 
 /**

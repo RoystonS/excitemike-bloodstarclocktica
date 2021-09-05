@@ -215,9 +215,16 @@ export function walkHTMLElements(element:HTMLElement, f:(e:HTMLElement)=>void):v
 }
 
 /** check that the index is valid for the arraylike item */
-export function arrayGet<T>(arr:ArrayLike<T>, i:number):T|null {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    return arr[i]??null;
+export function arrayGet<T, U=undefined>(arr:ArrayLike<T>, i:number, defaultValue:U):T|U {
+    if (!isNaN(i) && (i>=0) && (i<arr.length)) {
+        return arr[i];
+    }
+    return defaultValue;
+}
+
+/** check that the index is valid for the arraylike item */
+export function arrayGetLast<T, U=undefined>(arr:ArrayLike<T>, defaultValue:U):T|U {
+    return arrayGet(arr, arr.length-1, defaultValue);
 }
 
 /** check that the index is valid for the arraylike item */

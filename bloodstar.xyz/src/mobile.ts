@@ -1,15 +1,12 @@
 import './styles/mobile.css';
 import { hookupClickEvents } from './util';
 import { init, tabClicked } from "./bloodstar";
-
-/** track currently open curtain menu */
-let currentCurtain: Element|null = null;
+import { closeCurtain, openCurtainMenu } from './curtain';
 
 /** initialize listeners for mobile version of bloodstar */
 function initMobileBindings():void {
     hookupClickEvents([
         ['mobileHamburger', ()=>{ openCurtainMenu('mobileMainMenu'); }],
-        ['mobileSignInOut', ()=>{ openCurtainMenu('mobileSignInOutMenu'); }],
         ['mobileFileButton', ()=>{ openCurtainMenu('mobileFileMenu'); }],
         ['mobileImportButton', ()=>{ openCurtainMenu('mobileImportMenu'); }],
         ['mobilePublishButton', ()=>{ openCurtainMenu('mobilePublishMenu'); }],
@@ -25,21 +22,13 @@ function initMobileBindings():void {
         btn.addEventListener("click", closeCurtain);
     }
 
-    // TODO: escape/back button to close curtain
-}
+    // escape to close curtain
+    document.addEventListener('keyup', (event:KeyboardEvent) => {
+        if (event.code !== 'Escape') {return;}
+        closeCurtain();
+    });
 
-/** close currently-open curtain menu, if any */
-function closeCurtain() {
-    if (!currentCurtain) {return;}
-    currentCurtain.removeAttribute('open');
-    currentCurtain = null;
-}
-
-/** close currently-open curtain menu and open a new one */
-function openCurtainMenu(id:string):void {
-    closeCurtain();
-    currentCurtain = document.getElementById(id);
-    currentCurtain?.setAttribute('open', 'true');
+    // block back button
 }
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises

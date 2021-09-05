@@ -55,7 +55,6 @@
       "no-new-wrappers":"warn",
       "no-nonoctal-decimal-escape":"warn",
       "no-octal-escape":"warn",
-      "no-param-reassign":"warn",
       "no-proto":"warn",
       "no-return-assign":"warn",
       "no-script-url":"warn",

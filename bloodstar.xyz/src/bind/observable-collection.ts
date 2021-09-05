@@ -173,7 +173,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** get an item in the collection */
     get(i:number):ItemType|null {
-        return arrayGet(this.items, i)?.item??null;
+        return arrayGet(this.items, i, null)?.item??null;
     }
 
     /** items in the collection */
@@ -244,7 +244,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** remove an item from the collection */
     async remove(i:number):Promise<void> {
-        const itemPlus = arrayGet(this.items, i);
+        const itemPlus = arrayGet(this.items, i, null);
         if (!itemPlus) {return;}
         itemPlus.destroy();
         this.items.splice(i, 1);
@@ -261,7 +261,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** replace an item in the collection */
     async replace(i:number, newItem:ItemType):Promise<void> {
-        const oldItemPlus = arrayGet(this.items, i);
+        const oldItemPlus = arrayGet(this.items, i, null);
         if (!oldItemPlus) {return;}
         const oldItem = oldItemPlus.item;
         if (newItem !== oldItem) {
