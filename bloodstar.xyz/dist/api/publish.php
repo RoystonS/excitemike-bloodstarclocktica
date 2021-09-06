@@ -117,7 +117,7 @@
                 }
             }
 
-            // TODO: almanac link
+            $outMeta['almanac'] = "https://www.bloodstar.xyz/p/$username/$saveName/almanac.html";
 
             $scriptData[] = &$outMeta;
         }
