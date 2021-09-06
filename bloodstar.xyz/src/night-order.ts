@@ -34,7 +34,6 @@ async function initNightOrderBinding(
         (char, coll)=>makeNightOrderItem(char, coll, ordinalPropName, reminderTextPropName),
         cleanupNightOrderItem,
         {
-            buttonStyle:'nightOrderButton',
             editBtnCb:async (character:Character)=>{
                 await selectedCharacterProperty.set(character);
                 tabClicked('charTabBtn', 'charactertab');

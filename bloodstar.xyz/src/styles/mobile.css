@@ -25,7 +25,7 @@
 , .characterListItem:focus-visible > .characterListThumbnail {
     opacity: 0.75 !important;
 }
-.nightOrderButton {
+.nightOrderItem button {
     margin-right:0;
 }
 .space{height:64px;}

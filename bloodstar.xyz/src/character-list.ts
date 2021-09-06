@@ -17,7 +17,6 @@ export function bindCharacterList(id:string, characterList:ObservableCollection<
         (character: Character, collection:ObservableCollection<Character>)=>makeCharacterListItem(character, collection, selectedCharacterProperty),
         async (element: Node, character: Character)=>cleanupListItem(element, character, selectedCharacterProperty),
         {
-            buttonStyle:'characterListButton',
             deleteConfirmMessage:(item:Character)=>`Are you sure you want to delete character "${item.name.get()}"?`,
             editBtnCb:async (character:Character)=>{
                 await selectedCharacterProperty.set(character);
@@ -68,12 +67,13 @@ function makeCharacterListItem(character: Character, _collection:ObservableColle
 
     row.className = "characterListItem";
     row.tabIndex = 0;
-    // TODO: move to edit button?
-    row.onclick = async e => {
-        if (e.target === row) {
-            await selectedCharacterProperty.set(character);
-        }
-    };
+    if (!isMobile()) {
+        row.onclick = async e => {
+            if (e.target === row) {
+                await selectedCharacterProperty.set(character);
+            }
+        };
+    }
     row.onkeyup = async e => {
         switch (e.code) {
             case 'Space':

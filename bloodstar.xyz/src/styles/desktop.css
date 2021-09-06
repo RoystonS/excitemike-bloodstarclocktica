@@ -29,7 +29,7 @@
     .characterListName {
         font-weight:normal;
     }
-    .characterListButton {
+    .characterListItem button {
         padding:1px 4px;
     }
     .characterListItem > span
@@ -45,7 +45,7 @@
     }
 }
 @media only screen and (max-width:800px){
-    .characterListButton {
+    .characterListItem button {
         padding:1px 1px;
     }
     .characterListItem > input[type="checkbox"] {
@@ -89,7 +89,7 @@
 
 /* night order */
 @media only screen and (max-width:900px){
-    .nightOrderButton {
+    .nightOrderItem button {
         margin-right:0;
     }
 }
@@ -97,7 +97,7 @@
     .nightOrderItem::before {display:none}
 }
 @media only screen and (max-width:700px){
-    .nightOrderButton {
+    .nightOrderItem button {
         padding:1px 1px;
     }
     .nightOrderReminder {display:none}

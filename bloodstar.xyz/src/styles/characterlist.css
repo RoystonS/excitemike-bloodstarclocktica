@@ -74,20 +74,24 @@ ol#characterList {
     transition: all 0.1s ease-out;
     letter-spacing: 1px;
 }
-/*TODO: why is this even a different style than night order list buttons?*/
-.characterListButton {
-    background:none;
-    border:none;
-}
 ol#characterList::after {
     content:'';
     height:12px;
     pointer-events: none;
 }
-.characterListItem:hover > .characterListButton
-, .characterListItem:focus-visible > .characterListButton
-, .characterListItemSelected > .characterListButton {
+.characterListItem button {
+    background:none;
     border:none;
+}
+.characterListItem:hover button
+, .characterListItem:focus-visible button
+, .characterListItemSelected button {
+    border:none;
+}
+.characterListItem button:hover
+, .characterListItem button:focus
+, .characterListItem button:focus-visible {
+    background: #3977FF;
 }
 .characterListItem > span
 ,.characterListItem > button {

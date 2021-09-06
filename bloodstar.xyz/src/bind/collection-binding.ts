@@ -8,8 +8,6 @@ import { CollectionButtonsMgr } from './collection-buttons-mgr';
 export type RenderFn<T extends ObservableObject<T>> = (itemData:T, collection:ObservableCollection<T>)=>Element;
 export type CleanupFn<T> = (renderedElement:Element, itemData:T)=>void;
 export type CollectionBindingOptions<ItemType> = {
-    /** css style to add to buttons */
-    buttonStyle?:string;
     /** customize delete confirmation message */
     deleteConfirmMessage?:((item:ItemType)=>string);
     /** what to do when the edit button is clicked */

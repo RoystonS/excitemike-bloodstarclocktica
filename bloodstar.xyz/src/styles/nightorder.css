@@ -51,7 +51,17 @@
     max-height: 31px;
     margin: -10px 2px -15px 0;
 }
-.nightOrderButton{background:none;}
-.nightOrderButton, .nightOrderButton:hover, .nightOrderButton:focus-visible {
+.nightOrderItem button {
+    background:none;
     border:none;
+}
+.nightOrderItem button
+, .nightOrderItem:hover button
+, .nightOrderItem:focus-visible button {
+    border:none;
+}
+.nightOrderItem button:hover
+, .nightOrderItem button:focus
+, .nightOrderItem button:focus-visible {
+    background: #3977FF;
 }

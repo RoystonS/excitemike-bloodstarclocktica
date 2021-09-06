@@ -24,8 +24,6 @@ type ObservableCollection<ItemType> = {
 const MARKERATTRIBUTE = 'AddedByCollectionButtonsMgr';
 
 export type CollectionButtonsMgrOptions<ItemType> = {
-    /** css style to add to buttons */
-    buttonStyle?:string;
     /** customize delete confirmation message */
     deleteConfirmMessage?:((item:ItemType)=>string);
     /** what to do when the edit button is clicked */
@@ -37,9 +35,6 @@ export type CollectionButtonsMgrOptions<ItemType> = {
 };
 
 export class CollectionButtonsMgr<ItemType> {
-    /** css style to add to buttons */
-    buttonStyle:string;
-
     /** collection being edited */
     collection:ObservableCollection<ItemType>;
 
@@ -79,7 +74,6 @@ export class CollectionButtonsMgr<ItemType> {
         collection:ObservableCollection<ItemType>,
         options?:CollectionButtonsMgrOptions<ItemType>
     ) {
-        this.buttonStyle = options?.buttonStyle??'';
         this.collection = collection;
         this.collectionBinding = binding;
         this.deleteConfirmMessage = options?.deleteConfirmMessage??null;
@@ -118,8 +112,8 @@ export class CollectionButtonsMgr<ItemType> {
     }
 
     /** add a button to the element */
-    addButton(elem:HTMLElement, text:string, onclick:(e:MouseEvent)=>Promise<void>):void {
-        const btn = createElement({t:'button', css:[this.buttonStyle], txt:text});
+    static addButton(elem:HTMLElement, text:string, onclick:(e:MouseEvent)=>Promise<void>):void {
+        const btn = createElement({t:'button', txt:text});
         btn.onclick = onclick;
         btn.setAttribute(MARKERATTRIBUTE, 'true');
         elem.append(btn);
@@ -127,7 +121,7 @@ export class CollectionButtonsMgr<ItemType> {
 
     /** add the delete item button */
     addDeleteButton(elem:HTMLElement, item:ItemType):void {
-        this.addButton(elem, 'Delete', async () => {
+        CollectionButtonsMgr.addButton(elem, 'Delete', async () => {
             try {
                 const confirmationMessage = this.deleteConfirmMessage ? this.deleteConfirmMessage(item) : 'Are you sure you want to delete this item?';
                 if (await getConfirmation(
@@ -161,7 +155,7 @@ export class CollectionButtonsMgr<ItemType> {
         }
     }
 
-    /** clear all characterListButtons from element */
+    /** clear all added buttons from element */
     static clearButtons(elem:HTMLElement):void {
         const buttons = elem.getElementsByTagName('button');
         for (let i=buttons.length-1; i>=0; --i) {
@@ -211,21 +205,21 @@ export class CollectionButtonsMgr<ItemType> {
         if (this.moving) {
             if (this.index === i) {
                 // this is the one being moved
-                this.addButton(elem, 'Cancel Move', async ()=>{ this.cancelMove(); });
+                CollectionButtonsMgr.addButton(elem, 'Cancel Move', async ()=>{ this.cancelMove(); });
                 return;
             }
             // place we can move to
-            this.addButton(elem, 'Move Here', async ()=>this.doMove(elem));
+            CollectionButtonsMgr.addButton(elem, 'Move Here', async ()=>this.doMove(elem));
             return;
         }
 
         if (this.showEditBtn) {
             const {editBtnCb} = this;
             if (editBtnCb) {
-                this.addButton(elem, 'Edit', async ()=>editBtnCb(itemData));
+                CollectionButtonsMgr.addButton(elem, 'Edit', async ()=>editBtnCb(itemData));
             }
         }
-        this.addButton(elem, 'Move', async ()=>{this.beginMove(i);});
+        CollectionButtonsMgr.addButton(elem, 'Move', async ()=>{this.beginMove(i);});
         if (this.showDeleteBtn) {
             this.addDeleteButton(elem, itemData);
         }
