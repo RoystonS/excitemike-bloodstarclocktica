@@ -30,7 +30,12 @@ async function initNightOrderBinding(
         id,
         collection,
         (char, coll)=>makeNightOrderItem(char, coll, ordinalPropName, reminderTextPropName),
-        cleanupNightOrderItem
+        cleanupNightOrderItem,
+        {
+            allowDelete:false,
+            buttonStyle:'nightOrderButton',
+            // TODO: editCb - set selected character and change tab
+        }
     );
 
     // update ordinals when list changes
@@ -59,7 +64,7 @@ export async function initNightOrderBindings(edition:Edition):Promise<void> {
  */
 export function makeNightOrderItem(
     character: Character,
-    collection:ObservableCollection<Character>,
+    _collection:ObservableCollection<Character>,
     ordinalPropertyName:'firstNightOrdinal'|'otherNightOrdinal',
     reminderPropertyName:'firstNightReminder'|'otherNightReminder'
 ):HTMLElement {
@@ -89,14 +94,6 @@ export function makeNightOrderItem(
     const reminderElement = createElement({t:'span', css:['nightOrderReminder', 'nowrap']});
     bindText(reminderElement, character.getProperty(reminderPropertyName));
     row.appendChild(reminderElement);
-
-    const moveItemUp = async () => collection.moveItemUp(character);
-    const up = createElement({t:'button', css:['nightOrderButton'], txt:'▲', events:{click:moveItemUp}});
-    row.appendChild(up);
-
-    const moveItemDown = async () => collection.moveItemDown(character);
-    const down = createElement({t:'button', css:['nightOrderButton'], txt:'▼', events:{click:moveItemDown}});
-    row.appendChild(down);
 
     return row;
 }

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {BaseBinding, Property, PropertyChangeListener} from './base-binding';
 import AttributeBinding from './attribute-binding';
-import {CleanupFn, CollectionBinding, RenderFn} from './collection-binding';
+import {CleanupFn, CollectionBinding, CollectionBindingOptions, RenderFn} from './collection-binding';
 import {ImageChooserBinding, ImageDisplayBinding} from './image-binding';
 import SliderBinding from './slider-binding';
 import {StyleBinding} from './style-binding';
@@ -178,15 +178,27 @@ export function bindEnumDisplayById(id:string, property:EnumProperty<string>):vo
 }
 
 /** bind a collection of items, and callbacks to create/destroy/update items to a parent element */
-export function bindCollection<T extends ObservableObject<T>>(element:HTMLOListElement, collection:ObservableCollection<T>, renderFn:RenderFn<T>, cleanupFn:CleanupFn<T>):void {
-    addBinding(element, new CollectionBinding(element, collection, renderFn, cleanupFn));
+export function bindCollection<T extends ObservableObject<T>>(
+    element:HTMLOListElement,
+    collection:ObservableCollection<T>,
+    renderFn:RenderFn<T>,
+    cleanupFn:CleanupFn<T>,
+    options?:CollectionBindingOptions<T>
+):void {
+    addBinding(element, new CollectionBinding(element, collection, renderFn, cleanupFn, options));
 }
 
 /** bind a collection of items, and callbacks to create/destroy/update items to a parent element */
-export function bindCollectionById<T extends ObservableObject<T>>(id:string, collection:ObservableCollection<T>, renderFn:RenderFn<T>, cleanupFn:CleanupFn<T>):void {
+export function bindCollectionById<T extends ObservableObject<T>>(
+    id:string,
+    collection:ObservableCollection<T>,
+    renderFn:RenderFn<T>,
+    cleanupFn:CleanupFn<T>,
+    options?:CollectionBindingOptions<T>
+):void {
     const element = document.getElementById(id);
     if (element instanceof HTMLOListElement) {
-        bindCollection(element, collection, renderFn, cleanupFn);
+        bindCollection(element, collection, renderFn, cleanupFn, options);
     }
 }
 

@@ -37,8 +37,8 @@ export function openCurtainMenu(id:string):void {
         if (!newCurtain) {return;}
         newCurtain.setAttribute('open', 'true');
         curtainStack.push(newCurtain);
-        // we could store something here so that we can go back in by going forward?
-        // but that'd be pretty weird for the user to want
+        // TODO: should probably merge with current state instead of clobbering
+        // TODO: manually trigger popstate? (see https://stackoverflow.com/a/37492075)
         history.pushState(null, '');
     }
 }

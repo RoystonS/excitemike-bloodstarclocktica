@@ -1,11 +1,10 @@
 import { bindAttribute, bindCheckbox, bindCollectionById, bindImageDisplay, bindStyle, bindText, Property, PropertyChangeListener, unbindElement } from "./bind/bindings";
 import { ObservableCollection } from "./bind/observable-collection";
-import { showErrorNoWait } from "./dlg/blood-message-dlg";
-import {show as getConfirmation} from "./dlg/yes-no-dlg";
 import { BloodTeam } from "./model/blood-team";
 import { Character } from "./model/character";
 import { setTeamColorStyle } from "./team-color";
 import { createElement, walkHTMLElements } from "./util";
+import { tabClicked } from "./bloodstar";
 
 /** need to track the listeners we add so that we can remove them */
 const characterListCleanupSideTable = new Map<HTMLElement, PropertyChangeListener<Character|null>>();
@@ -16,7 +15,16 @@ export function bindCharacterList(id:string, characterList:ObservableCollection<
         id,
         characterList,
         (character: Character, collection:ObservableCollection<Character>)=>makeCharacterListItem(character, collection, selectedCharacterProperty),
-        async (element: Node, character: Character)=>cleanupListItem(element, character, selectedCharacterProperty)
+        async (element: Node, character: Character)=>cleanupListItem(element, character, selectedCharacterProperty),
+        {
+            allowDelete:true,
+            buttonStyle:'characterListButton',
+            deleteConfirmMessage:(item:Character)=>`Are you sure you want to delete character "${item.name.get()}"?`,
+            editBtnCb:async (character:Character)=>{
+                await selectedCharacterProperty.set(character);
+                tabClicked('charTabBtn', 'charactertab');
+            }
+        }
     );
     // autoselect a character when none selected
     characterList.addCollectionChangedListener(async ():Promise<void>=>{
@@ -26,6 +34,7 @@ export function bindCharacterList(id:string, characterList:ObservableCollection<
             }
         }
     });
+
 }
 
 /** recurses though children of element cleaning up click events and bindings */
@@ -54,11 +63,12 @@ async function cleanupListItem(element: Node, character: Character, selectedChar
  * @param character character for which we are making a list item
  * @returns HTMLElement to represent that character
  */
-function makeCharacterListItem(character: Character, collection:ObservableCollection<Character>, selectedCharacterProperty:Property<Character|null>):HTMLElement {
+function makeCharacterListItem(character: Character, _collection:ObservableCollection<Character>, selectedCharacterProperty:Property<Character|null>):HTMLElement {
     const row = document.createElement("div");
 
     row.className = "characterListItem";
     row.tabIndex = 0;
+    // TODO: move to edit button?
     row.onclick = async e => {
         if (e.target === row) {
             await selectedCharacterProperty.set(character);
@@ -91,32 +101,6 @@ function makeCharacterListItem(character: Character, collection:ObservableCollec
     const nameElement = createElement({t:'span', css:['characterListName', 'nowrap']});
     bindText(nameElement, character.name);
     row.appendChild(nameElement);
-
-    const up = document.createElement("button");
-    up.className = "characterListButton";
-    up.innerText = "▲";
-    up.onclick = async () => collection.moveItemUp(character);
-    row.appendChild(up);
-
-    const down = document.createElement("button");
-    down.className = "characterListButton";
-    down.innerText = "▼";
-    down.onclick = async () => collection.moveItemDown(character);
-    row.appendChild(down);
-
-    const del = document.createElement("button");
-    del.className = "characterListButton";
-    del.innerText = "Delete";
-    del.onclick = async () => {
-        try {
-            if (await getConfirmation('Confirm Delete', `Are you sure you want to delete character "${character.name.get()}"?`)) {
-                await collection.deleteItem(character);
-            }
-        } catch (e: unknown) {
-            showErrorNoWait('Error', 'Error encountered during deletion', e);
-        }
-    };
-    row.appendChild(del);
 
     const cb = (selectedCharacter:Character|null):void => {
         if (selectedCharacter === character) {

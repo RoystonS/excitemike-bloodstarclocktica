@@ -74,6 +74,7 @@ ol#characterList {
     transition: all 0.1s ease-out;
     letter-spacing: 1px;
 }
+/*TODO: why is this even a different style than night order list buttons?*/
 .characterListButton {
     background:none;
     border:none;

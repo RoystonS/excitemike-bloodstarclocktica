@@ -117,6 +117,8 @@
                 }
             }
 
+            // TODO: almanac link
+
             $scriptData[] = &$outMeta;
         }
 

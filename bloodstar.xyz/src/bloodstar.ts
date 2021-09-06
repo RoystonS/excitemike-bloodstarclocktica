@@ -45,6 +45,8 @@ export function isMobile():boolean {
  * switch to a tab
  */
 export function tabClicked(btnId:string, tabId:string):void {
+    // TODO: consider using history and/or manually triggering a popstate event (see https://stackoverflow.com/a/37492075)
+    // so that CollectionButtonsMgr can react
     const allTabBtns = document.getElementsByClassName("tabButton");
     for (let i = 0; i < allTabBtns.length; i++) {
         const tabBtn = allTabBtns[i];
@@ -120,8 +122,10 @@ async function initBindings(edition:Edition):Promise<void> {
     // tie selected character to character tab
     selectedCharacter.addListener(v=>{
         CharacterTab.setSelectedCharacter(v);
-        if (v) {
-            tabClicked('charTabBtn', 'charactertab');
+        if (!isMobile()) {
+            if (v) {
+                tabClicked('charTabBtn', 'charactertab');
+            }
         }
     });
     await selectedCharacter.set(edition.characterList.get(0));
@@ -170,6 +174,10 @@ async function _init(options?:BloodstarOptions) {
     const sessionInfo = await signIn({cancelLabel:'Continue as Guest'});
 
     await initCustomEdition(edition, sessionInfo?.email);
+
+    if (isMobile()) {
+        tabClicked('charTabBtn', 'charactertab');
+    }
 }
 
 type StatusBarData = Map<string, {id:string; exported:number; total:number}>;

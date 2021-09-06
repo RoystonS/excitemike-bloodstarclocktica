@@ -2,9 +2,21 @@ import * as Animate from '../animate';
 import {ObservableCollection, ObservableCollectionChangeAction, ObservableCollectionChangedEvent} from '../bind/observable-collection';
 import {ObservableObject} from '../bind/observable-object';
 import { isMobile } from '../bloodstar';
+import { arrayGet } from '../util';
+import { CollectionButtonsMgr } from './collection-buttons-mgr';
 
 export type RenderFn<T extends ObservableObject<T>> = (itemData:T, collection:ObservableCollection<T>)=>Element;
 export type CleanupFn<T> = (renderedElement:Element, itemData:T)=>void;
+export type CollectionBindingOptions<ItemType> = {
+    /** whether to add a delete button */
+    allowDelete?:boolean;
+    /** css style to add to buttons */
+    buttonStyle?:string;
+    /** customize delete confirmation message */
+    deleteConfirmMessage?:((item:ItemType)=>string);
+    /** what to do when the edit button is clicked */
+    editBtnCb?:(item:ItemType)=>Promise<void>;
+};
 
 /** get a y coordinate for the mouse relative to some element */
 function getRelativeY(event:MouseEvent, refElement:Element):number {
@@ -17,18 +29,23 @@ function checkInsertAfter(event:MouseEvent, refElement:Element):boolean {
     return getRelativeY(event, refElement) > 0.5 * refElement.getBoundingClientRect().height;
 }
 
-export class CollectionBinding<T extends ObservableObject<T>> {
+const MARKERATTRIBUTE = 'RenderedByCollectionBinding';
+
+export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
     /** ol element this will keep in sync with the data */
     private listElement:HTMLOListElement;
 
     /** collection we keep the DOM in sync with */
-    private collection:ObservableCollection<T>;
+    private collection:ObservableCollection<ItemType>;
+
+    /** manages the buttons in each item */
+    private buttonsMgr:CollectionButtonsMgr<ItemType>;
 
     /** how to create a DOM element for an item in the list */
-    private renderFn:RenderFn<T>;
+    private renderFn:RenderFn<ItemType>;
 
     /** how to destroy a DOM element for an item in the list */
-    private cleanupFn:CleanupFn<T>;
+    private cleanupFn:CleanupFn<ItemType>;
 
     /** what is being dragged */
     private dragged:HTMLLIElement|null;
@@ -40,7 +57,14 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     private dragOvers:Set<HTMLLIElement>;
 
     /** constructor */
-    constructor(listElement:HTMLOListElement, collection:ObservableCollection<T>, renderFn:RenderFn<T>, cleanupFn:CleanupFn<T>) {
+    // TODO: move callbacks into options object
+    constructor(
+        listElement:HTMLOListElement,
+        collection:ObservableCollection<ItemType>,
+        renderFn:RenderFn<ItemType>,
+        cleanupFn:CleanupFn<ItemType>,
+        options?:CollectionBindingOptions<ItemType>
+    ) {
         this.listElement = listElement;
         this.collection = collection;
         this.renderFn = renderFn;
@@ -49,6 +73,8 @@ export class CollectionBinding<T extends ObservableObject<T>> {
         this.dragOvers = new Set();
 
         collection.addCollectionChangedListener(async (e)=>{ this.collectionChanged(e); return Promise.resolve();});
+
+        this.buttonsMgr = new CollectionButtonsMgr(this, collection, options);
 
         // sync DOM to current value
         this.clear();
@@ -65,7 +91,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     }
 
     /** keep DOM in sync with collection changes */
-    private collectionChanged(event:ObservableCollectionChangedEvent<T>):void {
+    private collectionChanged(event:ObservableCollectionChangedEvent<ItemType>):void {
         switch (event.action) {
             case ObservableCollectionChangeAction.Add:
                 this.insert(event.newStartingIndex, event.newItems);
@@ -187,7 +213,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     }
 
     /** create and insert DOM elements at the specified index */
-    private insert(insertLocation:number, items:readonly T[]):void {
+    private insert(insertLocation:number, items:readonly ItemType[]):void {
         let i = insertLocation;
         for (const item of items) {
             const newChild = this.renderListItem(i, item);
@@ -216,7 +242,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     }
 
     /** update DOM elements to new data */
-    private replace(start:number, oldData:readonly T[], newData:readonly T[]):void {
+    private replace(start:number, oldData:readonly ItemType[], newData:readonly ItemType[]):void {
         if (!oldData.length) {return;}
         if (!newData.length) {return;}
         if (start < 0) {return;}
@@ -232,7 +258,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     }
 
     /** remove DOM elements in the specified index range */
-    private remove(start:number, oldItems:readonly T[]):void {
+    private remove(start:number, oldItems:readonly ItemType[]):void {
         const n = oldItems.length;
         if (n === 0) {return;}
         if (start < 0) {return;}
@@ -249,7 +275,7 @@ export class CollectionBinding<T extends ObservableObject<T>> {
     }
 
     /** create DOM list item for a data item */
-    private renderListItem(i:number, itemData:T):Element {
+    private renderListItem(i:number, itemData:ItemType):Element {
         const li = document.createElement('li');
         li.draggable = true;
         li.dataset.index = String(i);
@@ -261,7 +287,14 @@ export class CollectionBinding<T extends ObservableObject<T>> {
             li.addEventListener('dragleave', e=>{ this.dragleave(e); });
             li.addEventListener('drop', async e => this.drop(e));
         }
-        li.appendChild(this.renderFn(itemData, this.collection));
+
+        const renderedElem = this.renderFn(itemData, this.collection);
+        renderedElem.setAttribute(MARKERATTRIBUTE, 'true');
+        li.appendChild(renderedElem);
+
+        if (renderedElem instanceof HTMLElement) {
+            this.buttonsMgr.updateButtons(renderedElem, itemData, i);
+        }
 
         return li;
     }
@@ -279,13 +312,14 @@ export class CollectionBinding<T extends ObservableObject<T>> {
 
     /** cleanup */
     destroy():void {
+        this.buttonsMgr.destroy();
         this.collection.removeAllCollectionChangedListeners();
         this.clear();
         this.dragged = null;
     }
 
     /** cleanup whatever was done by renderListItem */
-    private cleanupListItem(listItem:Node, oldData:T):void {
+    private cleanupListItem(listItem:Node, oldData:ItemType):void {
         if (!(listItem instanceof HTMLElement)) { return; }
         if (!listItem.dataset.index ) { return; }
 
@@ -304,5 +338,40 @@ export class CollectionBinding<T extends ObservableObject<T>> {
             this.cleanupListItem(child, data);
         }
         this.listElement.innerText = '';
+    }
+
+    /** find the HTMLElement matching the index, or null */
+    getElement(i:number):HTMLElement|null {
+        const elem = arrayGet(this.listElement.childNodes, i, null);
+        return (elem instanceof HTMLElement) ? elem : null;
+    }
+
+    /** find the index matching the HTMLElement or -1 */
+    // eslint-disable-next-line class-methods-use-this
+    getIndex(elem:HTMLElement):number {
+        const listItemElement = elem.closest('li');
+        if (!listItemElement) { return -1; }
+        if (!listItemElement.dataset.index) { return -1; }
+        const n = parseInt(listItemElement.dataset.index, 10);
+        return isNaN(n) ? -1 : n;
+    }
+
+    /** iterate over rows of the list */
+    forEachElement(cb:(elem:HTMLElement, itemData:ItemType, i:number)=>void):void {
+        const listItems = this.listElement.childNodes;
+        const n = listItems.length;
+        for (let i=0; i<n; ++i) {
+            const listItem = arrayGet(listItems, i, null);
+            if (!(listItem instanceof HTMLElement)) {continue;}
+            const itemData = this.collection.get(i);
+            if (!itemData){continue;}
+            const children = listItem.childNodes;
+            for (let j = 0; j<children.length; ++j) {
+                const child = arrayGet(children, j, null);
+                if (!(child instanceof HTMLElement)) {continue;}
+                if (!child.hasAttribute(MARKERATTRIBUTE)) {continue;}
+                cb(child, itemData, i);
+            }
+        }
     }
 }
