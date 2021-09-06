@@ -8,14 +8,16 @@ import { CollectionButtonsMgr } from './collection-buttons-mgr';
 export type RenderFn<T extends ObservableObject<T>> = (itemData:T, collection:ObservableCollection<T>)=>Element;
 export type CleanupFn<T> = (renderedElement:Element, itemData:T)=>void;
 export type CollectionBindingOptions<ItemType> = {
-    /** whether to add a delete button */
-    allowDelete?:boolean;
     /** css style to add to buttons */
     buttonStyle?:string;
     /** customize delete confirmation message */
     deleteConfirmMessage?:((item:ItemType)=>string);
     /** what to do when the edit button is clicked */
     editBtnCb?:(item:ItemType)=>Promise<void>;
+    /** whether to add a delete button */
+    showDeleteBtn?:boolean;
+    /** whether to add an edit button */
+    showEditBtn?:boolean;
 };
 
 /** get a y coordinate for the mouse relative to some element */

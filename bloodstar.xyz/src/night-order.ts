@@ -2,7 +2,7 @@
  * code related to night order lists
  * @module NightOrder
  */
-import {bindAttribute, bindCollectionById, bindImageDisplay, bindStyle, bindText, unbindElement} from './bind/bindings';
+import {bindAttribute, bindCollectionById, bindImageDisplay, bindStyle, bindText, Property, unbindElement} from './bind/bindings';
 import {ObservableCollection} from './bind/observable-collection';
 import {PropKey} from './bind/observable-object';
 import { BloodTeam } from './model/blood-team';
@@ -10,6 +10,7 @@ import {Character} from './model/character';
 import { Edition } from './model/edition';
 import { setTeamColorStyle } from './team-color';
 import {createElement, getOrdinalString, walkHTMLElements} from './util';
+import { tabClicked } from "./bloodstar";
 
 /** recurses though children of element cleaning up click events and bindings */
 export function cleanupNightOrderItem(element: Node): void {
@@ -24,7 +25,8 @@ export function cleanupNightOrderItem(element: Node): void {
 async function initNightOrderBinding(
     id:string, collection:ObservableCollection<Character>,
     ordinalPropName:'firstNightOrdinal'|'otherNightOrdinal',
-    reminderTextPropName:'firstNightReminder'|'otherNightReminder'
+    reminderTextPropName:'firstNightReminder'|'otherNightReminder',
+    selectedCharacterProperty:Property<Character|null>
 ):Promise<void> {
     bindCollectionById(
         id,
@@ -32,9 +34,13 @@ async function initNightOrderBinding(
         (char, coll)=>makeNightOrderItem(char, coll, ordinalPropName, reminderTextPropName),
         cleanupNightOrderItem,
         {
-            allowDelete:false,
             buttonStyle:'nightOrderButton',
-            // TODO: editCb - set selected character and change tab
+            editBtnCb:async (character:Character)=>{
+                await selectedCharacterProperty.set(character);
+                tabClicked('charTabBtn', 'charactertab');
+            },
+            showDeleteBtn:false,
+            showEditBtn:true
         }
     );
 
@@ -52,9 +58,9 @@ async function initNightOrderBinding(
 }
 
 /** initialize listeners and data bindings */
-export async function initNightOrderBindings(edition:Edition):Promise<void> {
-    await initNightOrderBinding('firstNightOrderList', edition.firstNightOrder, 'firstNightOrdinal', 'firstNightReminder');
-    await initNightOrderBinding('otherNightOrderList', edition.otherNightOrder, 'otherNightOrdinal', 'otherNightReminder');
+export async function initNightOrderBindings(edition:Edition, selectedCharacterProperty:Property<Character|null>):Promise<void> {
+    await initNightOrderBinding('firstNightOrderList', edition.firstNightOrder, 'firstNightOrdinal', 'firstNightReminder', selectedCharacterProperty);
+    await initNightOrderBinding('otherNightOrderList', edition.otherNightOrder, 'otherNightOrdinal', 'otherNightReminder', selectedCharacterProperty);
 }
 
 /**

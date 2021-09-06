@@ -117,7 +117,7 @@ async function initBindings(edition:Edition):Promise<void> {
 
     bindCharacterList('characterList', edition.characterList, selectedCharacter);
 
-    await initNightOrderBindings(edition);
+    await initNightOrderBindings(edition, selectedCharacter);
 
     // tie selected character to character tab
     selectedCharacter.addListener(v=>{

@@ -4,7 +4,7 @@ import { BloodTeam } from "./model/blood-team";
 import { Character } from "./model/character";
 import { setTeamColorStyle } from "./team-color";
 import { createElement, walkHTMLElements } from "./util";
-import { tabClicked } from "./bloodstar";
+import { isMobile, tabClicked } from "./bloodstar";
 
 /** need to track the listeners we add so that we can remove them */
 const characterListCleanupSideTable = new Map<HTMLElement, PropertyChangeListener<Character|null>>();
@@ -17,13 +17,14 @@ export function bindCharacterList(id:string, characterList:ObservableCollection<
         (character: Character, collection:ObservableCollection<Character>)=>makeCharacterListItem(character, collection, selectedCharacterProperty),
         async (element: Node, character: Character)=>cleanupListItem(element, character, selectedCharacterProperty),
         {
-            allowDelete:true,
             buttonStyle:'characterListButton',
             deleteConfirmMessage:(item:Character)=>`Are you sure you want to delete character "${item.name.get()}"?`,
             editBtnCb:async (character:Character)=>{
                 await selectedCharacterProperty.set(character);
                 tabClicked('charTabBtn', 'charactertab');
-            }
+            },
+            showDeleteBtn:true,
+            showEditBtn:isMobile()
         }
     );
     // autoselect a character when none selected
@@ -34,7 +35,6 @@ export function bindCharacterList(id:string, characterList:ObservableCollection<
             }
         }
     });
-
 }
 
 /** recurses though children of element cleaning up click events and bindings */

@@ -5,7 +5,6 @@
 import { arrayGet, createElement } from "../util";
 import {show as getConfirmation} from "../dlg/yes-no-dlg";
 import { showErrorNoWait } from "../dlg/blood-message-dlg";
-import { isMobile } from "../bloodstar";
 
 type CollectionBinding<ItemType> = {
     forEachElement: (cb:(elem:HTMLElement, itemData:ItemType, i:number)=>void) => void;
@@ -25,20 +24,19 @@ type ObservableCollection<ItemType> = {
 const MARKERATTRIBUTE = 'AddedByCollectionButtonsMgr';
 
 export type CollectionButtonsMgrOptions<ItemType> = {
-    /** whether to add a delete button */
-    allowDelete?:boolean;
     /** css style to add to buttons */
     buttonStyle?:string;
     /** customize delete confirmation message */
     deleteConfirmMessage?:((item:ItemType)=>string);
     /** what to do when the edit button is clicked */
     editBtnCb?: (item:ItemType)=>Promise<void>;
+    /** whether to add a delete button */
+    showDeleteBtn?:boolean;
+    /** whether to add an edit button */
+    showEditBtn?:boolean;
 };
 
 export class CollectionButtonsMgr<ItemType> {
-    /** whether to insert a delete button */
-    allowDelete:boolean;
-
     /** css style to add to buttons */
     buttonStyle:string;
 
@@ -69,13 +67,18 @@ export class CollectionButtonsMgr<ItemType> {
     /** remember for cleanup */
     popstateListener:(e:PopStateEvent)=>void;
 
+    /** whether to add a delete button */
+    showDeleteBtn?:boolean;
+
+    /** whether to add an edit button */
+    showEditBtn?:boolean;
+
     /** prepare for use */
     constructor(
         binding:CollectionBinding<ItemType>,
         collection:ObservableCollection<ItemType>,
         options?:CollectionButtonsMgrOptions<ItemType>
     ) {
-        this.allowDelete = options?.allowDelete??false;
         this.buttonStyle = options?.buttonStyle??'';
         this.collection = collection;
         this.collectionBinding = binding;
@@ -83,6 +86,8 @@ export class CollectionButtonsMgr<ItemType> {
         this.editBtnCb = options?.editBtnCb??null;
         this.index = -1;
         this.moving = false;
+        this.showDeleteBtn = options?.showDeleteBtn??false;
+        this.showEditBtn = options?.showEditBtn??false;
 
         // if the collection changes under us, cancel
         this.collectionChangedListener = async ()=>{this.cancelMove();};
@@ -201,8 +206,9 @@ export class CollectionButtonsMgr<ItemType> {
 
     /** redo the row's buttons based on edit mode */
     updateButtons(elem:HTMLElement, itemData:ItemType, i:number):void {
+        CollectionButtonsMgr.clearButtons(elem);
+
         if (this.moving) {
-            CollectionButtonsMgr.clearButtons(elem);
             if (this.index === i) {
                 // this is the one being moved
                 this.addButton(elem, 'Cancel Move', async ()=>{ this.cancelMove(); });
@@ -213,27 +219,15 @@ export class CollectionButtonsMgr<ItemType> {
             return;
         }
 
-        // not moving
-        if (isMobile()) {
-            CollectionButtonsMgr.clearButtons(elem);
+        if (this.showEditBtn) {
             const {editBtnCb} = this;
             if (editBtnCb) {
                 this.addButton(elem, 'Edit', async ()=>editBtnCb(itemData));
             }
-            this.addButton(elem, 'Move', async ()=>{this.beginMove(i);});
-            if (this.allowDelete) {
-                this.addDeleteButton(elem, itemData);
-            }
-            return;
         }
-
-        // the old way - buttons aren't even dynamic
-        if (!CollectionButtonsMgr.hasButtons(elem)) {
-            this.addButton(elem, '▲', async () => this.collection.moveItemUp(itemData));
-            this.addButton(elem, '▼', async () => this.collection.moveItemDown(itemData));
-            if (this.allowDelete) {
-                this.addDeleteButton(elem, itemData);
-            }
+        this.addButton(elem, 'Move', async ()=>{this.beginMove(i);});
+        if (this.showDeleteBtn) {
+            this.addDeleteButton(elem, itemData);
         }
     }
 }
