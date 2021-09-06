@@ -13,7 +13,7 @@
 /* character list */
 @media only screen and (max-width:1100px){
     .characterListItemSelected > .characterListName {
-        text-shadow: 1px 1px 0 #222;
+        text-shadow: 0 0 2px #222, 0 0 2px #222, 0 0 2px #222;
     }
 }
 @media only screen and (max-width:900px){
@@ -65,13 +65,6 @@
     }
     .characterListItemSelected > .characterListName {
         transform:unset;
-    }
-}
-@media only screen and (max-width:500px){
-    .characterListThumbnail {
-        display:block;
-        opacity: 1 !important;
-        margin: -10px 0 -15px -5px;
     }
 }
 
