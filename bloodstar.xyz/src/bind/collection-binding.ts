@@ -364,7 +364,7 @@ export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
             const listItem = arrayGet(listItems, i, null);
             if (!(listItem instanceof HTMLElement)) {continue;}
             const itemData = this.collection.get(i);
-            if (!itemData){continue;}
+            if (!itemData) {continue;}
             const children = listItem.childNodes;
             for (let j = 0; j<children.length; ++j) {
                 const child = arrayGet(children, j, null);

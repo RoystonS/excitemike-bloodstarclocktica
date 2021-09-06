@@ -74,7 +74,7 @@ export class CollectionButtonsMgr<ItemType> {
         binding:CollectionBinding<ItemType>,
         collection:ObservableCollection<ItemType>,
         options?:CollectionButtonsMgrOptions<ItemType>
-    ){
+    ) {
         this.allowDelete = options?.allowDelete??false;
         this.buttonStyle = options?.buttonStyle??'';
         this.collection = collection;
@@ -85,9 +85,9 @@ export class CollectionButtonsMgr<ItemType> {
         this.moving = false;
 
         // if the collection changes under us, cancel
-        this.collectionChangedListener = async ()=>this.cancelMove();
+        this.collectionChangedListener = async ()=>{this.cancelMove();};
         collection.addCollectionChangedListener(this.collectionChangedListener);
-        
+
         // escape to back out of move mode
         this.keyupListener = (event:KeyboardEvent) => {
             if (event.code !== 'Escape') {return;}
@@ -103,7 +103,7 @@ export class CollectionButtonsMgr<ItemType> {
         };
         window.addEventListener('popstate', this.popstateListener);
     }
-    
+
     /** clean up move mode */
     _cancelMove():void {
         if (this.moving) {
@@ -143,7 +143,7 @@ export class CollectionButtonsMgr<ItemType> {
         this.moving = true;
         this.index = i;
         this.updateAllButtons();
-    
+
         // TODO: should probably merge with current state instead of clobbering
         // TODO: manually trigger popstate? (see https://stackoverflow.com/a/37492075)
         history.pushState(null, '');
@@ -205,7 +205,7 @@ export class CollectionButtonsMgr<ItemType> {
             CollectionButtonsMgr.clearButtons(elem);
             if (this.index === i) {
                 // this is the one being moved
-                this.addButton(elem, 'Cancel Move', async ()=>this.cancelMove());
+                this.addButton(elem, 'Cancel Move', async ()=>{ this.cancelMove(); });
                 return;
             }
             // place we can move to
@@ -216,17 +216,17 @@ export class CollectionButtonsMgr<ItemType> {
         // not moving
         if (isMobile()) {
             CollectionButtonsMgr.clearButtons(elem);
-            const editBtnCb = this.editBtnCb;
+            const {editBtnCb} = this;
             if (editBtnCb) {
                 this.addButton(elem, 'Edit', async ()=>editBtnCb(itemData));
             }
-            this.addButton(elem, 'Move', async ()=>this.beginMove(i));
+            this.addButton(elem, 'Move', async ()=>{this.beginMove(i);});
             if (this.allowDelete) {
                 this.addDeleteButton(elem, itemData);
             }
             return;
         }
-        
+
         // the old way - buttons aren't even dynamic
         if (!CollectionButtonsMgr.hasButtons(elem)) {
             this.addButton(elem, '▲', async () => this.collection.moveItemUp(itemData));

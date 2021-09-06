@@ -177,7 +177,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
     }
 
     /** items in the collection */
-    getItems(): readonly ItemType[] { 
+    getItems(): readonly ItemType[] {
         return this.items.map(i=>i.item);
     }
 
@@ -365,7 +365,7 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** notify listeners of a change */
     private async notifyCollectionChangedListeners(event:ObservableCollectionChangedEvent<ItemType>):Promise<void> {
-        await Promise.all(this.collectionChangedListeners.map(cb=>cb(event)));
+        await Promise.all(this.collectionChangedListeners.map(async cb=>cb(event)));
     }
 
     /**
@@ -398,6 +398,6 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
 
     /** notify listeners of a change */
     private async notifyItemChangedListeners(itemPlus:ItemPlus<ItemType>, propName:PropKey<ItemType>):Promise<void> {
-        await Promise.all(this.itemChangedListeners.map(cb=>cb(itemPlus.index, itemPlus.item, propName)));
+        await Promise.all(this.itemChangedListeners.map(async cb=>cb(itemPlus.index, itemPlus.item, propName)));
     }
 }
