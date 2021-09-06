@@ -1,9 +1,9 @@
-#tabHolder {
-    padding-bottom: 64px;
-}
-
 #characterPane {
     position:unset;
+}
+#characterListContainer {
+    position:unset;
+    overflow-y: unset;
 }
 #mobileHamburger {
     font-size:20px;
@@ -28,6 +28,7 @@
 .nightOrderButton {
     margin-right:0;
 }
+.space{height:64px;}
 
 @media only screen and (max-width:500px){
 
