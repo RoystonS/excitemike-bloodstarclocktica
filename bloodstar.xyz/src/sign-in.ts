@@ -71,7 +71,6 @@ async function promptAndSignIn(options?:SignInFlowOptions):Promise<boolean> {
  * @returns promise that resolves to user info
  */
 export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:string, body:{token:string}):Promise<ResultType> {
-    // TODO: I always wrap this in a try. Let's move the try in here.
     sessionInfo = sessionInfo ?? getStoredToken();
     while (!sessionInfo || accessTokenExpired()) {
         await signIn({force:true, message:'Please sign in to continue.'});
