@@ -79,6 +79,18 @@
         }
     }
 
+    function copyFieldWithSubstitutions(
+        $character,
+        $sourceField,
+        &$dstArray,
+        $dstName
+    ) {
+        if (!array_key_exists($sourceField, $character)){return;}
+        $originalText = $character[$sourceField];
+        $text = doSubstitutions($character, $originalText);
+        $dstArray[$dstName] = $text;
+    }
+
     // examine script to see what images are used. delete any that are unused
     function deleteUnusedImages($script, $publishDir){
         $usedImages = array();
@@ -162,9 +174,8 @@
                 }
 
                 copyField($inCharacter, 'edition', $outCharacter, 'edition');
-                copyField($inCharacter, 'firstNightReminder', $outCharacter, 'firstNightReminder');
-                // TODO: do substitutions
-                copyField($inCharacter, 'otherNightReminder', $outCharacter, 'otherNightReminder');
+                copyFieldWithSubstitutions($inCharacter, 'firstNightReminder', $outCharacter, 'firstNightReminder');
+                copyFieldWithSubstitutions($inCharacter, 'otherNightReminder', $outCharacter, 'otherNightReminder');
                 if (array_key_exists('characterReminderTokens', $inCharacter)){
                     $outCharacter['reminders'] = explode("\n", $inCharacter['characterReminderTokens']);
                 }
@@ -174,8 +185,8 @@
                 copyField($inCharacter, 'setup', $outCharacter, 'setup');
                 copyField($inCharacter, 'name', $outCharacter, 'name');
                 copyField($inCharacter, 'team', $outCharacter, 'team');
-                copyField($inCharacter, 'ability', $outCharacter, 'ability');
-                copyField($inCharacter, 'attribution', $outCharacter, 'attribution');
+                copyFieldWithSubstitutions($inCharacter, 'ability', $outCharacter, 'ability');
+                copyFieldWithSubstitutions($inCharacter, 'attribution', $outCharacter, 'attribution');
                 
                 // TODO: reevaluate if we want extras like this
                 if (array_key_exists('almanac', $inCharacter)) {
