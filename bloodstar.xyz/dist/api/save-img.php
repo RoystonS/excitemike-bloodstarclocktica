@@ -1,5 +1,6 @@
 <?php
-    // TODO: limit number of images per edition - client character limit should prevent this anyway, but sanity check here
+    $imageSizeMax = 1024*1024;
+    $maxImages = 500;
     header('Content-Type: application/json;');
     include('shared.php');
     requirePost();
@@ -23,15 +24,19 @@
         echo '{"error":"invalid image data"}';
         exit();
     }
+
+    // validate image size
     $size = strlen($decodedImage);
-    if ($size > 1024*1024) {
+    if ($size > $imageSizeMax) {
         echo "{\"error\":\"image too large ($size B)\"}";
         exit();
     }
 
-    
     $username = $tokenPayload['username'];
     validateUsername($username);
+
+    // validate image limit
+    validateImageLimit($maxImages, $username, $saveName);
 
     writeImage($username, $saveName, $id, $isSource, $decodedImage);
 
@@ -62,6 +67,19 @@
         } catch (Exception $e) {
             echo json_encode(array('error' =>"error writing file '$saveName'"));
             exit();
+        }
+    }
+
+    // bail with an error if there are a bazillion images
+    function validateImageLimit($maxImages, $username, $saveName) {
+        $userSaveDir = join_paths('../usersave', $username);
+        $editionFolder = join_paths($userSaveDir, $saveName);
+        if (is_dir($editionFolder)) {
+            $numImages = count(glob(join_paths($editionFolder, '*.png')));
+            if ($numImages > $maxImages) {
+                echo "{\"error\":\"too many images ($numImages / $maxImages)\"}";
+                exit();
+            }
         }
     }
 ?>
