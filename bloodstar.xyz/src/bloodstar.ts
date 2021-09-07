@@ -115,7 +115,7 @@ async function initBindings(edition:Edition):Promise<void> {
         BloodBind.bindVisibility(curvedCharacterText, edition.previewOnToken);
     }
 
-    bindCharacterList('characterList', edition.characterList, selectedCharacter);
+    await bindCharacterList('characterList', edition.characterList, selectedCharacter);
 
     await initNightOrderBindings(edition, selectedCharacter);
 

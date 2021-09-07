@@ -10,18 +10,18 @@ import { isMobile, tabClicked } from "./bloodstar";
 const characterListCleanupSideTable = new Map<HTMLElement, PropertyChangeListener<Character|null>>();
 
 /** setup bindings for character list */
-export function bindCharacterList(id:string, characterList:ObservableCollection<Character>, selectedCharacterProperty:Property<Character|null>):void {
-    bindCollectionById(
+export async function bindCharacterList(id:string, characterList:ObservableCollection<Character>, selectedCharacterProperty:Property<Character|null>):Promise<void> {
+    await bindCollectionById(
         id,
         characterList,
-        (character: Character, collection:ObservableCollection<Character>)=>makeCharacterListItem(character, collection, selectedCharacterProperty),
-        async (element: Node, character: Character)=>cleanupListItem(element, character, selectedCharacterProperty),
         {
+            cleanupFn: async (element: Node, character: Character)=>cleanupListItem(element, character, selectedCharacterProperty),
             deleteConfirmMessage:(item:Character)=>`Are you sure you want to delete character "${item.name.get()}"?`,
             editBtnCb:async (character:Character)=>{
                 await selectedCharacterProperty.set(character);
                 tabClicked('charTabBtn', 'charactertab');
             },
+            renderFn: (character: Character, collection:ObservableCollection<Character>)=>makeCharacterListItem(character, collection, selectedCharacterProperty),
             showDeleteBtn:true,
             showEditBtn:isMobile()
         }
@@ -43,9 +43,9 @@ async function cleanupListItem(element: Node, character: Character, selectedChar
     }
 
     if (element instanceof HTMLElement) {
-        walkHTMLElements(element, htmlElement=>{
+        await walkHTMLElements(element, async htmlElement=>{
             htmlElement.onclick = null;
-            unbindElement(htmlElement);
+            return unbindElement(htmlElement);
         });
 
         // cleanup listener from makeCharacterListItem

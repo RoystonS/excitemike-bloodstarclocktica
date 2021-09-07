@@ -33,13 +33,14 @@ export class ChooseCharactersDlg extends AriaDialog<ScriptEntry[]> {
     async open(json:ScriptEntry[]):Promise<ScriptEntry[]> {
         const entriesById = toMap(json);
         const container = ChooseCharactersDlg.makeContainer();
-        const onFilterChange=(e:Event)=>{
+        const onFilterChange=async (e:Event)=>{
             if (e.target instanceof HTMLInputElement) {
                 const filterString = e.target.value;
-                walkHTMLElements(container, elem=>{
+                return walkHTMLElements(container, async elem=>{
                     doFilter(filterString, entriesById, elem);
                 });
             }
+            return Promise.resolve();
         };
         const updateButton = ():void=>{
             const buttonElem = this.querySelector<HTMLButtonElement>('#importButton');

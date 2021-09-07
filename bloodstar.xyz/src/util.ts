@@ -197,13 +197,14 @@ export function getOrdinalString(n:number):string {
 }
 
 /** go through a HTMLElement and all its child HTMLElements, and call the function on them */
-export function walkHTMLElements(element:HTMLElement, f:(e:HTMLElement)=>void):void {
+export async function walkHTMLElements(element:HTMLElement, f:(e:HTMLElement)=>Promise<void>):Promise<void> {
     if (!(element instanceof HTMLElement)) {return;}
+    const elements = [];
     const stack:HTMLElement[] = [element];
     while (stack.length) {
         const htmlElement = stack.pop();
         if (htmlElement) {
-            f(htmlElement);
+            elements.push(htmlElement);
             for (let i=0; i<htmlElement.children.length; i++) {
                 const child = htmlElement.children[i];
                 if (child instanceof HTMLElement) {
@@ -212,6 +213,7 @@ export function walkHTMLElements(element:HTMLElement, f:(e:HTMLElement)=>void):v
             }
         }
     }
+    await Promise.all(elements.map(f));
 }
 
 /** check that the index is valid for the arraylike item */

@@ -24,8 +24,8 @@ import {hookupClickEvents} from './util';
 /** helper type for disableCharacterTab */
 type TagsThatCanBeDisabled = "button" | "fieldset" | "input" | "optgroup" | "option" | "select" | "textarea";
 
-/** set up character tab bindings */
-function bindCharacterTabControls(character:Character):(()=>void)|null {
+/** set up character tab bindings. returns the cleanup function */
+function bindCharacterTabControls(character:Character):(()=>Promise<void>)|null {
     const characterTabIds:Set<string> = new Set<string>();
     bindTrackedText('characterId', character.id, characterTabIds);
     bindTrackedText('characterName', character.name, characterTabIds);
@@ -81,12 +81,14 @@ function bindCharacterTabControls(character:Character):(()=>void)|null {
         showErrorNoWait('Programmer Error', message, new Error(message));
     }
 
-    return () => {
+    return async () => {
         unhookupClickEvents();
 
+        const promises = [];
         for (const id of characterTabIds) {
-            unbindElementById(id);
+            promises.push(unbindElementById(id));
         }
+        await Promise.all(promises);
     };
 }
 

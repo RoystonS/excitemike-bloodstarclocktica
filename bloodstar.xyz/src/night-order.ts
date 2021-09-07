@@ -13,11 +13,11 @@ import {createElement, getOrdinalString, walkHTMLElements} from './util';
 import { tabClicked } from "./bloodstar";
 
 /** recurses though children of element cleaning up click events and bindings */
-export function cleanupNightOrderItem(element: Node): void {
-    if (!(element instanceof HTMLElement)) {return;}
-    walkHTMLElements(element, htmlElement=>{
+export async function cleanupNightOrderItem(element: Node): Promise<void> {
+    if (!(element instanceof HTMLElement)) {return Promise.resolve();}
+    return walkHTMLElements(element, async htmlElement=>{
         htmlElement.onclick = null;
-        unbindElement(htmlElement);
+        return unbindElement(htmlElement);
     });
 }
 
@@ -28,16 +28,16 @@ async function initNightOrderBinding(
     reminderTextPropName:'firstNightReminder'|'otherNightReminder',
     selectedCharacterProperty:Property<Character|null>
 ):Promise<void> {
-    bindCollectionById(
+    await bindCollectionById(
         id,
         collection,
-        (char, coll)=>makeNightOrderItem(char, coll, ordinalPropName, reminderTextPropName),
-        cleanupNightOrderItem,
         {
+            cleanupFn: cleanupNightOrderItem,
             editBtnCb:async (character:Character)=>{
                 await selectedCharacterProperty.set(character);
                 tabClicked('charTabBtn', 'charactertab');
             },
+            renderFn: (char, coll)=>makeNightOrderItem(char, coll, ordinalPropName, reminderTextPropName),
             showDeleteBtn:false,
             showEditBtn:true
         }

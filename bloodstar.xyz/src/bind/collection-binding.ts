@@ -2,16 +2,20 @@ import * as Animate from '../animate';
 import {ObservableCollection, ObservableCollectionChangeAction, ObservableCollectionChangedEvent} from '../bind/observable-collection';
 import {ObservableObject} from '../bind/observable-object';
 import { isMobile } from '../bloodstar';
-import { arrayGet } from '../util';
+import { arrayGet, createElement } from '../util';
 import { CollectionButtonsMgr } from './collection-buttons-mgr';
 
 export type RenderFn<T extends ObservableObject<T>> = (itemData:T, collection:ObservableCollection<T>)=>Element;
-export type CleanupFn<T> = (renderedElement:Element, itemData:T)=>void;
-export type CollectionBindingOptions<ItemType> = {
+export type CleanupFn<T> = (renderedElement:Element, itemData:T)=>Promise<void>;
+export type CollectionBindingOptions<ItemType extends ObservableObject<ItemType>> = {
+    /** callback to clean up what renderFn does */
+    cleanupFn?:CleanupFn<ItemType>;
     /** customize delete confirmation message */
     deleteConfirmMessage?:((item:ItemType)=>string);
     /** what to do when the edit button is clicked */
     editBtnCb?:(item:ItemType)=>Promise<void>;
+    /** callback in which to creates the content of each row */
+    renderFn?:RenderFn<ItemType>;
     /** whether to add a delete button */
     showDeleteBtn?:boolean;
     /** whether to add an edit button */
@@ -27,6 +31,22 @@ function getRelativeY(event:MouseEvent, refElement:Element):number {
 /** check whether the mouse position indicates to position the dropped item after the hovered item instead of before */
 function checkInsertAfter(event:MouseEvent, refElement:Element):boolean {
     return getRelativeY(event, refElement) > 0.5 * refElement.getBoundingClientRect().height;
+}
+
+/** create default row content */
+function defaultRenderFn<T extends ObservableObject<T>>(itemData:T/*, collection:ObservableCollection<T>*/):Element {
+    const row = document.createElement("div");
+
+    itemData.forEachProperty((key, prop)=>{
+        row.appendChild(createElement({t:'span', txt:`${key}: ${prop.get()}, `}));
+    });
+
+    return row;
+}
+
+/** clean up default row content */
+async function defaultCleanupFn<T extends ObservableObject<T>>(/*element: Node, itemData: T*/):Promise<void> {
+    // nothing to do
 }
 
 const MARKERATTRIBUTE = 'RenderedByCollectionBinding';
@@ -56,29 +76,37 @@ export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
      * */
     private dragOvers:Set<HTMLLIElement>;
 
-    /** constructor */
-    // TODO: move callbacks into options object
-    constructor(
+    /** use CollectionBinding<...>.create instead */
+    private constructor(
         listElement:HTMLOListElement,
         collection:ObservableCollection<ItemType>,
-        renderFn:RenderFn<ItemType>,
-        cleanupFn:CleanupFn<ItemType>,
         options?:CollectionBindingOptions<ItemType>
     ) {
         this.listElement = listElement;
         this.collection = collection;
-        this.renderFn = renderFn;
-        this.cleanupFn = cleanupFn;
+        this.renderFn = options?.renderFn ?? defaultRenderFn;
+        this.cleanupFn = options?.cleanupFn ?? defaultCleanupFn;
         this.dragged = null;
         this.dragOvers = new Set();
 
-        collection.addCollectionChangedListener(async (e)=>{ this.collectionChanged(e); return Promise.resolve();});
+        collection.addCollectionChangedListener(async (e)=>this.collectionChanged(e));
 
         this.buttonsMgr = new CollectionButtonsMgr(this, collection, options);
+    }
 
-        // sync DOM to current value
-        this.clear();
-        this.insert(0, collection.getItems());
+    /** asynchronous creation */
+    static async create<T extends ObservableObject<T>>(
+        listElement:HTMLOListElement,
+        collection:ObservableCollection<T>,
+        options?:CollectionBindingOptions<T>
+    ):Promise<CollectionBinding<T>> {
+        const self = new CollectionBinding(listElement, collection, options);
+
+        // sync DOM to initial value
+        await self.clear();
+        self.insert(0, collection.getItems());
+
+        return self;
     }
 
     /** any styles added for dragover events needs to get removed */
@@ -91,7 +119,7 @@ export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
     }
 
     /** keep DOM in sync with collection changes */
-    private collectionChanged(event:ObservableCollectionChangedEvent<ItemType>):void {
+    private async collectionChanged(event:ObservableCollectionChangedEvent<ItemType>):Promise<void> {
         switch (event.action) {
             case ObservableCollectionChangeAction.Add:
                 this.insert(event.newStartingIndex, event.newItems);
@@ -100,10 +128,10 @@ export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
                 this.move(event.oldStartingIndex, event.newStartingIndex);
                 break;
             case ObservableCollectionChangeAction.Replace:
-                this.replace(event.newStartingIndex, event.oldItems, event.newItems);
+                await this.replace(event.newStartingIndex, event.oldItems, event.newItems);
                 break;
             case ObservableCollectionChangeAction.Remove:
-                this.remove(event.oldStartingIndex, event.oldItems);
+                await this.remove(event.oldStartingIndex, event.oldItems);
                 break;
             default:
                 throw new Error(`invalid action ${event.action}`);
@@ -242,7 +270,7 @@ export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
     }
 
     /** update DOM elements to new data */
-    private replace(start:number, oldData:readonly ItemType[], newData:readonly ItemType[]):void {
+    private async replace(start:number, oldData:readonly ItemType[], newData:readonly ItemType[]):Promise<void> {
         if (!oldData.length) {return;}
         if (!newData.length) {return;}
         if (start < 0) {return;}
@@ -251,25 +279,29 @@ export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
 
         for (let i=0; i<n; i++) {
             const oldChild = this.listElement.childNodes[start+i];
-            this.cleanupListItem(oldChild, oldData[i]);
+            await this.cleanupListItem(oldChild, oldData[i]);
             const newChild = this.renderListItem(i, newData[i]);
             this.listElement.replaceChild(newChild, oldChild);
         }
     }
 
     /** remove DOM elements in the specified index range */
-    private remove(start:number, oldItems:readonly ItemType[]):void {
+    private async remove(start:number, oldItems:readonly ItemType[]):Promise<void> {
         const n = oldItems.length;
         if (n === 0) {return;}
         if (start < 0) {return;}
         if (start >= this.listElement.childNodes.length) {return;}
 
+        const cleanUpPromises = [];
+
         for (let i=n-1; i>=0; i--) {
             const childIndex = i+start;
             const child = this.listElement.childNodes[childIndex];
             this.listElement.removeChild(child);
-            this.cleanupListItem(child, oldItems[i]);
+            cleanUpPromises.push(this.cleanupListItem(child, oldItems[i]));
         }
+
+        await Promise.all(cleanUpPromises);
 
         this.updateIndices(start);
     }
@@ -311,32 +343,37 @@ export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
     }
 
     /** cleanup */
-    destroy():void {
+    async destroy():Promise<void> {
         this.buttonsMgr.destroy();
         this.collection.removeAllCollectionChangedListeners();
-        this.clear();
+        await this.clear();
         this.dragged = null;
     }
 
     /** cleanup whatever was done by renderListItem */
-    private cleanupListItem(listItem:Node, oldData:ItemType):void {
+    private async cleanupListItem(listItem:Node, oldData:ItemType):Promise<void> {
         if (!(listItem instanceof HTMLElement)) { return; }
         if (!listItem.dataset.index ) { return; }
 
         const renderedElement = listItem.firstChild;
         if (renderedElement instanceof HTMLElement) {
-            this.cleanupFn(renderedElement, oldData);
+            await this.cleanupFn(renderedElement, oldData);
         }
     }
 
     /** remove any added elements */
-    private clear():void {
+    private async clear():Promise<void> {
+        const cleanUpPromises = [];
+
         for (let i=0; i<this.listElement.childNodes.length; ++i) {
             const child = this.listElement.childNodes[i];
             const data = this.collection.get(i);
             if (!data) {continue;}
-            this.cleanupListItem(child, data);
+            cleanUpPromises.push(this.cleanupListItem(child, data));
         }
+
+        await Promise.all(cleanUpPromises);
+
         this.listElement.innerText = '';
     }
 

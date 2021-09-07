@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {BaseBinding, Property, PropertyChangeListener} from './base-binding';
 import AttributeBinding from './attribute-binding';
-import {CleanupFn, CollectionBinding, CollectionBindingOptions, RenderFn} from './collection-binding';
+import {CollectionBinding, CollectionBindingOptions} from './collection-binding';
 import {ImageChooserBinding, ImageDisplayBinding} from './image-binding';
 import SliderBinding from './slider-binding';
 import {StyleBinding} from './style-binding';
@@ -178,28 +178,25 @@ export function bindEnumDisplayById(id:string, property:EnumProperty<string>):vo
 }
 
 /** bind a collection of items, and callbacks to create/destroy/update items to a parent element */
-export function bindCollection<T extends ObservableObject<T>>(
+export async function bindCollection<T extends ObservableObject<T>>(
     element:HTMLOListElement,
     collection:ObservableCollection<T>,
-    renderFn:RenderFn<T>,
-    cleanupFn:CleanupFn<T>,
     options?:CollectionBindingOptions<T>
-):void {
-    addBinding(element, new CollectionBinding(element, collection, renderFn, cleanupFn, options));
+):Promise<void> {
+    addBinding(element, await CollectionBinding.create<T>(element, collection, options));
 }
 
 /** bind a collection of items, and callbacks to create/destroy/update items to a parent element */
-export function bindCollectionById<T extends ObservableObject<T>>(
+export async function bindCollectionById<T extends ObservableObject<T>>(
     id:string,
     collection:ObservableCollection<T>,
-    renderFn:RenderFn<T>,
-    cleanupFn:CleanupFn<T>,
     options?:CollectionBindingOptions<T>
-):void {
+):Promise<void> {
     const element = document.getElementById(id);
     if (element instanceof HTMLOListElement) {
-        bindCollection(element, collection, renderFn, cleanupFn, options);
+        return bindCollection(element, collection, options);
     }
+    return Promise.resolve();
 }
 
 /** bind an image to a `string|null` property that stores an object url */
@@ -255,20 +252,20 @@ export function bindVisibilityById(id:string, property:Property<boolean>):void {
 }
 
 /** clear element's current binding, if any */
-export function unbindElement(element:Node):void {
+export async function unbindElement(element:Node):Promise<void> {
     const bindingsForElement = bindings.get(element);
     if (!bindingsForElement) {return;}
     for (const binding of bindingsForElement) {
-        binding.destroy();
+        await binding.destroy();
     }
     bindings.delete(element);
 }
 
 /** clear element's current binding, if any */
-export function unbindElementById(id:string):void {
+export async function unbindElementById(id:string):Promise<void> {
     const element = document.getElementById(id);
-    if (!element) {return;}
-    unbindElement(element);
+    if (!element) {return Promise.resolve();}
+    return unbindElement(element);
 }
 
 // re-export
