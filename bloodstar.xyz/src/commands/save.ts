@@ -192,12 +192,12 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
         return false;
     }
 
-    const promises = [];
+    const imgSavePromises = [];
 
     for (const [id, imageString] of toSave.sourceImages) {
         if (!imageString.startsWith('data:')) {continue;}
         if (!edition.isCharacterSourceImageDirty(id)) {continue;}
-        promises.push(Locks.enqueue('saveImage', async ()=>{
+        imgSavePromises.push(Locks.enqueue('saveImage', async ()=>{
             const saveImgData:SaveImgData = {
                 token: sessionInfo.token,
                 saveName: saveName,
@@ -212,7 +212,7 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
     for (const [id, imageString] of toSave.finalImages) {
         if (!imageString.startsWith('data:')) {continue;}
         if (!edition.isCharacterFinalImageDirty(id)) {continue;}
-        promises.push(Locks.enqueue('saveImage', async ()=>{
+        imgSavePromises.push(Locks.enqueue('saveImage', async ()=>{
             const saveImgData:SaveImgData = {
                 token: sessionInfo.token,
                 saveName: saveName,
@@ -233,7 +233,7 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
             logo = await imageUrlToDataUri(toSave.logo, useCors);
         }
         if (logo.startsWith('data:')) {
-            promises.push(Locks.enqueue('saveImage', async ()=>{
+            imgSavePromises.push(Locks.enqueue('saveImage', async ()=>{
                 const saveImgData:SaveImgData = {
                     token: sessionInfo.token,
                     saveName: saveName,
@@ -247,7 +247,7 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
     }
 
     // await results
-    const results = await spinner('save', `Saving as ${saveName}`, Promise.all(promises)) as SaveImgResult[];
+    const results = await spinner('save', `Saving as ${saveName}`, Promise.all(imgSavePromises)) as SaveImgResult[];
     for (const imgSaveResponse of results) {
         if ('error' in imgSaveResponse) {
             await showError('Error', `Error encountered while trying to save ${saveName}`, imgSaveResponse.error);
