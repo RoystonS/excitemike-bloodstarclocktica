@@ -192,57 +192,58 @@
                 $almanacHtml .= '<hr>';
 
                 // TODO: BUG! this continue is skipping non-almanac stuff!
-                if (!array_key_exists('almanac', $character)) {continue;}
-                $almanac = $character['almanac'];
-
-                // flavor
-                {
-                    $flavor = $almanac['flavor'] ?? '';
-                    if ($flavor !== '') {
-                        $flavorHtml = '“'.$flavor.'”';
-                        $almanacHtml .= "<div class=\"flavor\">$flavorHtml</div>";
+                if (array_key_exists('almanac', $character)) {
+                    $almanac = $character['almanac'];
+    
+                    // flavor
+                    {
+                        $flavor = $almanac['flavor'] ?? '';
+                        if ($flavor !== '') {
+                            $flavorHtml = '“'.$flavor.'”';
+                            $almanacHtml .= "<div class=\"flavor\">$flavorHtml</div>";
+                        }
                     }
-                }
-
-                // overview
-                {
-                    $overview = $almanac['overview'] ?? '';
-                    if ($overview !== '') {
-                        $almanacHtml .= '<div class="overview">';
-                        $almanacHtml .= $Parsedown->text(doSubstitutions($character, $overview));
-                        $almanacHtml .= '</div>';
+    
+                    // overview
+                    {
+                        $overview = $almanac['overview'] ?? '';
+                        if ($overview !== '') {
+                            $almanacHtml .= '<div class="overview">';
+                            $almanacHtml .= $Parsedown->text(doSubstitutions($character, $overview));
+                            $almanacHtml .= '</div>';
+                        }
                     }
-                }
-                
-                // examples
-                {
-                    $examples = $almanac['examples'] ?? '';
-                    if ($examples !== '') {
-                        $almanacHtml .= '<h3>Examples</h3>';
-                        $almanacHtml .= '<div class="example">';
-                        $almanacHtml .= $Parsedown->text(doSubstitutions($character, $examples));
-                        $almanacHtml .= '</div>';
+                    
+                    // examples
+                    {
+                        $examples = $almanac['examples'] ?? '';
+                        if ($examples !== '') {
+                            $almanacHtml .= '<h3>Examples</h3>';
+                            $almanacHtml .= '<div class="example">';
+                            $almanacHtml .= $Parsedown->text(doSubstitutions($character, $examples));
+                            $almanacHtml .= '</div>';
+                        }
                     }
-                }
-
-                // how to run
-                {
-                    $howToRun = $almanac['howToRun'] ?? '';
-                    if ($howToRun !== '') {
-                        $almanacHtml .= '<h3>How to Run</h3>';
-                        $almanacHtml .= '<div class="how-to-run">';
-                        $almanacHtml .= $Parsedown->text(doSubstitutions($character, $howToRun));
-                        $almanacHtml .= '</div>';
+    
+                    // how to run
+                    {
+                        $howToRun = $almanac['howToRun'] ?? '';
+                        if ($howToRun !== '') {
+                            $almanacHtml .= '<h3>How to Run</h3>';
+                            $almanacHtml .= '<div class="how-to-run">';
+                            $almanacHtml .= $Parsedown->text(doSubstitutions($character, $howToRun));
+                            $almanacHtml .= '</div>';
+                        }
                     }
-                }
 
-                // tips
-                {
-                    $tips = $almanac['tip'] ?? '';
-                    if ($tips !== '') {
-                        $almanacHtml .= '<div class="tip">';
-                        $almanacHtml .= $Parsedown->text(doSubstitutions($character, $tips));
-                        $almanacHtml .= '</div>';
+                    // tips
+                    {
+                        $tips = $almanac['tip'] ?? '';
+                        if ($tips !== '') {
+                            $almanacHtml .= '<div class="tip">';
+                            $almanacHtml .= $Parsedown->text(doSubstitutions($character, $tips));
+                            $almanacHtml .= '</div>';
+                        }
                     }
                 }
 
