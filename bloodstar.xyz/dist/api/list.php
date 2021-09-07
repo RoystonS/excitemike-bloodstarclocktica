@@ -19,12 +19,11 @@
     }
 
     $yourFiles = array();
-    foreach ($items as $key => $value) {
-        if ($value == '.') {continue;}
-        if ($value == '..') {continue;}
-        $filepath = join_paths($userSaveDir, $value);
+    foreach ($items as $item) {
+        if (startsWith($item, '.')) {continue;}
+        $filepath = join_paths($userSaveDir, $item);
         if (is_dir($filepath)) {
-            array_push($yourFiles, $value);
+            array_push($yourFiles, $item);
         }
     }
 
