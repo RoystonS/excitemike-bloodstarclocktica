@@ -57,6 +57,15 @@
         // ignoring errors in deleting unused images
     }
 
+    // dump ALL THE DATA
+    try {
+        file_put_contents(
+            join_paths($publishDir, 'full.json'),
+            json_encode(makeFullJson($data, $saveName, $username))
+        );
+    } catch (Exception $e) {
+    }
+
     echo json_encode(array(
         'success' => true,
         'script'=>"https://www.bloodstar.xyz/p/$username/$saveName/script.json",
@@ -117,6 +126,7 @@
                 }
             }
 
+            // TODO: reevaluate if we want extras like this
             $outMeta['almanac'] = "https://www.bloodstar.xyz/p/$username/$saveName/almanac.html";
 
             $scriptData[] = &$outMeta;
@@ -165,6 +175,13 @@
                 copyField($inCharacter, 'name', $outCharacter, 'name');
                 copyField($inCharacter, 'team', $outCharacter, 'team');
                 copyField($inCharacter, 'ability', $outCharacter, 'ability');
+                copyField($inCharacter, 'attribution', $outCharacter, 'attribution');
+                
+                // TODO: reevaluate if we want extras like this
+                if (array_key_exists('almanac', $inCharacter)) {
+                    $almanac = $inCharacter['almanac'];
+                    copyField($almanac, 'flavor', $outCharacter, 'flavor');
+                }
 
                 $scriptData[] = &$outCharacter;
             }
@@ -199,6 +216,66 @@
         }
 
         return $scriptData;
+    }
+
+    // all the extras
+    function makeFullJson($saveData, $saveName, $username) {
+        // php is weird and I guess this automagically does a copy-on-write deep copy for me???
+        $clone = $saveData;
+
+        // add links
+        $clone['links'] = array(
+            'script' => "https://www.bloodstar.xyz/p/$username/$saveName/script.json",
+            'almanac' => "https://www.bloodstar.xyz/p/$username/$saveName/almanac.html"
+        );
+
+        // convert logo path to point at published version
+        if (array_key_exists('meta', $clone)){
+            $meta = $clone['meta'];
+            if (array_key_exists('logo', $meta)){
+                if (!preg_match("/^data:$/", $meta['logo'])) {
+                    $meta['logo'] = "https://www.bloodstar.xyz/p/$username/$saveName/_meta.png";
+                }
+            }
+            // reassign so the changes stick
+            $clone['meta'] = $meta;
+        }
+
+        function includeCharacterInExport($character) {
+            if (array_key_exists('export', $character)) {
+                if (!$character['export']) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // convert character image paths, remove source images
+        if (array_key_exists('characterList', $clone)){
+
+            // filter out any which are not supposed to be exported
+            $characterList = array_values(array_filter($clone['characterList'], "includeCharacterInExport"));
+
+            foreach (array_keys($characterList) as $key) {
+                $character = $characterList[$key];
+                $id = $character['id'];
+                if (array_key_exists('styledImage', $character)) {
+                    if (!preg_match("/^data:$/", $character['styledImage'])) {
+                        $character['styledImage'] = "https://www.bloodstar.xyz/p/$username/$saveName/$id.png";
+                    }
+                }
+                if (array_key_exists('unStyledImage', $character)) {
+                    unset($character['unStyledImage']);
+                }
+                // reassign so the changes stick
+                $characterList[$key] = $character;
+            }
+
+            // reassign so the changes stick
+            $clone['characterList'] = $characterList;
+        }
+
+        return $clone;
     }
 
     // copy over images used by the script
