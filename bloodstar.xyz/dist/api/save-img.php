@@ -1,5 +1,4 @@
 <?php
-    // TODO: limit image size
     // TODO: limit number of images per edition - client character limit should prevent this anyway, but sanity check here
     header('Content-Type: application/json;');
     include('shared.php');
@@ -24,6 +23,12 @@
         echo '{"error":"invalid image data"}';
         exit();
     }
+    $size = strlen($decodedImage);
+    if ($size > 1024*1024) {
+        echo "{\"error\":\"image too large ($size B)\"}";
+        exit();
+    }
+
     
     $username = $tokenPayload['username'];
     validateUsername($username);
