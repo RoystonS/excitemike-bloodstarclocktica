@@ -1,6 +1,6 @@
 <?php
-    // TODO: limit number of saved editions! (send back a message about it, client prompts for deletion)
-    // TODO: limit number of characters per edition! (client side should prevent it, but validate here, too)
+    $maxEditions = 200;
+    $maxCharacters = 200;
     header('Content-Type: application/json;');
     include('shared.php');
     requirePost();
@@ -16,6 +16,9 @@
     validateFilename($saveName);
     $username = $tokenPayload['username'];
     validateUsername($username);
+
+    validateEditionLimit($maxEditions, $username);
+    validateCharacterLimit($maxCharacters, $customEdition);
 
     writeEditionFile($username, $saveName, $customEdition, $clobber);
 
@@ -97,5 +100,26 @@
         }
 
         return $usedImages;
+    }
+
+    // bail with an error if there are too many
+    function validateEditionLimit($maxEditions, $username) {
+        $userSaveDir = join_paths('../usersave', $username);
+        $numEditions = count(glob(join_paths($userSaveDir, '*')));
+        if ($numEditions > $maxEditions) {
+            echo "{\"error\":\"too many save files ($numEditions / $maxEditions)\"}";
+            exit();
+        }
+    }
+
+    // bail with an error if there are too many
+    function validateCharacterLimit($maxCharacters, $customEdition) {
+        if (!array_key_exists('characterList', $customEdition)) {return;}
+        $characterList = $customEdition['characterList'];
+        $numCharacters = count($characterList);
+        if ($numCharacters > $maxCharacters) {
+            echo "{\"error\":\"too many characters ($numCharacters / $maxCharacters)\"}";
+            exit();
+        }
     }
 ?>

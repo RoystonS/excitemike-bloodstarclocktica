@@ -70,7 +70,7 @@
         }
     }
 
-    // bail with an error if there are a bazillion images
+    // bail with an error if there are a too many images
     function validateImageLimit($maxImages, $username, $saveName) {
         $userSaveDir = join_paths('../usersave', $username);
         $editionFolder = join_paths($userSaveDir, $saveName);
