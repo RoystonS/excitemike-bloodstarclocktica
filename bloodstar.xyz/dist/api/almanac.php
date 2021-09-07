@@ -191,7 +191,6 @@
                 // line
                 $almanacHtml .= '<hr>';
 
-                // TODO: BUG! this continue is skipping non-almanac stuff!
                 if (array_key_exists('almanac', $character)) {
                     $almanac = $character['almanac'];
     
