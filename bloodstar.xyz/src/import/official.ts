@@ -87,7 +87,7 @@ async function _importOfficial(fromCharacter:CharacterEntry, toCharacter:Charact
     const canvas = await spinner(
         fromCharacter.id,
         `Downloading image for ${fromCharacter.name}`,
-        urlToCanvas(url, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, true)
+        urlToCanvas(url, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT)
     );
     const dataUrl = canvas.toDataURL('image/png');
     await toCharacter.imageSettings.shouldRestyle.set(false);

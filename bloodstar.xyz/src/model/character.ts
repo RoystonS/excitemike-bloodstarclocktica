@@ -4,30 +4,11 @@
  */
 import {CharacterAlmanac} from './character-almanac';
 import {EnumProperty, Property} from '../bind/bindings';
-import {observableChild, observableEnumProperty, ObservableObject, observableProperty, ObservableType} from '../bind/observable-object';
+import {observableChild, observableEnumProperty, ObservableObject, observableProperty} from '../bind/observable-object';
 import {BloodTeam, BLOODTEAM_OPTIONS} from '../model/blood-team';
 import {CharacterImageSettings} from '../model/character-image-settings';
 import BloodImage, { getGradientForTeam, imageUrlToDataUri, ProcessImageSettings, urlToBloodImage } from '../blood-image';
 import Images from '../images';
-
-/**
- * if the browser realizes we are using a downloaded image, it will not let us do image processing on those pixels
- * this tries to trick it by making a data uri first
- */
-async function safelyConvertImage(_object:ObservableObject<unknown>, field:ObservableType, data:unknown):Promise<void> {
-    if (data === null) { return; }
-    const unstyledImageProperty = field as Property<string|null>;
-    const sourceData = data as string;
-    const sourceUrl = new URL(sourceData);
-    const isDataUri = sourceUrl.protocol === 'data:';
-    if (isDataUri) {
-        await unstyledImageProperty.set(sourceData);
-    } else {
-        const useCors = sourceUrl.hostname !== window.location.hostname;
-        const dataUri = await imageUrlToDataUri(sourceData, useCors);
-        await unstyledImageProperty.set(dataUri);
-    }
-}
 
 export class Character extends ObservableObject<Character> {
     @observableProperty('')
@@ -81,7 +62,7 @@ export class Character extends ObservableObject<Character> {
     @observableEnumProperty(BloodTeam.TOWNSFOLK, BLOODTEAM_OPTIONS, {saveDefault:true})
     readonly team!: EnumProperty<BloodTeam>;
 
-    @observableProperty(null, {customDeserialize: safelyConvertImage})
+    @observableProperty(null)
     readonly unStyledImage!: Property<string | null>;
 
     @observableProperty(false, {read:false, write:false})
@@ -102,14 +83,22 @@ export class Character extends ObservableObject<Character> {
         this.id.addListener(async ()=>{
             const unstyled = this.unStyledImage.get();
             if (unstyled === null) { return; }
+            // when the id changes, remote path is no longer good, so convert to dataUri
             if (!unstyled.startsWith('data:')) {
+                await this.unStyledImage.set(await imageUrlToDataUri(unstyled));
+                return;
+            }
+            // similar for styled image
+            const styled = this.styledImage.get();
+            if (styled === null) {
                 await this.regenerateStyledImage();
                 return;
             }
-            const styled = this.styledImage.get();
-            if ((styled === null) || !styled.startsWith('data:')) {
-                // TODO: we could copy these on the server instead of this expensive regen
-                await this.regenerateStyledImage();
+            if (!styled.startsWith('data:')) {
+                // TODO: when doing a SaveAs this line will forces a re-save of the image,
+                // when we could instead copy things over on the server
+                // but it's weird to figure out from here that a SaveAs is happening
+                await this.styledImage.set(await imageUrlToDataUri(styled));
             }
         });
     }
@@ -150,7 +139,7 @@ export class Character extends ObservableObject<Character> {
         }
 
         // start from the unstyled image
-        let bloodImage = await urlToBloodImage(unstyledImage, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, false);
+        let bloodImage = await urlToBloodImage(unstyledImage, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
 
         // crop
         if (imageSettings.shouldCrop.get()) {
@@ -192,7 +181,8 @@ export class Character extends ObservableObject<Character> {
 
         // texture
         if (imageSettings.useTexture.get()) {
-            const tokenTexture = await urlToBloodImage(Images.TEXTURE_URL, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, false);
+            // TODO: cache texture image
+            const tokenTexture = await urlToBloodImage(Images.TEXTURE_URL, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
             bloodImage.multiply(tokenTexture);
         }
 

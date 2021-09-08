@@ -83,7 +83,7 @@ async function importMeta(entry:MetaEntry, edition:Edition):Promise<boolean> {
         await edition.meta.author.set(entry.author);
     }
     if (entry.logo) {
-        const canvas = await spinner(entry.id, 'Downloading edition logo', urlToCanvas(entry.logo, MAX_LOGO_WIDTH, MAX_LOGO_HEIGHT, true));
+        const canvas = await spinner(entry.id, 'Downloading edition logo', urlToCanvas(entry.logo, MAX_LOGO_WIDTH, MAX_LOGO_HEIGHT));
         await spinner(entry.id, 'Setting edition logo', edition.meta.logo.set(canvas.toDataURL('image/png')));
     }
     return true;
@@ -134,7 +134,7 @@ async function importCharacter(entry:CharacterEntry, edition:Edition, firstNight
         const canvas = await spinner(
             entry.id,
             `Downloading image for ${entry.name}`,
-            urlToCanvas(entry.image, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, true)
+            urlToCanvas(entry.image, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT)
         );
         const dataUrl = canvas.toDataURL('image/png');
         await spinner(entry.id, `Setting character image for ${entry.name}`, character.imageSettings.shouldRestyle.set(false));

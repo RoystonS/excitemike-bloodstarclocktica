@@ -225,12 +225,11 @@ async function _save(sessionInfo:SessionInfo, edition:Edition, clobber:boolean):
     }
 
     if (toSave.logo && edition.isLogoDirty()) {
-        const sourceUrl = new URL(toSave.logo);
+        const sourceUrl = new URL(toSave.logo, location.origin);
         const isDataUri = sourceUrl.protocol === 'data:';
         let {logo} = toSave;
         if (!isDataUri) {
-            const useCors = sourceUrl.hostname !== window.location.hostname;
-            logo = await imageUrlToDataUri(toSave.logo, useCors);
+            logo = await imageUrlToDataUri(toSave.logo);
         }
         if (logo.startsWith('data:')) {
             imgSavePromises.push(Locks.enqueue('saveImage', async ()=>{

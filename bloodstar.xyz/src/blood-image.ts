@@ -504,14 +504,16 @@ export default class BloodImage {
 }
 
 /** get BloodImage from url */
-export async function urlToBloodImage(url:string, maxWidth:number, maxHeight:number, useCorsProxy:boolean):Promise<BloodImage> {
-    const canvas = await urlToCanvas(url, maxWidth, maxHeight, useCorsProxy);
+export async function urlToBloodImage(url:string, maxWidth:number, maxHeight:number):Promise<BloodImage> {
+    const canvas = await urlToCanvas(url, maxWidth, maxHeight);
     return new BloodImage(canvas);
 }
 
 /** get image data from the url and convert it to a dataUri, throttled */
-export async function imageUrlToDataUri(url:string, useCorsProxy:boolean):Promise<string> {
-    return Locks.enqueue('imageRequest', async ()=>_imageUrlToDataUri(url, useCorsProxy), MAX_SIMULTANEOUS_IMAGE_REQUESTS);
+export async function imageUrlToDataUri(url:string):Promise<string> {
+    const sourceUrl = new URL(url, location.origin);
+    const useCors = sourceUrl.hostname !== window.location.hostname;
+    return Locks.enqueue('imageRequest', async ()=>_imageUrlToDataUri(url, useCors), MAX_SIMULTANEOUS_IMAGE_REQUESTS);
 }
 
 /** used to limit messages about download errors */
@@ -556,8 +558,10 @@ export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean):Promi
 }
 
 /** get image data from the url and put it in a new canvas */
-export async function urlToCanvas(url:string, width:number, height:number, useCorsProxy:boolean):Promise<HTMLCanvasElement> {
-    const proxyUrl = useCorsProxy ? await imageUrlToDataUri(url, useCorsProxy) : url;
+export async function urlToCanvas(url:string, width:number, height:number):Promise<HTMLCanvasElement> {
+    const sourceUrl = new URL(url, location.origin);
+    const isDataUri = sourceUrl.protocol === 'data:';
+    const dataUri = isDataUri ? url : await imageUrlToDataUri(url);
     const image = new Image();
     const canvas = document.createElement('canvas');
 
@@ -574,11 +578,12 @@ export async function urlToCanvas(url:string, width:number, height:number, useCo
                 reject(new Error('no context 2d'));
             }
         };
-        image.src = proxyUrl;
+        image.src = dataUri;
     });
 }
 
 /** find the appropriate gradient image for the team and settings */
+// TODO: PLEASE MEMOIZE
 export async function getGradientForTeam(team:BloodTeam, useOutsiderAndMinionColors:boolean, width:number, height:number):Promise<BloodImage> {
     let url:string;
     switch (team) {
@@ -603,5 +608,5 @@ export async function getGradientForTeam(team:BloodTeam, useOutsiderAndMinionCol
         default:
             throw new Error(`getGradientForTeam: unhandled team "${team}"`);
     }
-    return urlToBloodImage(url, width, height, false);
+    return urlToBloodImage(url, width, height);
 }
