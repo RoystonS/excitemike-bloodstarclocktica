@@ -11,7 +11,8 @@ export class ImageDisplayBinding extends BaseBinding<string|null> {
     /** create an instance asynchronously */
     static async create(
         element:HTMLImageElement,
-        property:Property<string|null>
+        property:Property<string|null>,
+        blockOnImageLoad = false // TODO: would be cool to have a statusbar throbber for non-blocking asynchronous stuff
     ):Promise<ImageDisplayBinding> {
         element.src = '';
 
@@ -19,13 +20,11 @@ export class ImageDisplayBinding extends BaseBinding<string|null> {
             // no throttling needed if no image to load
             if (!v) { element.src = ''; return Promise.resolve(); }
 
-            const leak = true; // TODO: would be cool to have a statusbar throbber for non-blocking asynchronous stuff
-
             // no throttling needed if cached
             const cached = cache.get(v);
             if (cached) {
                 element.src = v;
-                return leak ? Promise.resolve() : cached;
+                return blockOnImageLoad ? cached : Promise.resolve();
             }
 
             // throttle the rest
@@ -46,7 +45,7 @@ export class ImageDisplayBinding extends BaseBinding<string|null> {
             );
             // cache the promise
             cache.set(v, throttledLoad);
-            return leak ? Promise.resolve() : throttledLoad;
+            return blockOnImageLoad ? throttledLoad : Promise.resolve();
         };
 
         const self = new ImageDisplayBinding(

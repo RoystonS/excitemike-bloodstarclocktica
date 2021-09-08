@@ -131,6 +131,7 @@ async function initBindings(edition:Edition):Promise<void> {
                 return tabClicked('charTabBtn', 'charactertab');
             }
         }
+        return Promise.resolve();
     });
 
     promises.push(BloodBind.bindCheckboxById('previewOnToken', edition.previewOnToken));
@@ -182,7 +183,7 @@ async function _init(options?:BloodstarOptions) {
     await initCustomEdition(edition, sessionInfo?.email);
 
     if (isMobile()) {
-        return tabClicked('charTabBtn', 'charactertab');
+        await tabClicked('charTabBtn', 'charactertab');
     }
 }
 

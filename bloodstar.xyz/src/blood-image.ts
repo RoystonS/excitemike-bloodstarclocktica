@@ -604,7 +604,7 @@ export async function urlToCanvas(url:string, width:number, height:number, optio
                 reject(new Error('no context 2d'));
             }
         };
-        image.onerror = ()=>reject(new Error(`Failed to load image "${url}"`));
+        image.onerror = ()=>{ reject(new Error(`Failed to load image "${url}"`)); };
         image.src = dataUri;
     });
 

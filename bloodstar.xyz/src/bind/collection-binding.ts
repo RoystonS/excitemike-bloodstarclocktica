@@ -242,7 +242,7 @@ export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
 
     /** create and insert DOM elements at the specified index */
     private async insert(insertLocation:number, items:readonly ItemType[]):Promise<void> {
-        const renderPromises = items.map((item, i)=>this.renderListItem(i + insertLocation, item));
+        const renderPromises = items.map(async (item, i)=>this.renderListItem(i + insertLocation, item));
         const renderResults = await Promise.all(renderPromises);
         for (const {i, elem} of renderResults) {
             if (i === this.listElement.childNodes.length) {
