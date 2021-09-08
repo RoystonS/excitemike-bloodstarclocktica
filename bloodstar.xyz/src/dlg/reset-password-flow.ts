@@ -23,11 +23,19 @@ class ConfirmAndChoosePasswordDlg extends AriaDialog<ResetPasswordData|null> {
         });
         const passwordField = createElement({t:'input', a:{type:'password', required:'true', placeholder:'New Password', autocomplete:'new-password'}, 'id':'passwordInput'});
         const passwordWarnings = createElement({t:'div', css:['column'], a:{style:'color:red;grid-column-start:span 2'}});
-        const confirmField = createElement({t:'input', a:{type:'password', required:'true', placeholder:'Confirm Password', autocomplete:'new-password'}, 'id':'resetPasswordConfirm'});
+        const confirmField = createElement({
+            t:'input',
+            a:{type:'password', required:'true', placeholder:'Confirm Password', autocomplete:'new-password'},
+            'id':'resetPasswordConfirm'
+        });
 
         const body:CreateElementsOptions = [{t:'h1', txt:'Choose new password'}];
         if (doWarning) {
-            body.push({t:'p', a:{style:'color:red;max-width:400px'}, txt:'You must enter the correct confirmation code to reset your password. Please check your email for the six-digit code.'});
+            body.push({
+                t:'p',
+                a:{style:'color:red;max-width:400px'},
+                txt:'You must enter the correct confirmation code to reset your password. Please check your email for the six-digit code.'
+            });
         }
         body.splice(body.length, 0, ...[
             {

@@ -24,7 +24,11 @@ class ConfirmSignUpDlg extends AriaDialog<string> {
     async open(email:string, doWarning:boolean):Promise<string> {
         const body:CreateElementsOptions = [{t:'h1', txt:'Confirm email address'}];
         if (doWarning) {
-            body.push({t:'p', a:{style:'color:red;max-width:400px'}, txt:'Your account must be confirmed before you can continue. Please check your email for the six-digit code.'});
+            body.push({
+                t:'p',
+                a:{style:'color:red;max-width:400px'},
+                txt:'Your account must be confirmed before you can continue. Please check your email for the six-digit code.'
+            });
         }
         const syncButton = ()=>{
             const inputElement = document.getElementById('codeFromEmail');
@@ -35,7 +39,11 @@ class ConfirmSignUpDlg extends AriaDialog<string> {
             buttonElement.disabled = isNaN(codeValue);
         };
         body.splice(body.length, 0, ...[
-            {t:'p', a:{style:'max-width:400px'}, txt:`We have sent an email to "${email}" containing a 6-digit code. Please enter the code below, then click the button below to continue.`},
+            {
+                t:'p',
+                a:{style:'max-width:400px'},
+                txt:`We have sent an email to "${email}" containing a 6-digit code. Please enter the code below, then click the button below to continue.`
+            },
             {
                 t:'input',
                 a:{type:'text', minlength:'6', maxlength:'6', autocomplete:'off', required:'', pattern:'[0-9]{6}', title:'six-digit code from your email'},
@@ -106,7 +114,11 @@ async function showSignUpStep():Promise<string> {
     const syncToButton = ()=>{
         const buttonElem = document.getElementById('signupBtn');
         if (!(buttonElem instanceof HTMLButtonElement)) {return;}
-        buttonElem.disabled = !(validateUsername(usernameField.value) && validateEmail(emailField.value) && validatePassword(passwordField.value) && (passwordField.value === confirmField.value));
+        buttonElem.disabled =
+            !(validateUsername(usernameField.value) &&
+            validateEmail(emailField.value) &&
+            validatePassword(passwordField.value) &&
+            (passwordField.value === confirmField.value));
     };
     const usernameWarn = ()=>{
         updateUsernameWarnings(usernameField.value, usernameWarnings, 'Username');

@@ -50,7 +50,11 @@ class ChooseOfficialCharDlg extends ChooseCharactersDlg {
  * let the user choose and import an official character
  */
 export default async function importOfficial(edition:Edition):Promise<boolean> {
-    const json = await spinner('importOfficial', 'Fetching official characters', fetchJson<CharacterEntry[]>('https://raw.githubusercontent.com/bra1n/townsquare/main/src/roles.json'));
+    const json = await spinner(
+        'importOfficial',
+        'Fetching official characters',
+        fetchJson<CharacterEntry[]>('https://raw.githubusercontent.com/bra1n/townsquare/main/src/roles.json')
+    );
     if (!json) {return false;}
     const choices = await new ChooseOfficialCharDlg().open(json);
 
@@ -80,7 +84,11 @@ async function _importOfficial(fromCharacter:CharacterEntry, toCharacter:Charact
     }
 
     const url = `https://github.com/bra1n/townsquare/raw/main/src/assets/icons/${fromCharacter.id}.png`;
-    const canvas = await spinner(fromCharacter.id, `Downloading image for ${fromCharacter.name}`, urlToCanvas(url, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, true));
+    const canvas = await spinner(
+        fromCharacter.id,
+        `Downloading image for ${fromCharacter.name}`,
+        urlToCanvas(url, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, true)
+    );
     const dataUrl = canvas.toDataURL('image/png');
     await toCharacter.imageSettings.shouldRestyle.set(false);
     await spinner(fromCharacter.id, `Setting character image for ${fromCharacter.name}`, toCharacter.unStyledImage.set(dataUrl));

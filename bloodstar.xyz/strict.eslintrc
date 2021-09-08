@@ -78,7 +78,7 @@
       "comma-style":"warn",
       "consistent-this":"warn",
       "max-depth":["warn", 6],
-      "max-len":["warn", 200],
+      "max-len":["warn", 180], // TODO: reduce further?
       "max-nested-callbacks":"warn",
       "multiline-ternary": ["error", "always-multiline"],
       "new-cap":"warn",

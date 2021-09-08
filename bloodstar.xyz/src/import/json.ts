@@ -131,7 +131,11 @@ async function importCharacter(entry:CharacterEntry, edition:Edition, firstNight
         await character.ability.set(entry.ability);
     }
     if (entry.image) {
-        const canvas = await spinner(entry.id, `Downloading image for ${entry.name}`, urlToCanvas(entry.image, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, true));
+        const canvas = await spinner(
+            entry.id,
+            `Downloading image for ${entry.name}`,
+            urlToCanvas(entry.image, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, true)
+        );
         const dataUrl = canvas.toDataURL('image/png');
         await spinner(entry.id, `Setting character image for ${entry.name}`, character.imageSettings.shouldRestyle.set(false));
         await spinner(entry.id, `Setting character image for ${entry.name}`, character.unStyledImage.set(dataUrl));

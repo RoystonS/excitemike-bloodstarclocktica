@@ -24,7 +24,6 @@
       "block-scoped-var":"warn",
       "class-methods-use-this":"warn",
       "complexity":"warn",
-      "consistent-return":"warn",
       "curly":"warn",
       "default-case":"warn",
       "default-case-last":"warn",
