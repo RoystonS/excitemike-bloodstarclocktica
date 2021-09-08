@@ -85,7 +85,7 @@ export class Character extends ObservableObject<Character> {
             if (unstyled === null) { return; }
             // when the id changes, remote path is no longer good, so convert to dataUri
             if (!unstyled.startsWith('data:')) {
-                await this.unStyledImage.set(await imageUrlToDataUri(unstyled));
+                await this.unStyledImage.set(await imageUrlToDataUri(unstyled, false));
                 return;
             }
             // similar for styled image
@@ -98,7 +98,7 @@ export class Character extends ObservableObject<Character> {
                 // TODO: when doing a SaveAs this line will forces a re-save of the image,
                 // when we could instead copy things over on the server
                 // but it's weird to figure out from here that a SaveAs is happening
-                await this.styledImage.set(await imageUrlToDataUri(styled));
+                await this.styledImage.set(await imageUrlToDataUri(styled, false));
             }
         });
     }
@@ -139,7 +139,7 @@ export class Character extends ObservableObject<Character> {
         }
 
         // start from the unstyled image
-        let bloodImage = await urlToBloodImage(unstyledImage, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
+        let bloodImage = await urlToBloodImage(unstyledImage, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, {cache:false, showSpinner:false});
 
         // crop
         if (imageSettings.shouldCrop.get()) {
@@ -181,8 +181,7 @@ export class Character extends ObservableObject<Character> {
 
         // texture
         if (imageSettings.useTexture.get()) {
-            // TODO: cache texture image
-            const tokenTexture = await urlToBloodImage(Images.TEXTURE_URL, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
+            const tokenTexture = await urlToBloodImage(Images.TEXTURE_URL, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, {cache:true, showSpinner:false});
             bloodImage.multiply(tokenTexture);
         }
 

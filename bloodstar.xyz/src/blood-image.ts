@@ -21,6 +21,18 @@ export const enum ProcessImageSettings {
     USABLE_REGION_HEIGHT = 300,
 }
 
+/** cached results of urlToCanvas */
+const urlToCanvasCache = new Map<string, Promise<HTMLCanvasElement>>();
+
+/** options for urlToCanvas */
+type UrlToCanvasOptions = {
+    /** whether to allow caching of results (default: false) */
+    cache?:boolean;
+
+    /** whether to show a spinner popup while downloading (default: true) */
+    showSpinner?:boolean; // TODO: would be cool to do a statusbar throbber if false
+};
+
 /** clamp and force to int */
 function toByte(x:number):number { return Math.max(0, Math.min(255, x))|0; }
 
@@ -504,23 +516,24 @@ export default class BloodImage {
 }
 
 /** get BloodImage from url */
-export async function urlToBloodImage(url:string, maxWidth:number, maxHeight:number):Promise<BloodImage> {
-    const canvas = await urlToCanvas(url, maxWidth, maxHeight);
+// TODO: move size into options object
+export async function urlToBloodImage(url:string, maxWidth:number, maxHeight:number, options?:UrlToCanvasOptions):Promise<BloodImage> {
+    const canvas = await urlToCanvas(url, maxWidth, maxHeight, options);
     return new BloodImage(canvas);
 }
 
 /** get image data from the url and convert it to a dataUri, throttled */
-export async function imageUrlToDataUri(url:string):Promise<string> {
+export async function imageUrlToDataUri(url:string, showSpinner=true):Promise<string> {
     const sourceUrl = new URL(url, location.origin);
     const useCors = sourceUrl.hostname !== window.location.hostname;
-    return Locks.enqueue('imageRequest', async ()=>_imageUrlToDataUri(url, useCors), MAX_SIMULTANEOUS_IMAGE_REQUESTS);
+    return Locks.enqueue('imageRequest', async ()=>_imageUrlToDataUri(url, useCors, showSpinner), MAX_SIMULTANEOUS_IMAGE_REQUESTS);
 }
 
 /** used to limit messages about download errors */
 let blockErrorMessages = false;
 
 /** get image data from the url and convert it to a dataUri */
-export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean):Promise<string> {
+export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean, showSpinner=true):Promise<string> {
     const controller = new AbortController();
     const timeoutId = setTimeout(()=>{
         controller.abort();
@@ -528,11 +541,12 @@ export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean):Promi
     }, 30*1000);
     try {
         const proxiedUrl = useCorsProxy ? getCorsProxyUrl(url) : url;
-        const response = await spinner(url, `Downloading ${url}`, fetch(proxiedUrl, {
+        const fetchPromise = fetch(proxiedUrl, {
             method:'GET',
             mode: 'cors',
             signal: controller.signal
-        }));
+        });
+        const response = await (showSpinner ? spinner(url, `Downloading ${url}`, fetchPromise) : fetchPromise);
         if (!response.ok) {
             // intentional floating promise - TODO: something to prevent getting many of these at once
             if (!blockErrorMessages) {
@@ -558,14 +572,26 @@ export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean):Promi
 }
 
 /** get image data from the url and put it in a new canvas */
-export async function urlToCanvas(url:string, width:number, height:number):Promise<HTMLCanvasElement> {
+export async function urlToCanvas(url:string, width:number, height:number, options?:UrlToCanvasOptions):Promise<HTMLCanvasElement> {
     const sourceUrl = new URL(url, location.origin);
     const isDataUri = sourceUrl.protocol === 'data:';
-    const dataUri = isDataUri ? url : await imageUrlToDataUri(url);
+    const shouldCache = !isDataUri && (options?.cache ?? false);
+    const memoKey = shouldCache ? [url, width, height].join(' ') : '';
+
+    // early exit with the cached version if possible
+    if (shouldCache) {
+        const cached = urlToCanvasCache.get(memoKey);
+        if (cached) {
+            return cached;
+        }
+    }
+
+    const showSpinner = options?.showSpinner ?? true;
+    const dataUri = isDataUri ? url : await imageUrlToDataUri(url, showSpinner);
     const image = new Image();
     const canvas = document.createElement('canvas');
 
-    return new Promise((resolve, reject)=>{
+    const canvasPromise = new Promise<HTMLCanvasElement>((resolve, reject)=>{
         image.onload = function() {
             const scale = Math.min(1.0, width / image.width, height / image.height);
             canvas.width = (scale * image.width) | 0;
@@ -581,10 +607,13 @@ export async function urlToCanvas(url:string, width:number, height:number):Promi
         image.onerror = ()=>reject(new Error(`Failed to load image "${url}"`));
         image.src = dataUri;
     });
+
+    // cache and return (but no caching for dataUris)
+    if (shouldCache) { urlToCanvasCache.set(memoKey, canvasPromise); }
+    return canvasPromise;
 }
 
 /** find the appropriate gradient image for the team and settings */
-// TODO: PLEASE MEMOIZE
 export async function getGradientForTeam(team:BloodTeam, useOutsiderAndMinionColors:boolean, width:number, height:number):Promise<BloodImage> {
     let url:string;
     switch (team) {
@@ -609,5 +638,6 @@ export async function getGradientForTeam(team:BloodTeam, useOutsiderAndMinionCol
         default:
             throw new Error(`getGradientForTeam: unhandled team "${team}"`);
     }
-    return urlToBloodImage(url, width, height);
+
+    return urlToBloodImage(url, width, height, {cache:true, showSpinner:false});
 }

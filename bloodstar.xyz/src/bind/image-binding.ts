@@ -19,7 +19,7 @@ export class ImageDisplayBinding extends BaseBinding<string|null> {
             // no throttling needed if no image to load
             if (!v) { element.src = ''; return Promise.resolve(); }
 
-            const leak = true;
+            const leak = true; // TODO: would be cool to have a statusbar throbber for non-blocking asynchronous stuff
 
             // no throttling needed if cached
             const cached = cache.get(v);
