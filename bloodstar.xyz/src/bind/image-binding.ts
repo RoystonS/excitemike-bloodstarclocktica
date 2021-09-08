@@ -1,7 +1,10 @@
 import Locks from '../lock';
 import {BaseBinding, Property} from './base-binding';
 
-const MAX_SIMUL_SYNCTOELEMENT = 10;
+const MAX_SIMUL_SYNCTOELEMENT = 5;
+
+/** cache promises for images */
+const cache = new Map<string, Promise<void>>();
 
 /** one-way binding to display an image in an img tag */
 export class ImageDisplayBinding extends BaseBinding<string|null> {
@@ -12,18 +15,32 @@ export class ImageDisplayBinding extends BaseBinding<string|null> {
     ):Promise<ImageDisplayBinding> {
         element.src = '';
 
-        const syncToElement = async (v:string|null)=>{
-            if (v) {
-                await new Promise(resolve=>{
-                    element.addEventListener('load', resolve, {once:true});
-                    element.src = v;
-                });
-            } else {
-                element.src = '';
+        const throttledSyncToElement = async (v:string|null)=>{
+            // no throttling needed if no image to load
+            if (!v) { element.src = ''; return Promise.resolve(); }
+
+            const leak = true;
+
+            // no throttling needed if cached
+            const cached = cache.get(v);
+            if (cached) {
+                element.src = v;
+                return leak ? Promise.resolve() : cached;
             }
+
+            // throttle the rest
+            const throttledLoad = Locks.enqueue(
+                'ImageDisplayBinding',
+                async ()=>new Promise<void>(resolve=>{
+                    element.onload = ()=>{resolve();};
+                    element.src = v;
+                }),
+                MAX_SIMUL_SYNCTOELEMENT
+            );
+            // cache the promise
+            cache.set(v, throttledLoad);
+            return leak ? Promise.resolve() : throttledLoad;
         };
-        // TODO: leak the promise?
-        const throttledSyncToElement = async (v:string|null)=>Locks.enqueue('ImageDisplayBinding', async ()=>syncToElement(v), MAX_SIMUL_SYNCTOELEMENT);
 
         const self = new ImageDisplayBinding(
             element,
