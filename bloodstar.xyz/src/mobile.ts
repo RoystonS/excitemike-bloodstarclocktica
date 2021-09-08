@@ -6,11 +6,11 @@ import { closeCurtain, openCurtainMenu } from './curtain';
 /** initialize listeners for mobile version of bloodstar */
 function initMobileBindings():void {
     hookupClickEvents([
-        ['mobileHamburger', ()=>{ openCurtainMenu('mobileMainMenu'); }],
-        ['mobileFileButton', ()=>{ openCurtainMenu('mobileFileMenu'); }],
-        ['mobileImportButton', ()=>{ openCurtainMenu('mobileImportMenu'); }],
-        ['mobilePublishButton', ()=>{ openCurtainMenu('mobilePublishMenu'); }],
-        ['mobileSharingButton', ()=>{ openCurtainMenu('mobileSharingMenu'); }],
+        ['mobileHamburger', async ()=>openCurtainMenu('mobileMainMenu')],
+        ['mobileFileButton', async ()=>openCurtainMenu('mobileFileMenu')],
+        ['mobileImportButton', async ()=>openCurtainMenu('mobileImportMenu')],
+        ['mobilePublishButton', async ()=>openCurtainMenu('mobilePublishMenu')],
+        ['mobileSharingButton', async ()=>openCurtainMenu('mobileSharingMenu')],
 
         ['charlistTabBtn', ()=>{ tabClicked('charlistTabBtn', 'characterlisttab'); }],
     ]);
@@ -23,12 +23,10 @@ function initMobileBindings():void {
     }
 
     // escape to close curtain
-    document.addEventListener('keyup', (event:KeyboardEvent) => {
-        if (event.code !== 'Escape') {return;}
-        closeCurtain();
+    document.addEventListener('keyup', async (event:KeyboardEvent) => {
+        if (event.code !== 'Escape') {return Promise.resolve();}
+        return closeCurtain();
     });
-
-    // block back button
 }
 
 // eslint-disable-next-line @typescript-eslint/no-floating-promises

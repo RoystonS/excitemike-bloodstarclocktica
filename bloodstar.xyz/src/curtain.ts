@@ -1,56 +1,38 @@
 import './styles/curtain.css';
-import { arrayGetLast } from './util';
+import * as StateHistory from "./state-history";
 
-/** track currently open curtain menu */
-const curtainStack: Element[] = [];
+/** remember which curtain is up, if any */
+let curtainId = '';
 
 /** close entire curtain history */
-export function closeAllCurtains():void {
-    const n = curtainStack.length;
-    if (n) {
-        // get rid of the one that's up, and rewind all the way
-        const curCurtain = arrayGetLast(curtainStack, null);
-        curCurtain?.removeAttribute('open');
-        curtainStack.length = 0;
-        history.go(-n);
-    }
+export async function closeAllCurtains():Promise<void> {
+    return StateHistory.clear();
+    // listener picks it up from there
 }
 
 /** close currently-open curtain menu, if any */
-export function closeCurtain():void {
-    // rewind
-    if (curtainStack.length) {
-        history.back();
+export async function closeCurtain():Promise<void> {
+    const state = StateHistory.getState();
+    if (state && (state.type === 'curtain') && (state.curtainId === curtainId)) {
+        return StateHistory.pop();
+        // listener picks it up from there
     }
+    return Promise.resolve();
 }
 
 /** close currently-open curtain menu and open a new one */
-export function openCurtainMenu(id:string):void {
-    // we're replacing any current curtain, so hide without rewinding
-    if (curtainStack.length) {
-        const oldCurtain = curtainStack[curtainStack.length-1];
-        oldCurtain.removeAttribute('open');
-    }
-    // reveal new one and track history
-    if (id) {
-        const newCurtain = document.getElementById(id);
-        if (!newCurtain) {return;}
-        newCurtain.setAttribute('open', 'true');
-        curtainStack.push(newCurtain);
-        // TODO: should probably merge with current state instead of clobbering
-        // TODO: manually trigger popstate? (see https://stackoverflow.com/a/37492075)
-        history.pushState(null, '');
-    }
+export async function openCurtainMenu(id:string):Promise<void> {
+    return StateHistory.pushState({type:'curtain', curtainId:id}, true);
 }
 
-window.addEventListener('popstate', () => {
-    if (curtainStack.length) {
-        // current one goes away
-        const oldCurtain = curtainStack.pop();
-        oldCurtain?.removeAttribute('open');
-
-        // reveal the one we are at now
-        const newCurtain = arrayGetLast(curtainStack, null);
-        newCurtain?.setAttribute('open', 'true');
+/** sync with browser when it changes */
+StateHistory.addListener((state:StateHistory.HistoryState)=>{
+    const previousCurtainId = curtainId;
+    curtainId = (state && (state.type === 'curtain')) ? state.curtainId : '';
+    if ((previousCurtainId !== curtainId) && (previousCurtainId !== '')) {
+        document.getElementById(previousCurtainId)?.removeAttribute('open');
+    }
+    if (curtainId !== '') {
+        document.getElementById(curtainId)?.setAttribute('open', 'true');
     }
 });

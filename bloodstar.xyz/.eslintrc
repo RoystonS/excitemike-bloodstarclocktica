@@ -16,7 +16,6 @@
       "no-unreachable-loop":"warn",
       "no-unsafe-optional-chaining":"warn",
       "no-useless-backreference":"warn",
-      "require-atomic-updates":"warn",
       "@typescript-eslint/no-floating-promises": "error",
 
       // additional best-practice things
