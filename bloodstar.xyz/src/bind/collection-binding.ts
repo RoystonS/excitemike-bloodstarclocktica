@@ -242,17 +242,16 @@ export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
 
     /** create and insert DOM elements at the specified index */
     private async insert(insertLocation:number, items:readonly ItemType[]):Promise<void> {
-        let i = insertLocation;
-        for (const item of items) {
-            const newChild = await this.renderListItem(i, item);
+        const renderPromises = items.map((item, i)=>this.renderListItem(i + insertLocation, item));
+        const renderResults = await Promise.all(renderPromises);
+        for (const {i, elem} of renderResults) {
             if (i === this.listElement.childNodes.length) {
-                this.listElement.appendChild(newChild);
+                this.listElement.appendChild(elem);
             } else {
-                this.listElement.insertBefore(newChild, this.listElement.childNodes[i]);
+                this.listElement.insertBefore(elem, this.listElement.childNodes[i]);
             }
-            i++;
         }
-        this.updateIndices(i);
+        this.updateIndices(insertLocation);
     }
 
     /** change the order of items */
@@ -280,8 +279,8 @@ export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
         for (let i=0; i<n; i++) {
             const oldChild = this.listElement.childNodes[start+i];
             await this.cleanupListItem(oldChild, oldData[i]);
-            const newChild = await this.renderListItem(i, newData[i]);
-            this.listElement.replaceChild(newChild, oldChild);
+            const {elem} = await this.renderListItem(i, newData[i]);
+            this.listElement.replaceChild(elem, oldChild);
         }
     }
 
@@ -307,7 +306,7 @@ export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
     }
 
     /** create DOM list item for a data item */
-    private async renderListItem(i:number, itemData:ItemType):Promise<Element> {
+    private async renderListItem(i:number, itemData:ItemType):Promise<{i:number; elem:Element}> {
         const li = document.createElement('li');
         li.draggable = true;
         li.dataset.index = String(i);
@@ -328,7 +327,7 @@ export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
             this.buttonsMgr.updateButtons(renderedElem, itemData, i);
         }
 
-        return li;
+        return {i, elem:li};
     }
 
     /** keep dataset index in sync */
