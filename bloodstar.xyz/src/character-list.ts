@@ -86,20 +86,23 @@ async function makeCharacterListItem(character: Character, _collection:Observabl
                 break;
         }
     };
-    await bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);
-    await bindAttribute(row, 'title', character.ability);
+
+    const promises = [];
+
+    promises.push(bindStyle<BloodTeam>(row, character.team, setTeamColorStyle));
+    promises.push(bindAttribute(row, 'title', character.ability));
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
-    await bindCheckbox(checkbox, character.export);
+    promises.push(bindCheckbox(checkbox, character.export));
     row.appendChild(checkbox);
 
     const icon = createElement({t:'img', css:['characterListThumbnail']});
-    await bindImageDisplay(icon, character.styledImage);
+    promises.push(bindImageDisplay(icon, character.styledImage));
     row.appendChild(icon);
 
     const nameElement = createElement({t:'span', css:['characterListName', 'nowrap']});
-    await bindText(nameElement, character.name);
+    promises.push(bindText(nameElement, character.name));
     row.appendChild(nameElement);
 
     const cb = (selectedCharacter:Character|null):void => {
@@ -111,6 +114,8 @@ async function makeCharacterListItem(character: Character, _collection:Observabl
     };
     selectedCharacterProperty.addListener(cb);
     characterListCleanupSideTable.set(row, cb);
+
+    await Promise.all(promises);
 
     return row;
 }

@@ -58,8 +58,10 @@ async function initNightOrderBinding(
 
 /** initialize listeners and data bindings */
 export async function initNightOrderBindings(edition:Edition, selectedCharacterProperty:Property<Character|null>):Promise<void> {
-    await initNightOrderBinding('firstNightOrderList', edition.firstNightOrder, 'firstNightOrdinal', 'firstNightReminder', selectedCharacterProperty);
-    await initNightOrderBinding('otherNightOrderList', edition.otherNightOrder, 'otherNightOrdinal', 'otherNightReminder', selectedCharacterProperty);
+    await Promise.all([
+        initNightOrderBinding('firstNightOrderList', edition.firstNightOrder, 'firstNightOrdinal', 'firstNightReminder', selectedCharacterProperty),
+        initNightOrderBinding('otherNightOrderList', edition.otherNightOrder, 'otherNightOrdinal', 'otherNightReminder', selectedCharacterProperty)
+    ]);
 }
 
 /**
@@ -73,32 +75,35 @@ export async function makeNightOrderItem(
     ordinalPropertyName:'firstNightOrdinal'|'otherNightOrdinal',
     reminderPropertyName:'firstNightReminder'|'otherNightReminder'
 ):Promise<HTMLElement> {
+    const promises = [];
     const row = createElement({t:'div', css:['nightOrderItem']});
-    await bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);
-    await bindAttribute(row, 'title', character.getProperty<string>(reminderPropertyName));
+    promises.push(bindStyle<BloodTeam>(row, character.team, setTeamColorStyle));
+    promises.push(bindAttribute(row, 'title', character.getProperty<string>(reminderPropertyName)));
 
     const ordinal = createElement({t:'span', css:['ordinal']});
-    await bindText(ordinal, character.getProperty(ordinalPropertyName));
-    await bindStyle<boolean>(ordinal, character.export, (willExport:boolean, classList:DOMTokenList)=>{
+    promises.push(bindText(ordinal, character.getProperty(ordinalPropertyName)));
+    promises.push(bindStyle<boolean>(ordinal, character.export, (willExport:boolean, classList:DOMTokenList)=>{
         if (willExport) {
             classList.remove('dim');
         } else {
             classList.add('dim');
         }
-    });
+    }));
     row.appendChild(ordinal);
 
     const icon = createElement({t:'img', css:['nightOrderThumbnail']});
-    await bindImageDisplay(icon, character.styledImage);
+    promises.push(bindImageDisplay(icon, character.styledImage));
     row.appendChild(icon);
 
     const nameElement = createElement({t:'span', css:['nightOrderName', 'nowrap']});
-    await bindText(nameElement, character.name);
+    promises.push(bindText(nameElement, character.name));
     row.appendChild(nameElement);
 
     const reminderElement = createElement({t:'span', css:['nightOrderReminder', 'nowrap']});
-    await bindText(reminderElement, character.getProperty(reminderPropertyName));
+    promises.push(bindText(reminderElement, character.getProperty(reminderPropertyName)));
     row.appendChild(reminderElement);
+
+    await Promise.all(promises);
 
     return row;
 }

@@ -95,28 +95,30 @@ async function initBindings(edition:Edition):Promise<void> {
         ['metaLogoRemoveBtn', async ()=>edition.meta.logo.set(null)],
     ]);
 
-    await BloodBind.bindTextById('windowTitle', edition.windowTitle);
-    await BloodBind.bindTextById('metaName', edition.meta.name);
-    await BloodBind.bindTextById('metaAuthor', edition.meta.author);
-    await BloodBind.bindTextById('metaSynopsis', edition.almanac.synopsis);
-    await BloodBind.bindTextById('metaOverview', edition.almanac.overview);
-    await BloodBind.bindTextById('metaChangeLog', edition.almanac.changelog);
-    await BloodBind.bindImageChooserById('metaLogoInput', edition.meta.logo, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
-    await BloodBind.bindImageDisplayById('metaLogoDisplay', edition.meta.logo);
+    const promises = [];
+
+    promises.push(BloodBind.bindTextById('windowTitle', edition.windowTitle));
+    promises.push(BloodBind.bindTextById('metaName', edition.meta.name));
+    promises.push(BloodBind.bindTextById('metaAuthor', edition.meta.author));
+    promises.push(BloodBind.bindTextById('metaSynopsis', edition.almanac.synopsis));
+    promises.push(BloodBind.bindTextById('metaOverview', edition.almanac.overview));
+    promises.push(BloodBind.bindTextById('metaChangeLog', edition.almanac.changelog));
+    promises.push(BloodBind.bindImageChooserById('metaLogoInput', edition.meta.logo, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT));
+    promises.push(BloodBind.bindImageDisplayById('metaLogoDisplay', edition.meta.logo));
 
     const tokenBackground = document.getElementById('tokenBackground');
     if (tokenBackground instanceof HTMLImageElement) {
         tokenBackground.src = Images.TOKEN_URL;
-        await BloodBind.bindVisibility(tokenBackground, edition.previewOnToken);
+        promises.push(BloodBind.bindVisibility(tokenBackground, edition.previewOnToken));
     }
     const curvedCharacterText = document.getElementById('curvedCharacterNameHolder');
     if (curvedCharacterText) {
-        await BloodBind.bindVisibility(curvedCharacterText, edition.previewOnToken);
+        promises.push(BloodBind.bindVisibility(curvedCharacterText, edition.previewOnToken));
     }
 
-    await bindCharacterList('characterList', edition.characterList, selectedCharacter);
+    promises.push(bindCharacterList('characterList', edition.characterList, selectedCharacter));
 
-    await initNightOrderBindings(edition, selectedCharacter);
+    promises.push(initNightOrderBindings(edition, selectedCharacter));
 
     // tie selected character to character tab
     selectedCharacter.addListener(async v=>{
@@ -127,9 +129,8 @@ async function initBindings(edition:Edition):Promise<void> {
             }
         }
     });
-    await selectedCharacter.set(edition.characterList.get(0));
 
-    await BloodBind.bindCheckboxById('previewOnToken', edition.previewOnToken);
+    promises.push(BloodBind.bindCheckboxById('previewOnToken', edition.previewOnToken));
 
     edition.addPropertyChangedEventListener(key => {
         if (key === 'characterList') {
@@ -137,6 +138,9 @@ async function initBindings(edition:Edition):Promise<void> {
         }
     });
     updateStatusbar(edition);
+
+    await Promise.all(promises);
+    await selectedCharacter.set(edition.characterList.get(0));
 }
 
 /** initialize CustomEdition object to bind to */
