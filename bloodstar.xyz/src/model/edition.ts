@@ -92,6 +92,9 @@ export class Edition extends ObservableObject<Edition> {
     /** whether the logo has changed since save/open */
     private dirtyLogo = false;
 
+    /** disable propagtion of changes when we know it is useless */
+    private suspendPropagation = false;
+
     static async asyncNew():Promise<Edition>
     {
         const edition = new Edition();
@@ -99,6 +102,7 @@ export class Edition extends ObservableObject<Edition> {
 
         // set dirty flag when most things change and update window title when dirty or savename change
         edition.addPropertyChangedEventListener(async propName=>{
+            if (edition.suspendPropagation) {return;}
             switch (propName) {
                 case 'dirty':
                 case 'saveName':
@@ -114,6 +118,7 @@ export class Edition extends ObservableObject<Edition> {
 
         // watch for dirtying of images
         edition.characterList.addItemChangedListener(async (_:number, character:Character, propName:PropKey<Character>) => {
+            if (edition.suspendPropagation) {return;}
             switch (propName) {
                 case 'name':
                     await character.id.set(edition.generateValidId(character.name.get()));
@@ -136,12 +141,14 @@ export class Edition extends ObservableObject<Edition> {
 
         // propagate character list changes to night order lists and dirty maps
         const propagateAdd = async (newItems:readonly Character[])=>{
+            if (edition.suspendPropagation) {return;}
             await edition.firstNightOrder.addMany(newItems);
             await edition.otherNightOrder.addMany(newItems);
         };
 
         // propagate character list changes to night order lists and dirty maps
         const propagateRemoval = async (oldItems:readonly Character[])=>{
+            if (edition.suspendPropagation) {return;}
             for (const character of oldItems) {
                 const id = character.id.get();
                 edition.dirtySourceImages.delete(id);
@@ -152,6 +159,7 @@ export class Edition extends ObservableObject<Edition> {
         };
 
         edition.characterList.addCollectionChangedListener(async event=>{
+            if (edition.suspendPropagation) {return;}
             switch (event.action) {
                 case ObservableCollectionChangeAction.Add:
                     await propagateAdd(event.newItems);
@@ -172,12 +180,13 @@ export class Edition extends ObservableObject<Edition> {
 
         // watch for dirtying of logo
         edition.meta.logo.addListener(()=>{
+            if (edition.suspendPropagation) {return;}
             edition.dirtyLogo = true;
         });
 
         // changing save name needs to mark all images as needing re-saving
         edition.saveName.addListener(()=>{
-            // TODO: I seem to be reaching here when opening a new file
+            if (edition.suspendPropagation) {return;}
             edition.dirtyLogo = true;
             for (const existingCharacter of edition.characterList) {
                 const id = existingCharacter.id.get();
@@ -277,7 +286,9 @@ export class Edition extends ObservableObject<Edition> {
     /** set to opened file */
     async open(saveName:string, data:Record<string, unknown>):Promise<boolean> {
         await this.reset();
+        this.suspendPropagation = true;
         await this.saveName.set(saveName);
+        this.suspendPropagation = false;
         await spinner('edition.open', 'Deserializing edition', this.deserialize(data));
 
         // mark all as up to date
@@ -291,9 +302,11 @@ export class Edition extends ObservableObject<Edition> {
 
     /** reset to a blank edition */
     async reset():Promise<void> {
+        this.suspendPropagation = true;
         await super.reset();
         await this.addNewCharacter();
         await this.markClean();
+        this.suspendPropagation = false;
     }
 
     /** overriding to do a last-minute id uniqification */
