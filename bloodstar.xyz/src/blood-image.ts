@@ -578,6 +578,7 @@ export async function urlToCanvas(url:string, width:number, height:number):Promi
                 reject(new Error('no context 2d'));
             }
         };
+        image.onerror = ()=>reject(new Error(`Failed to load image "${url}"`));
         image.src = dataUri;
     });
 }

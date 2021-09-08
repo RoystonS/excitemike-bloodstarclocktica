@@ -31,8 +31,15 @@ export class ImageDisplayBinding extends BaseBinding<string|null> {
             // throttle the rest
             const throttledLoad = Locks.enqueue(
                 'ImageDisplayBinding',
-                async ()=>new Promise<void>(resolve=>{
+                async ()=>new Promise<void>((resolve, reject)=>{
                     element.onload = ()=>{resolve();};
+                    element.onerror = (e)=>{
+                        if (typeof e === 'string') {
+                            reject(new Error(e));
+                            return;
+                        }
+                        reject(new Error(`Error loading image "${v}"`));
+                    };
                     element.src = v;
                 }),
                 MAX_SIMUL_SYNCTOELEMENT
