@@ -1,11 +1,10 @@
 import Locks from '../lock';
 import {BaseBinding, Property} from './base-binding';
 
-const MAX_SIMUL_SYNCTOELEMENT = 5;
+const MAX_SIMUL_SYNCTOELEMENT = 10;
 
 /** one-way binding to display an image in an img tag */
 export class ImageDisplayBinding extends BaseBinding<string|null> {
-
     /** create an instance asynchronously */
     static async create(
         element:HTMLImageElement,
@@ -23,15 +22,15 @@ export class ImageDisplayBinding extends BaseBinding<string|null> {
                 element.src = '';
             }
         };
-        // TODO: spinner here?
-        const throttleSyncToElement = async (v:string|null)=>Locks.enqueue('ImageDisplayBinding', async ()=>syncToElement(v), MAX_SIMUL_SYNCTOELEMENT);
+        // TODO: leak the promise?
+        const throttledSyncToElement = async (v:string|null)=>Locks.enqueue('ImageDisplayBinding', async ()=>syncToElement(v), MAX_SIMUL_SYNCTOELEMENT);
 
         const self = new ImageDisplayBinding(
             element,
             property,
             '',
             null,
-            throttleSyncToElement
+            throttledSyncToElement
         );
         await self.init();
         return self;
