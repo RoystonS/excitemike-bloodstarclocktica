@@ -34,7 +34,7 @@ export class LockSet<KeyType> {
             entry.queue.push(resolve);
         });
 
-        // if we weren't already locked, it can run immediately
+        // if we weren't already at max, it can run immediately
         if (entry.running.length < max) {this.runNext(key);}
 
         return promise;
@@ -48,7 +48,6 @@ export class LockSet<KeyType> {
      * @returns Promise for work result
      * */
     async enqueue<T>(key:KeyType, work:()=>Promise<T>|T, max = 1):Promise<T> {
-
         // wait for previous work to complete
         const workCompleteFn = await this.acquire(key, max);
 
