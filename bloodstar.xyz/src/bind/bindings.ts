@@ -64,7 +64,7 @@ class TextBinding extends BaseBinding<string> {
                 element.dispatchEvent(new Event('change'));
                 element.dispatchEvent(new Event('input'));
             } :
-            async (v:string)=>{element.innerText=v;};
+            async (v:string)=>{element.textContent=v;};
         const self = new TextBinding(element, property, eventName, syncFromElementToProperty, syncFromPropertyToElement);
         await self.init();
         return self;
