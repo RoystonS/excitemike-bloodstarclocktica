@@ -46,7 +46,12 @@ export function isMobile():boolean {
  * switch to a tab
  */
 export async function tabClicked(btnId:string, tabId:string):Promise<void> {
-    // TODO: early out if you clicked the current tab
+    // if you clicked the current tab, nevermind
+    const clickedTabBtn = document.getElementById(btnId);
+    if (clickedTabBtn?.classList.contains('selectedTabBtn')) {
+        return;
+    }
+
     await StateHistory.clear();
 
     const allTabBtns = document.getElementsByClassName("tabButton");
@@ -61,9 +66,8 @@ export async function tabClicked(btnId:string, tabId:string):Promise<void> {
         tabBtn.classList.remove('activeTab');
     }
 
-    const tabBtn = document.getElementById(btnId);
-    if (tabBtn) {
-        tabBtn.classList.add('selectedTabBtn');
+    if (clickedTabBtn) {
+        clickedTabBtn.classList.add('selectedTabBtn');
     }
 
     const tabDiv = document.getElementById(tabId);
