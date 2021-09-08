@@ -16,7 +16,6 @@
 
 ## QoL
 
-- fewer rules in .eslintrc
 - rename command
 - saveAs is quite slow :(
 - auto-fill author field on new
