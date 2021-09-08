@@ -51,6 +51,12 @@
 }
 #characterStyledImageDisplay {
     margin-top: 3%;
+    max-width: 200px;
+    max-height: 200px;
+}
+#tokenBackground{
+    max-width: 200px;
+    max-height: 200px;
 }
 .characterImageRow{
     display:flex;

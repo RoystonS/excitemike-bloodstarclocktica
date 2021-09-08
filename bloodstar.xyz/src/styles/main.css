@@ -123,6 +123,7 @@ summary {
 *:disabled {
     filter: blur(1px) opacity(50%) invert(25%);
 }
+img[src=''] {visibility:hidden}
 #app {
     display:flex;
     flex-flow:column;
