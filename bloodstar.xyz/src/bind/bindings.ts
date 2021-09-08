@@ -43,42 +43,52 @@ type Binding = BaseBinding<any> | CollectionBinding<any>;
 
 /** bindings for a checkbox */
 class CheckboxBinding extends BaseBinding<boolean> {
-    constructor(element:HTMLInputElement, property:Property<boolean>) {
-        super(element, property, 'change', async ()=>property.set(element.checked), v=>{element.checked=v;});
+    /** create an instance asynchronously */
+    static async create(element:HTMLInputElement, property:Property<boolean>) {
+        const self = new CheckboxBinding(element, property, 'change', async ()=>property.set(element.checked), async v=>{element.checked=v;});
+        await self.init();
+        return self;
     }
 }
 
 /** binding between a label, input text, ot text area element and a string property */
 class TextBinding extends BaseBinding<string> {
-    constructor(node:Node, property:Property<string>) {
-        if ((node instanceof HTMLTextAreaElement) || (node instanceof HTMLInputElement)) {
-            super(node, property, 'input', async ()=>property.set(node.value), v=>{
-                node.value=v;
-                node.dispatchEvent(new Event('change'));
-                node.dispatchEvent(new Event('input'));
-            });
-        } else if (node instanceof HTMLElement) {
-            super(node, property, '', null, v=>{node.innerText=v;});
-        } else {
-            super(node, property, '', null, v=>{node.textContent=v;});
-        }
+    /** create an instance asynchronously */
+    static async create(element:HTMLElement, property:Property<string>) {
+        const isText = (element instanceof HTMLTextAreaElement) || (element instanceof HTMLInputElement);
+        const eventName = isText ? 'input' : '';
+        const syncFromElementToProperty = isText ? async ()=>property.set(element.value) : null;
+        const syncFromPropertyToElement = isText ?
+            async (v:string)=>{
+                element.value=v;
+                element.dispatchEvent(new Event('change'));
+                element.dispatchEvent(new Event('input'));
+            } :
+            async (v:string)=>{element.innerText=v;};
+        const self = new TextBinding(element, property, eventName, syncFromElementToProperty, syncFromPropertyToElement);
+        await self.init();
+        return self;
     }
 }
 
 /** binding between a label, input text, ot text area element and a string property, showing the display string rather the value */
 class TextEnumBinding extends BaseBinding<any> {
-    constructor(element:HTMLElement, property:EnumProperty<any>) {
-        if ((element instanceof HTMLTextAreaElement) || (element instanceof HTMLInputElement)) {
-            super(element, property, 'input', null, ()=>{element.value=property.getDisplay();});
-        } else {
-            super(element, property, '', null, ()=>{element.innerText=property.getDisplay();});
-        }
+    /** create an instance asynchronously */
+    static async create(element:HTMLElement, property:EnumProperty<any>) {
+        const isText = (element instanceof HTMLTextAreaElement) || (element instanceof HTMLInputElement);
+        const eventName = isText ? 'input' : '';
+        const syncFromPropertyToElement = isText ?
+            async ()=>{element.value=property.getDisplay();} :
+            async ()=>{element.innerText=property.getDisplay();};
+        const self = new TextEnumBinding(element, property, eventName, null, syncFromPropertyToElement);
+        await self.init();
+        return self;
     }
 }
 
 /** bindings for a ComboBox and EnumProperty */
 class ComboBoxBinding<T> extends BaseBinding<T> {
-    constructor(element:HTMLSelectElement, property:EnumProperty<T>, stringToEnum:(s:string)=>T, enumToString:(t:T)=>string) {
+    private constructor(element:HTMLSelectElement, property:EnumProperty<T>, stringToEnum:(s:string)=>T, enumToString:(t:T)=>string) {
         element.innerText = '';
         property.getOptions().forEach(data => {
             const {display, value} = data;
@@ -89,10 +99,15 @@ class ComboBoxBinding<T> extends BaseBinding<T> {
         });
 
         const syncFromElementToProperty = async ()=>property.set(stringToEnum(element.value));
-        const syncFromPropertyToElement = (value:T)=>{element.value=enumToString(value);};
+        const syncFromPropertyToElement = async (value:T)=>{element.value=enumToString(value);};
         super(element, property, 'change', syncFromElementToProperty, syncFromPropertyToElement);
+    }
 
-        syncFromPropertyToElement(property.get());
+    /** create an instance asynchronously */
+    static async createComboBoxBinding<T>(element:HTMLSelectElement, property:EnumProperty<T>, stringToEnum:(s:string)=>T, enumToString:(t:T)=>string) {
+        const self = new ComboBoxBinding<T>(element, property, stringToEnum, enumToString);
+        await self.init();
+        return self;
     }
 }
 
@@ -107,74 +122,95 @@ function addBinding(element:Node, binding:Binding):void {
 }
 
 /** ONE WAY. bind a string property to an element attribute */
-export function bindAttribute(element:HTMLElement, attributeName:string, property:Property<string>):void {
-    addBinding(element, new AttributeBinding(element, attributeName, property));
+export async function bindAttribute(element:HTMLElement, attributeName:string, property:Property<string>):Promise<void> {
+    const binding = await AttributeBinding.create(element, attributeName, property);
+    addBinding(element, binding);
 }
 
 /** bind checkbox to some data */
-export function bindCheckbox(checkboxElement:HTMLInputElement, boolProperty:Property<boolean>):void {
-    addBinding(checkboxElement, new CheckboxBinding(checkboxElement, boolProperty));
+export async function bindCheckbox(checkboxElement:HTMLInputElement, boolProperty:Property<boolean>):Promise<void> {
+    const binding = await CheckboxBinding.create(checkboxElement, boolProperty);
+    addBinding(checkboxElement, binding);
 }
 
 /** bind checkbox to some data */
-export function bindCheckboxById(id:string, boolProperty:Property<boolean>):void {
+export async function bindCheckboxById(id:string, boolProperty:Property<boolean>):Promise<void> {
     const element = document.getElementById(id);
     if (element instanceof HTMLInputElement) {
-        bindCheckbox(element, boolProperty);
+        return bindCheckbox(element, boolProperty);
     }
+    return Promise.resolve();
 }
 
 /** bind ComboBox to EnumProperty */
-export function bindComboBox<ValueType>(selectElement:HTMLSelectElement, enumProperty:EnumProperty<ValueType>, stringToEnum:(s:string)=>ValueType, enumToString:(t:ValueType)=>string):void {
-    addBinding(selectElement, new ComboBoxBinding<ValueType>(selectElement, enumProperty, stringToEnum, enumToString));
+export async function bindComboBox<ValueType>(
+    selectElement:HTMLSelectElement,
+    enumProperty:EnumProperty<ValueType>,
+    stringToEnum:(s:string)=>ValueType,
+    enumToString:(t:ValueType)=>string
+):Promise<void> {
+    const binding = await ComboBoxBinding.createComboBoxBinding<ValueType>(selectElement, enumProperty, stringToEnum, enumToString);
+    addBinding(selectElement, binding);
 }
 
 /** bind ComboBox to EnumProperty */
-export function bindComboBoxById<ValueType>(id:string, enumProperty:EnumProperty<ValueType>, stringToEnum:(s:string)=>ValueType, enumToString:(t:ValueType)=>string):void {
+export async function bindComboBoxById<ValueType>(
+    id:string,
+    enumProperty:EnumProperty<ValueType>,
+    stringToEnum:(s:string)=>ValueType,
+    enumToString:(t:ValueType)=>string
+):Promise<void> {
     const element = document.getElementById(id);
     if (element instanceof HTMLSelectElement) {
-        bindComboBox<ValueType>(element, enumProperty, stringToEnum, enumToString);
+        return bindComboBox<ValueType>(element, enumProperty, stringToEnum, enumToString);
     }
+    return Promise.resolve();
 }
 
 /** bind a string property to a label, input text, text area, or even SVG element */
-export function bindText(element:Node, property:Property<string>):void {
-    addBinding(element, new TextBinding(element, property));
+export async function bindText(element:HTMLElement, property:Property<string>):Promise<void> {
+    const binding = await TextBinding.create(element, property);
+    addBinding(element, binding);
 }
 
 /** bind a string property to a label, input text, or text area element */
-export function bindTextById(id:string, property:Property<string>):void {
+export async function bindTextById(id:string, property:Property<string>):Promise<void> {
     const element = document.getElementById(id);
     if (element instanceof Node) {
-        bindText(element, property);
+        return bindText(element, property);
     }
+    return Promise.resolve();
 }
 
 /** bind a number property to a input[type=range] element */
-export function bindSlider(element:HTMLInputElement, valueLabel:HTMLElement|null, property:Property<number>):void {
-    addBinding(element, new SliderBinding(element, valueLabel, property));
+export async function bindSlider(element:HTMLInputElement, valueLabel:HTMLElement|null, property:Property<number>):Promise<void> {
+    const binding = await SliderBinding.create(element, valueLabel, property);
+    addBinding(element, binding);
 }
 
 /** bind a number property to a input[type=range] element */
-export function bindSliderById(id:string, valueLabelId:string|null, property:Property<number>):void {
+export async function bindSliderById(id:string, valueLabelId:string|null, property:Property<number>):Promise<void> {
     const element = document.getElementById(id);
     const valueLabel = (valueLabelId===null)?null:document.getElementById(valueLabelId);
     if (element instanceof HTMLInputElement) {
-        bindSlider(element, valueLabel, property);
+        return bindSlider(element, valueLabel, property);
     }
+    return Promise.resolve();
 }
 
 /** bind an enumproperty to a label, input text, or text area element, showing the display name of the value rather than the value */
-export function bindEnumDisplay(element:HTMLElement, property:EnumProperty<any>):void {
-    addBinding(element, new TextEnumBinding(element, property));
+export async function bindEnumDisplay(element:HTMLElement, property:EnumProperty<any>):Promise<void> {
+    const binding = await TextEnumBinding.create(element, property);
+    addBinding(element, binding);
 }
 
 /** bind an enumproperty to a label, input text, or text area element, showing the display name of the value rather than the value */
-export function bindEnumDisplayById(id:string, property:EnumProperty<string>):void {
+export async function bindEnumDisplayById(id:string, property:EnumProperty<string>):Promise<void> {
     const element = document.getElementById(id);
     if (element instanceof HTMLElement) {
-        bindEnumDisplay(element, property);
+        return bindEnumDisplay(element, property);
     }
+    return Promise.resolve();
 }
 
 /** bind a collection of items, and callbacks to create/destroy/update items to a parent element */
@@ -200,55 +236,63 @@ export async function bindCollectionById<T extends ObservableObject<T>>(
 }
 
 /** bind an image to a `string|null` property that stores an object url */
-export function bindImageDisplay(element:HTMLImageElement, property:Property<string|null>):void {
-    addBinding(element, new ImageDisplayBinding(element, property));
+export async function bindImageDisplay(element:HTMLImageElement, property:Property<string|null>):Promise<void> {
+    const binding = await ImageDisplayBinding.create(element, property);
+    addBinding(element, binding);
 }
 
 /** bind an image to a `string|null` property that stores an object url */
-export function bindImageDisplayById(id:string, property:Property<string|null>):void {
+export async function bindImageDisplayById(id:string, property:Property<string|null>):Promise<void> {
     const element = document.getElementById(id);
     if (element instanceof HTMLImageElement) {
-        bindImageDisplay(element, property);
+        return bindImageDisplay(element, property);
     }
+    return Promise.resolve();
 }
 
 /** bind an `input[type=file]` element to a `string|null` property that stores an object url */
-export function bindImageChooser(element:HTMLInputElement, property:Property<string|null>, maxWidth:number, maxHeight:number):void {
-    addBinding(element, new ImageChooserBinding(element, property, maxWidth, maxHeight));
+export async function bindImageChooser(element:HTMLInputElement, property:Property<string|null>, maxWidth:number, maxHeight:number):Promise<void> {
+    const binding = await ImageChooserBinding.create(element, property, maxWidth, maxHeight);
+    addBinding(element, binding);
 }
 
 /** bind an `input[type=file] to a `string|null` property that stores an object url */
-export function bindImageChooserById(id:string, property:Property<string|null>, maxWidth:number, maxHeight:number):void {
+export async function bindImageChooserById(id:string, property:Property<string|null>, maxWidth:number, maxHeight:number):Promise<void> {
     const element = document.getElementById(id);
     if (element instanceof HTMLInputElement) {
-        bindImageChooser(element, property, maxWidth, maxHeight);
+        return bindImageChooser(element, property, maxWidth, maxHeight);
     }
+    return Promise.resolve();
 }
 
 /** one way binding. automatically add or remove a css class based on the property value and callback */
-export function bindStyle<ValueType>(element:HTMLElement, property:Property<ValueType>, cb:(value:ValueType, classList:DOMTokenList)=>void):void {
-    addBinding(element, new StyleBinding<ValueType>(element, property, cb));
+export async function bindStyle<ValueType>(element:HTMLElement, property:Property<ValueType>, cb:(value:ValueType, classList:DOMTokenList)=>void):Promise<void> {
+    const binding = await StyleBinding.create(element, property, cb);
+    addBinding(element, binding);
 }
 
 /** one way binding. automatically add or remove a css class based on the property value and callback */
-export function bindStyleById<ValueType>(id:string, property:Property<ValueType>, cb:(value:ValueType, classList:DOMTokenList)=>void):void {
+export async function bindStyleById<ValueType>(id:string, property:Property<ValueType>, cb:(value:ValueType, classList:DOMTokenList)=>void):Promise<void> {
     const element = document.getElementById(id);
     if (element instanceof HTMLElement) {
-        bindStyle(element, property, cb);
+        return bindStyle(element, property, cb);
     }
+    return Promise.resolve();
 }
 
 /** one-way binding. make the element visible or not based on a boolean property */
-export function bindVisibility(element:HTMLElement, property:Property<boolean>):void {
-    addBinding(element, new VisibilityBinding(element, property));
+export async function bindVisibility(element:HTMLElement, property:Property<boolean>):Promise<void> {
+    const binding = await VisibilityBinding.create(element, property);
+    addBinding(element, binding);
 }
 
 /** one-way binding. make the element visible or not based on a boolean property */
-export function bindVisibilityById(id:string, property:Property<boolean>):void {
+export async function bindVisibilityById(id:string, property:Property<boolean>):Promise<void> {
     const element = document.getElementById(id);
     if (element instanceof HTMLElement) {
-        bindVisibility(element, property);
+        return bindVisibility(element, property);
     }
+    return Promise.resolve();
 }
 
 /** clear element's current binding, if any */

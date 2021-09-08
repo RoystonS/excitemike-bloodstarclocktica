@@ -37,7 +37,7 @@ async function initNightOrderBinding(
                 await selectedCharacterProperty.set(character);
                 tabClicked('charTabBtn', 'charactertab');
             },
-            renderFn: (char, coll)=>makeNightOrderItem(char, coll, ordinalPropName, reminderTextPropName),
+            renderFn: async (char, coll)=>makeNightOrderItem(char, coll, ordinalPropName, reminderTextPropName),
             showDeleteBtn:false,
             showEditBtn:true
         }
@@ -67,19 +67,19 @@ export async function initNightOrderBindings(edition:Edition, selectedCharacterP
  * @param character character for which we are making a list item
  * @returns HTMLElement to represent that character
  */
-export function makeNightOrderItem(
+export async function makeNightOrderItem(
     character: Character,
     _collection:ObservableCollection<Character>,
     ordinalPropertyName:'firstNightOrdinal'|'otherNightOrdinal',
     reminderPropertyName:'firstNightReminder'|'otherNightReminder'
-):HTMLElement {
+):Promise<HTMLElement> {
     const row = createElement({t:'div', css:['nightOrderItem']});
-    bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);
-    bindAttribute(row, 'title', character.getProperty<string>(reminderPropertyName));
+    await bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);
+    await bindAttribute(row, 'title', character.getProperty<string>(reminderPropertyName));
 
     const ordinal = createElement({t:'span', css:['ordinal']});
-    bindText(ordinal, character.getProperty(ordinalPropertyName));
-    bindStyle<boolean>(ordinal, character.export, (willExport:boolean, classList:DOMTokenList)=>{
+    await bindText(ordinal, character.getProperty(ordinalPropertyName));
+    await bindStyle<boolean>(ordinal, character.export, (willExport:boolean, classList:DOMTokenList)=>{
         if (willExport) {
             classList.remove('dim');
         } else {
@@ -89,15 +89,15 @@ export function makeNightOrderItem(
     row.appendChild(ordinal);
 
     const icon = createElement({t:'img', css:['nightOrderThumbnail']});
-    bindImageDisplay(icon, character.styledImage);
+    await bindImageDisplay(icon, character.styledImage);
     row.appendChild(icon);
 
     const nameElement = createElement({t:'span', css:['nightOrderName', 'nowrap']});
-    bindText(nameElement, character.name);
+    await bindText(nameElement, character.name);
     row.appendChild(nameElement);
 
     const reminderElement = createElement({t:'span', css:['nightOrderReminder', 'nowrap']});
-    bindText(reminderElement, character.getProperty(reminderPropertyName));
+    await bindText(reminderElement, character.getProperty(reminderPropertyName));
     row.appendChild(reminderElement);
 
     return row;

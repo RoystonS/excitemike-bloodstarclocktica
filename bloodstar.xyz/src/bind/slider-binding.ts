@@ -15,19 +15,22 @@ async function syncFromElementToProperty(element:HTMLInputElement, valueLabel:HT
     await property.set(parseFloat(element.value));
     updateValueLabel(element, valueLabel);
 }
-function syncFromPropertyToElement(element:HTMLInputElement, valueLabel:HTMLElement|null, property:Property<number>):void {
+async function syncFromPropertyToElement(element:HTMLInputElement, valueLabel:HTMLElement|null, property:Property<number>):Promise<void> {
     element.value=String(property.get());
     updateValueLabel(element, valueLabel);
 }
 
 export default class SliderBinding extends BaseBinding<number> {
-    constructor(element:HTMLInputElement, valueLabel:HTMLElement|null, property:Property<number>) {
-        super(
+    /** create an instance asynchronously */
+    static async create(element:HTMLInputElement, valueLabel:HTMLElement|null, property:Property<number>):Promise<SliderBinding> {
+        const self = new SliderBinding(
             element,
             property,
             'change',
             async ()=>syncFromElementToProperty(element, valueLabel, property),
-            ()=>{ syncFromPropertyToElement(element, valueLabel, property); }
+            async ()=>syncFromPropertyToElement(element, valueLabel, property)
         );
+        await self.init();
+        return self;
     }
 }

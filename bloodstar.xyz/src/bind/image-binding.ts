@@ -1,17 +1,40 @@
+import Locks from '../lock';
 import {BaseBinding, Property} from './base-binding';
+
+const MAX_SIMUL_SYNCTOELEMENT = 5;
 
 /** one-way binding to display an image in an img tag */
 export class ImageDisplayBinding extends BaseBinding<string|null> {
-    constructor(element:HTMLImageElement, property:Property<string|null>) {
+
+    /** create an instance asynchronously */
+    static async create(
+        element:HTMLImageElement,
+        property:Property<string|null>
+    ):Promise<ImageDisplayBinding> {
         element.src = '';
 
-        // TODO: delayed (throttled?) syncing from prop to element
-        super(
+        const syncToElement = async (v:string|null)=>{
+            if (v) {
+                await new Promise(resolve=>{
+                    element.addEventListener('load', resolve, {once:true});
+                    element.src = v;
+                });
+            } else {
+                element.src = '';
+            }
+        };
+        // TODO: spinner here?
+        const throttleSyncToElement = async (v:string|null)=>Locks.enqueue('ImageDisplayBinding', async ()=>syncToElement(v), MAX_SIMUL_SYNCTOELEMENT);
+
+        const self = new ImageDisplayBinding(
             element,
             property,
             '',
             null,
-            v=>{element.src = v??'';});
+            throttleSyncToElement
+        );
+        await self.init();
+        return self;
     }
 }
 
@@ -49,13 +72,16 @@ async function toDataUri(url:string, maxWidth:number, maxHeight:number):Promise<
 
 /** one-way binding to set a property to a data URI from a chosen image file */
 export class ImageChooserBinding extends BaseBinding<string|null> {
-    constructor(element:HTMLInputElement, property:Property<string|null>, maxWidth:number, maxHeight:number) {
-        super(
+    /** create an instance asynchronously */
+    static async create(element:HTMLInputElement, property:Property<string|null>, maxWidth:number, maxHeight:number):Promise<ImageChooserBinding> {
+        const self = new ImageChooserBinding(
             element,
             property,
             'change',
             async ()=>syncFileElemToProperty(element, property, maxWidth, maxHeight),
             null);
+        await self.init();
+        return self;
     }
 
     destroy():void {

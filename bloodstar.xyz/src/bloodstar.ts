@@ -45,8 +45,7 @@ export function isMobile():boolean {
  * switch to a tab
  */
 export function tabClicked(btnId:string, tabId:string):void {
-    // TODO: consider using history and/or manually triggering a popstate event (see https://stackoverflow.com/a/37492075)
-    // so that CollectionButtonsMgr can react
+    // TODO: consider clearing state history here so that special modes go away on tab changes
     const allTabBtns = document.getElementsByClassName("tabButton");
     for (let i = 0; i < allTabBtns.length; i++) {
         const tabBtn = allTabBtns[i];
@@ -96,23 +95,23 @@ async function initBindings(edition:Edition):Promise<void> {
         ['metaLogoRemoveBtn', async ()=>edition.meta.logo.set(null)],
     ]);
 
-    BloodBind.bindTextById('windowTitle', edition.windowTitle);
-    BloodBind.bindTextById('metaName', edition.meta.name);
-    BloodBind.bindTextById('metaAuthor', edition.meta.author);
-    BloodBind.bindTextById('metaSynopsis', edition.almanac.synopsis);
-    BloodBind.bindTextById('metaOverview', edition.almanac.overview);
-    BloodBind.bindTextById('metaChangeLog', edition.almanac.changelog);
-    BloodBind.bindImageChooserById('metaLogoInput', edition.meta.logo, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
-    BloodBind.bindImageDisplayById('metaLogoDisplay', edition.meta.logo);
+    await BloodBind.bindTextById('windowTitle', edition.windowTitle);
+    await BloodBind.bindTextById('metaName', edition.meta.name);
+    await BloodBind.bindTextById('metaAuthor', edition.meta.author);
+    await BloodBind.bindTextById('metaSynopsis', edition.almanac.synopsis);
+    await BloodBind.bindTextById('metaOverview', edition.almanac.overview);
+    await BloodBind.bindTextById('metaChangeLog', edition.almanac.changelog);
+    await BloodBind.bindImageChooserById('metaLogoInput', edition.meta.logo, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
+    await BloodBind.bindImageDisplayById('metaLogoDisplay', edition.meta.logo);
 
     const tokenBackground = document.getElementById('tokenBackground');
     if (tokenBackground instanceof HTMLImageElement) {
         tokenBackground.src = Images.TOKEN_URL;
-        BloodBind.bindVisibility(tokenBackground, edition.previewOnToken);
+        await BloodBind.bindVisibility(tokenBackground, edition.previewOnToken);
     }
     const curvedCharacterText = document.getElementById('curvedCharacterNameHolder');
     if (curvedCharacterText) {
-        BloodBind.bindVisibility(curvedCharacterText, edition.previewOnToken);
+        await BloodBind.bindVisibility(curvedCharacterText, edition.previewOnToken);
     }
 
     await bindCharacterList('characterList', edition.characterList, selectedCharacter);
@@ -120,8 +119,8 @@ async function initBindings(edition:Edition):Promise<void> {
     await initNightOrderBindings(edition, selectedCharacter);
 
     // tie selected character to character tab
-    selectedCharacter.addListener(v=>{
-        CharacterTab.setSelectedCharacter(v);
+    selectedCharacter.addListener(async v=>{
+        await CharacterTab.setSelectedCharacter(v);
         if (!isMobile()) {
             if (v) {
                 tabClicked('charTabBtn', 'charactertab');
@@ -130,7 +129,7 @@ async function initBindings(edition:Edition):Promise<void> {
     });
     await selectedCharacter.set(edition.characterList.get(0));
 
-    BloodBind.bindCheckboxById('previewOnToken', edition.previewOnToken);
+    await BloodBind.bindCheckboxById('previewOnToken', edition.previewOnToken);
 
     edition.addPropertyChangedEventListener(key => {
         if (key === 'characterList') {

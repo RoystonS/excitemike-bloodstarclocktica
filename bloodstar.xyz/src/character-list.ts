@@ -21,7 +21,7 @@ export async function bindCharacterList(id:string, characterList:ObservableColle
                 await selectedCharacterProperty.set(character);
                 tabClicked('charTabBtn', 'charactertab');
             },
-            renderFn: (character: Character, collection:ObservableCollection<Character>)=>makeCharacterListItem(character, collection, selectedCharacterProperty),
+            renderFn: async (character: Character, collection:ObservableCollection<Character>)=>makeCharacterListItem(character, collection, selectedCharacterProperty),
             showDeleteBtn:true,
             showEditBtn:isMobile()
         }
@@ -62,7 +62,7 @@ async function cleanupListItem(element: Node, character: Character, selectedChar
  * @param character character for which we are making a list item
  * @returns HTMLElement to represent that character
  */
-function makeCharacterListItem(character: Character, _collection:ObservableCollection<Character>, selectedCharacterProperty:Property<Character|null>):HTMLElement {
+async function makeCharacterListItem(character: Character, _collection:ObservableCollection<Character>, selectedCharacterProperty:Property<Character|null>):Promise<HTMLElement> {
     const row = document.createElement("div");
 
     row.className = "characterListItem";
@@ -86,20 +86,20 @@ function makeCharacterListItem(character: Character, _collection:ObservableColle
                 break;
         }
     };
-    bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);
-    bindAttribute(row, 'title', character.ability);
+    await bindStyle<BloodTeam>(row, character.team, setTeamColorStyle);
+    await bindAttribute(row, 'title', character.ability);
 
     const checkbox = document.createElement("input");
     checkbox.type = "checkbox";
-    bindCheckbox(checkbox, character.export);
+    await bindCheckbox(checkbox, character.export);
     row.appendChild(checkbox);
 
     const icon = createElement({t:'img', css:['characterListThumbnail']});
-    bindImageDisplay(icon, character.styledImage);
+    await bindImageDisplay(icon, character.styledImage);
     row.appendChild(icon);
 
     const nameElement = createElement({t:'span', css:['characterListName', 'nowrap']});
-    bindText(nameElement, character.name);
+    await bindText(nameElement, character.name);
     row.appendChild(nameElement);
 
     const cb = (selectedCharacter:Character|null):void => {

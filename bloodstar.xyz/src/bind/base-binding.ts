@@ -56,14 +56,14 @@ export class Property<T> {
     }
 }
 
-export type SyncFromElementToPropertyFn = ((_:Event)=>void)|null;
-export type SyncFromPropertyToElementFn<ValueType> = ((v:ValueType)=>void) | null;
+export type SyncFromElementToPropertyFn = ((e:Event)=>Promise<void>)|null;
+export type SyncFromPropertyToElementFn<ValueType> = ((v:ValueType)=>Promise<void>) | null;
 
 /** shared code between binding classes */
 export class BaseBinding<ValueType> {
-    private htmlElement:HTMLElement|null;
+    private htmlElement:HTMLElement;
 
-    private property:Property<ValueType>|null;
+    private property:Property<ValueType>;
 
     private eventName:string;
 
@@ -72,39 +72,46 @@ export class BaseBinding<ValueType> {
     private syncFromPropertyToElement:SyncFromPropertyToElementFn<ValueType>;
 
     /** set up the binding and bookkeeping for cleanup */
-    constructor(node:Node, property:Property<ValueType>, eventName:string, syncFromElementToProperty:SyncFromElementToPropertyFn, syncFromPropertyToElement:SyncFromPropertyToElementFn<ValueType>) {
-        this.htmlElement = (node instanceof HTMLElement) ? node : null;
+    protected constructor(
+        element:HTMLElement,
+        property:Property<ValueType>,
+        eventName:string,
+        syncFromElementToProperty:SyncFromElementToPropertyFn,
+        syncFromPropertyToElement:SyncFromPropertyToElementFn<ValueType>
+    ) {
+        this.htmlElement = element;
         this.property = property;
         this.eventName = eventName;
 
         this.syncFromElementToProperty = syncFromElementToProperty;
         this.syncFromPropertyToElement = syncFromPropertyToElement;
-
-        if (syncFromPropertyToElement) { syncFromPropertyToElement(property.get()); }
-
-        if (this.htmlElement && syncFromElementToProperty) {
-            this.htmlElement.addEventListener(eventName, syncFromElementToProperty);
-        }
-        if (syncFromPropertyToElement) {
-            property.addListener(syncFromPropertyToElement);
-        }
     }
 
     /** clean up */
     destroy():void {
-        if (this.htmlElement && this.syncFromElementToProperty) {
+        if (this.syncFromElementToProperty) {
             this.htmlElement.removeEventListener(this.eventName, this.syncFromElementToProperty);
             this.syncFromElementToProperty = null;
         }
         if (this.syncFromPropertyToElement) {
-            this.property?.removeListener(this.syncFromPropertyToElement);
+            this.property.removeListener(this.syncFromPropertyToElement);
             this.syncFromPropertyToElement = null;
         }
-        this.htmlElement = null;
-        this.property = null;
     }
 
     protected getProperty():Property<ValueType>|null {
         return this.property;
+    }
+
+    /** asynchronous initialization */
+    protected async init():Promise<void> {
+        if (this.syncFromPropertyToElement) { await this.syncFromPropertyToElement(this.property.get()); }
+
+        if (this.syncFromElementToProperty) {
+            this.htmlElement.addEventListener(this.eventName, this.syncFromElementToProperty);
+        }
+        if (this.syncFromPropertyToElement) {
+            this.property.addListener(this.syncFromPropertyToElement);
+        }
     }
 }

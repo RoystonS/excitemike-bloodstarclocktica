@@ -25,51 +25,49 @@ import {hookupClickEvents} from './util';
 type TagsThatCanBeDisabled = "button" | "fieldset" | "input" | "optgroup" | "option" | "select" | "textarea";
 
 /** set up character tab bindings. returns the cleanup function */
-function bindCharacterTabControls(character:Character):(()=>Promise<void>)|null {
+async function bindCharacterTabControls(character:Character):Promise<()=>Promise<void>> {
     const characterTabIds:Set<string> = new Set<string>();
-    bindTrackedText('characterId', character.id, characterTabIds);
-    bindTrackedText('characterName', character.name, characterTabIds);
-    bindTrackedComboBox('characterTeam', character.team, characterTabIds, parseBloodTeam, x=>x);
-    bindTrackedStyle<BloodTeam>('characterTeam', character.team, setTeamColorStyle, characterTabIds);
-    bindTrackedText('characterAbility', character.ability, characterTabIds);
-    bindTrackedText('characterFirstNightReminder', character.firstNightReminder, characterTabIds);
-    bindTrackedText('characterOtherNightReminder', character.otherNightReminder, characterTabIds);
-    bindTrackedCheckBox('characterSetup', character.setup, characterTabIds);
-    bindTrackedText('characterReminderTokens', character.characterReminderTokens, characterTabIds);
-    bindTrackedText('globalReminderTokens', character.globalReminderTokens, characterTabIds);
-    bindTrackedCheckBox('characterExport', character.export, characterTabIds);
-    bindTrackedText('characterNotes', character.notes, characterTabIds);
-    bindTrackedText('characterAttribution', character.attribution, characterTabIds);
-    bindTrackedText('characterAlmanacFlavor', character.almanac.flavor, characterTabIds);
-    bindTrackedText('characterAlmanacOverview', character.almanac.overview, characterTabIds);
-    bindTrackedText('characterAlmanacExamples', character.almanac.examples, characterTabIds);
-    bindTrackedText('characterAlmanacHowToRun', character.almanac.howToRun, characterTabIds);
-    bindTrackedText('characterAlmanacTip', character.almanac.tip, characterTabIds);
-    bindTrackedImageChooser('characterUnstyledImageInput', character.unStyledImage, characterTabIds);
-    bindTrackedVisibility('characterImagePreviewSpinner', character.isLoading, characterTabIds);
-    bindTrackedImageDisplay('characterStyledImageDisplay', character.styledImage, characterTabIds);
+    await bindTrackedText('characterId', character.id, characterTabIds);
+    await bindTrackedText('characterName', character.name, characterTabIds);
+    await bindTrackedComboBox('characterTeam', character.team, characterTabIds, parseBloodTeam, x=>x);
+    await bindTrackedStyle<BloodTeam>('characterTeam', character.team, setTeamColorStyle, characterTabIds);
+    await bindTrackedText('characterAbility', character.ability, characterTabIds);
+    await bindTrackedText('characterFirstNightReminder', character.firstNightReminder, characterTabIds);
+    await bindTrackedText('characterOtherNightReminder', character.otherNightReminder, characterTabIds);
+    await bindTrackedCheckBox('characterSetup', character.setup, characterTabIds);
+    await bindTrackedText('characterReminderTokens', character.characterReminderTokens, characterTabIds);
+    await bindTrackedText('globalReminderTokens', character.globalReminderTokens, characterTabIds);
+    await bindTrackedCheckBox('characterExport', character.export, characterTabIds);
+    await bindTrackedText('characterNotes', character.notes, characterTabIds);
+    await bindTrackedText('characterAttribution', character.attribution, characterTabIds);
+    await bindTrackedText('characterAlmanacFlavor', character.almanac.flavor, characterTabIds);
+    await bindTrackedText('characterAlmanacOverview', character.almanac.overview, characterTabIds);
+    await bindTrackedText('characterAlmanacExamples', character.almanac.examples, characterTabIds);
+    await bindTrackedText('characterAlmanacHowToRun', character.almanac.howToRun, characterTabIds);
+    await bindTrackedText('characterAlmanacTip', character.almanac.tip, characterTabIds);
+    await bindTrackedImageChooser('characterUnstyledImageInput', character.unStyledImage, characterTabIds);
+    await bindTrackedVisibility('characterImagePreviewSpinner', character.isLoading, characterTabIds);
+    await bindTrackedImageDisplay('characterStyledImageDisplay', character.styledImage, characterTabIds);
 
-    bindTrackedText('curvedCharacterNameTextPath', character.name, characterTabIds);
+    await bindTrackedText('curvedCharacterNameTextPath', character.name, characterTabIds);
 
-    const sliderHelper = (id:string, p:Property<number>) => {
-        bindTrackedSlider(id, `${id}ValueLabel`, p, characterTabIds);
-    };
+    const sliderHelper = async (id:string, p:Property<number>) => bindTrackedSlider(id, `${id}ValueLabel`, p, characterTabIds);
 
-    bindTrackedCheckBox('shouldRestyle', character.imageSettings.shouldRestyle, characterTabIds);
-    sliderHelper('horizontalPlacement', character.imageSettings.horizontalPlacement);
-    sliderHelper('verticalPlacement', character.imageSettings.verticalPlacement);
-    sliderHelper('sizeFactor', character.imageSettings.sizeFactor);
-    bindTrackedCheckBox('shouldCrop', character.imageSettings.shouldCrop, characterTabIds);
-    bindTrackedCheckBox('shouldColorize', character.imageSettings.shouldColorize, characterTabIds);
-    bindTrackedCheckBox('useOutsiderAndMinionColors', character.imageSettings.useOutsiderAndMinionColors, characterTabIds);
-    bindTrackedCheckBox('useTexture', character.imageSettings.useTexture, characterTabIds);
-    bindTrackedCheckBox('useBorder', character.imageSettings.useBorder, characterTabIds);
-    sliderHelper('borderIntensity', character.imageSettings.borderIntensity);
-    bindTrackedCheckBox('dropShadow', character.imageSettings.useDropshadow, characterTabIds);
-    sliderHelper('dropShadowSize', character.imageSettings.dropShadowSize);
-    sliderHelper('dropShadowOffsetX', character.imageSettings.dropShadowOffsetX);
-    sliderHelper('dropShadowOffsetY', character.imageSettings.dropShadowOffsetY);
-    sliderHelper('dropShadowOpacity', character.imageSettings.dropShadowOpacity);
+    await bindTrackedCheckBox('shouldRestyle', character.imageSettings.shouldRestyle, characterTabIds);
+    await sliderHelper('horizontalPlacement', character.imageSettings.horizontalPlacement);
+    await sliderHelper('verticalPlacement', character.imageSettings.verticalPlacement);
+    await sliderHelper('sizeFactor', character.imageSettings.sizeFactor);
+    await bindTrackedCheckBox('shouldCrop', character.imageSettings.shouldCrop, characterTabIds);
+    await bindTrackedCheckBox('shouldColorize', character.imageSettings.shouldColorize, characterTabIds);
+    await bindTrackedCheckBox('useOutsiderAndMinionColors', character.imageSettings.useOutsiderAndMinionColors, characterTabIds);
+    await bindTrackedCheckBox('useTexture', character.imageSettings.useTexture, characterTabIds);
+    await bindTrackedCheckBox('useBorder', character.imageSettings.useBorder, characterTabIds);
+    await sliderHelper('borderIntensity', character.imageSettings.borderIntensity);
+    await bindTrackedCheckBox('dropShadow', character.imageSettings.useDropshadow, characterTabIds);
+    await sliderHelper('dropShadowSize', character.imageSettings.dropShadowSize);
+    await sliderHelper('dropShadowOffsetX', character.imageSettings.dropShadowOffsetX);
+    await sliderHelper('dropShadowOffsetY', character.imageSettings.dropShadowOffsetY);
+    await sliderHelper('dropShadowOpacity', character.imageSettings.dropShadowOpacity);
 
     const unhookupClickEvents = hookupClickEvents([
         ['characterImageRemoveBtn', async ()=>character.unStyledImage.set(null)],
@@ -93,50 +91,55 @@ function bindCharacterTabControls(character:Character):(()=>Promise<void>)|null 
 }
 
 /** helper for bindCharacterTabControls */
-function bindTrackedCheckBox(id:string, property:Property<boolean>, set:Set<string>):void {
+async function bindTrackedCheckBox(id:string, property:Property<boolean>, set:Set<string>):Promise<void> {
     set.add(id);
-    bindCheckboxById(id, property);
+    await bindCheckboxById(id, property);
 }
 
 /** helper for bindCharacterTabControls */
-function bindTrackedComboBox<ValueType>(id:string, property:EnumProperty<ValueType>, set:Set<string>, stringToEnum:(s:string)=>ValueType, enumToString:(t:ValueType)=>string):void {
+async function bindTrackedComboBox<ValueType>(
+    id:string, property:EnumProperty<ValueType>,
+    set:Set<string>,
+    stringToEnum:(s:string)=>ValueType,
+    enumToString:(t:ValueType)=>string
+):Promise<void> {
     set.add(id);
-    bindComboBoxById<ValueType>(id, property, stringToEnum, enumToString);
+    await bindComboBoxById<ValueType>(id, property, stringToEnum, enumToString);
 }
 /** helper for bindCharacterTabControls */
-function bindTrackedImageChooser(id:string, property:Property<string|null>, set:Set<string>):void {
+async function bindTrackedImageChooser(id:string, property:Property<string|null>, set:Set<string>):Promise<void> {
     set.add(id);
-    bindImageChooserById(id, property, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
-}
-
-/** helper for bindCharacterTabControls */
-function bindTrackedImageDisplay(id:string, property:Property<string|null>, set:Set<string>):void {
-    set.add(id);
-    bindImageDisplayById(id, property);
-}
-
-/** helper for bindCharacterTabControls */
-function bindTrackedSlider(id:string, valueLabelId:string|null, property:Property<number>, set:Set<string>):void {
-    set.add(id);
-    bindSliderById(id, valueLabelId, property);
+    await bindImageChooserById(id, property, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT);
 }
 
 /** helper for bindCharacterTabControls */
-function bindTrackedStyle<ValueType>(id:string, property:Property<ValueType>, cb:(value:ValueType, classList:DOMTokenList)=>void, set:Set<string>):void {
+async function bindTrackedImageDisplay(id:string, property:Property<string|null>, set:Set<string>):Promise<void> {
     set.add(id);
-    bindStyleById<ValueType>(id, property, cb);
+    await bindImageDisplayById(id, property);
 }
 
 /** helper for bindCharacterTabControls */
-function bindTrackedText(id:string, property:Property<string>, set:Set<string>):void {
+async function bindTrackedSlider(id:string, valueLabelId:string|null, property:Property<number>, set:Set<string>):Promise<void> {
     set.add(id);
-    bindTextById(id, property);
+    await bindSliderById(id, valueLabelId, property);
 }
 
 /** helper for bindCharacterTabControls */
-function bindTrackedVisibility(id:string, property:Property<boolean>, set:Set<string>):void {
+async function bindTrackedStyle<ValueType>(id:string, property:Property<ValueType>, cb:(value:ValueType, classList:DOMTokenList)=>void, set:Set<string>):Promise<void> {
     set.add(id);
-    bindVisibilityById(id, property);
+    await bindStyleById<ValueType>(id, property, cb);
+}
+
+/** helper for bindCharacterTabControls */
+async function bindTrackedText(id:string, property:Property<string>, set:Set<string>):Promise<void> {
+    set.add(id);
+    await bindTextById(id, property);
+}
+
+/** helper for bindCharacterTabControls */
+async function bindTrackedVisibility(id:string, property:Property<boolean>, set:Set<string>):Promise<void> {
+    set.add(id);
+    await bindVisibilityById(id, property);
 }
 
 /** make the entire character tab disabled */
@@ -172,11 +175,11 @@ function enableCharacterTab():void {
 }
 
 /** update character tab to show this character */
-export function setSelectedCharacter(value:Character|null):void {
+export async function setSelectedCharacter(value:Character|null):Promise<void> {
     if (unbindCharacterTabControls) {unbindCharacterTabControls();}
     unbindCharacterTabControls = null;
     if (value) {
-        unbindCharacterTabControls = bindCharacterTabControls(value);
+        unbindCharacterTabControls = await bindCharacterTabControls(value);
         enableCharacterTab();
     } else {
         disableCharacterTab();

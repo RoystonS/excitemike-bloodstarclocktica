@@ -5,7 +5,7 @@ import { isMobile } from '../bloodstar';
 import { arrayGet, createElement } from '../util';
 import { CollectionButtonsMgr } from './collection-buttons-mgr';
 
-export type RenderFn<T extends ObservableObject<T>> = (itemData:T, collection:ObservableCollection<T>)=>Element;
+export type RenderFn<T extends ObservableObject<T>> = (itemData:T, collection:ObservableCollection<T>)=>Promise<Element>;
 export type CleanupFn<T> = (renderedElement:Element, itemData:T)=>Promise<void>;
 export type CollectionBindingOptions<ItemType extends ObservableObject<ItemType>> = {
     /** callback to clean up what renderFn does */
@@ -34,7 +34,7 @@ function checkInsertAfter(event:MouseEvent, refElement:Element):boolean {
 }
 
 /** create default row content */
-function defaultRenderFn<T extends ObservableObject<T>>(itemData:T/*, collection:ObservableCollection<T>*/):Element {
+async function defaultRenderFn<T extends ObservableObject<T>>(itemData:T/*, collection:ObservableCollection<T>*/):Promise<Element> {
     const row = document.createElement("div");
 
     itemData.forEachProperty((key, prop)=>{
@@ -104,7 +104,7 @@ export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
 
         // sync DOM to initial value
         await self.clear();
-        self.insert(0, collection.getItems());
+        await self.insert(0, collection.getItems());
 
         return self;
     }
@@ -122,7 +122,7 @@ export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
     private async collectionChanged(event:ObservableCollectionChangedEvent<ItemType>):Promise<void> {
         switch (event.action) {
             case ObservableCollectionChangeAction.Add:
-                this.insert(event.newStartingIndex, event.newItems);
+                await this.insert(event.newStartingIndex, event.newItems);
                 break;
             case ObservableCollectionChangeAction.Move:
                 this.move(event.oldStartingIndex, event.newStartingIndex);
@@ -241,10 +241,10 @@ export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
     }
 
     /** create and insert DOM elements at the specified index */
-    private insert(insertLocation:number, items:readonly ItemType[]):void {
+    private async insert(insertLocation:number, items:readonly ItemType[]):Promise<void> {
         let i = insertLocation;
         for (const item of items) {
-            const newChild = this.renderListItem(i, item);
+            const newChild = await this.renderListItem(i, item);
             if (i === this.listElement.childNodes.length) {
                 this.listElement.appendChild(newChild);
             } else {
@@ -280,7 +280,7 @@ export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
         for (let i=0; i<n; i++) {
             const oldChild = this.listElement.childNodes[start+i];
             await this.cleanupListItem(oldChild, oldData[i]);
-            const newChild = this.renderListItem(i, newData[i]);
+            const newChild = await this.renderListItem(i, newData[i]);
             this.listElement.replaceChild(newChild, oldChild);
         }
     }
@@ -307,7 +307,7 @@ export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
     }
 
     /** create DOM list item for a data item */
-    private renderListItem(i:number, itemData:ItemType):Element {
+    private async renderListItem(i:number, itemData:ItemType):Promise<Element> {
         const li = document.createElement('li');
         li.draggable = true;
         li.dataset.index = String(i);
@@ -320,7 +320,7 @@ export class CollectionBinding<ItemType extends ObservableObject<ItemType>> {
             li.addEventListener('drop', async e => this.drop(e));
         }
 
-        const renderedElem = this.renderFn(itemData, this.collection);
+        const renderedElem = await this.renderFn(itemData, this.collection);
         renderedElem.setAttribute(MARKERATTRIBUTE, 'true');
         li.appendChild(renderedElem);
 
