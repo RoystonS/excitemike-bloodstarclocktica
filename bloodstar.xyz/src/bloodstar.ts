@@ -15,6 +15,7 @@ import menuInit, { updateUserDisplay } from './menu';
 import {save} from './commands/save';
 import {clearRecentFile, getRecentFile} from './recent-file';
 import {openExisting} from './dlg/open-flow';
+import * as StateHistory from './state-history';
 import './styles/autogrowtextarea.css';
 import './styles/characterlist.css';
 import './styles/charactertab.css';
@@ -44,8 +45,10 @@ export function isMobile():boolean {
 /**
  * switch to a tab
  */
-export function tabClicked(btnId:string, tabId:string):void {
-    // TODO: consider clearing state history here so that special modes go away on tab changes
+export async function tabClicked(btnId:string, tabId:string):Promise<void> {
+    // TODO: early out if you clicked the current tab
+    await StateHistory.clear();
+
     const allTabBtns = document.getElementsByClassName("tabButton");
     for (let i = 0; i < allTabBtns.length; i++) {
         const tabBtn = allTabBtns[i];
@@ -88,10 +91,10 @@ async function initBindings(edition:Edition):Promise<void> {
         }
     });
     hookupClickEvents([
-        ['metaTabBtn', ()=>{ tabClicked('metaTabBtn', 'metatab'); }],
-        ['charTabBtn', ()=>{ tabClicked('charTabBtn', 'charactertab'); }],
-        ['firstNightTabBtn', ()=>{ tabClicked('firstNightTabBtn', 'firstNightOrderTab'); }],
-        ['otherNightTabBtn', ()=>{ tabClicked('otherNightTabBtn', 'otherNightOrderTab'); }],
+        ['metaTabBtn', async ()=>tabClicked('metaTabBtn', 'metatab')],
+        ['charTabBtn', async ()=>tabClicked('charTabBtn', 'charactertab')],
+        ['firstNightTabBtn', async ()=>tabClicked('firstNightTabBtn', 'firstNightOrderTab')],
+        ['otherNightTabBtn', async ()=>tabClicked('otherNightTabBtn', 'otherNightOrderTab')],
         ['metaLogoRemoveBtn', async ()=>edition.meta.logo.set(null)],
     ]);
 
@@ -125,7 +128,7 @@ async function initBindings(edition:Edition):Promise<void> {
         await CharacterTab.setSelectedCharacter(v);
         if (!isMobile()) {
             if (v) {
-                tabClicked('charTabBtn', 'charactertab');
+                return tabClicked('charTabBtn', 'charactertab');
             }
         }
     });
@@ -179,7 +182,7 @@ async function _init(options?:BloodstarOptions) {
     await initCustomEdition(edition, sessionInfo?.email);
 
     if (isMobile()) {
-        tabClicked('charTabBtn', 'charactertab');
+        return tabClicked('charTabBtn', 'charactertab');
     }
 }
 

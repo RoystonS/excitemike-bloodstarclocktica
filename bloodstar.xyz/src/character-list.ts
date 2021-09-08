@@ -19,7 +19,7 @@ export async function bindCharacterList(id:string, characterList:ObservableColle
             deleteConfirmMessage:(item:Character)=>`Are you sure you want to delete character "${item.name.get()}"?`,
             editBtnCb:async (character:Character)=>{
                 await selectedCharacterProperty.set(character);
-                tabClicked('charTabBtn', 'charactertab');
+                return tabClicked('charTabBtn', 'charactertab');
             },
             renderFn: async (character: Character, collection:ObservableCollection<Character>)=>makeCharacterListItem(character, collection, selectedCharacterProperty),
             showDeleteBtn:true,

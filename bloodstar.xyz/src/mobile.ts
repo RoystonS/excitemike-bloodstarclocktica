@@ -12,7 +12,7 @@ function initMobileBindings():void {
         ['mobilePublishButton', async ()=>openCurtainMenu('mobilePublishMenu')],
         ['mobileSharingButton', async ()=>openCurtainMenu('mobileSharingMenu')],
 
-        ['charlistTabBtn', ()=>{ tabClicked('charlistTabBtn', 'characterlisttab'); }],
+        ['charlistTabBtn', async ()=>tabClicked('charlistTabBtn', 'characterlisttab')],
     ]);
 
     // find ALL `closeCurtainBtn`
