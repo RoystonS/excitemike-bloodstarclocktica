@@ -25,6 +25,7 @@ import showHelp from './dlg/help-dlg';
 import showSharing from './dlg/sharing-dlg';
 import {showManageBlocked} from './dlg/block-flow';
 import { closeAllCurtains } from "./curtain";
+import showSignUpFlow from './dlg/sign-up-flow';
 
 /** add a new character to the custom edition */
 async function addCharacterClicked(edition:Edition):Promise<boolean> {
@@ -83,6 +84,7 @@ async function importSharedClicked(edition:Edition):Promise<boolean> {
 export default function init(edition:Edition):void {
     const mapping:[string, (e:Edition)=>Promise<boolean>][] = [
         ['signInBtn', signInClicked],
+        ['signUpBtn', signUpClicked],
         ['signOutBtn', signOutClicked],
         ['changePasswordBtn', changePasswordClicked],
         ['deleteAccountBtn', deleteAccount],
@@ -186,6 +188,13 @@ async function signInClicked():Promise<boolean> {
     return true;
 }
 
+/** sign up */
+async function signUpClicked():Promise<boolean> {
+    await showSignUpFlow();
+    await signIn();
+    return true;
+}
+
 /** forget session info */
 async function signOutClicked(edition:Edition):Promise<boolean> {
     if (!await SdcDlg.savePromptIfDirty(edition)) {return false;}
@@ -203,7 +212,7 @@ export function updateUserDisplay(session:SessionInfo|null):void {
             showHideElement(element, Boolean(session));
         }
     }
-    for (const id of ['signedOutLabel', 'signInBtn']) {
+    for (const id of ['signedOutLabel', 'signInBtn', 'signUpBtn']) {
         const element = document.getElementById(id);
         if (element) {
             showHideElement(element, !session);
