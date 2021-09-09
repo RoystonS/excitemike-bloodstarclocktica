@@ -15,7 +15,7 @@ export type UserPass = {username:string; password:string};
  * Brings up the loading spinner during the operation
  */
 export default async function cmd<ResultType = unknown>(cmdName:string, spinnerMessage:string, body?:BodyInit):Promise<ResultType> {
-    return spinner<ResultType>('command', spinnerMessage, _cmd<ResultType>(cmdName, body, TIMEOUT, MAXRETRIES));
+    return spinner<ResultType>(spinnerMessage, spinnerMessage, _cmd<ResultType>(cmdName, body, TIMEOUT, MAXRETRIES));
 }
 
 /**
