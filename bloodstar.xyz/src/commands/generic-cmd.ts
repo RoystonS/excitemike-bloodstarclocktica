@@ -114,7 +114,7 @@ async function runCmd<
     }
     if (response === 'signInRequired') {return {cancel:'signInFailed'};}
     if ((typeof response === 'object') && ('error' in response)) {
-        return {error:String(response)};
+        return {error:String(response.error)};
     }
     return {data:response};
 }

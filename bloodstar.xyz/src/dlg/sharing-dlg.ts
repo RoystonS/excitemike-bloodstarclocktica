@@ -2,35 +2,42 @@
 * Sharing dialog
 * @module SharingDlg
 */
-import signIn, { signedInCmd, signInAndConfirm } from '../sign-in';
+import genericCmd from '../commands/generic-cmd';
 import { createElement, CreateElementsOptions } from '../util';
 import { updateUsernameWarnings, validateUsername } from '../validate';
 import {AriaDialog, ButtonCfg, showDialog} from './aria-dlg';
 import {showError, show as showMessage} from './blood-message-dlg';
 
 type GetSharedRequest = {token:string; saveName:string};
-type GetSharedResponse = {error?:string; users:string[]};
+type GetSharedResponse = {users:string[]};
 
 type ShareRequest = GetSharedRequest & {user:string};
-type ShareResponse = true | {error:string};
+type ShareResponse = true;
 
 type UnshareRequest = GetSharedRequest & {user:string};
-type UnshareResponse = true | {error:string};
+type UnshareResponse = true;
 
 class SharingDlg extends AriaDialog<void> {
     shareList:string[] = [];
 
-    editionName:string|null = null;
+    editionName:string;
 
     listDiv:HTMLDivElement|null = null;
 
     addUserButton:HTMLButtonElement|null = null;
 
+    constructor(editionName:string) {
+        super();
+        this.editionName = editionName;
+    }
+
     /** create the dialog */
     async open(editionName:string):Promise<void> {
         this.editionName = editionName;
         if (!this.editionName) {return;}
-        this.shareList = await this.getShareList();
+        const shareList = await this.getShareList();
+        if (shareList === null) {return;}
+        this.shareList = shareList;
         this.listDiv = createElement({t:'div', css:['shareDlgList']});
         this.addUserButton = createElement({t:'button', txt:'Add User'});
         this.addUserButton.addEventListener('click', async ()=>this.showShareWithUser());
@@ -56,90 +63,68 @@ class SharingDlg extends AriaDialog<void> {
      * Get a list of users with whom you are sharing
      * Brings up the loading spinner during the operation
      */
-    async getShareList():Promise<string[]> {
-        const sessionInfo = await signIn({
-            title:'Sign In',
-            message:'You must sign in to change sharing settings.'
+    async getShareList():Promise<string[] | null> {
+        const result = await genericCmd<GetSharedRequest, GetSharedResponse>({
+            command:'get-shared',
+            errorMessage:'Error encountered while retrieving share list',
+            request:sessionInfo=>({
+                token:sessionInfo?.token??'',
+                saveName:this.editionName
+            }),
+            signIn: {message:'You must sign in to change sharing settings.'},
+            spinnerMessage:'Retrieving share list'
         });
-        if (!sessionInfo) {return this.shareList;}
-        if (!this.editionName) {return this.shareList;}
-        const request:GetSharedRequest={
-            token:sessionInfo.token,
-            saveName:this.editionName
-        };
-        try {
-            const {error, users} = await signedInCmd<GetSharedResponse>('get-shared', 'Retrieving share list', request);
-            if (error) {
-                console.error(error);
-                await showError('Network Error', `Error encountered while retrieving share list`, error);
-                return [];
-            }
-            return users;
-        } catch (error: unknown) {
-            await showError('Network Error', `Error encountered while retrieving share list`, error);
-        }
-        return [];
+        if ('data' in result) {return result.data.users;}
+        return null;
     }
 
     /** remove a user */
-    async removeUser(user:string):Promise<void> {
-        const sessionInfo = await signInAndConfirm(
-            {title:'Sign In', message:'You must sign in to change sharing settings.'},
-            {title:'Unshare with user?', message:`Are you sure you'd like to stop sharing with user "${user}"?`}
-        );
-        if (!sessionInfo) {return;}
-        if (!this.editionName) {return;}
-        const request:UnshareRequest={
-            token:sessionInfo.token,
-            saveName:this.editionName,
-            user
-        };
-        try {
-            const response = await signedInCmd<UnshareResponse>('unshare', 'Unsharing', request);
-            if (response !== true) {
-                await showError('Network Error', `Error encountered while unsharing`, response.error);
-                console.error(response.error);
-                return;
-            }
-        } catch (error: unknown) {
-            await showError('Network Error', `Error encountered while unsharing`, error);
-            return;
-        }
+    async removeUser(user:string):Promise<boolean> {
+        const response = await genericCmd<UnshareRequest, UnshareResponse>({
+            command:'unshare',
+            confirmOptions: {title:'Unshare with user?', message:`Are you sure you'd like to stop sharing with user "${user}"?`},
+            errorMessage:'Error encountered while unsharing',
+            request:sessionInfo=>({
+                token:sessionInfo?.token??'',
+                saveName:this.editionName,
+                user
+            }),
+            signIn: {title:'Sign In', message:'You must sign in to change sharing settings.'},
+            spinnerMessage:`Unsharing ${this.editionName}`
+        });
+
+        if ('error' in response) { return false;}
+        if ('cancel' in response) { return false;}
 
         const i = this.shareList.indexOf(user);
         if (i !== -1) {
             this.shareList.splice(i, 1);
         }
         this.updateSharingDlg();
+
+        return response.data;
     }
 
     /** do the command to share with the specified user */
     async shareWithUser(user:string):Promise<boolean> {
-        const sessionInfo = await signIn({
-            title:'Sign In',
-            message:'You must sign in to change sharing settings.'
+        const response = await genericCmd<ShareRequest, ShareResponse>({
+            command:'share',
+            errorMessage:`Error encountered while sharing`,
+            request:sessionInfo=>({
+                token:sessionInfo?.token??'',
+                saveName:this.editionName,
+                user
+            }),
+            signIn: {title:'Sign In', message:'You must sign in to change sharing settings.'},
+            spinnerMessage:'Retrieving share list'
         });
-        if (!sessionInfo) {return Promise.resolve(false);}
-        if (!this.editionName) {return Promise.resolve(false);}
-        const request:ShareRequest={
-            token:sessionInfo.token,
-            saveName:this.editionName,
-            user
-        };
-        try {
-            const response = await signedInCmd<ShareResponse>('share', 'Sharing', request);
-            if (response !== true) {
-                await showError('Network Error', `Error encountered while sharing`, response.error);
-                return await Promise.resolve(false);
-            }
-        } catch (error: unknown) {
-            await showError('Network Error', `Error encountered while unsharing`, error);
-            return Promise.resolve(false);
-        }
 
+        if ('error' in response) { return false;}
+        if ('cancel' in response) { return false;}
+        
         this.shareList.push(user);
         this.updateSharingDlg();
-        return Promise.resolve(true);
+        return response.data;
     }
 
     /** bring up subdialog for sharing with a specific person */
@@ -212,5 +197,6 @@ class SharingDlg extends AriaDialog<void> {
 
 /** show sharing dialog */
 export default async function show(editionSaveName:string):Promise<void> {
-    await new SharingDlg().open(editionSaveName);
+    if (!editionSaveName) {return;}
+    await new SharingDlg(editionSaveName).open(editionSaveName);
 }
