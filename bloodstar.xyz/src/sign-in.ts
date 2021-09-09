@@ -10,7 +10,7 @@ import { updateUserDisplay } from "./menu";
 import { isRecord } from "./util";
 import {show as getConfirmation, YesNoOptions} from "./dlg/yes-no-dlg";
 
-type SignInOptions = SignInFlowOptions & {
+export type SignInOptions = SignInFlowOptions & {
     /** true to force a new sign-in instead of reusing existing token */
     force?:boolean;
 };
@@ -18,7 +18,7 @@ type SignInOptions = SignInFlowOptions & {
 let sessionInfo:SessionInfo|null = null;
 
 /** true when we have don't have an accesstoken or it is expired */
-function accessTokenExpired():boolean {
+export function accessTokenExpired(sessionInfo:SessionInfo|null):boolean {
     if (!sessionInfo) {return true;}
     const timestamp = Date.now() / 1000 | 0;
     const leeway = 60;
@@ -35,7 +35,7 @@ function clearStoredToken():void {
     }
 }
 
-function getStoredToken():SessionInfo|null {
+export function getStoredToken():SessionInfo|null {
     const {localStorage} = window;
     try {
         const fromStorage = localStorage.getItem('accessToken');
@@ -71,9 +71,10 @@ async function promptAndSignIn(options?:SignInFlowOptions):Promise<boolean> {
  * Note that body is not pre-stringified like it is with cmd()
  * @returns promise that resolves to user info
  */
+// TODO: remove in favor of genericCmd
 export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:string, body:{token:string}):Promise<ResultType> {
     sessionInfo = sessionInfo ?? getStoredToken();
-    while (!sessionInfo || accessTokenExpired()) {
+    while (accessTokenExpired(sessionInfo)) {
         await signIn({force:true, message:'Please sign in to continue.'});
         if (sessionInfo) {
             body.token = sessionInfo.token;
@@ -100,7 +101,7 @@ export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:str
 export async function signIn(options?:SignInOptions):Promise<SessionInfo|null> {
     const force = Boolean(options?.force);
     sessionInfo = sessionInfo ?? getStoredToken();
-    if (!force && sessionInfo && !accessTokenExpired()) {
+    if (!force && !accessTokenExpired(sessionInfo)) {
         updateUserDisplay(sessionInfo);
         return sessionInfo;
     }
@@ -131,6 +132,7 @@ export async function signIn(options?:SignInOptions):Promise<SessionInfo|null> {
  * sign in and do a confirmation popup
  * @returns SessionInfo if they are both signed in AND said yes to the confirmation dialog, otherwise null
  */
+// TODO: remove in favor of genericCmd
 export async function signInAndConfirm(
     signInOptions:SignInOptions,
     confirmOptions:YesNoOptions
