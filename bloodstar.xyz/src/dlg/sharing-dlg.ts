@@ -121,7 +121,7 @@ class SharingDlg extends AriaDialog<void> {
 
         if ('error' in response) { return false;}
         if ('cancel' in response) { return false;}
-        
+
         this.shareList.push(user);
         this.updateSharingDlg();
         return response.data;

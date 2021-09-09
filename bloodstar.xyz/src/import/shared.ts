@@ -125,7 +125,7 @@ export async function chooseFileToImport(accept:string):Promise<File|null> {
     if (!(fileInput instanceof HTMLInputElement)) {return Promise.resolve(null);}
     const dlg = new AriaDialog<File|null>();
 
-    function chooseFile():void {
+    function onChooseFile():void {
         if (fileInput instanceof HTMLInputElement) {
             fileInput.onchange=()=>{
                 dlg.close(fileInput.files?.[0]);
@@ -143,7 +143,7 @@ export async function chooseFileToImport(accept:string):Promise<File|null> {
             {t:'h1', txt:'Choose file'},
             {t:'p', txt:'Choose a .blood file to import.'},
             {t:'div', css:['dialogBtnGroup'], children:[
-                {t:'button', txt:'Choose File', events:{click:()=>{ chooseFile(); }}},
+                {t:'button', txt:'Choose File', events:{click:()=>{ onChooseFile(); }}},
                 {t:'button', txt:'Cancel', events:{click:()=>{ dlg.close(); }}}
             ]}
         ],

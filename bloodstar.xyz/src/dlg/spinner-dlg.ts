@@ -98,7 +98,7 @@ const _spinner = new SpinnerDialog();
 
 /**
  * show or add to a spinner until the given promise resolves
- * @param key category of message. only one message per key is shown at a time
+ * @param key category of message. only one message per key is shown at a time // TODO: do I even use this feature?
  * @param message message to display while waiting
  * @param somePromise promise to spin during
  */

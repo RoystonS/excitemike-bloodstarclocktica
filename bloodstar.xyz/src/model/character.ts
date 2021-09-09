@@ -95,7 +95,7 @@ export class Character extends ObservableObject<Character> {
                 return;
             }
             if (!styled.startsWith('data:')) {
-                // TODO: when doing a SaveAs this line will forces a re-save of the image,
+                // TODO: when doing a SaveAs this line will force a re-save of the image,
                 // when we could instead copy things over on the server
                 // but it's weird to figure out from here that a SaveAs is happening
                 await this.styledImage.set(await imageUrlToDataUri(styled, false));
