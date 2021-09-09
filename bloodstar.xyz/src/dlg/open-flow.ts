@@ -124,7 +124,6 @@ class ChooseFileDlg extends AriaDialog<string|[string, string]> {
 }
 
 /** share file chooser with the delete command */
-// TODO: simplify return type
 export async function chooseFile(options?:ChooseFileOptions):Promise<string|[string, string]> {
     return new ChooseFileDlg().open(options);
 }
