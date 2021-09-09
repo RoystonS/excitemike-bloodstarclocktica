@@ -30,3 +30,7 @@ Initial setup was done like this. **(DO NOT do this with an already set-up proje
         > `npm install --save-dev typescript eslint  @typescript-eslint/parser @typescript-eslint/eslint-plugin webpack webpack-cli ts-loader style-loader css-loader live-server npm-run-all mini-css-extract-plugin css-minimizer-webpack-plugin html-webpack-plugin file-loader`
     3. because I'm using jszip:
         > `npm install --save-dev jszip`
+
+## Other
+
+I'm using a thing called [Sider Scan](https://siderlabs.com/scan/) to identify duplicate code to fix.

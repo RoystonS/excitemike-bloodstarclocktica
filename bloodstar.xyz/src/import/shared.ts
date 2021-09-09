@@ -4,10 +4,9 @@
  */
 import { AriaDialog } from '../dlg/aria-dlg';
 import { showError } from '../dlg/blood-message-dlg';
-import { chooseFile, OpenRequest, OpenResponse } from '../dlg/open-flow';
+import { chooseFile, openEditionFile } from '../dlg/open-flow';
 import {spinner} from '../dlg/spinner-dlg';
 import { Edition } from "../model/edition";
-import signIn, { signedInCmd } from '../sign-in';
 import { createElement } from '../util';
 import { ChooseCharactersDlg } from './choose-characters-dlg';
 import { ScriptEntry } from './json';
@@ -72,31 +71,19 @@ export default async function importShared(edition:Edition):Promise<boolean> {
 
 /** import character from chosen save */
 async function _importShared(edition:Edition, file:string|[string, string]):Promise<boolean> {
-    const sessionInfo = await signIn({
+    const data = await openEditionFile(file, {
         title:'Sign In to Open',
         message:'You must first sign in to import.'
     });
-    if (!sessionInfo) {return false;}
+    if (!data) {return false;}
     const label = Array.isArray(file) ? file.join(' / ') : file;
-    const openData:OpenRequest = {
-        saveName: file,
-        token: sessionInfo.token,
-        username: sessionInfo.username
-    };
-
-    // get the edition data
-    const response = await signedInCmd<OpenResponse>('open', `Retrieving ${label}`, openData);
-    if ('error' in response) {
-        await showError('Error', `Error encountered while trying to open file ${label}`, response.error);
-        return false;
-    }
 
     // load into temp Edition
     const tempEdition = await Edition.asyncNew();
     if (!await spinner(
         'open',
         `Opening edition file "${label}"`,
-        tempEdition.open(label, response.data)))
+        tempEdition.open(label, data)))
     {
         await showError('Error', `Error parsing "${label}"`);
         return false;

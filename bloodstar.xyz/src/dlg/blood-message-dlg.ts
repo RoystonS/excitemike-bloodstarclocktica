@@ -38,7 +38,6 @@ export async function showError(
     message = 'It looks like you encountered a bug! The error message below may help the developers fix it.',
     error:Error|unknown = undefined
 ):Promise<null> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const errorMessage = (error instanceof Error) ? `${error.message}` : `${error}`;
     return new MessageDialog().open(document.activeElement, title, message, errorMessage);
 }

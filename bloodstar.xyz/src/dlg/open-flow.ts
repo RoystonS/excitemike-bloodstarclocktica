@@ -12,6 +12,7 @@ import { setRecentFile } from '../recent-file';
 import signIn, { signedInCmd, signInAndConfirm } from '../sign-in';
 import { SessionInfo } from '../iam';
 import {showBlockUser} from './block-flow';
+import { SignInFlowOptions } from './sign-in-flow';
 
 type LeaveRequest = {token:string; owner:string; saveName:string};
 type LeaveResponse = true | {error:string};
@@ -160,29 +161,20 @@ async function listFiles(sessionInfo:SessionInfo, includeShared:boolean):Promise
  * Open a file by name (no save prompts!)
  * Brings up the loading spinner during the operation
  * @param edition Edition instance with which to open a file
- * @param name name of the file to open
+ * @param file name of the file to open
+ * @param signInOptions SignInFlowOptions
  * @returns promise that resolves to whether a file was successfully opened
  */
-async function openNoPrompts(edition:Edition, name:string|[string, string]):Promise<boolean> {
+async function openNoPrompts(edition:Edition, file:string|[string, string], signInOptions?:SignInFlowOptions):Promise<boolean> {
     try {
-        const sessionInfo = await signIn({
-            title:'Sign In to Open',
-            message:'You must first sign in to open a file.'
-        });
-        if (!sessionInfo) {return false;}
-        const openData:OpenRequest = {
-            saveName: name,
-            token: sessionInfo.token,
-            username: sessionInfo.username
-        };
-        const response = await signedInCmd<OpenResponse>('open', `Retrieving ${name}`, openData);
-        if ('error' in response) {
-            await showError('Error', `Error encountered while trying to open file ${name}`, response.error);
-            return false;
-        }
-        const saveName = Array.isArray(name) ? '' : name;
-        const success = await spinner('open', `Opening edition file "${name}"`, edition.open(saveName, response.data));
+        const data = await openEditionFile(file, signInOptions);
+        if (!data) {return false;}
+        const label = Array.isArray(file) ? file.join(' / ') : file;
+        const saveName = Array.isArray(file) ? '' : file;
+        const success = await spinner('open', `Opening edition file "${label}"`, edition.open(saveName, data));
         if (success) {
+            const sessionInfo = await signIn();
+            if (!sessionInfo) {return false;}
             setRecentFile(edition.saveName.get(), sessionInfo.email);
         }
         return success;
@@ -190,6 +182,34 @@ async function openNoPrompts(edition:Edition, name:string|[string, string]):Prom
         await showError('Error', `Error encountered while trying to open file ${name}`, error);
         return false;
     }
+}
+
+/**
+ * Get file data by name (no save prompts!)
+ * Brings up the loading spinner during the operation
+ * @param file name of the file to open
+ * @param signInOptions SignInFlowOptions
+ * @returns promise that resolves to edition data or null
+ */
+export async function openEditionFile(file:string|[string, string], signInOptions?:SignInFlowOptions):Promise<Record<string, unknown>|null> {
+    const signInOptionsSafe = signInOptions ?? {
+        title: 'Sign In to Open',
+        message: 'You must first sign in to open a file.'
+    };
+    const sessionInfo = await signIn(signInOptionsSafe);
+    if (!sessionInfo) {return null;}
+    const label = Array.isArray(file) ? file.join(' / ') : file;
+    const openData:OpenRequest = {
+        saveName: file,
+        token: sessionInfo.token,
+        username: sessionInfo.username
+    };
+    const response = await signedInCmd<OpenResponse>('open', `Retrieving ${label}`, openData);
+    if ('error' in response) {
+        await showError('Error', `Error encountered while trying to open file ${label}`, response.error);
+        return null;
+    }
+    return response.data;
 }
 
 /**
