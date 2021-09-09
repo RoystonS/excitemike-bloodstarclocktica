@@ -15,7 +15,7 @@ export type SignInOptions = SignInFlowOptions & {
     force?:boolean;
 };
 
-let sessionInfo:SessionInfo|null = null;
+let gSessionInfo:SessionInfo|null = null;
 
 /** true when we have don't have an accesstoken or it is expired */
 export function accessTokenExpired(sessionInfo:SessionInfo|null):boolean {
@@ -58,7 +58,7 @@ export function getStoredToken():SessionInfo|null {
  */
 async function promptAndSignIn(options?:SignInFlowOptions):Promise<boolean> {
     try {
-        sessionInfo = await doSignInFlow(options);
+        gSessionInfo = await doSignInFlow(options);
         return true;
     } catch (error: unknown) {
         await showError('Error', 'Error encountered during sign-in', error);
@@ -73,11 +73,11 @@ async function promptAndSignIn(options?:SignInFlowOptions):Promise<boolean> {
  */
 // TODO: remove in favor of genericCmd
 export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:string, body:{token:string}):Promise<ResultType> {
-    sessionInfo = sessionInfo ?? getStoredToken();
-    while (accessTokenExpired(sessionInfo)) {
+    gSessionInfo = gSessionInfo ?? getStoredToken();
+    while (accessTokenExpired(gSessionInfo)) {
         await signIn({force:true, message:'Please sign in to continue.'});
-        if (sessionInfo) {
-            body.token = sessionInfo.token;
+        if (gSessionInfo) {
+            body.token = gSessionInfo.token;
         }
     }
 
@@ -100,13 +100,13 @@ export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:str
  */
 export async function signIn(options?:SignInOptions):Promise<SessionInfo|null> {
     const force = Boolean(options?.force);
-    sessionInfo = sessionInfo ?? getStoredToken();
-    if (!force && !accessTokenExpired(sessionInfo)) {
-        updateUserDisplay(sessionInfo);
-        return sessionInfo;
+    gSessionInfo = gSessionInfo ?? getStoredToken();
+    if (!force && !accessTokenExpired(gSessionInfo)) {
+        updateUserDisplay(gSessionInfo);
+        return gSessionInfo;
     }
     clearStoredToken();
-    sessionInfo = null;
+    gSessionInfo = null;
 
     if (options?.canCancel === false) {
         let signedIn = false;
@@ -121,11 +121,11 @@ export async function signIn(options?:SignInOptions):Promise<SessionInfo|null> {
         await promptAndSignIn(options);
     }
 
-    storeToken(sessionInfo);
+    storeToken(gSessionInfo);
 
-    updateUserDisplay(sessionInfo);
+    updateUserDisplay(gSessionInfo);
 
-    return sessionInfo;
+    return gSessionInfo;
 }
 
 /**
@@ -139,13 +139,13 @@ export async function signInAndConfirm(
 ):Promise<SessionInfo|null> {
     const sessionInfo = await signIn(signInOptions);
     if (!sessionInfo) {return null;}
-    if (!await getConfirmation(confirmOptions)){ return null; }
+    if (!await getConfirmation(confirmOptions)) { return null; }
     return sessionInfo;
 }
 
 /** clear session info */
 export function signOut():void {
-    sessionInfo = null;
+    gSessionInfo = null;
     clearStoredToken();
     updateUserDisplay(null);
 }
