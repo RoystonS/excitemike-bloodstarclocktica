@@ -37,9 +37,9 @@ export async function showError(
     title = 'Error',
     message = 'It looks like you encountered a bug! The error message below may help the developers fix it.',
     error:Error|unknown = undefined
-):Promise<null> {
+):Promise<void> {
     const errorMessage = (error instanceof Error) ? `${error.message}` : `${error}`;
-    return new MessageDialog().open(document.activeElement, title, message, errorMessage);
+    await new MessageDialog().open(document.activeElement, title, message, errorMessage);
 }
 /**
  * bring up the popup showing exception information
