@@ -2,26 +2,13 @@
  * Code related to deleting files
  * @module Delete
  */
-import { showError, show as showMessage } from '../dlg/blood-message-dlg';
-import {spinner} from '../dlg/spinner-dlg';
-import {show as getConfirmation} from "../dlg/yes-no-dlg";
+import { show as showMessage } from '../dlg/blood-message-dlg';
 import {chooseFile} from "../dlg/open-flow";
-import signIn, { signedInCmd } from '../sign-in';
 import { clearRecentFile } from '../recent-file';
+import genericCmd from './generic-cmd';
 
 type DeleteRequest = {token:string; saveName:string};
-type DeleteResponse = true | {error:string};
-
-/** confirm deletion */
-async function confirmDelete(name:string):Promise<boolean> {
-    return getConfirmation({
-        checkboxMessage:`Yes, I am certain I want to delete file "${name}"`,
-        message:`Are you sure you'd like to delete "${name}"? This file will be lost forever!`,
-        noLabel:'Cancel',
-        title:'Confirm Delete',
-        yesLabel: `Yes, delete "${name}"`,
-    });
-}
+type DeleteResponse = true;
 
 /**
  * Bring up a list of deletable files, and let the user delete from there
@@ -34,36 +21,28 @@ export async function chooseAndDeleteFile():Promise<string> {
     // can't delete shared files
     if (Array.isArray(name)) {return '';}
 
-    if (!await confirmDelete(name)) {return '';}
-    if (!await spinner('delete', 'Choose file to delete', deleteFile(name))) {return '';}
+    const result = await genericCmd<DeleteRequest, DeleteResponse>({
+        command:'delete',
+        confirmOptions:{
+            checkboxMessage:`Yes, I am certain I want to delete file "${name}"`,
+            message:`Are you sure you'd like to delete "${name}"? This file will be lost forever!`,
+            noLabel:'Cancel',
+            title:'Confirm Delete',
+            yesLabel: `Yes, delete "${name}"`,
+        },
+        errorMessage:`Error encountered while trying to delete file ${name}`,
+        request:sessionInfo=>({
+            token:sessionInfo?.token??'',
+            saveName: name
+        }),
+        signIn:{title:'Sign In to Delete', message:'You must be signed in to delete a file.'},
+        spinnerMessage:`Deleting ${name}`
+    });
+
+    if ('error' in result) {return '';}
+    if ('cancel' in result) {return '';}
+
     clearRecentFile(name);
     await showMessage(`Deleted`, `File "${name}" deleted`);
     return name;
-}
-
-/**
- * Run the server command to delete a file
- * @param name name of the file to open
- * @returns true if nothing went terribly wrong
- */
-async function deleteFile(name:string):Promise<boolean> {
-    const sessionInfo = await signIn({
-        title:'Sign In to Delete',
-        message:'You must be signed in to delete a file.'
-    });
-    if (!sessionInfo) {return false;}
-    const deleteData:DeleteRequest = {
-        token:sessionInfo.token,
-        saveName: name
-    };
-    try {
-        const response = await signedInCmd<DeleteResponse>('delete', `Deleting ${name}`, deleteData);
-        if (response === true) {return true;}
-        const {error} = response;
-        await showError('Error', `Error encountered while trying to delete file ${name}`, error);
-        return false;
-    } catch (error: unknown) {
-        await showError('Error', `Error encountered while trying to delete file ${name}`, error);
-        return false;
-    }
 }
