@@ -2,20 +2,21 @@
 * Manage Blocked Users dialog
 * @module ManageBlockedDlg
 */
-import signIn, { signedInCmd, signInAndConfirm } from '../sign-in';
 import { createElement, CreateElementsOptions } from '../util';
 import { updateUsernameWarnings, validateUsername } from '../validate';
 import {AriaDialog, showDialog} from './aria-dlg';
-import {showError, show as showMessage} from './blood-message-dlg';
+import {show as showMessage} from './blood-message-dlg';
+import genericCmd from '../commands/generic-cmd';
+import { SessionInfo } from '../iam';
 
 type BlockRequest = {token:string; username:string};
-type BlockResponse = true | {error:string};
+type BlockResponse = true;
 
 type GetBlockedRequest = {token:string};
-type GetBlockedResponse = {error:string}|{users:string[]};
+type GetBlockedResponse = {users:string[]};
 
 type UnblockRequest = {token:string; username:string};
-type UnblockResponse = true | {error:string};
+type UnblockResponse = true;
 
 class ManageBlockedDlg extends AriaDialog<void> {
     blockList:string[]|null = null;
@@ -32,7 +33,7 @@ class ManageBlockedDlg extends AriaDialog<void> {
         this.addButton = createElement({t:'button', txt:'Block a User'});
         this.addButton.addEventListener('click', async ()=>{
             const username = await showBlockPrompt();
-            if (username && await doBlockUser(username)) {
+            if (username && await showBlockUser(username)) {
                 this.blockList?.push(username);
                 this.update();
             }
@@ -86,54 +87,40 @@ class ManageBlockedDlg extends AriaDialog<void> {
 }
 
 /**
- * do the actual command to block a user
- *
+ * Confirm, then block a user
+ * @param username username of who to block
+ * @returns promise that resolves to whether the user was blocked
  */
-async function doBlockUser(username:string):Promise<boolean> {
-    const sessionInfo = await signIn({
-        title:'Sign In',
-        message:'You must sign in to manage your block list.'
+export async function showBlockUser(username:string):Promise<boolean> {
+    const result = await genericCmd<BlockRequest, BlockResponse>({
+        command: 'block',
+        confirmOptions: {title:`Block ${username}`, message:`Are you sure you'd like to block ${username}? You will no longer be able to import files they share.`},
+        errorMessage: `Error encountered while blocking`,
+        request: (sessionInfo:SessionInfo|null)=>({
+            token:sessionInfo?.token ?? '',
+            username,
+        }),
+        signIn: {title:'Sign In to Block', message:'You must first sign in before blocking a user.'},
+        spinnerMessage: `Blocking user "${username}"`
     });
-    if (!sessionInfo) {return false;}
-    const request:BlockRequest = {
-        token:sessionInfo.token,
-        username,
-    };
-    try {
-        const response = await signedInCmd<BlockResponse>('block', 'Blocking user', request);
-        if (response===true) {
-            return true;
-        }
-        const {error} = response;
-        throw new Error(error);
-    } catch (error: unknown) {
-        await showError('Network Error', `Error encountered while blocking`, error);
-        return false;
-    }
+    return ('data' in result);
 }
-
 
 /**
  * Get a list of users you have blocked
  * Brings up the loading spinner during the operation
  */
 export async function getBlockList():Promise<string[]|null> {
-    const sessionInfo = await signIn({
-        title:'Sign In',
-        message:'You must sign in to manage your block list.'
+    const result = await genericCmd<GetBlockedRequest, GetBlockedResponse>({
+        command:'get-blocked',
+        errorMessage: 'Error encountered while retrieving block list',
+        request: si=>({token:si?.token ?? ''}),
+        signIn:{message:'You must sign in to manage your block list.'},
+        spinnerMessage: 'Retrieving block list'
     });
-    if (!sessionInfo) {return null;}
-    const request:GetBlockedRequest={token:sessionInfo.token};
-    try {
-        const response = await signedInCmd<GetBlockedResponse>('get-blocked', 'Retrieving block list', request);
-        if ('error' in response) {
-            throw new Error(response.error);
-        }
-        return response.users;
-    } catch (error: unknown) {
-        await showError('Network Error', `Error encountered while retrieving block list`, error);
-    }
-    return [];
+    if (!('data' in result)) {return null;}
+    if (!Array.isArray(result.data.users)) { throw new Error('"get-blocked" command failed.'); }
+    return result.data.users;
 }
 
 /**
@@ -181,21 +168,6 @@ async function showBlockPrompt():Promise<string> {
     ) ?? '';
 }
 
-/**
- * Confirm, then block a user
- * @param username username of who to block
- * @returns promise that resolves to whether the user was blocked
- */
-export async function showBlockUser(username:string):Promise<boolean> {
-    const sessionInfo = await signInAndConfirm(
-        {title:'Sign In to Block', message:'You must first sign in before blocking a user.'},
-        {title:`Block ${username}`, message:`Are you sure you'd like to block ${username}? You will no longer be able to import files they share.`}
-    );
-    if (!sessionInfo) {return false;}
-
-    return doBlockUser(username);
-}
-
 /** show dialog for managing block list */
 export async function showManageBlocked():Promise<void> {
     await new ManageBlockedDlg().open();
@@ -207,26 +179,16 @@ export async function showManageBlocked():Promise<void> {
  * @returns promise that resolves to whether the user was unblocked
  */
 export async function showUnblockUser(username:string):Promise<boolean> {
-    const sessionInfo = await signInAndConfirm(
-        {title:'Sign In to Unblock', message:'You must first sign in before unblocking a user.'},
-        {title:`Unblock ${username}`, message:`Are you sure you'd like to unblock ${username}?`}
-    );
-    if (!sessionInfo) { return false; }
-
-    const request:UnblockRequest = {
-        token:sessionInfo.token,
-        username,
-    };
-
-    try {
-        const response = await signedInCmd<UnblockResponse>('unblock', 'Unblocking user', request);
-        if (response===true) {
-            return true;
-        }
-        const {error} = response;
-        throw new Error(error);
-    } catch (error: unknown) {
-        await showError('Network Error', `Error encountered while unblocking`, error);
-        return false;
-    }
+    const result = await genericCmd<UnblockRequest, UnblockResponse>({
+        command: 'unblock',
+        confirmOptions: {title:`Block ${username}`, message:`Are you sure you'd like to block ${username}? You will no longer be able to import files they share.`},
+        errorMessage: `Error encountered while unblocking`,
+        request: (sessionInfo:SessionInfo|null)=>({
+            token:sessionInfo?.token ?? '',
+            username,
+        }),
+        signIn: {title:'Sign In to Unblock', message:'You must first sign in before unblocking a user.'},
+        spinnerMessage: `Unblocking user "${username}"`
+    });
+    return ('data' in result);
 }
