@@ -20,6 +20,7 @@ import { ProcessImageSettings } from './blood-image';
 import { BloodTeam, parseBloodTeam } from './model/blood-team';
 import { Character } from './model/character';
 import {hookupClickEvents} from './util';
+import { setTeamColorStyle } from './team-color';
 
 /** helper type for disableCharacterTab */
 type TagsThatCanBeDisabled = "button" | "fieldset" | "input" | "optgroup" | "option" | "select" | "textarea";
@@ -188,24 +189,3 @@ export async function setSelectedCharacter(value:Character|null):Promise<void> {
 
 /** returned by bindCharacterTabControls, used to undo what it did */
 let unbindCharacterTabControls:(()=>void)|null = null;
-
-/** map teams to css classes */
-const teamColorStyleMap = new Map<BloodTeam, string>([
-    [BloodTeam.TOWNSFOLK, 'teamColorTownsfolk'],
-    [BloodTeam.OUTSIDER, 'teamColorOutsider'],
-    [BloodTeam.MINION, 'teamColorMinion'],
-    [BloodTeam.DEMON, 'teamColorDemon'],
-    [BloodTeam.TRAVELER, 'teamColorTraveler'],
-    [BloodTeam.FABLED, 'teamColorFabled'],
-]);
-
-/** sync team color style to the actual team */
-function setTeamColorStyle(actualTeam:BloodTeam, classList:DOMTokenList):void {
-    for (const [team, style] of teamColorStyleMap) {
-        if (actualTeam === team) {
-            classList.add(style);
-        } else {
-            classList.remove(style);
-        }
-    }
-}
