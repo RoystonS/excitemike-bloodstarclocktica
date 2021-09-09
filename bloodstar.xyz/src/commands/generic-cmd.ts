@@ -14,7 +14,7 @@ export type GenericCmdOptions<RequestType> = {
      * command to run. required
      */
     command:string;
-    
+
     /**
      * If provided, a confirmation popup using these options will be shown after signing in.
      */
@@ -61,6 +61,7 @@ type GenericCmdReturn<ResponseDataType> = CancelReason | ErrorReason | {data:Res
 /**
  * handle common operations around running a command
  */
+// TODO: do throttling here as well?
 export default async function genericCmd<
     RequestType extends {token:string},
     ResponseDataType
@@ -92,13 +93,13 @@ async function runCmd<
     ResponseDataType
 >(options:GenericCmdOptions<RequestType>):Promise<GenericCmdReturn<ResponseDataType>> {
     let response;
-    if (options.signIn ?? true) {
+    if (options.signIn) {
         let sessionInfo = getStoredToken();
         if (!sessionInfo || accessTokenExpired(sessionInfo)) {
             sessionInfo = await signIn(options.signIn);
         }
         if (!sessionInfo) {return {cancel:'signInFailed'};}
-        if (options.confirmOptions && !await getConfirmation(options.confirmOptions)){ return {cancel:'declined'}; }
+        if (options.confirmOptions && !await getConfirmation(options.confirmOptions)) { return {cancel:'declined'}; }
         const requestSafe = (typeof options.request === 'function') ? options.request(sessionInfo) : options.request;
         response = await cmd<CmdResult<ResponseDataType>>(options.command, options.spinnerMessage, JSON.stringify(requestSafe));
         while (response === 'signInRequired') {
