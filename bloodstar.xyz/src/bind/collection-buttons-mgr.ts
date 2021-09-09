@@ -115,10 +115,10 @@ export class CollectionButtonsMgr<ItemType> {
         CollectionButtonsMgr.addButton(elem, 'Delete', async () => {
             try {
                 const confirmationMessage = this.deleteConfirmMessage ? this.deleteConfirmMessage(item) : 'Are you sure you want to delete this item?';
-                if (await getConfirmation(
-                    'Confirm Delete',
-                    confirmationMessage
-                )) {
+                if (await getConfirmation({
+                    title: 'Confirm Delete',
+                    message: confirmationMessage
+                })) {
                     await this.collection.deleteItem(item);
                 }
             } catch (e: unknown) {

@@ -9,9 +9,8 @@ import { showError } from './blood-message-dlg';
 import { createElement, CreateElementsOptions } from '../util';
 import { AriaDialog } from './aria-dlg';
 import { setRecentFile } from '../recent-file';
-import signIn, { signedInCmd } from '../sign-in';
+import signIn, { signedInCmd, signInAndConfirm } from '../sign-in';
 import { SessionInfo } from '../iam';
-import {show as getConfirmation} from "./yes-no-dlg";
 import {showBlockUser} from './block-flow';
 
 type LeaveRequest = {token:string; owner:string; saveName:string};
@@ -254,16 +253,11 @@ export async function promptAndOpen(edition:Edition, options?:ChooseFileOptions)
  * @returns promise that resolves to whether you left the file
  */
 async function showLeave(owner:string, edition:string):Promise<boolean> {
-    const sessionInfo = await signIn({
-        title:'Sign In to Leave',
-        message:'You must first sign in to leave the file\'s sharelist.'
-    });
+    const sessionInfo = await signInAndConfirm(
+        {title:'Sign In to Leave', message:'You must first sign in to leave the file\'s sharelist.'},
+        {title:`Leave "${owner} / ${edition}"`, message: `Are you sure you'd like to leave "${owner} / ${edition}"? You will no longer be able to import from this file.`}
+    );
     if (!sessionInfo) {return false;}
-    if (!await getConfirmation(
-        `Leave "${owner} / ${edition}"`,
-        `Are you sure you'd like to leave "${owner} / ${edition}"? You will no longer be able to import from this file.`,
-    ))
-    { return false; }
 
     const request:LeaveRequest = {
         token:sessionInfo.token,

@@ -14,14 +14,13 @@ type DeleteResponse = true | {error:string};
 
 /** confirm deletion */
 async function confirmDelete(name:string):Promise<boolean> {
-    return getConfirmation(
-        'Confirm Delete',
-        `Are you sure you'd like to delete "${name}"? This file will be lost forever!`,
-        {
-            yesLabel: `Yes, delete "${name}"`,
-            noLabel:'Cancel',
-            checkboxMessage:`Yes, I am certain I want to delete file "${name}"`,
-        });
+    return getConfirmation({
+        checkboxMessage:`Yes, I am certain I want to delete file "${name}"`,
+        message:`Are you sure you'd like to delete "${name}"? This file will be lost forever!`,
+        noLabel:'Cancel',
+        title:'Confirm Delete',
+        yesLabel: `Yes, delete "${name}"`,
+    });
 }
 
 /**

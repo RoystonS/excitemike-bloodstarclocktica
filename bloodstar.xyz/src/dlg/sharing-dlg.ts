@@ -2,12 +2,11 @@
 * Sharing dialog
 * @module SharingDlg
 */
-import signIn, { signedInCmd } from '../sign-in';
+import signIn, { signedInCmd, signInAndConfirm } from '../sign-in';
 import { createElement, CreateElementsOptions } from '../util';
 import { updateUsernameWarnings, validateUsername } from '../validate';
 import {AriaDialog, ButtonCfg, showDialog} from './aria-dlg';
 import {showError, show as showMessage} from './blood-message-dlg';
-import {show as getConfirmation} from "./yes-no-dlg";
 
 type GetSharedRequest = {token:string; saveName:string};
 type GetSharedResponse = {error?:string; users:string[]};
@@ -84,16 +83,10 @@ class SharingDlg extends AriaDialog<void> {
 
     /** remove a user */
     async removeUser(user:string):Promise<void> {
-        if (!await getConfirmation(
-            'Unshare with user?',
-            `Are you sure you'd like to stop sharing with user "${user}"?`,
-        ))
-        { return; }
-
-        const sessionInfo = await signIn({
-            title:'Sign In',
-            message:'You must sign in to change sharing settings.'
-        });
+        const sessionInfo = await signInAndConfirm(
+            {title:'Sign In', message:'You must sign in to change sharing settings.'},
+            {title:'Unshare with user?', message:`Are you sure you'd like to stop sharing with user "${user}"?`}
+        );
         if (!sessionInfo) {return;}
         if (!this.editionName) {return;}
         const request:UnshareRequest={

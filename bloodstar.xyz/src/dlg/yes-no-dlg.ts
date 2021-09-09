@@ -6,31 +6,39 @@ import { CreateElementsOptions } from '../util';
 import {AriaDialog} from './aria-dlg';
 
 export type YesNoOptions = {
-    /** how to label the Yes button. default: 'Yes' */
-    yesLabel?:string;
-    /** how to label the No button. default: 'No' */
-    noLabel?:string;
     /**
      * Label to place on the checkbox.
      * If present and not empty, a checkbox is present and must be checked in order for the dialog to result in true.
      * If not present or empty, no checkbox appears
      */
     checkboxMessage?:string;
+
+    /** question you are answering */
+    message?:string;
+
+    /** how to label the No button. default: 'No' */
+    noLabel?:string;
+
+    /** popup title */
+    title:string;
+
+    /** how to label the Yes button. default: 'Yes' */
+    yesLabel?:string;
 };
 
 class YesNoDialog extends AriaDialog<boolean> {
-    async open(titleText:string, messageText?:string, options?:YesNoOptions):Promise<boolean> {
-        const yesLabel = options?.yesLabel ?? 'Yes';
-        const noLabel = options?.noLabel ?? 'No';
-        const checkboxMessage = options?.checkboxMessage ?? '';
+    async open(options:YesNoOptions):Promise<boolean> {
+        const yesLabel = options.yesLabel ?? 'Yes';
+        const noLabel = options.noLabel ?? 'No';
+        const checkboxMessage = options.checkboxMessage ?? '';
 
         const body:CreateElementsOptions = [{
             t:'h1',
-            txt:titleText
+            txt:options.title
         }];
 
-        if (messageText) {
-            body.push({t:'p', txt:messageText});
+        if (options.message) {
+            body.push({t:'p', txt:options.message});
         }
 
         if (checkboxMessage) {
@@ -71,6 +79,6 @@ class YesNoDialog extends AriaDialog<boolean> {
 }
 
 /** bring up the confirmation dialog */
-export async function show(titleText:string, messageText?:string, options?:YesNoOptions):Promise<boolean> {
-    return new YesNoDialog().open(titleText, messageText, options);
+export async function show(options:YesNoOptions):Promise<boolean> {
+    return new YesNoDialog().open(options);
 }

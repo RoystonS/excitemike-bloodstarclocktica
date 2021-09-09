@@ -2,12 +2,11 @@
 * Manage Blocked Users dialog
 * @module ManageBlockedDlg
 */
-import signIn, { signedInCmd } from '../sign-in';
+import signIn, { signedInCmd, signInAndConfirm } from '../sign-in';
 import { createElement, CreateElementsOptions } from '../util';
 import { updateUsernameWarnings, validateUsername } from '../validate';
 import {AriaDialog, showDialog} from './aria-dlg';
 import {showError, show as showMessage} from './blood-message-dlg';
-import {show as getConfirmation} from "./yes-no-dlg";
 
 type BlockRequest = {token:string; username:string};
 type BlockResponse = true | {error:string};
@@ -188,16 +187,11 @@ async function showBlockPrompt():Promise<string> {
  * @returns promise that resolves to whether the user was blocked
  */
 export async function showBlockUser(username:string):Promise<boolean> {
-    const sessionInfo = await signIn({
-        title:'Sign In to Block',
-        message:'You must first sign in before blocking a user.'
-    });
+    const sessionInfo = await signInAndConfirm(
+        {title:'Sign In to Block', message:'You must first sign in before blocking a user.'},
+        {title:`Block ${username}`, message:`Are you sure you'd like to block ${username}? You will no longer be able to import files they share.`}
+    );
     if (!sessionInfo) {return false;}
-    if (!await getConfirmation(
-        `Block ${username}`,
-        `Are you sure you'd like to block ${username}? You will no longer be able to import files they share.`,
-    ))
-    { return false; }
 
     return doBlockUser(username);
 }
@@ -213,17 +207,11 @@ export async function showManageBlocked():Promise<void> {
  * @returns promise that resolves to whether the user was unblocked
  */
 export async function showUnblockUser(username:string):Promise<boolean> {
-    // TODO: DRY: signin, then confirmation, then signedInCmd, is a common pattern. make a single function for it somewhere?
-    const sessionInfo = await signIn({
-        title:'Sign In to Unblock',
-        message:'You must first sign in before unblocking a user.'
-    });
-    if (!sessionInfo) {return false;}
-    if (!await getConfirmation(
-        `Unblock ${username}`,
-        `Are you sure you'd like to unblock ${username}?`,
-    ))
-    { return false; }
+    const sessionInfo = await signInAndConfirm(
+        {title:'Sign In to Unblock', message:'You must first sign in before unblocking a user.'},
+        {title:`Unblock ${username}`, message:`Are you sure you'd like to unblock ${username}?`}
+    );
+    if (!sessionInfo) { return false; }
 
     const request:UnblockRequest = {
         token:sessionInfo.token,

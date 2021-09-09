@@ -21,15 +21,15 @@ async function confirmDeleteAccount():Promise<SessionInfo|null> {
         includeSignUpLink:false
     });
     if (!sessionInfo) {return null;}
-    if (!await getConfirmation(
-        'Confirm Delete',
-        `Are you sure you'd like to the account associated with username "${sessionInfo.username}" and email "${sessionInfo.email}"? You will not be able to recover your account!`,
-        {
-            yesLabel: `Delete my account`,
-            noLabel:'Cancel',
-            checkboxMessage:`Yes, I am certain I want to permanently delete my account`,
-        }))
-    { return null; }
+    if (!await getConfirmation({
+        checkboxMessage:`Yes, I am certain I want to permanently delete my account`,
+        noLabel:'Cancel',
+        title:'Confirm Delete',
+        message:`Are you sure you'd like to the account associated with username "${sessionInfo.username}" and email "${sessionInfo.email}"? You will not be able to recover your account!`,
+        yesLabel: `Delete my account`,
+    })) {
+        return null;
+    }
     return sessionInfo;
 }
 
