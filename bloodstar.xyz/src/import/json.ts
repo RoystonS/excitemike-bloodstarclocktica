@@ -11,8 +11,8 @@ import { Character } from "../model/character";
 import { Edition } from "../model/edition";
 import * as StringDlg from '../dlg/blood-string-dlg';
 import { fetchJson } from '../util';
-import { AriaDialog } from "../dlg/aria-dlg";
 import { ChooseCharactersDlg } from './choose-characters-dlg';
+import { chooseFileToImport } from "./shared";
 
 export type MetaEntry = {
     id:'_meta';
@@ -41,38 +41,6 @@ type NightOrderTracker = Map<number, Character[]>;
 // sizes here based on what what I see clocktower.online using
 const MAX_LOGO_WIDTH = 1661;
 const MAX_LOGO_HEIGHT = 709;
-
-/** promise for choosing a JSON file */
-async function chooseJsonFile():Promise<File|null> {
-    const fileInput = document.getElementById('jsonFileInput');
-    if (!(fileInput instanceof HTMLInputElement)) {return Promise.resolve(null);}
-    fileInput.value = '';
-    const dlg = new AriaDialog<File|null>();
-
-    function chooseFile():void {
-        if (fileInput instanceof HTMLInputElement) {
-            fileInput.onchange=()=>{
-                dlg.close(fileInput.files?.[0]);
-            };
-            fileInput.click();
-        } else {
-            dlg.close(null);
-        }
-    }
-
-    return dlg.baseOpen(
-        document.activeElement,
-        'chooseJsonFile',
-        [
-            {t:'h1', txt:'Choose file'},
-            {t:'div', css:['dialogBtnGroup'], children:[
-                {t:'button', txt:'Choose File', events:{click:()=>{ chooseFile(); }}},
-                {t:'button', txt:'Cancel', events:{click:()=>{ dlg.close(); }}}
-            ]}
-        ],
-        []
-    );
-}
 
 /** import meta information about the edition */
 async function importMeta(entry:MetaEntry, edition:Edition):Promise<boolean> {
@@ -208,7 +176,7 @@ export async function importJson(fileOrStringOrArray:File | ScriptEntry[] | stri
 
 /** user chose to import character(s) from a json file */
 export async function importJsonFromFile(edition:Edition):Promise<boolean> {
-    const file = await chooseJsonFile();
+    const file = await chooseFileToImport('.json');
     if (!file) {return false;}
     return importJson(file, edition);
 }

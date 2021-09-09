@@ -6,8 +6,7 @@ import {savePromptIfDirty} from '../dlg/blood-save-discard-cancel';
 import {spinner} from '../dlg/spinner-dlg';
 import {Edition} from '../model/edition';
 import { JSZipObject, loadAsync as loadZipAsync} from 'jszip';
-import { AriaDialog } from '../dlg/aria-dlg';
-import { createElement, isRecord } from '../util';
+import { isRecord } from '../util';
 import { Character } from '../model/character';
 import { Property } from '../bind/bindings';
 import { ObservableCollection } from '../bind/observable-collection';
@@ -15,6 +14,7 @@ import Locks from '../lock';
 import { parseBloodTeam } from '../model/blood-team';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 import JSZip = require('jszip');
+import { chooseFileToImport } from './shared';
 
 /** set property if the value is not undefined */
 async function trySet<T>(sourceRecord:Record<string, unknown>, key:string, property:Property<T>):Promise<void> {
@@ -233,38 +233,6 @@ class BloodImporter {
     }
 }
 
-/** promise for choosing a .blood file */
-async function chooseBloodFile():Promise<File|null> {
-    const fileInput = createElement({t:'input', a:{type:'file', accept:'.blood'}, css:['hidden']});
-    if (!(fileInput instanceof HTMLInputElement)) {return Promise.resolve(null);}
-    const dlg = new AriaDialog<File|null>();
-
-    function chooseFile():void {
-        if (fileInput instanceof HTMLInputElement) {
-            fileInput.onchange=()=>{
-                dlg.close(fileInput.files?.[0]);
-            };
-            fileInput.click();
-        } else {
-            dlg.close(null);
-        }
-    }
-
-    return dlg.baseOpen(
-        document.activeElement,
-        'chooseBloodFile',
-        [
-            {t:'h1', txt:'Choose file'},
-            {t:'p', txt:'Choose a .blood file to import.'},
-            {t:'div', css:['dialogBtnGroup'], children:[
-                {t:'button', txt:'Choose File', events:{click:()=>{ chooseFile(); }}},
-                {t:'button', txt:'Cancel', events:{click:()=>{ dlg.close(); }}}
-            ]}
-        ],
-        []
-    );
-}
-
 /** user chose to import a project form the windows version of Bloodstar Clocktica */
 export async function importBlood(edition:Edition):Promise<boolean> {
     if (!await savePromptIfDirty(edition)) {return false;}
@@ -274,7 +242,7 @@ export async function importBlood(edition:Edition):Promise<boolean> {
 /** user chose to import a .blood file */
 export async function importBloodFile(edition:Edition):Promise<boolean> {
     if (!await savePromptIfDirty(edition)) {return false;}
-    const file = await chooseBloodFile();
+    const file = await chooseFileToImport('.blood');
     if (!file) {return false;}
     await edition.reset();
     await edition.characterList.clear();

@@ -2,11 +2,13 @@
  * code for importing from Bloodstar saves
  * @module ImportShared
  */
+import { AriaDialog } from '../dlg/aria-dlg';
 import { showError } from '../dlg/blood-message-dlg';
 import { chooseFile, OpenRequest, OpenResponse } from '../dlg/open-flow';
 import {spinner} from '../dlg/spinner-dlg';
 import { Edition } from "../model/edition";
 import signIn, { signedInCmd } from '../sign-in';
+import { createElement } from '../util';
 import { ChooseCharactersDlg } from './choose-characters-dlg';
 import { ScriptEntry } from './json';
 
@@ -128,4 +130,36 @@ async function _importShared(edition:Edition, file:string|[string, string]):Prom
     });
     await Promise.all(promises);
     return true;
+}
+
+/** promise for choosing a file */
+export async function chooseFileToImport(accept:string):Promise<File|null> {
+    const fileInput = createElement({t:'input', a:{type:'file', accept}, css:['hidden']});
+    if (!(fileInput instanceof HTMLInputElement)) {return Promise.resolve(null);}
+    const dlg = new AriaDialog<File|null>();
+
+    function chooseFile():void {
+        if (fileInput instanceof HTMLInputElement) {
+            fileInput.onchange=()=>{
+                dlg.close(fileInput.files?.[0]);
+            };
+            fileInput.click();
+        } else {
+            dlg.close(null);
+        }
+    }
+
+    return dlg.baseOpen(
+        document.activeElement,
+        'chooseFileToImport',
+        [
+            {t:'h1', txt:'Choose file'},
+            {t:'p', txt:'Choose a .blood file to import.'},
+            {t:'div', css:['dialogBtnGroup'], children:[
+                {t:'button', txt:'Choose File', events:{click:()=>{ chooseFile(); }}},
+                {t:'button', txt:'Cancel', events:{click:()=>{ dlg.close(); }}}
+            ]}
+        ],
+        []
+    );
 }
