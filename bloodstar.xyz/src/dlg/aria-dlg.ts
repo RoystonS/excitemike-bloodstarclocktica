@@ -8,6 +8,7 @@
 import { appear, disappear } from "../animate";
 import { createElement, CreateElementsOptions } from "../util";
 import { showError } from "./blood-message-dlg";
+import * as StateHistory from '../state-history';
 
 type ResolveFn = (value:any)=>void;
 type ButtonCb<T = unknown> = ()=>Promise<T>|T;
@@ -255,6 +256,9 @@ export class AriaDialog<ResultType> {
         body:CreateElementsOptions,
         buttons:ButtonCfg<ResultType|null>[] = [{label:'OK'}]
     ):Promise<ResultType|null> {
+        // stop whatever special state you were in
+        await StateHistory.clear();
+
         this.root = this.createDialog(debugName, body, buttons);
 
         // we need to replace the previous dialog's listeners

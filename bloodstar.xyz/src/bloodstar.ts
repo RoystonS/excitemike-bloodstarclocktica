@@ -52,6 +52,7 @@ export async function tabClicked(btnId:string, tabId:string):Promise<void> {
         return;
     }
 
+    // stop whatever special state you were in
     await StateHistory.clear();
 
     const allTabBtns = document.getElementsByClassName("tabButton");
