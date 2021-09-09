@@ -153,7 +153,7 @@ export default class BloodImage {
     }
 
     /** create a new image that is the result of applying a convolution matrix to this image */
-    convolve(kernel:number[][]):BloodImage {
+    convolve(kernel:number[][], channelMask=0xF):BloodImage {
         const kernelRows = kernel.length;
         if (kernelRows % 2 === 0) { throw new Error('convolve function expects the kernel dimensions to be odd'); }
         const kernelCols = kernel[0].length;
@@ -173,10 +173,7 @@ export default class BloodImage {
             for (let dstX = 0; dstX < w; ++dstX) {
                 const dstI = (dstX + dstY * this.width) * 4;
 
-                let red = 0;
-                let green = 0;
-                let blue = 0;
-                let alpha = 0;
+                const pixel = [0, 0, 0, 0];
 
                 // sum up values from src
                 let weightSum = 0;
@@ -185,69 +182,19 @@ export default class BloodImage {
                         const weight = kernel[srcY - dstY + yReach][srcX - dstX + xReach];
                         weightSum += weight;
                         const srcI = (srcX + srcY * w) * 4;
-                        red += weight * srcPixels[srcI + 0];
-                        green += weight * srcPixels[srcI + 1];
-                        blue += weight * srcPixels[srcI + 2];
-                        alpha += weight * srcPixels[srcI + 3];
+                        for (let channel = 0; channel<4; ++channel) {
+                            pixel[channel] += weight * srcPixels[srcI + channel];
+                        }
                     }
                 }
-                red /= weightSum;
-                green /= weightSum;
-                blue /= weightSum;
-                alpha /= weightSum;
-
-                dstPixels[dstI + 0] = toByte(red);
-                dstPixels[dstI + 1] = toByte(green);
-                dstPixels[dstI + 2] = toByte(blue);
-                dstPixels[dstI + 3] = toByte(alpha);
-            }
-        }
-        destination.ctx.putImageData(dstImageData, 0, 0);
-        return destination;
-    }
-
-    /** create a new image that is the result of applying a convolution matrix to one channel of the image */
-    convolveChannel(channel:number, kernel:number[][]):BloodImage {
-        const kernelRows = kernel.length;
-        if (kernelRows % 2 === 0) { throw new Error('convolve function expects the kernel dimensions to be odd'); }
-        const kernelCols = kernel[0].length;
-        if (kernelCols % 2 === 0) { throw new Error('convolve function expects the kernel dimensions to be odd'); }
-        const xReach = (kernelCols / 2)|0;
-        const yReach = (kernelRows / 2)|0;
-        const destination = new BloodImage([this.width, this.height]);
-
-        const dstImageData = destination.ctx.getImageData(0, 0, destination.width, destination.height);
-        const dstPixels = dstImageData.data;
-        const srcImageData = this.ctx.getImageData(0, 0, this.width, this.height);
-        const srcPixels = srcImageData.data;
-
-        const w = this.width;
-        const h = this.height;
-        for (let dstY = 0; dstY < h; ++dstY) {
-            for (let dstX = 0; dstX < w; ++dstX) {
-                const dstI = (dstX + dstY * this.width) * 4;
-
-                let value = 0;
-
-                // sum up values from src
-                let weightSum = 0;
-                for (let srcY = Math.max(0, dstY - yReach); srcY < Math.min(h, dstY + yReach); ++srcY) {
-                    for (let srcX = Math.max(0, dstX - xReach); srcX < Math.min(w, dstX + xReach); ++srcX) {
-                        const weight = kernel[srcY - dstY + yReach][srcX - dstX + xReach];
-                        weightSum += weight;
-                        const srcI = (srcX + srcY * w) * 4;
-                        value += weight * srcPixels[srcI + channel];
-                    }
+                for (let channel = 0; channel<4; ++channel) {
+                    pixel[channel] /= weightSum;
                 }
-                value /= weightSum;
 
-                // write all channels
-                for (let outChannel = 0; outChannel < 4; ++outChannel) {
-                    if (outChannel === channel) {
-                        dstPixels[dstI + outChannel] = toByte(value);
-                    } else {
-                        dstPixels[dstI + outChannel] = srcPixels[dstI + outChannel];
-                    }
+                for (let channel = 0; channel<4; ++channel) {
+                    dstPixels[dstI + channel] = (channelMask & (0x1 << channel)) ?
+                        toByte(pixel[channel]) :
+                        srcPixels[dstI + channel];
                 }
             }
         }
@@ -316,7 +263,7 @@ export default class BloodImage {
 
     /** create a new image by blurring one channel of the image */
     gaussianBlurChannel(channel:number, radius:number):BloodImage {
-        return this.convolveChannel(channel, makeGaussianKernel(radius));
+        return this.convolve(makeGaussianKernel(radius), 0x1 << channel);
     }
 
     /** get [x,y,width,height] describing region of image with visible pixels */
