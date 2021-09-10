@@ -141,8 +141,8 @@ async function listFiles(includeShared:boolean):Promise<ListFilesReturn> {
     });
     if ('error' in result) {return null;}
     if ('cancel' in result) {return null;}
-    
-    const data = result.data;
+
+    const {data} = result;
     const ret:ListFilesReturn = {
         yours: data.files,
     };
