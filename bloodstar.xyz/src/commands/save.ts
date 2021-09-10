@@ -250,7 +250,7 @@ async function _savePng(editionSaveName:string, imageId:string, imageString:stri
             title:'Sign In to Save',
             message:'You must first sign in if you wish to save.'
         },
-        spinnerMessage:`Saving ${imageId}.src.png`
+        spinnerMessage:`Saving ${imageId}${isSource?'.src':''}.png`
     });
     if ('error' in response) {return response;}
     if ('cancel' in response) {return {error:`cancel reason: ${response.cancel}`};}
