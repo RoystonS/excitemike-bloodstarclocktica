@@ -304,9 +304,9 @@ export class Edition extends ObservableObject<Edition> {
     async reset():Promise<void> {
         this.suspendPropagation = true;
         await super.reset();
+        this.suspendPropagation = false;
         await this.addNewCharacter();
         await this.markClean();
-        this.suspendPropagation = false;
     }
 
     /** overriding to do a last-minute id uniqification */
