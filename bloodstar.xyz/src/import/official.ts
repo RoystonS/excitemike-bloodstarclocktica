@@ -51,7 +51,6 @@ class ChooseOfficialCharDlg extends ChooseCharactersDlg {
  */
 export default async function importOfficial(edition:Edition):Promise<boolean> {
     const json = await spinner(
-        'importOfficial',
         'Fetching official characters',
         fetchJson<CharacterEntry[]>('https://raw.githubusercontent.com/bra1n/townsquare/main/src/roles.json')
     );
@@ -85,13 +84,12 @@ async function _importOfficial(fromCharacter:CharacterEntry, toCharacter:Charact
 
     const url = `https://github.com/bra1n/townsquare/raw/main/src/assets/icons/${fromCharacter.id}.png`;
     const canvas = await spinner(
-        fromCharacter.id,
         `Downloading image for ${fromCharacter.name}`,
         urlToCanvas(url, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT)
     );
     const dataUrl = canvas.toDataURL('image/png');
     await toCharacter.imageSettings.shouldRestyle.set(false);
-    await spinner(fromCharacter.id, `Setting character image for ${fromCharacter.name}`, toCharacter.unStyledImage.set(dataUrl));
+    await spinner(`Setting character image for ${fromCharacter.name}`, toCharacter.unStyledImage.set(dataUrl));
 
     if (fromCharacter.name) {
         await toCharacter.name.set(fromCharacter.name);

@@ -170,7 +170,7 @@ async function openNoPrompts(edition:Edition, file:string|[string, string], sign
         if (!data) {return false;}
         const label = Array.isArray(file) ? file.join(' / ') : file;
         const saveName = Array.isArray(file) ? '' : file;
-        const success = await spinner('open', `Opening edition file "${label}"`, edition.open(saveName, data));
+        const success = await spinner(`Opening edition file "${label}"`, edition.open(saveName, data));
         if (success) {
             const sessionInfo = await signIn();
             if (!sessionInfo) {return false;}
@@ -232,9 +232,9 @@ async function openPromptNoSavePrompt(edition:Edition, options?:ChooseFileOption
 async function openExistingNoSavePrompt(edition:Edition, name:string|[string, string]):Promise<boolean> {
     if (Array.isArray(name)) {
         const label = name.join(' / ');
-        return spinner('open', `Opening shared file "${label}"`, openNoPrompts(edition, name));
+        return spinner(`Opening shared file "${label}"`, openNoPrompts(edition, name));
     } else if (name) {
-        return spinner('open', `Opening edition file "${name}"`, openNoPrompts(edition, name));
+        return spinner(`Opening edition file "${name}"`, openNoPrompts(edition, name));
     }
     return Promise.resolve(false);
 }

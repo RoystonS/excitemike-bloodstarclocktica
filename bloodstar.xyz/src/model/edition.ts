@@ -289,7 +289,7 @@ export class Edition extends ObservableObject<Edition> {
         this.suspendPropagation = true;
         await this.saveName.set(saveName);
         this.suspendPropagation = false;
-        await spinner('edition.open', 'Deserializing edition', this.deserialize(data));
+        await spinner('Deserializing edition', this.deserialize(data));
 
         // mark all as up to date
         await this.markClean();

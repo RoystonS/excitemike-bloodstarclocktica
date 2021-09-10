@@ -50,7 +50,7 @@ export async function saveAs(edition:Edition):Promise<boolean> {
     try {
         await edition.saveName.set(name);
         await edition.markDirty();
-        await spinner('saveAs.regeneratingimages', 'Copying Images', edition.regenAllIds());
+        await spinner('Copying Images', edition.regenAllIds());
         const success = await _save(edition, backupName===name);
         if (!success) {
             await edition.saveName.set(backupName);
@@ -177,7 +177,7 @@ async function _save(edition:Edition, clobber:boolean):Promise<boolean> {
 
     // await results
     // TODO: _savePng should accept a cancel token so that if one fails we can kill the rest
-    for (const result of await spinner('save', `Saving as ${editionSaveName}`, Promise.all(imgSavePromises))) {
+    for (const result of await spinner(`Saving as ${editionSaveName}`, Promise.all(imgSavePromises))) {
         if ('error' in result) {
             await showError('Error', `Error encountered while trying to save ${editionSaveName}`, result.error);
             return false;

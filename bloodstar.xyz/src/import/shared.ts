@@ -80,10 +80,7 @@ async function _importShared(edition:Edition, file:string|[string, string]):Prom
 
     // load into temp Edition
     const tempEdition = await Edition.asyncNew();
-    if (!await spinner(
-        'open',
-        `Opening edition file "${label}"`,
-        tempEdition.open(label, data)))
+    if (!await spinner(`Opening edition file "${label}"`, tempEdition.open(label, data)))
     {
         await showError('Error', `Error parsing "${label}"`);
         return false;

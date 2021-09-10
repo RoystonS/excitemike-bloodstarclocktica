@@ -51,15 +51,15 @@ async function importMeta(entry:MetaEntry, edition:Edition):Promise<boolean> {
         await edition.meta.author.set(entry.author);
     }
     if (entry.logo) {
-        const canvas = await spinner(entry.id, 'Downloading edition logo', urlToCanvas(entry.logo, MAX_LOGO_WIDTH, MAX_LOGO_HEIGHT));
-        await spinner(entry.id, 'Setting edition logo', edition.meta.logo.set(canvas.toDataURL('image/png')));
+        const canvas = await spinner('Downloading edition logo', urlToCanvas(entry.logo, MAX_LOGO_WIDTH, MAX_LOGO_HEIGHT));
+        await spinner('Setting edition logo', edition.meta.logo.set(canvas.toDataURL('image/png')));
     }
     return true;
 }
 
 /** import a character into the edition */
 async function importCharacter(entry:CharacterEntry, edition:Edition, firstNightOrder:NightOrderTracker, otherNightOrder:NightOrderTracker):Promise<boolean> {
-    const character = await spinner(entry.id, `Adding new character`, edition.addNewCharacter());
+    const character = await spinner(`Adding new character`, edition.addNewCharacter());
     const newId = edition.generateValidId(entry.name ?? 'newcharacter');
     await character.id.set(newId);
 
@@ -100,13 +100,12 @@ async function importCharacter(entry:CharacterEntry, edition:Edition, firstNight
     }
     if (entry.image) {
         const canvas = await spinner(
-            entry.id,
             `Downloading image for ${entry.name}`,
             urlToCanvas(entry.image, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT)
         );
         const dataUrl = canvas.toDataURL('image/png');
-        await spinner(entry.id, `Setting character image for ${entry.name}`, character.imageSettings.shouldRestyle.set(false));
-        await spinner(entry.id, `Setting character image for ${entry.name}`, character.unStyledImage.set(dataUrl));
+        await spinner(`Setting character image for ${entry.name}`, character.imageSettings.shouldRestyle.set(false));
+        await spinner(`Setting character image for ${entry.name}`, character.unStyledImage.set(dataUrl));
     }
 
     return true;
@@ -118,9 +117,9 @@ async function importEntry(entry:ScriptEntry, edition:Edition, firstNightOrder:N
         return Promise.resolve(false);
     }
     if (entry.id === '_meta') {
-        return spinner(entry.id, 'Importing _meta', importMeta(entry as MetaEntry, edition));
+        return spinner('Importing _meta', importMeta(entry as MetaEntry, edition));
     }
-    return spinner(entry.id, `Importing ${entry.name}`, importCharacter(entry as CharacterEntry, edition, firstNightOrder, otherNightOrder));
+    return spinner(`Importing ${entry.name}`, importCharacter(entry as CharacterEntry, edition, firstNightOrder, otherNightOrder));
 }
 
 /** import a whole script */
@@ -134,7 +133,7 @@ async function importScript(json:ScriptEntry[], edition:Edition):Promise<boolean
 
     const promises = choices.map(async characterJson=>importEntry(characterJson, edition, firstNightOrder, otherNightOrder));
 
-    const importResults = await spinner('importJsonFromUrl', 'Importing', Promise.all(promises));
+    const importResults = await spinner('Importing JSON', Promise.all(promises));
 
     const allImported = importResults.reduce((a, b)=>a&&b, true);
     if (!allImported) { return false; }
@@ -162,7 +161,7 @@ async function importScript(json:ScriptEntry[], edition:Edition):Promise<boolean
 export async function importJson(fileOrStringOrArray:File | ScriptEntry[] | string, edition:Edition):Promise<boolean> {
     let json:ScriptEntry[];
     if (fileOrStringOrArray instanceof File) {
-        const text = await spinner('importJson', 'Retrieving response text', fileOrStringOrArray.text());
+        const text = await spinner('Retrieving response text', fileOrStringOrArray.text());
         json = JSON.parse(text);
     } else if (typeof fileOrStringOrArray === 'string') {
         const parseResult = JSON.parse(fileOrStringOrArray);
@@ -185,7 +184,7 @@ export async function importJsonFromFile(edition:Edition):Promise<boolean> {
 export async function importJsonFromUrl(edition:Edition):Promise<boolean> {
     const url = await StringDlg.show('Enter URL', 'Enter URL to a custom-script.json file.');
     if (!url) {return false;}
-    const json = await spinner('importJsonFromUrl', 'Fetching custom script JSON', fetchJson<ScriptEntry[]>(url));
+    const json = await spinner('Fetching custom script JSON', fetchJson<ScriptEntry[]>(url));
     if (!json) {return false;}
     return importJson(json, edition);
 }

@@ -493,7 +493,7 @@ export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean, showS
             mode: 'cors',
             signal: controller.signal
         });
-        const response = await (showSpinner ? spinner(url, `Downloading ${url}`, fetchPromise) : fetchPromise);
+        const response = await (showSpinner ? spinner(`Downloading ${url}`, fetchPromise) : fetchPromise);
         if (!response.ok) {
             // intentional floating promise - TODO: something to prevent getting many of these at once
             if (!blockErrorMessages) {
