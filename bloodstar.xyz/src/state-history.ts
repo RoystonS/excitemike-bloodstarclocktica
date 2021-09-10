@@ -2,7 +2,7 @@
  * Work with the browser to manage states that the user can back out of.
  * @module StateHistory
  */
-
+import Locks from './lock';
 export type CurtainState = {type:'curtain';curtainId:string};
 export type CbmState = {type:'cbm';listId:number;fromIndex:number};
 export type HistoryState = CbmState | CurtainState | null;
@@ -10,11 +10,11 @@ type HistoryStateInternal = {depth:number; state:HistoryState; canGoForward:bool
 
 export type StateChangeListener = (state:HistoryState)=>void;
 
-/** state change listeners */
-let listeners:StateChangeListener[] = [];
-
 /** so we can tell if going forward or back */
 let lastDepth = 0;
+
+/** state change listeners */
+let listeners:StateChangeListener[] = [];
 
 /** register to receive state changes */
 export function addListener(listener:StateChangeListener):void {
@@ -23,15 +23,19 @@ export function addListener(listener:StateChangeListener):void {
 
 /** back out of all states */
 export async function clear():Promise<void> {
-    const depth:number = history.state?.depth ?? 0;
-    if (depth > 0) {
-        await new Promise(resolve=>{
-            window.addEventListener('popstate', ()=>setTimeout(resolve, 1), {once:true});
-            history.go(-depth);
-        });
+    if (depthFromHistory() <= 0) {return Promise.resolve();}
+    await Locks.enqueue('state-history', async ()=>new Promise<void>(resolve=>{
+        const depth:number = depthFromHistory();
+        if (depth <= 0) { resolve(); return; }
+        window.addEventListener('popstate', ()=>setTimeout(resolve, 1), {once:true});
+        history.go(-depth);
         // popstate listener takes it from here
-    }
-    lastDepth = 0;
+    }));
+}
+
+/** get current depth based on history */
+function depthFromHistory():number {
+    return history.state?.depth ?? 0;
 }
 
 /** check current state */
@@ -40,48 +44,52 @@ export function getState():HistoryState {
     return internalState?.state ?? null;
 }
 
-/** get current depth based on history */
-function depthFromHistory():number {
-    return history.state?.depth ?? 0;
+/** notify all listeners that the state changed */
+function notifyListeners(state:HistoryState):void {
+    for (const listener of listeners.concat()) {
+        listener(state);
+    }
 }
 
 /** back up */
-export async function pop():Promise<void> {
-    if (depthFromHistory() > 0) {
-        await new Promise(resolve=>{
-            window.addEventListener('popstate', ()=>setTimeout(resolve, 1), {once:true});
-            history.back();
-        });
+export async function pop():Promise<void> { return popN(1); }
+
+/** back up */
+async function popN(n:number):Promise<void> {
+    if (n<=0) {return;}
+    const startDepth = depthFromHistory();
+    if (startDepth <= 0) {return Promise.resolve();}
+    const times = Math.min(n, startDepth);
+    await Locks.enqueue('state-history', async ()=>new Promise<void>(resolve=>{
+        const curDepth = depthFromHistory();
+        const popHowMany = Math.min(times, curDepth);
+        if (popHowMany <= 0) { resolve(); return; }
+        window.addEventListener('popstate', ()=>setTimeout(resolve, 1), {once:true});
+        history.go(-popHowMany);
         // popstate listener takes it from here
-    }
+    }));
 }
 
 /** push state */
 export async function pushState(state:HistoryState, canGoForward:boolean):Promise<void> {
     // clear first if the current state is not one we can go forward from
-    const internalState0:HistoryStateInternal|null = history.state;
-    if (internalState0?.canGoForward === false) {
+    if (history.state && (history.state.canGoForward === false)) {
         await clear();
     }
 
     // back up out of meaningless states
-    const delta = depthFromHistory() - lastDepth;
-    if (delta > 0) {
-        await new Promise(resolve=>{
-            window.addEventListener('popstate', ()=>setTimeout(resolve, 1), {once:true});
-            history.go(-delta);
-        });
+    const popAmnt = depthFromHistory() - lastDepth;
+    if (popAmnt > 0) {
+        await popN(popAmnt);
     }
 
     // forward to new state
-    lastDepth = 1 + depthFromHistory();
-    const internalState1:HistoryStateInternal = {depth: lastDepth, state, canGoForward};
-    history.pushState(internalState1, '');
-
-    // pushState does NOT cause a popstate event. so we must call listeners here
-    for (const listener of listeners.concat()) {
-        listener(state);
-    }
+    return Locks.enqueue('state-history', async ()=>{
+        lastDepth = 1 + depthFromHistory();
+        history.pushState({depth: lastDepth, state, canGoForward}, '');
+        // pushState does NOT cause a popstate event. so we must call listeners here
+        notifyListeners(state);
+    });
 }
 
 /** undo addListener */
@@ -93,13 +101,9 @@ export function removeListener(listener:StateChangeListener):void {
 export async function setState(state:HistoryState, canGoForward:boolean):Promise<void> {
     const depth:number = depthFromHistory();
     if (depth > 0) {
-        await new Promise(resolve=>{
-            window.addEventListener('popstate', ()=>setTimeout(resolve, 1), {once:true});
-            history.go(-depth);
-        });
-        // popstate listener takes it from here
+        await popN(depth);
     }
-    return pushState(state, canGoForward);
+    await pushState(state, canGoForward);
 }
 
 /** watch for backing out of states */
@@ -108,9 +112,7 @@ window.addEventListener('popstate', (e:PopStateEvent)=>{
     const newDepth = internalState?.depth ?? 0;
     if (newDepth < lastDepth) {
         lastDepth = newDepth;
-        for (const listener of listeners.concat()) {
-            listener(internalState?.state ?? null);
-        }
+        notifyListeners(internalState?.state ?? null);
     }
 });
 
