@@ -50,6 +50,7 @@ export async function saveAs(edition:Edition):Promise<boolean> {
     try {
         await edition.saveName.set(name);
         await edition.markDirty();
+        // TODO: could probably do this much much faster as a server command to move rather than a regen and re-save
         await spinner('Copying Images', edition.regenAllIds());
         const success = await _save(edition, backupName===name);
         if (!success) {
