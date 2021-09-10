@@ -9,8 +9,7 @@ import { showError } from './blood-message-dlg';
 import { createElement, CreateElementsOptions } from '../util';
 import { AriaDialog } from './aria-dlg';
 import { setRecentFile } from '../recent-file';
-import signIn, { signedInCmd } from '../sign-in';
-import { SessionInfo } from '../iam';
+import signIn from '../sign-in';
 import {showBlockUser} from './block-flow';
 import { SignInFlowOptions } from './sign-in-flow';
 import genericCmd from '../commands/generic-cmd';
@@ -26,13 +25,13 @@ type ListFilesResponse = {
 export type ListFilesReturn = {
     yours: string[];
     shared?: Record<string, string[]>;
-};
+} | null;
 export type OpenRequest = {
     saveName: string|[string, string];
     token: string;
     username: string;
 };
-export type OpenResponse = {data:Record<string, unknown>} | {error:string};
+export type OpenResponse = {data:Record<string, unknown>};
 
 type ChooseFileOptions = {
     /** customize prompt title */
@@ -52,12 +51,6 @@ type ChooseFileOptions = {
 class ChooseFileDlg extends AriaDialog<string|[string, string]> {
     /** returns name of chosen file, or empty string */
     async open(options?:ChooseFileOptions):Promise<string|[string, string]> {
-        const sessionInfo = await signIn({
-            title:'Sign In to Choose File',
-            message:'You must first sign in to choose a file.'
-        });
-        if (!sessionInfo) {return '';}
-
         const fileListDiv = createElement({t:'div', css:['openDlgList']});
         const body:CreateElementsOptions = [
             {t:'h1', txt:options?.title ?? 'Choose File'},
@@ -65,7 +58,9 @@ class ChooseFileDlg extends AriaDialog<string|[string, string]> {
             fileListDiv
         ];
 
-        const {yours:yourFiles, shared:sharedFiles} = await listFiles(sessionInfo, options?.includeShared ?? false);
+        const listFilesData = await listFiles(options?.includeShared ?? false);
+        if (!listFilesData) {return '';}
+        const {yours:yourFiles, shared:sharedFiles} = listFilesData;
         const owners = (options?.includeShared && sharedFiles) ? Object.keys(sharedFiles) : [];
 
         // list your files (perhaps with label)
@@ -133,28 +128,28 @@ export async function chooseFile(options?:ChooseFileOptions):Promise<string|[str
  * Get a list of openable files
  * Brings up the loading spinner during the operation
  */
-async function listFiles(sessionInfo:SessionInfo, includeShared:boolean):Promise<ListFilesReturn> {
-    const request:ListRequest={
-        token:sessionInfo.token,
-        includeShared
+async function listFiles(includeShared:boolean):Promise<ListFilesReturn> {
+    const result = await genericCmd<ListRequest, ListFilesResponse>({
+        command:'list',
+        errorMessage:'Error encountered while retrieving file list',
+        request:sessionInfo=>({
+            includeShared,
+            token:sessionInfo?.token??'',
+        }),
+        signIn: {title:'Sign In to Choose File', message:'You must first sign in to choose a file.'},
+        spinnerMessage:'Retrieving file list'
+    });
+    if ('error' in result) {return null;}
+    if ('cancel' in result) {return null;}
+    
+    const data = result.data;
+    const ret:ListFilesReturn = {
+        yours: data.files,
     };
-    try {
-        const response = await signedInCmd<ListFilesResponse>('list', 'Retrieving file list', request);
-        if ('error' in response) {
-            console.error(response.error);
-            await showError('Network Error', `Error encountered while retrieving file list`, response.error);
-        }
-        const ret:ListFilesReturn = {
-            yours: response.files,
-        };
-        if (response.shared && Object.keys(response.shared).length) {
-            ret.shared = response.shared;
-        }
-        return ret;
-    } catch (error: unknown) {
-        await showError('Network Error', `Error encountered while retrieving file list`, error);
+    if (data.shared && Object.keys(data.shared).length) {
+        ret.shared = data.shared;
     }
-    return {yours:[]};
+    return ret;
 }
 
 /**
@@ -196,20 +191,22 @@ export async function openEditionFile(file:string|[string, string], signInOption
         title: 'Sign In to Open',
         message: 'You must first sign in to open a file.'
     };
-    const sessionInfo = await signIn(signInOptionsSafe);
-    if (!sessionInfo) {return null;}
     const label = Array.isArray(file) ? file.join(' / ') : file;
-    const openData:OpenRequest = {
-        saveName: file,
-        token: sessionInfo.token,
-        username: sessionInfo.username
-    };
-    const response = await signedInCmd<OpenResponse>('open', `Retrieving ${label}`, openData);
-    if ('error' in response) {
-        await showError('Error', `Error encountered while trying to open file ${label}`, response.error);
-        return null;
-    }
-    return response.data;
+    const result = await genericCmd<OpenRequest, OpenResponse>({
+        command:'open',
+        errorMessage:`Error encountered while trying to open file ${label}`,
+        request:sessionInfo=>({
+            saveName: file,
+            token:sessionInfo?.token??'',
+            username: sessionInfo?.username??''
+        }),
+        signIn:signInOptionsSafe,
+        spinnerMessage:`Retrieving ${label}`
+    });
+
+    if ('error' in result) {return null;}
+    if ('cancel' in result) {return null;}
+    return result.data.data;
 }
 
 /**

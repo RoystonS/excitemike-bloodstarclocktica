@@ -2,7 +2,6 @@
  * sign in to bloodstar clocktica
  * @module SignIn
  */
-import cmd from "./commands/cmd";
 import {showError} from "./dlg/blood-message-dlg";
 import {show as doSignInFlow, SignInFlowOptions} from "./dlg/sign-in-flow";
 import { SessionInfo } from "./iam";
@@ -63,33 +62,6 @@ async function promptAndSignIn(options?:SignInFlowOptions):Promise<boolean> {
         await showError('Error', 'Error encountered during sign-in', error);
     }
     return false;
-}
-
-/**
- * execute a command, signing in first if that looks necessary
- * Note that body is not pre-stringified like it is with cmd()
- * @returns promise that resolves to user info
- */
-// TODO: remove in favor of genericCmd
-export async function signedInCmd<ResultType>(cmdName:string, spinnerMessage:string, body:{token:string}):Promise<ResultType> {
-    gSessionInfo = gSessionInfo ?? getStoredToken();
-    while (accessTokenExpired(gSessionInfo)) {
-        await signIn({force:true, message:'Please sign in to continue.'});
-        if (gSessionInfo) {
-            body.token = gSessionInfo.token;
-        }
-    }
-
-    const bodyClone = {...body};
-    let cmdResult = await cmd<ResultType|'signInRequired'>(cmdName, spinnerMessage, JSON.stringify(bodyClone));
-    while (cmdResult==='signInRequired') {
-        const signInResult = await signIn({force:true, message:'Please sign in to continue.'});
-        if (signInResult) {
-            bodyClone.token = signInResult.token;
-        }
-        cmdResult = await cmd<ResultType|'signInRequired'>(cmdName, spinnerMessage, JSON.stringify(bodyClone));
-    }
-    return cmdResult;
 }
 
 /**
