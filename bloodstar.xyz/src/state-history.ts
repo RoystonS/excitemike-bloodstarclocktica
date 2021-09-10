@@ -27,7 +27,7 @@ export async function clear():Promise<void> {
     if (depthFromHistory() <= 0) {return Promise.resolve();}
     return Locks.enqueue('state-history', async ()=>{
         const depth:number = depthFromHistory();
-        if (depth <= 0) { return; }
+        if (depth <= 0) { return Promise.resolve(); }
         return new Promise<void>(resolve=>{
             window.addEventListener('popstate', ()=>setTimeout(resolve, 1), {once:true});
             history.go(-depth);
@@ -59,12 +59,12 @@ export async function pop():Promise<void> { return popN(1); }
 
 /** back up */
 async function popN(n:number):Promise<void> {
-    if (n<=0) {return;}
+    if (n<=0) {return Promise.resolve();}
     const times = Math.min(n, depthFromHistory());
     if (times <= 0) {return Promise.resolve();}
-    await Locks.enqueue('state-history', async ()=>{
+    return Locks.enqueue('state-history', async ()=>{
         const popHowMany = Math.min(times, depthFromHistory());
-        if (popHowMany <= 0) { return; }
+        if (popHowMany <= 0) { return Promise.resolve(); }
         return new Promise<void>(resolve=>{
             window.addEventListener('popstate', ()=>setTimeout(resolve, 1), {once:true});
             history.go(-popHowMany);
