@@ -2,17 +2,17 @@
  * dialog chain for deleting your account
  * @module DeleteAccountFlow
  */
-import { showError, show as showMessage } from "../dlg/blood-message-dlg";
-import signIn, { signedInCmd, signOut } from "../sign-in";
-import { show as getConfirmation } from "../dlg/yes-no-dlg";
+import { show as showMessage } from "../dlg/blood-message-dlg";
+import signIn, { signOut } from "../sign-in";
 import { AriaDialog } from "../dlg/aria-dlg";
 import { createElement } from "../util";
-import { SessionInfo } from "../iam";
-type DeleteAccountData = {token:string; password:string};
-type DeleteAccountResult = true | {error:string};
+import genericCmd from "../commands/generic-cmd";
 
-/** make sure the user really really wants to do that */
-async function confirmDeleteAccount():Promise<SessionInfo|null> {
+type DeleteAccountRequest = {token:string; password:string};
+type DeleteAccountResponse = true;
+
+/** user chose to delete their account */
+export async function deleteAccount():Promise<boolean> {
     const sessionInfo = await signIn({
         canCancel:true,
         title:'Confirm Account',
@@ -20,43 +20,33 @@ async function confirmDeleteAccount():Promise<SessionInfo|null> {
         includeForgotPasswordLink:false,
         includeSignUpLink:false
     });
-    if (!sessionInfo) {return null;}
-    if (!await getConfirmation({
-        checkboxMessage:`Yes, I am certain I want to permanently delete my account`,
-        noLabel:'Cancel',
-        title:'Confirm Delete',
-        message:`Are you sure you'd like to the account associated with username "${sessionInfo.username}" and email "${sessionInfo.email}"?` +
-            'You will not be able to recover your account!',
-        yesLabel: `Delete my account`,
-    })) {
-        return null;
-    }
-    return sessionInfo;
-}
-
-/** user chose to delete their account */
-export async function deleteAccount():Promise<boolean> {
-    const sessionInfo = await confirmDeleteAccount();
     if (!sessionInfo) {return false;}
-
-    const password = await getPassword();
+    const password = await new PasswordDlg().open();
     if (!password) {return false;}
+    const result = await genericCmd<DeleteAccountRequest, DeleteAccountResponse>({
+        command:'deleteaccount',
+        confirmOptions:{
+            checkboxMessage:'Yes, I am certain I want to permanently delete my account',
+            message:`Are you sure you'd like to the account associated with username "${sessionInfo.username}" and email "${sessionInfo.email}"?` +
+                ' You will not be able to recover your account!',
+            noLabel:'Cancel',
+            title:'Confirm Delete',
+            yesLabel:'Delete my account'
+        },
+        errorMessage: 'Deleting account',
+        request: sess=>({
+            token:sess?.token ?? '',
+            password
+        }),
+        signIn:{message:'Sign in delete account'},
+        spinnerMessage: 'Deleting account'
+    });
+    if ('error' in result) {return false;}
+    if ('cancel' in result) {return false;}
 
-    const commandData:DeleteAccountData = {
-        token:sessionInfo.token,
-        password
-    };
-    const result = await signedInCmd<DeleteAccountResult>('deleteaccount', 'Deleting account', commandData);
-
-    if (result === true) {
-        await showMessage('Done', 'Account deleted');
-        signOut();
-        return Boolean(await signIn());
-    }
-
-    const {error} = result;
-    await showError('Error', 'Something went wrong while attempting to delete your account.', error);
-    return false;
+    await showMessage('Done', 'Account deleted');
+    signOut();
+    return Boolean(await signIn());
 }
 
 class PasswordDlg extends AriaDialog<string> {
@@ -90,9 +80,4 @@ class PasswordDlg extends AriaDialog<string> {
                 {label:'Cancel'}]
         )??'';
     }
-}
-
-/** prompt user for their password before letting them delete an account */
-async function getPassword():Promise<string> {
-    return new PasswordDlg().open();
 }
