@@ -2,6 +2,7 @@
  * Work with the browser to manage states that the user can back out of.
  * @module StateHistory
  */
+// TODO: for safety, maybe this should do a timeout as well as the popstate listeners?
 import Locks from './lock';
 export type CurtainState = {type:'curtain';curtainId:string};
 export type CbmState = {type:'cbm';listId:number;fromIndex:number};
@@ -24,13 +25,15 @@ export function addListener(listener:StateChangeListener):void {
 /** back out of all states */
 export async function clear():Promise<void> {
     if (depthFromHistory() <= 0) {return Promise.resolve();}
-    await Locks.enqueue('state-history', async ()=>new Promise<void>(resolve=>{
+    return Locks.enqueue('state-history', async ()=>{
         const depth:number = depthFromHistory();
-        if (depth <= 0) { resolve(); return; }
-        window.addEventListener('popstate', ()=>setTimeout(resolve, 1), {once:true});
-        history.go(-depth);
-        // popstate listener takes it from here
-    }));
+        if (depth <= 0) { return; }
+        return new Promise<void>(resolve=>{
+            window.addEventListener('popstate', ()=>setTimeout(resolve, 1), {once:true});
+            history.go(-depth);
+            // popstate listener takes it from here
+        });
+    });
 }
 
 /** get current depth based on history */
@@ -57,17 +60,17 @@ export async function pop():Promise<void> { return popN(1); }
 /** back up */
 async function popN(n:number):Promise<void> {
     if (n<=0) {return;}
-    const startDepth = depthFromHistory();
-    if (startDepth <= 0) {return Promise.resolve();}
-    const times = Math.min(n, startDepth);
-    await Locks.enqueue('state-history', async ()=>new Promise<void>(resolve=>{
-        const curDepth = depthFromHistory();
-        const popHowMany = Math.min(times, curDepth);
-        if (popHowMany <= 0) { resolve(); return; }
-        window.addEventListener('popstate', ()=>setTimeout(resolve, 1), {once:true});
-        history.go(-popHowMany);
-        // popstate listener takes it from here
-    }));
+    const times = Math.min(n, depthFromHistory());
+    if (times <= 0) {return Promise.resolve();}
+    await Locks.enqueue('state-history', async ()=>{
+        const popHowMany = Math.min(times, depthFromHistory());
+        if (popHowMany <= 0) { return; }
+        return new Promise<void>(resolve=>{
+            window.addEventListener('popstate', ()=>setTimeout(resolve, 1), {once:true});
+            history.go(-popHowMany);
+            // popstate listener takes it from here
+        });
+    });
 }
 
 /** push state */
@@ -85,9 +88,10 @@ export async function pushState(state:HistoryState, canGoForward:boolean):Promis
 
     // forward to new state
     return Locks.enqueue('state-history', async ()=>{
+        // pushState does NOT cause a popstate event. so we must call listeners
+        // and update lastDepth here
         lastDepth = 1 + depthFromHistory();
         history.pushState({depth: lastDepth, state, canGoForward}, '');
-        // pushState does NOT cause a popstate event. so we must call listeners here
         notifyListeners(state);
     });
 }
