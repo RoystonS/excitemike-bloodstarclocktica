@@ -9,13 +9,14 @@ import { showError } from './blood-message-dlg';
 import { createElement, CreateElementsOptions } from '../util';
 import { AriaDialog } from './aria-dlg';
 import { setRecentFile } from '../recent-file';
-import signIn, { signedInCmd, signInAndConfirm } from '../sign-in';
+import signIn, { signedInCmd } from '../sign-in';
 import { SessionInfo } from '../iam';
 import {showBlockUser} from './block-flow';
 import { SignInFlowOptions } from './sign-in-flow';
+import genericCmd from '../commands/generic-cmd';
 
 type LeaveRequest = {token:string; owner:string; saveName:string};
-type LeaveResponse = true | {error:string};
+type LeaveResponse = true;
 type ListRequest = {token:string; includeShared?:boolean};
 type ListFilesResponse = {
     error?:string;
@@ -268,33 +269,27 @@ export async function promptAndOpen(edition:Edition, options?:ChooseFileOptions)
 /**
  * Confirm, then leave a file's sharelist
  * @param owner username of the file's owner
- * @param edition savename for the file
+ * @param saveName savename for the file
  * @returns promise that resolves to whether you left the file
  */
-async function showLeave(owner:string, edition:string):Promise<boolean> {
-    const sessionInfo = await signInAndConfirm(
-        {title:'Sign In to Leave', message:'You must first sign in to leave the file\'s sharelist.'},
-        {title:`Leave "${owner} / ${edition}"`, message: `Are you sure you'd like to leave "${owner} / ${edition}"? You will no longer be able to import from this file.`}
-    );
-    if (!sessionInfo) {return false;}
+async function showLeave(owner:string, saveName:string):Promise<boolean> {
+    const result = await genericCmd<LeaveRequest, LeaveResponse>({
+        command:'leave',
+        confirmOptions: {
+            title:`Leave "${owner} / ${saveName}"`,
+            message: `Are you sure you'd like to leave "${owner} / ${saveName}"? You will no longer be able to import from this file.`
+        },
+        errorMessage:'Error encountered while retrieving share list',
+        request:sessionInfo=>({
+            owner,
+            saveName,
+            token:sessionInfo?.token??'',
+        }),
+        signIn: {title:'Sign In to Leave', message:'You must first sign in to leave the file\'s sharelist.'},
+        spinnerMessage:'Leaving share list'
+    });
 
-    const request:LeaveRequest = {
-        token:sessionInfo.token,
-        owner,
-        saveName:edition
-    };
-
-    try {
-        const response = await signedInCmd<LeaveResponse>('leave', 'Leaving share list', request);
-        if (response===true) {
-            return true;
-        }
-        const {error} = response;
-        console.error(error);
-        await showError('Network Error', `Error encountered while retrieving share list`, error);
-        return false;
-    } catch (error: unknown) {
-        await showError('Network Error', `Error encountered while retrieving share list`, error);
-        return false;
-    }
+    if ('error' in result) {return false;}
+    if ('cancel' in result) {return false;}
+    return result.data;
 }

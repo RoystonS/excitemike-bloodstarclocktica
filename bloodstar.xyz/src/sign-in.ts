@@ -8,7 +8,6 @@ import {show as doSignInFlow, SignInFlowOptions} from "./dlg/sign-in-flow";
 import { SessionInfo } from "./iam";
 import { updateUserDisplay } from "./menu";
 import { isRecord } from "./util";
-import {show as getConfirmation, YesNoOptions} from "./dlg/yes-no-dlg";
 
 export type SignInOptions = SignInFlowOptions & {
     /** true to force a new sign-in instead of reusing existing token */
@@ -126,21 +125,6 @@ export async function signIn(options?:SignInOptions):Promise<SessionInfo|null> {
     updateUserDisplay(gSessionInfo);
 
     return gSessionInfo;
-}
-
-/**
- * sign in and do a confirmation popup
- * @returns SessionInfo if they are both signed in AND said yes to the confirmation dialog, otherwise null
- */
-// TODO: remove in favor of genericCmd
-export async function signInAndConfirm(
-    signInOptions:SignInOptions,
-    confirmOptions:YesNoOptions
-):Promise<SessionInfo|null> {
-    const sessionInfo = await signIn(signInOptions);
-    if (!sessionInfo) {return null;}
-    if (!await getConfirmation(confirmOptions)) { return null; }
-    return sessionInfo;
 }
 
 /** clear session info */
