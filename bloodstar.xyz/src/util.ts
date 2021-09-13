@@ -95,6 +95,7 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(options:Cre
 }
 
 /** attempt to read some json from the internet */
+// TODO: go through cmd, accept a controller
 export async function fetchJson<T>(uri:string):Promise<T|null> {
     let response:Response;
     const controller = new AbortController();
