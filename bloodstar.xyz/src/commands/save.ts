@@ -173,9 +173,8 @@ async function _save(edition:Edition, clobber:boolean):Promise<boolean> {
         if (!imageString.startsWith('data:')) {continue;}
         if (!edition.isCharacterSourceImageDirty(id)) {continue;}
         imgSavePromises.push(Locks.enqueue('saveImage', async ()=>{
-            const result = await _savePng(editionSaveName, id, imageString, true, controller);
+            await _savePng(editionSaveName, id, imageString, true, controller);
             edition.unDirtySourceImage(id);
-            return result;
         }, MAX_SIMULTANEOUS_IMAGE_SAVES));
     }
 
@@ -183,9 +182,8 @@ async function _save(edition:Edition, clobber:boolean):Promise<boolean> {
         if (!imageString.startsWith('data:')) {continue;}
         if (!edition.isCharacterFinalImageDirty(id)) {continue;}
         imgSavePromises.push(Locks.enqueue('saveImage', async ()=>{
-            const result = await _savePng(editionSaveName, id, imageString, false, controller);
+            await _savePng(editionSaveName, id, imageString, false, controller);
             edition.unDirtyFinalImage(id);
-            return result;
         }, MAX_SIMULTANEOUS_IMAGE_SAVES));
     }
 
@@ -198,9 +196,8 @@ async function _save(edition:Edition, clobber:boolean):Promise<boolean> {
         }
         if (logo.startsWith('data:')) {
             imgSavePromises.push(Locks.enqueue('saveImage', async ()=>{
-                const result = _savePng(editionSaveName, '_meta', logo, false, controller);
+                await _savePng(editionSaveName, '_meta', logo, false, controller);
                 edition.unDirtyLogo();
-                return result;
             }, MAX_SIMULTANEOUS_IMAGE_SAVES));
         }
     }
@@ -333,7 +330,7 @@ async function clobberPrompt(saveName:string):Promise<boolean> {
     const response = await genericCmd<ExistsRequest, ExistsResponse>(existsCmdOptions);
     if (!('data' in response)) {return false;}
     if (!response.data) {return true;}
-    
+
     const confirmOptions:YesNoOptions = {
         message:`There is already a save file named ${saveName}. Would you like to replace it?`,
         noLabel:'No, Cancel Save',

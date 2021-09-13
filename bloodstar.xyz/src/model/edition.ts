@@ -340,7 +340,7 @@ export class Edition extends ObservableObject<Edition> {
     getIdSuffix():string {
         return `_${this.saveName.get().toLowerCase().replace(/[^A-Za-z0-9_]/g, '')}`;
     }
-    
+
     /** update edition after an image save */
     unDirtyLogo():void {this.dirtyLogo = false;}
 
