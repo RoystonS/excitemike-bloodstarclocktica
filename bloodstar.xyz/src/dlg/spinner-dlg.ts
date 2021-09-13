@@ -24,7 +24,7 @@ class SpinnerDialog extends AriaDialog<null> {
 
     /**
      * create or add to a spinner.
-     * @returns a promise that resolves to a function for you to call when work completes */
+     */
     add(message:string):void {
         if (!this.listElement) {
             this.open();
