@@ -117,8 +117,6 @@ export class AriaDialog<ResultType> {
 
     private postNode:Node|null = null;
 
-    private promise:Promise<ResultType|null>|null = null;
-
     private resolveFn:ResolveFn|null = null;
 
     private lastFocus:Node|null = null;
@@ -282,7 +280,7 @@ export class AriaDialog<ResultType> {
         dialogStack.push(this);
 
         // result promise
-        this.promise = new Promise<ResultType|null>((resolve)=>{
+        const promise = new Promise<ResultType>((resolve)=>{
             this.resolveFn = resolve;
         });
 
@@ -291,7 +289,7 @@ export class AriaDialog<ResultType> {
 
         appear(this.root as HTMLElement);
 
-        return this.promise;
+        return promise;
     }
 
     /** find the first element in the dialog with the given id */
