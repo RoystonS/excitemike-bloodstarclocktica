@@ -30,16 +30,25 @@ class MessageDialog extends AriaDialog<void> {
     }
 }
 
+let errorMessages = 0;
+
 /**
  * bring up the popup showing exception information
  */
 export async function showError(
     title = 'Error',
     message = 'It looks like you encountered a bug! The error message below may help the developers fix it.',
-    error:Error|unknown = undefined
+    error:unknown = undefined
 ):Promise<void> {
-    const errorMessage = (error instanceof Error) ? `${error.message}` : `${error}`;
-    await new MessageDialog().open(document.activeElement, title, message, errorMessage);
+    if (errorMessages===0) {
+        const errorMessage = (error instanceof Error) ? `${error.message}` : `${error ?? ''}`;
+        ++errorMessages;
+        try {
+            await new MessageDialog().open(document.activeElement, title, message, errorMessage);
+        } finally {
+            --errorMessages;
+        }
+    }
 }
 /**
  * bring up the popup showing exception information
