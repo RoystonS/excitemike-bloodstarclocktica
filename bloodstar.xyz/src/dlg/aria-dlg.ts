@@ -231,8 +231,6 @@ export class AriaDialog<ResultType> {
         root.appendChild(box);
         document.body.appendChild(root);
 
-        console.log('>>> open', id);
-
         // bracket the dialog in invisible, focusable nodes that we use to keep focus from leaving
         if (!root.parentNode) {return root;}
         const preNode = document.createElement('div');
