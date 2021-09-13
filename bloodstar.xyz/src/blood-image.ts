@@ -2,7 +2,7 @@
  * image processing for character tokens
  * @module ImageProcessing
  */
-import {show as showMessage, showNoWait as showMessageNoWait} from './dlg/blood-message-dlg';
+import {showErrorNoWait, show as showMessage} from './dlg/blood-message-dlg';
 import { BloodTeam } from "./model/blood-team";
 import Images from "./images";
 import { getCorsProxyUrl } from "./util";
@@ -480,11 +480,14 @@ export async function imageUrlToDataUri(url:string, showSpinner=true):Promise<st
 let blockErrorMessages = false;
 
 /** get image data from the url and convert it to a dataUri */
+// TODO: go through cmd, accept a controller
 export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean, showSpinner=true):Promise<string> {
     const controller = new AbortController();
     const timeoutId = setTimeout(()=>{
-        controller.abort();
-        showMessageNoWait('Network Error', `Request timed out trying to reach ${url}`);
+        if (!controller.signal.aborted) {
+            controller.abort();
+            showErrorNoWait('Network Error', `Request timed out trying to reach ${url}`);
+        }
     }, 30*1000);
     try {
         const proxiedUrl = useCorsProxy ? getCorsProxyUrl(url) : url;
