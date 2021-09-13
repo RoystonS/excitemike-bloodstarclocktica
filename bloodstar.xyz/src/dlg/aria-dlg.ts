@@ -128,9 +128,6 @@ export class AriaDialog<ResultType> {
 
     /** close the dialog early. resolve result promise with specified value */
     close(value:ResultType|null = null):void {
-        if (!this.resolveFn) {return;}
-        this.resolveFn(value);
-
         // remove from dialog stack
         if (dialogStack.length) {
             const i = dialogStack.indexOf(this);
@@ -155,17 +152,25 @@ export class AriaDialog<ResultType> {
         }
 
         // remove from DOM
-        if (!this.root) {return;}
         if (this.preNode) {
-            this.root.parentNode?.removeChild(this.preNode);
+            this.preNode.parentNode?.removeChild(this.preNode);
             this.preNode = null;
         }
         if (this.postNode) {
-            this.root.parentNode?.removeChild(this.postNode);
+            this.postNode.parentNode?.removeChild(this.postNode);
             this.postNode = null;
         }
 
-        disappear(this.root as HTMLElement);
+        if (this.root) {
+            disappear(this.root as HTMLElement);
+            this.root = null;
+        }
+
+        if (this.resolveFn) {
+            const fn = this.resolveFn;
+            this.resolveFn = null;
+            fn(value);
+        }
     }
 
     /**
@@ -212,7 +217,6 @@ export class AriaDialog<ResultType> {
                     } catch (error: unknown) {
                         await showError('Error', `Error when handling ${label}`, error);
                         this.close();
-
                     }
                 });
                 btn.innerText = label;
@@ -226,6 +230,8 @@ export class AriaDialog<ResultType> {
         // box in dlg, dlg in document.
         root.appendChild(box);
         document.body.appendChild(root);
+
+        console.log('>>> open', id);
 
         // bracket the dialog in invisible, focusable nodes that we use to keep focus from leaving
         if (!root.parentNode) {return root;}
@@ -254,9 +260,6 @@ export class AriaDialog<ResultType> {
         body:CreateElementsOptions,
         buttons:ButtonCfg<ResultType|null>[] = [{label:'OK'}]
     ):Promise<ResultType|null> {
-        // stop whatever special state you were in
-        await StateHistory.clear();
-
         this.root = this.createDialog(debugName, body, buttons);
 
         // we need to replace the previous dialog's listeners
@@ -288,6 +291,9 @@ export class AriaDialog<ResultType> {
         this.lastFocus = document.activeElement;
 
         appear(this.root as HTMLElement);
+
+        // stop whatever special state you were in
+        await StateHistory.clear();
 
         return promise;
     }
@@ -361,7 +367,6 @@ export async function showDialog<ResultType = unknown>(
 {
     return new AriaDialog<ResultType>().baseOpen(focusAfterClose, debugName, body, buttons);
 }
-
 
 // escape to cancel current dialog
 document.addEventListener('keyup', (event:KeyboardEvent) => {

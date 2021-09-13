@@ -27,6 +27,9 @@ class SpinnerDialog extends AriaDialog<null> {
      */
     add(message:string):void {
         if (!this.listElement) {
+            // intentionally leaking this promise. The point of spinner is to have one popup 
+            // stick around with messages, so blocking here would defeat the purpose
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             this.open();
         }
         if (!this.listElement) {return;}
@@ -86,9 +89,7 @@ const _spinner = new SpinnerDialog();
 export async function spinner<T>(message:string, somePromise:Promise<T>):Promise<T> {
     _spinner.add(message);
     try {
-        const result = await somePromise;
-        _spinner.remove(message);
-        return result;
+        return await somePromise;
     } finally {
         _spinner.remove(message);
     }
