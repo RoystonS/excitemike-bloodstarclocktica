@@ -38,7 +38,7 @@ class StringDialog extends AriaDialog<string> {
         warningsContainer];
 
         // submit on enter
-        // TODO: DRY: wrap in function and move to base class. find other dialogs doing the same
+        // TODO: DRY: make some kind of submitOnEnter function instead of duping this code
         inputField.addEventListener('keyup', (event:KeyboardEvent):void=>{
             switch (event.code)
             {

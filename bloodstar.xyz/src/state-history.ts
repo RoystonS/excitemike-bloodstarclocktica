@@ -2,7 +2,6 @@
  * Work with the browser to manage states that the user can back out of.
  * @module StateHistory
  */
-// TODO: for safety, maybe this should do a timeout as well as the popstate listeners?
 import Locks from './lock';
 export type CurtainState = {type:'curtain';curtainId:string};
 export type CbmState = {type:'cbm';listId:number;fromIndex:number};

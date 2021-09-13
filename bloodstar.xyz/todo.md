@@ -15,9 +15,6 @@
 ## QoL
 
 - saveAs is quite slow :(
-- auto-fill author field on new
-- gray out other image settings when Restyle Image unchecked
-  - similar for dropshadow options when dropshadow unchecked
 
 ## Bugs
 

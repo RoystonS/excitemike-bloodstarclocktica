@@ -77,9 +77,6 @@ export default async function genericCmd<
         const safeErrorMessage = (typeof options.errorMessage === 'function') ?
             options.errorMessage() :
             options.errorMessage;
-        // TODO: I'd much rather this returned an error or even threw an exception
-        // and this be handled at hte call site rather than have the 
-        // handleError/errorMessage options
         await showError('Network Error', safeErrorMessage, response.error);
     }
     return response;

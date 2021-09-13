@@ -21,7 +21,6 @@ import { promptAndOpen } from "./dlg/open-flow";
 import { SessionInfo } from "./iam";
 import { newEdition } from './commands/new';
 import showResetPasswordFlow from './dlg/reset-password-flow';
-import showHelp from './dlg/help-dlg';
 import showSharing from './dlg/sharing-dlg';
 import {showManageBlocked} from './dlg/block-flow';
 import { closeAllCurtains } from "./curtain";
@@ -100,7 +99,6 @@ export default function init(edition:Edition):void {
         ['importOfficialButton', importOfficialClicked],
         ['saveAndPublishButton', saveAndPublishClicked],
         ['sharingButton', sharingButtonClicked],
-        ['helpButton', showHelpClicked],
         ['importSharedButton', importSharedClicked],
         ['blockedUsersButton', blockedUsersClicked]
     ];
@@ -173,12 +171,6 @@ async function sharingButtonClicked(edition:Edition):Promise<boolean> {
 /** clicked the Manage Blocked Users button */
 async function blockedUsersClicked():Promise<boolean> {
     await showManageBlocked();
-    return true;
-}
-
-/** clicked the help menu button */
-async function showHelpClicked():Promise<boolean> {
-    await showHelp();
     return true;
 }
 

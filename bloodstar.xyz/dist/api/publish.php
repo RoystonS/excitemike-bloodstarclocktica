@@ -138,7 +138,6 @@
                 }
             }
 
-            // TODO: reevaluate if we want extras like this
             $outMeta['almanac'] = "https://www.bloodstar.xyz/p/$username/$saveName/almanac.html";
 
             $scriptData[] = &$outMeta;
@@ -188,7 +187,6 @@
                 copyFieldWithSubstitutions($inCharacter, 'ability', $outCharacter, 'ability');
                 copyFieldWithSubstitutions($inCharacter, 'attribution', $outCharacter, 'attribution');
                 
-                // TODO: reevaluate if we want extras like this
                 if (array_key_exists('almanac', $inCharacter)) {
                     $almanac = $inCharacter['almanac'];
                     copyField($almanac, 'flavor', $outCharacter, 'flavor');
