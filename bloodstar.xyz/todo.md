@@ -21,6 +21,5 @@
 
 ## Bugs
 
-- gradient and texture images not getting cached
 - on SaveAs: copying images happens before confirmation prompt
 - on narrow screen on Firefox, there is a gap between menu button and dropdown

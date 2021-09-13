@@ -480,7 +480,6 @@ export async function imageUrlToDataUri(url:string, showSpinner=true):Promise<st
 let blockErrorMessages = false;
 
 /** get image data from the url and convert it to a dataUri */
-// TODO: go through cmd, accept a controller
 export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean, showSpinner=true):Promise<string> {
     const controller = new AbortController();
     const timeoutId = setTimeout(()=>{
@@ -523,6 +522,15 @@ export async function _imageUrlToDataUri(url:string, useCorsProxy:boolean, showS
 
 /** get image data from the url and put it in a new canvas */
 export async function urlToCanvas(url:string, width:number, height:number, options?:UrlToCanvasOptions):Promise<HTMLCanvasElement> {
+    const shouldCache = url.startsWith('data:') || !(options?.cache ?? false);
+    const workFn = async ()=>_urlToCanvas(url, width, height, options);
+
+    // when caching the image, we don't want two downloads of the same thing going at once
+    return shouldCache ? workFn() : Locks.enqueue(`urlToCanvas ${url}`, workFn);
+}
+
+/** does the work of urlToCanvas */
+export async function _urlToCanvas(url:string, width:number, height:number, options?:UrlToCanvasOptions):Promise<HTMLCanvasElement> {
     const sourceUrl = new URL(url, location.origin);
     const isDataUri = sourceUrl.protocol === 'data:';
     const shouldCache = !isDataUri && (options?.cache ?? false);
@@ -564,7 +572,7 @@ export async function urlToCanvas(url:string, width:number, height:number, optio
 }
 
 /** find the appropriate gradient image for the team and settings */
-export async function getGradientForTeam(team:BloodTeam, useOutsiderAndMinionColors:boolean, width:number, height:number):Promise<BloodImage> {
+export async function getGradientForTeam(team:BloodTeam, useOutsiderAndMinionColors:boolean):Promise<BloodImage> {
     let url:string;
     switch (team) {
         case BloodTeam.TOWNSFOLK:
@@ -589,5 +597,5 @@ export async function getGradientForTeam(team:BloodTeam, useOutsiderAndMinionCol
             throw new Error(`getGradientForTeam: unhandled team "${team}"`);
     }
 
-    return urlToBloodImage(url, width, height, {cache:true, showSpinner:false});
+    return urlToBloodImage(url, ProcessImageSettings.FULL_WIDTH, ProcessImageSettings.FULL_HEIGHT, {cache:true, showSpinner:false});
 }

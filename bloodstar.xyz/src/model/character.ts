@@ -150,9 +150,7 @@ export class Character extends ObservableObject<Character> {
         if (imageSettings.shouldColorize.get()) {
             const gradientImage = await getGradientForTeam(
                 this.team.get(),
-                imageSettings.useOutsiderAndMinionColors.get(),
-                bloodImage.width,
-                bloodImage.height
+                imageSettings.useOutsiderAndMinionColors.get()
             );
             bloodImage.setRGB(255, 255, 255);
             bloodImage.multiply(gradientImage.resized(bloodImage.width, bloodImage.height));
