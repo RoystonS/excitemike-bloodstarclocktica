@@ -12,6 +12,7 @@ import { updateSaveNameWarnings, validateSaveName } from '../validate';
 import { imageUrlToDataUri } from '../blood-image';
 import genericCmd, { GenericCmdOptions } from './generic-cmd';
 import signIn from '../sign-in';
+import { TimeoutError } from './cmd';
 
 type SaveRequest = {
     clobber?:boolean;
@@ -58,8 +59,11 @@ export async function saveAs(edition:Edition):Promise<boolean> {
         }
         return success;
     } catch (error: unknown) {
-        await edition.saveName.set(backupName);
-        await showError('Error', 'Error encountered while trying to save', error);
+        if (error instanceof TimeoutError) {
+            await showError('Error', `Timed out while trying to save as ${name}. Please check your internet connection and save again.`, error);
+            return false;
+        }
+        await showError('Error', `Error encountered while trying to save as ${name}. Please check your internet connection and save again.`, error);
     }
     return false;
 }
@@ -79,7 +83,11 @@ export async function save(edition:Edition):Promise<boolean> {
                 return await _save(edition, true);
         }
     } catch (error: unknown) {
-        await showError('Error', 'Error encountered while trying to save', error);
+        if (error instanceof TimeoutError) {
+            await showError('Error', `Timed out while trying to save ${saveName}. Please check your internet connection and save again.`, error);
+            return false;
+        }
+        await showError('Error', `Error encountered while trying to save ${saveName}. Please check your internet connection and save again.`, error);
         return false;
     }
 }
@@ -150,18 +158,27 @@ async function _save(edition:Edition, clobber:boolean):Promise<boolean> {
     // save JSON
     if (!await _saveJson(editionSaveName, toSave.edition, clobber)) { return false; }
 
-    const imgSavePromises = [];
+    const imgSavePromises:Promise<void>[] = [];
+    const controller = new AbortController();
 
     for (const [id, imageString] of toSave.sourceImages) {
         if (!imageString.startsWith('data:')) {continue;}
         if (!edition.isCharacterSourceImageDirty(id)) {continue;}
-        imgSavePromises.push(Locks.enqueue('saveImage', async ()=>_savePng(editionSaveName, id, imageString, true), MAX_SIMULTANEOUS_IMAGE_SAVES));
+        imgSavePromises.push(Locks.enqueue('saveImage', async ()=>{
+            const result = await _savePng(editionSaveName, id, imageString, true, controller);
+            edition.unDirtySourceImage(id);
+            return result;
+        }, MAX_SIMULTANEOUS_IMAGE_SAVES));
     }
 
     for (const [id, imageString] of toSave.finalImages) {
         if (!imageString.startsWith('data:')) {continue;}
         if (!edition.isCharacterFinalImageDirty(id)) {continue;}
-        imgSavePromises.push(Locks.enqueue('saveImage', async ()=>_savePng(editionSaveName, id, imageString, false), MAX_SIMULTANEOUS_IMAGE_SAVES));
+        imgSavePromises.push(Locks.enqueue('saveImage', async ()=>{
+            const result = await _savePng(editionSaveName, id, imageString, false, controller);
+            edition.unDirtyFinalImage(id);
+            return result;
+        }, MAX_SIMULTANEOUS_IMAGE_SAVES));
     }
 
     if (toSave.logo && edition.isLogoDirty()) {
@@ -172,17 +189,21 @@ async function _save(edition:Edition, clobber:boolean):Promise<boolean> {
             logo = await imageUrlToDataUri(toSave.logo);
         }
         if (logo.startsWith('data:')) {
-            imgSavePromises.push(Locks.enqueue('saveImage', async ()=>_savePng(editionSaveName, '_meta', logo, false), MAX_SIMULTANEOUS_IMAGE_SAVES));
+            imgSavePromises.push(Locks.enqueue('saveImage', async ()=>{
+                const result = _savePng(editionSaveName, '_meta', logo, false, controller);
+                edition.unDirtyLogo();
+                return result;
+            }, MAX_SIMULTANEOUS_IMAGE_SAVES));
         }
     }
 
-    // await results
-    // TODO: _savePng should accept a cancel token so that if one fails we can kill the rest
-    for (const result of await spinner(`Saving as ${editionSaveName}`, Promise.all(imgSavePromises))) {
-        if ('error' in result) {
-            await showError('Error', `Error encountered while trying to save ${editionSaveName}`, result.error);
-            return false;
-        }
+    // await all those images
+    try {
+        await spinner(`Saving as ${editionSaveName}`, Promise.all(imgSavePromises));
+    } catch (e:unknown) {
+        // if any fail, cancel the others
+        controller.abort();
+        throw e;
     }
 
     // mark things as up to date
@@ -235,28 +256,36 @@ async function _saveJson(saveName:string, serializedEdition:unknown, clobber:boo
     return response.data.success;
 }
 
-/** helper for _save */
-async function _savePng(editionSaveName:string, imageId:string, imageString:string, isSource:boolean):Promise<{error:string}|{success:true}> {
-    const response = await genericCmd<SaveImgRequest, SaveImgResponse>({
-        command: 'save-img',
-        errorMessage: `Error occurred while saving ${imageId}.src.png`,
-        request:sessionInfo=>({
-            token: sessionInfo?.token ?? '',
-            saveName: editionSaveName,
-            id: imageId,
-            isSource,
-            image: imageString
-        }),
-        signIn:{
-            title:'Sign In to Save',
-            message:'You must first sign in if you wish to save.'
-        },
-        spinnerMessage:`Saving ${imageId}${isSource?'.src':''}.png`
-    });
-    if ('error' in response) {return response;}
-    if ('cancel' in response) {return {error:`cancel reason: ${response.cancel}`};}
-    if (typeof response.data === 'string') {return {error:`cancel reason: ${response.data}`};}
-    return response.data;
+/**
+ * Helper for _save.
+ */
+async function _savePng(editionSaveName:string, imageId:string, imageString:string, isSource:boolean, controller:AbortController):Promise<void> {
+    try {
+        const response = await genericCmd<SaveImgRequest, SaveImgResponse>({
+            command: 'save-img',
+            controller: controller,
+            errorMessage: `Error occurred while saving ${imageId}.src.png`,
+            request:sessionInfo=>({
+                token: sessionInfo?.token ?? '',
+                saveName: editionSaveName,
+                id: imageId,
+                isSource,
+                image: imageString
+            }),
+            signIn:{
+                title:'Sign In to Save',
+                message:'You must first sign in if you wish to save.'
+            },
+            spinnerMessage:`Saving ${imageId}${isSource?'.src':''}.png`
+        });
+        if ('error' in response) {throw new Error(response.error);}
+        if ('cancel' in response) {throw new Error(`cancel reason: ${response.cancel}`);}
+    } catch (e:unknown) {
+        if (e instanceof TimeoutError) {
+            e.message = `Timed out while saving ${imageId}${isSource?'.src':''}.png`;
+        }
+        throw e;
+    }
 }
 
 /**

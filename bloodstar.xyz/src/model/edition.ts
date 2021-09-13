@@ -326,4 +326,13 @@ export class Edition extends ObservableObject<Edition> {
         }
         return null;
     }
+    
+    /** update edition after an image save */
+    unDirtyLogo():void {this.dirtyLogo = false;}
+
+    /** update edition after an image save */
+    unDirtyFinalImage(id:string):void {this.dirtyFinalImages.delete(id);}
+
+    /** update edition after an image save */
+    unDirtySourceImage(id:string):void {this.dirtySourceImages.delete(id);}
 }
