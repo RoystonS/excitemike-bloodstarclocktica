@@ -21,6 +21,11 @@ export type GenericCmdOptions<RequestType> = {
     confirmOptions?:YesNoOptions;
 
     /**
+     * provide an abort controller to make the command cancellable
+     */
+    controller?:AbortController;
+
+    /**
      * Whether to catch exceptions and bring up an error message for them.
      * (default: true)
      */
@@ -67,23 +72,18 @@ export default async function genericCmd<
     ResponseDataType
 >(options:GenericCmdOptions<RequestType>):Promise<GenericCmdReturn<ResponseDataType>> {
     const response = await runCmd<RequestType, ResponseDataType>(options);
-    if ('cancel' in response) {
-        return response;
-    }
-    if ('error' in response) {
-        if (options.handleError ?? true) {
-            const safeErrorMessage = (typeof options.errorMessage === 'function') ?
-                options.errorMessage() :
-                options.errorMessage;
-            await showError('Network Error', safeErrorMessage, response.error);
-        }
-        return response;
+    if ('cancel' in response) {return response;}
+    if (('error' in response) && (options.handleError ?? true)) {
+        const safeErrorMessage = (typeof options.errorMessage === 'function') ?
+            options.errorMessage() :
+            options.errorMessage;
+        // TODO: I'd much rather this returned an error or even threw an exception
+        // and this be handled at hte call site rather than have the 
+        // handleError/errorMessage options
+        await showError('Network Error', safeErrorMessage, response.error);
     }
     return response;
 }
-
-/** verify that value looks like an error object */
-
 
 /**
  * run a command based on GenericCmdOptions
@@ -92,7 +92,7 @@ async function runCmd<
     RequestType extends {token:string},
     ResponseDataType
 >(options:GenericCmdOptions<RequestType>):Promise<GenericCmdReturn<ResponseDataType>> {
-    let response;
+    let response:CmdResult<ResponseDataType>;
     if (options.signIn) {
         let sessionInfo = getStoredToken();
         if (!sessionInfo || accessTokenExpired(sessionInfo)) {
@@ -101,16 +101,16 @@ async function runCmd<
         if (!sessionInfo) {return {cancel:'signInFailed'};}
         if (options.confirmOptions && !await getConfirmation(options.confirmOptions)) { return {cancel:'declined'}; }
         const requestSafe = (typeof options.request === 'function') ? options.request(sessionInfo) : options.request;
-        response = await cmd<CmdResult<ResponseDataType>>(options.command, options.spinnerMessage, JSON.stringify(requestSafe));
+        response = await cmd<CmdResult<ResponseDataType>>(options.command, options.spinnerMessage, JSON.stringify(requestSafe), options.controller);
         while (response === 'signInRequired') {
             sessionInfo = await signIn(options.signIn);
             if (!sessionInfo) {return {cancel:'signInFailed'};}
             requestSafe.token = sessionInfo.token;
-            response = await cmd<CmdResult<ResponseDataType>>(options.command, options.spinnerMessage, JSON.stringify(requestSafe));
+            response = await cmd<CmdResult<ResponseDataType>>(options.command, options.spinnerMessage, JSON.stringify(requestSafe), options.controller);
         }
     } else {
         const requestSafe = (typeof options.request === 'function') ? options.request(null) : options.request;
-        response = await cmd<CmdResult<ResponseDataType>>(options.command, options.spinnerMessage, JSON.stringify(requestSafe));
+        response = await cmd<CmdResult<ResponseDataType>>(options.command, options.spinnerMessage, JSON.stringify(requestSafe), options.controller);
     }
     if (response === 'signInRequired') {return {cancel:'signInFailed'};}
     if ((typeof response === 'object') && ('error' in response)) {
