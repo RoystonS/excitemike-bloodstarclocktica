@@ -121,7 +121,7 @@ export class Edition extends ObservableObject<Edition> {
             if (edition.suspendPropagation) {return;}
             switch (propName) {
                 case 'name':
-                    await character.id.set(edition.generateValidId(character.name.get()));
+                    await character.id.set(edition.generateValidId(character.name.get(), character));
                     break;
                 case 'id':
                     edition.dirtySourceImages.add(character.id.get());
@@ -201,28 +201,29 @@ export class Edition extends ObservableObject<Edition> {
     /** add a new character to the set */
     async addNewCharacter():Promise<Character> {
         const character = await Character.asyncNew();
-        await character.id.set(this.generateValidId(character.name.get()));
+        await character.id.set(this.generateValidId(character.name.get(), character));
         await this.characterList.add(character);
         return character;
     }
 
-    /** get a unique id from the given basename */
-    generateValidId(basename:string):string {
-        const newBase = basename
-            .toLowerCase()
-            .replace(/[^A-Za-z0-9_]/g, '');
-        const suffix = this.saveName.get()
-            .toLowerCase()
-            .replace(/[^A-Za-z0-9_]/g, '');
+    /**
+     * get a unique id from the given basename
+     * @param basename - string to base id on (usually character name)
+     * @param ignoreCharacter - optional character to ignore when looking for dupe ids. Usually the character whose id you are generating
+     */
+    generateValidId(basename:string, ignoreCharacter?:Character):string {
+        const newBase = Edition.getIdPrefix(basename);
+        const suffix = this.getIdSuffix();
         let number = 0;
-        let combined = `${newBase}${number||''}_${suffix}`;
+        let combined = `${newBase}${number||''}${suffix}`;
         let dupeFound = false;
         do {
             dupeFound = false;
             for (const character of this.characterList) {
+                if (character === ignoreCharacter) {continue;}
                 if (character.id.get() === combined) {
                     number++;
-                    combined = `${newBase}${number||''}_${suffix}`;
+                    combined = `${newBase}${number||''}${suffix}`;
                     dupeFound = true;
                     break;
                 }
@@ -232,11 +233,12 @@ export class Edition extends ObservableObject<Edition> {
     }
 
     /** update all ids (you probably changed the save name of the edition) */
-    async regenAllIds():Promise<void> {
+    async regenIdsForNameChange():Promise<void> {
+        const desiredSuffix = this.getIdSuffix();
         await Promise.all(
-            this.characterList.map(
-                async character=>character.id.set(this.generateValidId(character.name.get()))
-            )
+            this.characterList
+                .filter(character=>!character.id.get().endsWith(desiredSuffix))
+                .map(async character=>character.id.set(this.generateValidId(character.name.get(), character)))
         );
     }
 
@@ -247,7 +249,7 @@ export class Edition extends ObservableObject<Edition> {
             let id = character.id.get();
             if (ids.has(id)) {
                 while (ids.has(id)) {
-                    id = this.generateValidId(character.name.get());
+                    id = this.generateValidId(character.name.get(), character);
                 }
                 await character.id.set(id);
             }
@@ -325,6 +327,18 @@ export class Edition extends ObservableObject<Edition> {
             }
         }
         return null;
+    }
+
+    /** get the id prefix for the edition's characters based on a base name */
+    static getIdPrefix(basename:string):string {
+        return basename
+            .toLowerCase()
+            .replace(/[^A-Za-z0-9_]/g, '');
+    }
+
+    /** get the id suffix for the edition's characters */
+    getIdSuffix():string {
+        return `_${this.saveName.get().toLowerCase().replace(/[^A-Za-z0-9_]/g, '')}`;
     }
     
     /** update edition after an image save */

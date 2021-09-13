@@ -18,4 +18,4 @@
 
 ## Bugs
 
-- on SaveAs: copying images happens before confirmation prompt
+- all fixed AFAIK

@@ -171,6 +171,11 @@ export class ObservableCollection<ItemType extends ObservableObject<ItemType>> i
         await this.addMany(toAdd);
     }
 
+    /** return an array of items for which the provided predicate returns true */
+    filter(predicate:(_:ItemType)=>boolean):ItemType[] {
+        return this.items.filter(itemPlus=>predicate(itemPlus.item)).map(itemPlus=>itemPlus.item);
+    }
+
     /** get an item in the collection */
     get(i:number):ItemType|null {
         return arrayGet(this.items, i, null)?.item??null;

@@ -13,13 +13,20 @@ import { imageUrlToDataUri } from '../blood-image';
 import genericCmd, { GenericCmdOptions } from './generic-cmd';
 import signIn from '../sign-in';
 import { TimeoutError } from './cmd';
+import { show as getConfirmation, YesNoOptions } from '../dlg/yes-no-dlg';
 
+type ExistsRequest = {
+    saveName:string;
+    token:string;
+};
+type ExistsResponse = boolean;
 type SaveRequest = {
     clobber?:boolean;
     edition:unknown;
     saveName:string;
     token:string;
 };
+type SaveResponse = 'cancel' | 'clobber' | {success:true};
 type SaveImgRequest = {
     token:string;
     saveName:string;
@@ -27,7 +34,6 @@ type SaveImgRequest = {
     isSource:boolean;
     image:string;
 };
-type SaveResponse = 'cancel' | 'clobber' | {success:true};
 type SaveImgResponse = {success:true};
 
 const MAX_SIMULTANEOUS_IMAGE_SAVES = 4;
@@ -48,16 +54,18 @@ export async function saveAs(edition:Edition):Promise<boolean> {
     }
 
     const backupName = edition.saveName.get();
+
+    // if it would clobber, get confirmation first
+    if ((backupName!==name) && !await clobberPrompt(name)) {
+        return false;
+    }
+
     try {
         await edition.saveName.set(name);
         await edition.markDirty();
         // TODO: could probably do this much much faster as a server command to move rather than a regen and re-save
-        await spinner('Copying Images', edition.regenAllIds());
-        const success = await _save(edition, backupName===name);
-        if (!success) {
-            await edition.saveName.set(backupName);
-        }
-        return success;
+        await spinner('Copying Images', edition.regenIdsForNameChange());
+        return await _save(edition, true);
     } catch (error: unknown) {
         if (error instanceof TimeoutError) {
             await showError('Error', `Timed out while trying to save as ${name}. Please check your internet connection and save again.`, error);
@@ -302,4 +310,35 @@ async function promptForName(defaultName:string):Promise<string|null> {
             validateFn: validateSaveName,
             warningsFn: (input:string, container:HTMLElement)=>{ updateSaveNameWarnings(input, container, 'Save name'); }
         });
+}
+
+/**
+ * True if it either wouldn't clobber, or the user said it's ok to clobber
+ */
+async function clobberPrompt(saveName:string):Promise<boolean> {
+    // TODO: I should handle exceptions in here.
+    const existsCmdOptions:GenericCmdOptions<ExistsRequest> = {
+        command:'exists',
+        errorMessage:`Error encountered while trying to save ${saveName}`,
+        request:sessionInfo=>({
+            saveName: saveName,
+            token: sessionInfo?.token ?? '',
+        }),
+        signIn:{
+            title:'Sign In to Save',
+            message:'You must first sign in if you wish to save.'
+        },
+        spinnerMessage:'Saving edition data',
+    };
+    const response = await genericCmd<ExistsRequest, ExistsResponse>(existsCmdOptions);
+    if (!('data' in response)) {return false;}
+    if (!response.data) {return true;}
+    
+    const confirmOptions:YesNoOptions = {
+        message:`There is already a save file named ${saveName}. Would you like to replace it?`,
+        noLabel:'No, Cancel Save',
+        title:'Confirm Overwrite',
+        yesLabel:`Yes, Replace ${saveName}`
+    };
+    return getConfirmation(confirmOptions);
 }
