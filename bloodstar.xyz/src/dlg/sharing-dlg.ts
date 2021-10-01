@@ -44,7 +44,12 @@ class SharingDlg extends AriaDialog<void> {
 
         const body:CreateElementsOptions = [
             {t:'h1', txt:'Sharing settings'},
-            {t:'p', txt:`Currently sharing "${editionName}" with:`},
+            {
+                t:'p',
+                txt:'Users you are share this edition with will be able to open a copy and will be able to import characters from it.',
+                a:{style:"max-width:300px"}
+            },
+            { t:'p', txt:`You are currently sharing "${editionName}" with:` },
             this.listDiv,
             {t:'div', css:['column'], children:[this.addUserButton]}
         ];
