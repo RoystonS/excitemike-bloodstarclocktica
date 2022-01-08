@@ -50,12 +50,18 @@ class ChooseOfficialCharDlg extends ChooseCharactersDlg {
  * let the user choose and import an official character
  */
 export default async function importOfficial(edition:Edition):Promise<boolean> {
-    const json = await spinner(
+    const rolesJson = await spinner(
         'Fetching official characters',
         fetchJson<CharacterEntry[]>('https://raw.githubusercontent.com/bra1n/townsquare/main/src/roles.json')
     );
-    if (!json) {return false;}
-    const choices = await new ChooseOfficialCharDlg().open(json);
+    if (!rolesJson) {return false;}
+    const fabledJson = await spinner(
+        'Fetching official fabled',
+        fetchJson<CharacterEntry[]>('https://raw.githubusercontent.com/bra1n/townsquare/main/src/fabled.json')
+    );
+    if (!fabledJson) {return false;}
+    const combined = rolesJson.concat(fabledJson);
+    const choices = await new ChooseOfficialCharDlg().open(combined);
 
     const results = await Promise.all(choices.map(async choice=>{
         const character = await edition.addNewCharacter();

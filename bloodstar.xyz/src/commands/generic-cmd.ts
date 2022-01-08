@@ -66,7 +66,6 @@ type GenericCmdReturn<ResponseDataType> = CancelReason | ErrorReason | {data:Res
 /**
  * handle common operations around running a command
  */
-// TODO: do throttling here as well?
 export default async function genericCmd<
     RequestType extends {token:string},
     ResponseDataType
