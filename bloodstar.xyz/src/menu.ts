@@ -150,11 +150,9 @@ export async function saveFileAsClicked(edition:Edition):Promise<boolean> {
         message:'You must be signed in to save.'
     });
     if (!sessionInfo) {return false;}
-    if (await saveAs(edition)) {
-        setRecentFile(edition.saveName.get(), sessionInfo.email);
-        return true;
-    }
-    return false;
+    if (!await saveAs(edition)) {return false;}
+    setRecentFile(edition.saveName.get(), sessionInfo.email);
+    return true;
 }
 
 /** clicked the sharing button */

@@ -1,6 +1,6 @@
 <?php
-    $maxEditions = 200;
-    $maxCharacters = 200;
+    $maxEditions = 50;
+    $maxCharacters = 100;
     header('Content-Type: application/json;');
     include('shared.php');
     requirePost();
@@ -105,8 +105,11 @@
     // bail with an error if there are too many
     function validateEditionLimit($maxEditions, $username) {
         $userSaveDir = join_paths('../usersave', $username);
+        $editionFolder = join_paths($userSaveDir, $saveName);
+        $editionFilePath = join_paths($editionFolder, 'edition');
+        $isGrandfathered = file_exists($editionFilePath);
         $numEditions = count(glob(join_paths($userSaveDir, '*')));
-        if ($numEditions > $maxEditions) {
+        if (($numEditions > $maxEditions) && (!$isGrandfathered)) {
             echo "{\"error\":\"too many save files ($numEditions / $maxEditions)\"}";
             exit();
         }

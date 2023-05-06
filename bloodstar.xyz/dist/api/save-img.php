@@ -1,6 +1,6 @@
 <?php
-    $imageSizeMax = 1024*1024;
-    $maxImages = 500;
+    $imageSizeMax = 512*1024;
+    $maxImages = 200;
     header('Content-Type: application/json;');
     include('shared.php');
     requirePost();

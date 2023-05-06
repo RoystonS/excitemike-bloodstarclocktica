@@ -24,6 +24,7 @@ import { setTeamColorStyle } from './team-color';
 
 /** helper type for disableCharacterTab */
 type TagsThatCanBeDisabled = "button" | "fieldset" | "input" | "optgroup" | "option" | "select" | "textarea";
+const tagsThatCanBeDisabled:readonly TagsThatCanBeDisabled[] = ['button', 'fieldset', 'optgroup', 'option', 'select', 'textarea', 'input'];
 
 /** set up character tab bindings. returns the cleanup function */
 async function bindCharacterTabControls(character:Character):Promise<()=>Promise<void>> {
@@ -147,8 +148,7 @@ async function bindTrackedVisibility(id:string, property:Property<boolean>, set:
 function disableCharacterTab():void {
     const tabDiv = document.getElementById('charactertab');
     if (!tabDiv) { return; }
-    const tags:readonly TagsThatCanBeDisabled[] = ['button', 'fieldset', 'optgroup', 'option', 'select', 'textarea', 'input'];
-    for (const tag of tags) {
+    for (const tag of tagsThatCanBeDisabled) {
         const elements = tabDiv.getElementsByTagName(tag);
         for (let i=0; i<elements.length; i++) {
             const item = elements.item(i);
@@ -163,8 +163,7 @@ function disableCharacterTab():void {
 function enableCharacterTab():void {
     const tabDiv = document.getElementById('charactertab');
     if (!tabDiv) { return; }
-    const tags:readonly TagsThatCanBeDisabled[] = ['button', 'fieldset', 'optgroup', 'option', 'select', 'textarea', 'input'];
-    for (const tag of tags) {
+    for (const tag of tagsThatCanBeDisabled) {
         const elements = tabDiv.getElementsByTagName(tag);
         for (let i=0; i<elements.length; i++) {
             const item = elements.item(i);
