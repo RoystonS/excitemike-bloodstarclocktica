@@ -107,6 +107,12 @@ ol.nav > li {
 #changelog > .page-contents > p {
     width:60%;
 }
+.donate {
+    list-style:none;
+    flex: none;
+    position:relative;
+    text-align:center
+}
 
 /*paper effect*/
 .page::before{
@@ -338,7 +344,6 @@ p{
     grid-template-columns: 1fr 1fr;
     gap:5rem;
     margin:1rem;
-
 }
 .nightOrderList {
     display: grid;
