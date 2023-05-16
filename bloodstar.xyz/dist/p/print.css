@@ -236,6 +236,22 @@ p{
     border-color:#553412;
 }
 
+.jinxes h1,
+.jinxes h2,
+.jinxes h3,
+.jinxes h4,
+.jinxes h5,
+.jinxes h6,
+.jinxes .ability,
+.jinxes .team,
+.jinxes .overview > p:nth-child(1)::first-letter,
+.jinxes .overview > p + p::before {
+    color:#333;
+}
+.jinxes hr {
+    border-color:#333;
+}
+
 .characterImage {
     max-width:12rem;
     max-height:12rem;

@@ -13,6 +13,7 @@ const teamColorStyleMap = new Map<BloodTeam, string>([
     [BloodTeam.DEMON, 'teamColorDemon'],
     [BloodTeam.TRAVELER, 'teamColorTraveler'],
     [BloodTeam.FABLED, 'teamColorFabled'],
+    [BloodTeam.JINXES, 'teamColorJinxes'],
 ]);
 
 /** sync team color style to the actual team */

@@ -204,6 +204,7 @@ function collectStatusBarData(edition:Edition):StatusBarData {
     data.set(BloodTeam.DEMON, {id:'demonsStatus', exported:0, total:0});
     data.set(BloodTeam.TRAVELER, {id:'travelersStatus', exported:0, total:0});
     data.set(BloodTeam.FABLED, {id:'fabledStatus', exported:0, total:0});
+    data.set(BloodTeam.JINXES, {id:'jinxesStatus', exported:0, total:0});
     for (const character of edition.characterList) {
         const exported = character.export.get();
         for (const teamKey of ['all', character.team.get()]) {

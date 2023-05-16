@@ -9,12 +9,14 @@ export enum BloodTeam {
     DEMON = 'demon',
     TRAVELER = 'traveler',
     FABLED = 'fabled',
+    JINXES = 'jinxes',
     TOWNSFOLK_DISPLAY = 'Townsfolk',
     OUTSIDER_DISPLAY = 'Outsider',
     MINION_DISPLAY = 'Minion',
     DEMON_DISPLAY = 'Demon',
     TRAVELER_DISPLAY = 'Traveler',
     FABLED_DISPLAY = 'Fabled',
+    JINXES_DISPLAY = 'Jinxes',
 }
 
 /** convert a string to a BloodTeam enum */
@@ -34,6 +36,8 @@ export function parseBloodTeam(s:string):BloodTeam {
             return BloodTeam.TRAVELER;
         case 'fabled':
             return BloodTeam.FABLED;
+        case 'jinxes':
+            return BloodTeam.JINXES;
         default:
             throw new Error(`parseBloodTeam: unhandled team ${s}`);
     }
@@ -46,7 +50,8 @@ export const BLOODTEAM_OPTIONS:readonly {display:string; value:BloodTeam}[] = [
     {display: BloodTeam.MINION_DISPLAY, value: BloodTeam.MINION},
     {display: BloodTeam.DEMON_DISPLAY, value: BloodTeam.DEMON},
     {display: BloodTeam.TRAVELER_DISPLAY, value: BloodTeam.TRAVELER},
-    {display: BloodTeam.FABLED_DISPLAY, value: BloodTeam.FABLED}
+    {display: BloodTeam.FABLED_DISPLAY, value: BloodTeam.FABLED},
+    {display: BloodTeam.JINXES_DISPLAY, value: BloodTeam.JINXES}
 ];
 
 /** convert BloodTeam enum to a display string */
@@ -66,6 +71,8 @@ export function bloodTeamDisplayString(team:BloodTeam):string {
             return BloodTeam.TRAVELER_DISPLAY;
         case 'fabled':
             return BloodTeam.FABLED_DISPLAY;
+        case 'jinxes':
+            return BloodTeam.JINXES_DISPLAY;
         default:
             throw new Error(`bloodTeamDisplayString: unhandled team ${team}`);
     }

@@ -593,6 +593,9 @@ export async function getGradientForTeam(team:BloodTeam, useOutsiderAndMinionCol
         case BloodTeam.FABLED:
             url = Images.FABLED_GRADIENT_URL;
             break;
+        case BloodTeam.JINXES:
+            url = Images.JINXES_GRADIENT_URL;
+            break;
         default:
             throw new Error(`getGradientForTeam: unhandled team "${team}"`);
     }
