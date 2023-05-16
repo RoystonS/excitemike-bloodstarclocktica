@@ -18,6 +18,7 @@ import {
 import {showErrorNoWait} from "./dlg/blood-message-dlg";
 import { ProcessImageSettings } from './blood-image';
 import { BloodTeam, parseBloodTeam } from './model/blood-team';
+import { parseSpecial } from './model/special';
 import { Character } from './model/character';
 import {hookupClickEvents} from './util';
 import { setTeamColorStyle } from './team-color';
@@ -34,6 +35,7 @@ async function bindCharacterTabControls(character:Character):Promise<()=>Promise
     await bindTrackedComboBox('characterTeam', character.team, characterTabIds, parseBloodTeam, x=>x);
     await bindTrackedStyle<BloodTeam>('characterTeam', character.team, setTeamColorStyle, characterTabIds);
     await bindTrackedText('characterAbility', character.ability, characterTabIds);
+    await bindTrackedComboBox('characterSpecial', character.special, characterTabIds, parseSpecial, x=>x);
     await bindTrackedText('characterFirstNightReminder', character.firstNightReminder, characterTabIds);
     await bindTrackedText('characterOtherNightReminder', character.otherNightReminder, characterTabIds);
     await bindTrackedCheckBox('characterSetup', character.setup, characterTabIds);

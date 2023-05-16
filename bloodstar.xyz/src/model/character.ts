@@ -9,6 +9,7 @@ import {BloodTeam, BLOODTEAM_OPTIONS} from '../model/blood-team';
 import {CharacterImageSettings} from '../model/character-image-settings';
 import BloodImage, { getGradientForTeam, imageUrlToDataUri, ProcessImageSettings, urlToBloodImage } from '../blood-image';
 import Images from '../images';
+import { BloodSpecial, SPECIAL_OPTIONS } from './special';
 
 export class Character extends ObservableObject<Character> {
     @observableProperty('')
@@ -67,6 +68,9 @@ export class Character extends ObservableObject<Character> {
 
     @observableProperty(false, {read:false, write:false})
     readonly isLoading!: Property<boolean>;
+
+    @observableEnumProperty(BloodSpecial.NONE, SPECIAL_OPTIONS)
+    readonly special!: EnumProperty<BloodSpecial>;
 
     /** prevent extraneous image processing during deserialization */
     private imageRegenSuspended = false;

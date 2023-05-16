@@ -79,6 +79,30 @@
         }
     }
 
+    // special handling for the special field
+    function copySpecial($srcArray, &$dstArray) {
+        if (array_key_exists('special', $srcArray)) {
+            $special = $srcArray['special'];
+            if ($special == 'showGrimoire') {
+                $dstArray['special'] = [
+                    array(
+                        'name' => 'grimoire',
+                        'type' => 'signal',
+                        'time' => 'night',
+                    )
+                ];
+            } elseif ($special == 'point') {
+                $dstArray['special'] = [
+                    array(
+                        'name' => 'pointing',
+                        'type' => 'ability',
+                        'time' => 'day',
+                    )
+                ];
+            }
+        }
+    }
+
     function copyFieldWithSubstitutions(
         $character,
         $sourceField,
@@ -185,6 +209,7 @@
                 copyField($inCharacter, 'name', $outCharacter, 'name');
                 copyField($inCharacter, 'team', $outCharacter, 'team');
                 copyFieldWithSubstitutions($inCharacter, 'ability', $outCharacter, 'ability');
+                copySpecial($inCharacter, $outCharacter);
                 copyFieldWithSubstitutions($inCharacter, 'attribution', $outCharacter, 'attribution');
                 
                 if (array_key_exists('almanac', $inCharacter)) {
