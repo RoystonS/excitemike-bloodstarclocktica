@@ -7,6 +7,13 @@
     $request = getPayload();
     $token = requireField($request, 'token');
     $tokenPayload = verifySession($token);
+    
+    $username = $tokenPayload['username'];
+    validateUsername($username);
+    $bigLimitUsername = "Poria";
+    $isBigLimit = ($username == $bigLimitUsername) ?? false;
+    $maxEditions = $isBigLimit ? 200 : 50;
+    $maxCharacters = $isBigLimit ? 200 : 100;
 
     $clobber = optionalField($request, 'clobber', false);
     validateBoolean($clobber);
@@ -14,8 +21,6 @@
     validateEdition($customEdition);
     $saveName = requireField($request, 'saveName');
     validateFilename($saveName);
-    $username = $tokenPayload['username'];
-    validateUsername($username);
 
     validateEditionLimit($maxEditions, $username);
     validateCharacterLimit($maxCharacters, $customEdition);
